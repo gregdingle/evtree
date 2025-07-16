@@ -26,8 +26,15 @@ export default function ReactFlowApp() {
   // Get system color mode preference
   const colorMode = useDarkMode() ? "dark" : "light";
 
+  // TODO: hook up to keyboard shortcuts
+  const { undo, redo } = useStore.temporal.getState();
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
+      <div className="flex justify-start space-x-2">
+        <button onClick={() => undo()}>undo</button>
+        <button onClick={() => redo()}>redo</button>
+      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}

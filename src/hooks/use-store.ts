@@ -8,6 +8,7 @@ import {
   OnEdgesChange,
   OnNodesChange,
 } from "@xyflow/react";
+import { temporal } from "zundo";
 import { create } from "zustand";
 
 export interface StoreState {
@@ -47,48 +48,48 @@ const initialEdges = [
 const useStoreBase = create<StoreState>()(
   // TODO: Uncomment when ready for persistence
   //   persist(
-  (set, get) => ({
-    nodes: initialNodes,
-    edges: initialEdges,
+  temporal(
+    (set, get) => ({
+      nodes: initialNodes,
+      edges: initialEdges,
 
-    onNodesChange(changes) {
-      set({
-        nodes: applyNodeChanges(changes, get().nodes),
-      });
-    },
+      onNodesChange(changes) {
+        set({
+          nodes: applyNodeChanges(changes, get().nodes),
+        });
+      },
 
-    onEdgesChange(changes) {
-      set({
-        edges: applyEdgeChanges(changes, get().edges),
-      });
-    },
+      onEdgesChange(changes) {
+        set({
+          edges: applyEdgeChanges(changes, get().edges),
+        });
+      },
 
-    onConnect: (connection) => {
-      // TODO: why is this not doing anything?
-      set({
-        edges: addEdge(connection, get().edges),
-      });
-    },
+      onConnect: (connection) => {
+        set({
+          edges: addEdge(connection, get().edges),
+        });
+      },
 
-    setNodes: (nodes) => {
-      set({ nodes });
-    },
+      setNodes: (nodes) => {
+        set({ nodes });
+      },
 
-    setEdges: (edges) => {
-      set({ edges });
-    },
-  })
-  // TODO: Uncomment when ready for persistence
-  //   {
-  //   name: "evtree-storage", // name of the item in the storage (must be unique)
-  //   // TODO: localStorage or sessionStorage?
-  //   storage: createJSONStorage(() => window.localStorage),
-  // }
-  //   )
+      setEdges: (edges) => {
+        set({ edges });
+      },
+    })
+    // TODO: Uncomment when ready for persistence
+    //   {
+    //   name: "evtree-storage", // name of the item in the storage (must be unique)
+    //   // TODO: localStorage or sessionStorage?
+    //   storage: createJSONStorage(() => window.localStorage),
+    // }
+    //   )
+  )
 );
 // TODO: consider 3rd party libs like shared-zustand or simple-zustand-devtools
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
-// definitely zundo for undo/redo support!!!
 
 //
 // NOTE: Zustand example code. See https://zustand.docs.pmnd.rs/guides/auto-generating-selectors
