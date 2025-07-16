@@ -44,6 +44,8 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Use descriptive file names in kebab-case
 - Group related functionality together
 - Keep components focused and single-purpose
+- Place shared hooks in `src/hooks/` directory
+- Use `use-` prefix for custom hook files (e.g., `use-tree-state.ts`)
 
 ### Styling
 
@@ -108,6 +110,12 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Implement proper state management patterns
 - Follow React best practices and hooks patterns
 - Write self-documenting code when possible
+
+### State Management
+
+- Use Zustand store in `src/hooks/use-store.ts` for global shared state in React client-side components
+- Prefer Zustand over Context API for state that needs to be shared across many components
+- Use local component state (useState) for component-specific state that doesn't need to be shared
 
 ## Project-Specific Guidelines
 
