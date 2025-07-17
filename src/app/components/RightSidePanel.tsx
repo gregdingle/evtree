@@ -1,11 +1,14 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import { pick } from "es-toolkit";
+import { values } from "es-toolkit/compat";
 
 export default function RightSidePanel() {
   const { nodes, edges, onNodeDataUpdate, onEdgeDataUpdate } = useStore(
     (state) => ({
-      ...state.selection,
+      nodes: values(pick(state.nodes, state.selection.nodeIds)),
+      edges: values(pick(state.edges, state.selection.edgeIds)),
       onNodeDataUpdate: state.onNodeDataUpdate,
       onEdgeDataUpdate: state.onEdgeDataUpdate,
     })
@@ -23,7 +26,7 @@ export default function RightSidePanel() {
               <div key={node.id} className="">
                 <PropertyInput
                   label="Label"
-                  defaultValue={node.data.label}
+                  value={node.data.label}
                   onChange={(value) =>
                     onNodeDataUpdate(node.id, { label: value })
                   }
@@ -31,7 +34,7 @@ export default function RightSidePanel() {
                 />
                 <PropertyInput
                   label="Description"
-                  defaultValue={node.data.description}
+                  value={node.data.description}
                   onChange={(value) =>
                     onNodeDataUpdate(node.id, { description: value })
                   }
@@ -44,7 +47,7 @@ export default function RightSidePanel() {
               <div key={edge.id} className="">
                 <PropertyInput
                   label="Label"
-                  defaultValue={edge.data?.label}
+                  value={edge.data?.label}
                   onChange={(value) =>
                     onEdgeDataUpdate(edge.id, { label: value })
                   }
@@ -52,7 +55,7 @@ export default function RightSidePanel() {
                 />
                 <PropertyInput
                   label="Description"
-                  defaultValue={edge.data?.description}
+                  value={edge.data?.description}
                   onChange={(value) =>
                     onEdgeDataUpdate(edge.id, { description: value })
                   }
@@ -69,14 +72,14 @@ export default function RightSidePanel() {
 
 interface PropertyInputProps {
   label: string;
-  defaultValue?: string;
+  value?: string;
   onChange: (value: string) => void;
   placeholder?: string;
 }
 
 function PropertyInput({
   label,
-  defaultValue,
+  value,
   onChange,
   placeholder,
 }: PropertyInputProps) {
@@ -87,10 +90,10 @@ function PropertyInput({
       <label className="">{label}</label>
       <input
         type="text"
-        defaultValue={defaultValue || ""}
+        value={value || ""}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border-1 p-1"
+        className="w-full border-2 p-1"
       />
     </div>
   );

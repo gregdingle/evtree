@@ -12,7 +12,7 @@ import {
   OnSelectionChangeFunc,
   OnSelectionChangeParams,
 } from "@xyflow/react";
-import { keyBy } from "es-toolkit";
+import { debounce, keyBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import { temporal } from "zundo";
 import { create, StateCreator } from "zustand";
@@ -27,7 +27,7 @@ export interface StoreState {
   // TODO: AppNode type for custom data
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
-  selection: { nodes: AppNode[]; edges: AppEdge[] };
+  selection: { nodeIds: AppNode["id"][]; edgeIds: AppEdge["id"][] };
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange<AppEdge>;
   onConnect: OnConnect;
@@ -89,6 +89,7 @@ const initialEdges = [
 
 // TODO: add persist when ready for persistence
 // TODO: add when ready for persistence
+// TODO: should exclude selection from being persisted?
 //   {
 //   name: "evtree-storage", // name of the item in the storage (must be unique)
 //   // TODO: localStorage or sessionStorage?
@@ -96,14 +97,29 @@ const initialEdges = [
 // }
 //   )
 const middlewares = (f: StateCreator<StoreState>) =>
-  devtools(temporal(immer(f)));
+  devtools(
+    temporal(immer(f), {
+      handleSet: (handleSet) =>
+        // TODO: is throttle working as expected? the last char in a string
+        // always triggers an undo save... it is not batched
+        debounce<typeof handleSet>((state) => {
+          handleSet(state);
+        }, 1000),
+      // NOTE: we don't want to track selection in history
+      // TODO: why isn't this working?
+      // partialize: (state) => {
+      //   console.log("[EVTree]", omit(state, ["selection"]));
+      //   return omit(state, ["selection"]);
+      // },
+    })
+  );
 
 // TODO: change default selector to be shallow
 export const useStore = create<StoreState>()(
   middlewares((set, get) => ({
     nodes: keyBy(initialNodes, (node) => node.id),
     edges: keyBy(initialEdges, (edge) => edge.id),
-    selection: { nodes: [], edges: [] },
+    selection: { nodeIds: [], edgeIds: [] },
 
     onNodesChange(changes) {
       const updatedNodesArray = applyNodeChanges(changes, values(get().nodes));
@@ -128,7 +144,10 @@ export const useStore = create<StoreState>()(
 
     onSelectionChange: (selection: OnSelectionChangeParams) => {
       set({
-        selection,
+        selection: {
+          nodeIds: selection.nodes.map((node) => node.id),
+          edgeIds: selection.edges.map((edge) => edge.id),
+        },
       });
     },
 
@@ -140,6 +159,7 @@ export const useStore = create<StoreState>()(
         } else {
           console.warn(`[EVTree] Node with id ${id} not found for data update`);
         }
+        // TODO: should we return state here? what is immer API?
         return state;
       });
     },
