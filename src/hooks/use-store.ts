@@ -1,3 +1,5 @@
+"use client";
+
 import {
   addEdge,
   applyEdgeChanges,
@@ -13,13 +15,17 @@ import {
 import { temporal } from "zundo";
 import { create } from "zustand";
 
+// TODO: fill in AppNode and AppEdge types with custom data
+type AppNode = Node<{ label?: string; description?: string }>;
+type AppEdge = Edge<{ label?: string; description?: string }>;
+
 export interface StoreState {
   // TODO: AppNode type for custom data
-  nodes: Node[];
-  edges: Edge[];
-  selection: { nodes: Node[]; edges: Edge[] };
-  onNodesChange: OnNodesChange<Node>;
-  onEdgesChange: OnEdgesChange<Edge>;
+  nodes: AppNode[];
+  edges: AppEdge[];
+  selection: { nodes: AppNode[]; edges: AppEdge[] };
+  onNodesChange: OnNodesChange<AppNode>;
+  onEdgesChange: OnEdgesChange<AppEdge>;
   onConnect: OnConnect;
   onSelectionChange: OnSelectionChangeFunc;
   //   TODO: re-enable if needed
@@ -44,14 +50,14 @@ const initialNodes = [
     data: { label: "Output" },
     position: { x: 250, y: 250 },
   },
-] as Node[];
+] as AppNode[];
 
 const initialEdges = [
-  { id: "e1-2", source: "1", target: "2" },
-  { id: "e2-3", source: "2", target: "3" },
-] as Edge[];
+  { id: "e1-2", source: "1", target: "2", data: { label: "Edge 1-2" } },
+  { id: "e2-3", source: "2", target: "3", data: { label: "Edge 2-3" } },
+] as AppEdge[];
 
-const useStoreBase = create<StoreState>()(
+export const useStore = create<StoreState>()(
   // TODO: Uncomment when ready for persistence
   //   persist(
   temporal(
@@ -106,27 +112,5 @@ const useStoreBase = create<StoreState>()(
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
 
 //
-// NOTE: Zustand example code. See https://zustand.docs.pmnd.rs/guides/auto-generating-selectors
+// TODO why not auto selectors working? See https://zustand.docs.pmnd.rs/guides/auto-generating-selectors
 //
-
-import { StoreApi, UseBoundStore } from "zustand";
-
-type WithSelectors<S> = S extends { getState: () => infer T }
-  ? S & { use: { [K in keyof T]: () => T[K] } }
-  : never;
-
-const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
-  _store: S
-) => {
-  const store = _store as WithSelectors<typeof _store>;
-  store.use = {};
-  for (const k of Object.keys(store.getState())) {
-    // NOTE: Zustand example code
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (store.use as any)[k] = () => store((s) => s[k as keyof typeof s]);
-  }
-
-  return store;
-};
-
-export const useStore = createSelectors(useStoreBase);

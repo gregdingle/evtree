@@ -25,7 +25,6 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 ### React Components
 
 - Use functional components with hooks
-- Prefer named exports for components
 - Use React 19 features and patterns
 - Take advantage of React Compiler optimizations (no manual memoization needed)
 - Use proper JSX syntax and accessibility attributes
@@ -56,6 +55,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Follow modern CSS practices
 - Always implement dark mode support using Tailwind's `dark:` variant classes
 - Respect user's system preference for light/dark mode
+- When generating CSS classes for a new React component, generate only CSS classes that affect layout: margin, padding, flexbox, grid, etc.
 
 ## Domain-Specific Context
 
