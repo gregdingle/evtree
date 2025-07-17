@@ -4,6 +4,7 @@ import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { values } from "es-toolkit/compat";
 import { useShallow } from "zustand/react/shallow";
 
 import type { StoreState } from "@/hooks/use-store";
@@ -35,8 +36,8 @@ export default function ReactFlowApp() {
   return (
     <div className="h-full w-full">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={values(nodes)}
+        edges={values(edges)}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}

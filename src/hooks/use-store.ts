@@ -12,8 +12,12 @@ import {
   OnSelectionChangeFunc,
   OnSelectionChangeParams,
 } from "@xyflow/react";
+import { keyBy } from "es-toolkit";
+import { values } from "es-toolkit/compat";
 import { temporal } from "zundo";
-import { create } from "zustand";
+import { create, StateCreator } from "zustand";
+import { devtools } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
 // TODO: fill in AppNode and AppEdge types with custom data
 type AppNode = Node<{ label?: string; description?: string }>;
@@ -21,17 +25,18 @@ type AppEdge = Edge<{ label?: string; description?: string }>;
 
 export interface StoreState {
   // TODO: AppNode type for custom data
-  nodes: AppNode[];
-  edges: AppEdge[];
+  nodes: Record<string, AppNode>;
+  edges: Record<string, AppEdge>;
   selection: { nodes: AppNode[]; edges: AppEdge[] };
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange<AppEdge>;
   onConnect: OnConnect;
   onSelectionChange: OnSelectionChangeFunc;
-  //   TODO: re-enable if needed
-  //   setNodes: (nodes: Node[]) => void;
-  //   setEdges: (edges: Edge[]) => void;
+  // NOTE: app-specific methods
+  onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
+  onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
 }
+
 const initialNodes = [
   {
     id: "1",
@@ -82,55 +87,75 @@ const initialEdges = [
   },
 ] as AppEdge[];
 
+// TODO: add persist when ready for persistence
+// TODO: add when ready for persistence
+//   {
+//   name: "evtree-storage", // name of the item in the storage (must be unique)
+//   // TODO: localStorage or sessionStorage?
+//   storage: createJSONStorage(() => window.localStorage),
+// }
+//   )
+const middlewares = (f: StateCreator<StoreState>) =>
+  devtools(temporal(immer(f)));
+
+// TODO: change default selector to be shallow
 export const useStore = create<StoreState>()(
-  // TODO: Uncomment when ready for persistence
-  //   persist(
-  temporal(
-    (set, get) => ({
-      nodes: initialNodes,
-      edges: initialEdges,
-      selection: { nodes: [], edges: [] },
+  middlewares((set, get) => ({
+    nodes: keyBy(initialNodes, (node) => node.id),
+    edges: keyBy(initialEdges, (edge) => edge.id),
+    selection: { nodes: [], edges: [] },
 
-      onNodesChange(changes) {
-        set({
-          nodes: applyNodeChanges(changes, get().nodes),
-        });
-      },
+    onNodesChange(changes) {
+      const updatedNodesArray = applyNodeChanges(changes, values(get().nodes));
+      set({
+        nodes: keyBy(updatedNodesArray, (node) => node.id),
+      });
+    },
 
-      onEdgesChange(changes) {
-        set({
-          edges: applyEdgeChanges(changes, get().edges),
-        });
-      },
+    onEdgesChange(changes) {
+      const updatedEdgesArray = applyEdgeChanges(changes, values(get().edges));
+      set({
+        edges: keyBy(updatedEdgesArray, (edge) => edge.id),
+      });
+    },
 
-      onConnect: (connection) => {
-        set({
-          edges: addEdge(connection, get().edges),
-        });
-      },
+    onConnect: (connection) => {
+      const updatedEdgesArray = addEdge(connection, values(get().edges));
+      set({
+        edges: keyBy(updatedEdgesArray, (edge) => edge.id),
+      });
+    },
 
-      onSelectionChange: (selection: OnSelectionChangeParams) => {
-        set({
-          selection,
-        });
-      },
-      // TODO: re-enable if needed
-      //   setNodes: (nodes) => {
-      //     set({ nodes });
-      //   },
+    onSelectionChange: (selection: OnSelectionChangeParams) => {
+      set({
+        selection,
+      });
+    },
 
-      //   setEdges: (edges) => {
-      //     set({ edges });
-      //   },
-    })
-    // TODO: Uncomment when ready for persistence
-    //   {
-    //   name: "evtree-storage", // name of the item in the storage (must be unique)
-    //   // TODO: localStorage or sessionStorage?
-    //   storage: createJSONStorage(() => window.localStorage),
-    // }
-    //   )
-  )
+    onNodeDataUpdate: (id, nodeData) => {
+      set((state) => {
+        const node = state.nodes[id];
+        if (node) {
+          node.data = { ...node.data, ...nodeData };
+        } else {
+          console.warn(`[EVTree] Node with id ${id} not found for data update`);
+        }
+        return state;
+      });
+    },
+
+    onEdgeDataUpdate: (id, edgeData) => {
+      set((state) => {
+        const edge = state.edges[id];
+        if (edge) {
+          edge.data = { ...edge.data, ...edgeData };
+        } else {
+          console.warn(`[EVTree] Edge with id ${id} not found for data update`);
+        }
+        return state;
+      });
+    },
+  }))
 );
 // TODO: consider 3rd party libs like shared-zustand or simple-zustand-devtools
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries

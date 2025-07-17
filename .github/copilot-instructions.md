@@ -21,6 +21,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Use interface for public, extensible object shapes. Use type for everything else.
 - Use proper generics and avoid `any`
 - Export interfaces alongside components when needed
+- Prefix all console messages with `[EVTree]`
 
 ### React Components
 
