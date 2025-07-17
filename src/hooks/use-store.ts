@@ -8,11 +8,12 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  OnNodesDelete,
   OnSelectionChangeFunc,
   OnSelectionChangeParams,
 } from "@xyflow/react";
 import { debounce, keyBy } from "es-toolkit";
-import { values } from "es-toolkit/compat";
+import { keys, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { create, StateCreator } from "zustand";
@@ -35,6 +36,7 @@ export interface StoreState {
   // NOTE: app-specific methods
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
+  onNodesDelete: OnNodesDelete<AppNode>;
   createNodeAt: (
     position: { x: number; y: number },
     fromNodeId: string
@@ -176,6 +178,25 @@ export const useStore = create<StoreState>()(
         } else {
           console.warn(`[EVTree] Edge with id ${id} not found for data update`);
         }
+        return state;
+      });
+    },
+
+    // TODO: reconnect edges to nodes after deletion as in the example at
+    // https://reactflow.dev/examples/nodes/delete-middle-node ??
+    onNodesDelete: (deleted) => {
+      set((state) => {
+        // Remove nodes and edges from the state
+        deleted.forEach((node) => {
+          delete state.nodes[node.id];
+          // Remove edges connected to the deleted node
+          keys(state.edges).forEach((edgeId) => {
+            const edge = state.edges[edgeId];
+            if (edge.source === node.id || edge.target === node.id) {
+              delete state.edges[edgeId];
+            }
+          });
+        });
         return state;
       });
     },
