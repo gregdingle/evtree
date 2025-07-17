@@ -1,5 +1,4 @@
 "use client";
-
 import {
   addEdge,
   applyEdgeChanges,
@@ -14,14 +13,15 @@ import {
 } from "@xyflow/react";
 import { debounce, keyBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
+import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { create, StateCreator } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 // TODO: fill in AppNode and AppEdge types with custom data
-type AppNode = Node<{ label?: string; description?: string }>;
-type AppEdge = Edge<{ label?: string; description?: string }>;
+export type AppNode = Node<{ label?: string; description?: string }>;
+export type AppEdge = Edge<{ label?: string; description?: string }>;
 
 export interface StoreState {
   // TODO: AppNode type for custom data
@@ -35,6 +35,10 @@ export interface StoreState {
   // NOTE: app-specific methods
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
+  createNodeAt: (
+    position: { x: number; y: number },
+    fromNodeId: string
+  ) => void;
 }
 
 const initialNodes = [
@@ -172,6 +176,36 @@ export const useStore = create<StoreState>()(
         } else {
           console.warn(`[EVTree] Edge with id ${id} not found for data update`);
         }
+        return state;
+      });
+    },
+
+    createNodeAt: (position, fromNodeId) => {
+      set((state) => {
+        // Generate unique IDs
+        const nodeId = nanoid(12);
+        const edgeId = `e${fromNodeId}-${nodeId}`;
+
+        // Create new node at the specified position
+        const newNode: AppNode = {
+          id: nodeId,
+          position,
+          data: { label: `Node ${nodeId}`, description: "" },
+          origin: [0.5, 0.0] as [number, number], // center horizontally, top vertically
+        };
+
+        // Create new edge from the source node to the new node
+        const newEdge: AppEdge = {
+          id: edgeId,
+          source: fromNodeId,
+          target: nodeId,
+          data: { label: `Edge ${fromNodeId}-${nodeId}`, description: "" },
+        };
+
+        // Add both to the state
+        state.nodes[nodeId] = newNode;
+        state.edges[edgeId] = newEdge;
+
         return state;
       });
     },

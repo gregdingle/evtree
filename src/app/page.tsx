@@ -1,3 +1,4 @@
+import { ReactFlowProvider } from "@xyflow/react";
 import ReactFlowApp from "./components/ReactFlowApp";
 import RightSidePanel from "./components/RightSidePanel";
 import Toolbar from "./components/Toolbar";
@@ -12,7 +13,9 @@ export default function Home() {
           <Toolbar />
         </div>
         <div className="col-span-2 row-span-11 bg-amber-50">
-          <ReactFlowApp />
+          <ReactFlowProvider>
+            <ReactFlowApp />
+          </ReactFlowProvider>
         </div>
         <div className="col-span-1 row-span-11 border-l">
           <RightSidePanel />
