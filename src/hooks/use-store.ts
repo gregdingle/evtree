@@ -36,25 +36,50 @@ const initialNodes = [
   {
     id: "1",
     type: "input",
-    data: { label: "Input" },
+    data: {
+      label: "Input",
+      description: "Starting point of the decision tree",
+    },
     position: { x: 250, y: 25 },
   },
   {
     id: "2",
-    data: { label: "Default" },
+    data: {
+      label: "Default",
+      description: "Main decision node with multiple options",
+    },
     position: { x: 100, y: 125 },
   },
   {
     id: "3",
     type: "output",
-    data: { label: "Output" },
+    data: {
+      label: "Output",
+      description: "Final outcome of the decision process",
+    },
     position: { x: 250, y: 250 },
   },
 ] as AppNode[];
 
 const initialEdges = [
-  { id: "e1-2", source: "1", target: "2", data: { label: "Edge 1-2" } },
-  { id: "e2-3", source: "2", target: "3", data: { label: "Edge 2-3" } },
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    data: {
+      label: "Edge 1-2",
+      description: "Connection from input to main decision node",
+    },
+  },
+  {
+    id: "e2-3",
+    source: "2",
+    target: "3",
+    data: {
+      label: "Edge 2-3",
+      description: "Path from decision to final output",
+    },
+  },
 ] as AppEdge[];
 
 export const useStore = create<StoreState>()(
@@ -85,7 +110,6 @@ export const useStore = create<StoreState>()(
       },
 
       onSelectionChange: (selection: OnSelectionChangeParams) => {
-        console.log("onSelectionChange", selection);
         set({
           selection,
         });

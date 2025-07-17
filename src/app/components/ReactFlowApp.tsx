@@ -33,7 +33,7 @@ export default function ReactFlowApp() {
   const colorMode = useDarkMode() ? "dark" : "light";
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <div className="h-full w-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}

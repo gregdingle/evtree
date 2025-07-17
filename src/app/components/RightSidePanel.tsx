@@ -7,7 +7,7 @@ export default function RightSidePanel() {
   const { nodes, edges } = useStore((state) => state.selection);
 
   return (
-    <div className="w-48 p-4">
+    <div className="p-4">
       <h2 className="text-lg font-semibold mb-4">Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
