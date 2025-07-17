@@ -79,6 +79,7 @@ const useStoreBase = create<StoreState>()(
       },
 
       onSelectionChange: (selection: OnSelectionChangeParams) => {
+        console.log("onSelectionChange", selection);
         set({
           selection,
         });

@@ -3,7 +3,7 @@ import ReactFlowApp from "./components/ReactFlowApp";
 export default function Home() {
   return (
     <div className="">
-      Hello World!
+      <h1>EVTree</h1>
       <ReactFlowApp />
     </div>
   );

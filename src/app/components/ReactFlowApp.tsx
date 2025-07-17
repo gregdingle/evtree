@@ -35,6 +35,8 @@ export default function ReactFlowApp() {
   // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
 
+  // TODO: selection
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <div className="flex justify-start space-x-2">
