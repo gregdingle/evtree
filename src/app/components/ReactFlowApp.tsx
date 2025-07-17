@@ -14,12 +14,18 @@ const selector = (state: StoreState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
+  onSelectionChange: state.onSelectionChange,
 });
 
 export default function ReactFlowApp() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
-    useShallow(selector)
-  );
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    onSelectionChange,
+  } = useStore(useShallow(selector));
   // TODO: why was this not working?
   // const nodes = useStore.use.nodes()
 
@@ -41,6 +47,7 @@ export default function ReactFlowApp() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onSelectionChange={onSelectionChange}
         colorMode={colorMode}
         fitView
       />

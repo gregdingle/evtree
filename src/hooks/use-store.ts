@@ -7,18 +7,24 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  OnSelectionChangeFunc,
+  OnSelectionChangeParams,
 } from "@xyflow/react";
 import { temporal } from "zundo";
 import { create } from "zustand";
 
 export interface StoreState {
+  // TODO: AppNode type for custom data
   nodes: Node[];
   edges: Edge[];
+  selection: { nodes: Node[]; edges: Edge[] };
   onNodesChange: OnNodesChange<Node>;
   onEdgesChange: OnEdgesChange<Edge>;
   onConnect: OnConnect;
-  setNodes: (nodes: Node[]) => void;
-  setEdges: (edges: Edge[]) => void;
+  onSelectionChange: OnSelectionChangeFunc;
+  //   TODO: re-enable if needed
+  //   setNodes: (nodes: Node[]) => void;
+  //   setEdges: (edges: Edge[]) => void;
 }
 const initialNodes = [
   {
@@ -52,6 +58,7 @@ const useStoreBase = create<StoreState>()(
     (set, get) => ({
       nodes: initialNodes,
       edges: initialEdges,
+      selection: { nodes: [], edges: [] },
 
       onNodesChange(changes) {
         set({
@@ -71,13 +78,19 @@ const useStoreBase = create<StoreState>()(
         });
       },
 
-      setNodes: (nodes) => {
-        set({ nodes });
+      onSelectionChange: (selection: OnSelectionChangeParams) => {
+        set({
+          selection,
+        });
       },
+      // TODO: re-enable if needed
+      //   setNodes: (nodes) => {
+      //     set({ nodes });
+      //   },
 
-      setEdges: (edges) => {
-        set({ edges });
-      },
+      //   setEdges: (edges) => {
+      //     set({ edges });
+      //   },
     })
     // TODO: Uncomment when ready for persistence
     //   {
