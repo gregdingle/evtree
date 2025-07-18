@@ -9,12 +9,6 @@ export default function Toolbar() {
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste } = useStore((state) => state);
 
-  // TODO: hook up selection which is not in <ReactFlow> props
-  const resetSelectedElements = useReactFlowStore(
-    (state) => state.resetSelectedElements
-  );
-  const addSelectedNodes = useReactFlowStore((state) => state.addSelectedNodes);
-  const addSelectedEdges = useReactFlowStore((state) => state.addSelectedEdges);
   return (
     <div className="flex items-center space-x-4 p-4 h-full">
       <div className="flex items-center space-x-1">

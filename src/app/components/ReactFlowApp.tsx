@@ -4,21 +4,9 @@ import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { OnConnectEnd, ReactFlow, useReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { values } from "es-toolkit/compat";
-import { useShallow } from "zustand/react/shallow";
+import { pick, values } from "es-toolkit/compat";
 
 import type { StoreState } from "@/hooks/use-store";
-
-const selector = (state: StoreState) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  onConnect: state.onConnect,
-  onSelectionChange: state.onSelectionChange,
-  onNodesDelete: state.onNodesDelete,
-  createNodeAt: state.createNodeAt,
-});
 
 export default function ReactFlowApp() {
   const {
@@ -30,7 +18,18 @@ export default function ReactFlowApp() {
     onSelectionChange,
     onNodesDelete,
     createNodeAt,
-  } = useStore(useShallow(selector));
+  } = useStore((state: StoreState) =>
+    pick(state, [
+      "nodes",
+      "edges",
+      "onNodesChange",
+      "onEdgesChange",
+      "onConnect",
+      "onSelectionChange",
+      "onNodesDelete",
+      "createNodeAt",
+    ])
+  );
   // TODO: why was this not working?
   // const nodes = useStore.use.nodes()
 

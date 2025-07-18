@@ -1,14 +1,18 @@
 "use client";
 
-import { useStore } from "@/hooks/use-store";
-import { pick } from "es-toolkit";
+import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
+import { pickBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 export default function RightSidePanel() {
   const { nodes, edges, onNodeDataUpdate, onEdgeDataUpdate } = useStore(
     (state) => ({
-      nodes: values(pick(state.nodes, state.selection.nodeIds)),
-      edges: values(pick(state.edges, state.selection.edgeIds)),
+      nodes: values(
+        pickBy(state.nodes, (node) => !!node.selected)
+      ) as AppNode[],
+      edges: values(
+        pickBy(state.edges, (edge) => !!edge.selected)
+      ) as AppEdge[],
       onNodeDataUpdate: state.onNodeDataUpdate,
       onEdgeDataUpdate: state.onEdgeDataUpdate,
     })

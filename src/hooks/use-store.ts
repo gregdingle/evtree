@@ -12,11 +12,14 @@ import {
   OnSelectionChangeFunc,
   OnSelectionChangeParams,
 } from "@xyflow/react";
-import { debounce, keyBy } from "es-toolkit";
-import { keys, values } from "es-toolkit/compat";
+import { debounce, isEqual, keyBy, omit } from "es-toolkit";
+import { fromPairs, keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
-import { create, StateCreator } from "zustand";
+import { StateCreator } from "zustand";
+import { createWithEqualityFn } from "zustand/traditional";
+import { shallow } from "zustand/vanilla/shallow";
+
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
@@ -28,7 +31,6 @@ export interface StoreState {
   // TODO: AppNode type for custom data
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
-  selection: { nodeIds: AppNode["id"][]; edgeIds: AppEdge["id"][] };
   clipboard: { nodeIds: AppNode["id"][]; edgeIds: AppEdge["id"][] };
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange<AppEdge>;
@@ -116,16 +118,32 @@ const middlewares = (f: StateCreator<StoreState>) =>
           handleSet(state);
         }, 1000),
       // NOTE: we don't want to track selection in history
-      // TODO: why isn't this working?
-      // partialize: (state) => {
-      //   console.log("[EVTree]", omit(state, ["selection"]));
-      //   return omit(state, ["selection"]);
-      // },
+      partialize: (state) => {
+        return {
+          ...state,
+          nodes: fromPairs(
+            toPairs(state.nodes).map(([id, node]) => [
+              id,
+              omit(node, ["selected"]),
+            ])
+          ),
+          edges: fromPairs(
+            toPairs(state.edges).map(([id, edge]) => [
+              id,
+              omit(edge, ["selected"]),
+            ])
+          ),
+        };
+      },
+      // HACK: deep isEqual instead of shallow to fix extra pastState with undo after paste
+      // TODO: figure out the extra store updates, then mirror the useStore hook
+      // one-level-deep compare. See createWithEqualityFn.
+      equality: (pastState, currentState) => isEqual(pastState, currentState),
     })
   );
 
-// TODO: change default selector to be shallow
-export const useStore = create<StoreState>()(
+// NOTE: default selector changed to shallow for less re-renders
+export const useStore = createWithEqualityFn<StoreState>()(
   middlewares((set, get) => ({
     nodes: keyBy(initialNodes, (node) => node.id),
     edges: keyBy(initialEdges, (edge) => edge.id),
@@ -153,12 +171,11 @@ export const useStore = create<StoreState>()(
       });
     },
 
-    onSelectionChange: (selection: OnSelectionChangeParams) => {
+    // TODO: does onSelectionChange simply receive all nodes that have updated selected property?
+    onSelectionChange: ({ nodes, edges }: OnSelectionChangeParams) => {
       set({
-        selection: {
-          nodeIds: selection.nodes.map((node) => node.id),
-          edgeIds: selection.edges.map((edge) => edge.id),
-        },
+        nodes: { ...get().nodes, ...keyBy(nodes, (node) => node.id) },
+        edges: { ...get().edges, ...keyBy(edges, (edge) => edge.id) },
       });
     },
 
@@ -207,11 +224,14 @@ export const useStore = create<StoreState>()(
     },
 
     onCopy: () => {
-      const { selection } = get();
       set({
         clipboard: {
-          nodeIds: selection.nodeIds,
-          edgeIds: selection.edgeIds,
+          nodeIds: values(get().nodes)
+            .filter((node) => node.selected)
+            .map((node) => node.id),
+          edgeIds: values(get().edges)
+            .filter((edge) => edge.selected)
+            .map((edge) => edge.id),
         },
       });
     },
@@ -303,7 +323,8 @@ export const useStore = create<StoreState>()(
         return state;
       });
     },
-  }))
+  })),
+  shallow
 );
 // TODO: consider 3rd party libs like shared-zustand or simple-zustand-devtools
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
