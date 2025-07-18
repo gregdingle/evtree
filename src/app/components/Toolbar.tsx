@@ -16,6 +16,7 @@ export default function Toolbar() {
   useHotkeys("ctrl+c", () => onCopy(), { preventDefault: true });
   useHotkeys("ctrl+v", () => onPaste(), { preventDefault: true });
   useHotkeys("ctrl+r", () => onReset(), { preventDefault: true });
+  //   useHotkeys("ctrl+a", () => onArrange(), { preventDefault: true });
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">
@@ -45,6 +46,9 @@ export default function Toolbar() {
         <ToolbarButton onClick={() => onReset()} tooltip="Ctrl+R">
           reset
         </ToolbarButton>
+        {/* <ToolbarButton onClick={() => onArrange()} tooltip="Ctrl+R">
+          arrange
+        </ToolbarButton> */}
       </div>
     </div>
   );

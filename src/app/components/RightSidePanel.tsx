@@ -14,14 +14,14 @@ export default function RightSidePanel() {
 
   return (
     <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4">Properties</h2>
+      <h2 className="text-lg font-semibold mb-8">Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
           <p className="">Select a node or edge to view its properties</p>
         ) : (
           <div className="">
             {nodes.map((node) => (
-              <div key={node.id} className="">
+              <div key={node.id} className="mb-8">
                 <PropertyInput
                   label="Label"
                   value={node.data.label}

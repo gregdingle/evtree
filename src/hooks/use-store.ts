@@ -11,6 +11,7 @@ import {
   OnNodesDelete,
   OnSelectionChangeFunc,
   OnSelectionChangeParams,
+  Position,
 } from "@xyflow/react";
 import { debounce, isEqual, keyBy, omit } from "es-toolkit";
 import { fromPairs, keys, toPairs, values } from "es-toolkit/compat";
@@ -52,7 +53,6 @@ export interface StoreState {
     fromNodeId: string
   ) => void;
 }
-
 const initialNodes = [
   {
     id: "1",
@@ -61,7 +61,9 @@ const initialNodes = [
       label: "Input",
       description: "Starting point of the decision tree",
     },
-    position: { x: 250, y: 25 },
+    position: { x: 0, y: 25 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
   },
   {
     id: "2",
@@ -69,7 +71,9 @@ const initialNodes = [
       label: "Default",
       description: "Main decision node with multiple options",
     },
-    position: { x: 100, y: 125 },
+    position: { x: 125, y: 100 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
   },
   {
     id: "3",
@@ -78,7 +82,9 @@ const initialNodes = [
       label: "Output",
       description: "Final outcome of the decision process",
     },
-    position: { x: 250, y: 250 },
+    position: { x: 250, y: 175 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
   },
 ] as AppNode[];
 
@@ -115,13 +121,15 @@ const initialEdges = [
 const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
     temporal(immer(f), {
-      handleSet: (handleSet) =>
+      handleSet: (handleSet) => {
         // TODO: is throttle working as expected? the last char in a string
         // always triggers an undo save... it is not batched
         // TODO: also the onDragEndCreateNodeAt is not always working to undo
-        debounce<typeof handleSet>((state) => {
+        // TODO: also undoing a delete of a node takes two steps!
+        return debounce<typeof handleSet>((state) => {
           handleSet(state);
-        }, 1000),
+        }, 1000);
+      },
       // NOTE: we don't want to track selection in history
       partialize: (state) => {
         return {
@@ -314,13 +322,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         // Generate unique IDs
         const nodeId = nanoid(12);
         const edgeId = `e${fromNodeId}-${nodeId}`;
-
         // Create new node at the specified position
         const newNode: AppNode = {
           id: nodeId,
           position,
           data: { label: `Node ${nodeId}`, description: "" },
           origin: [0.5, 0.0] as [number, number], // center horizontally, top vertically
+          sourcePosition: Position.Right,
+          targetPosition: Position.Left,
         };
 
         // Create new edge from the source node to the new node

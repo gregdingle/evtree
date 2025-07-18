@@ -2,7 +2,12 @@
 
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
-import { OnConnectEnd, ReactFlow, useReactFlow } from "@xyflow/react";
+import {
+  Background,
+  OnConnectEnd,
+  ReactFlow,
+  useReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { values } from "es-toolkit/compat";
 
@@ -54,7 +59,9 @@ export default function ReactFlowApp() {
         onNodesDelete={onNodesDelete}
         colorMode={colorMode}
         fitView
-      />
+      >
+        <Background />
+      </ReactFlow>
     </div>
   );
 }
