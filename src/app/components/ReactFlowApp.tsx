@@ -60,6 +60,7 @@ export default function ReactFlowApp() {
       <ReactFlow
         nodes={values(nodes)}
         edges={values(edges)}
+        elementsSelectable={true}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}

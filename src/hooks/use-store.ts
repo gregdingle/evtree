@@ -29,6 +29,7 @@ export interface StoreState {
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
   selection: { nodeIds: AppNode["id"][]; edgeIds: AppEdge["id"][] };
+  clipboard: { nodeIds: AppNode["id"][]; edgeIds: AppEdge["id"][] };
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange<AppEdge>;
   onConnect: OnConnect;
@@ -37,6 +38,9 @@ export interface StoreState {
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
   onNodesDelete: OnNodesDelete<AppNode>;
+  onCopy: () => void;
+  onPaste: () => void;
+  // TODO: rename to onCreateNodeAt?
   createNodeAt: (
     position: { x: number; y: number },
     fromNodeId: string
@@ -126,6 +130,7 @@ export const useStore = create<StoreState>()(
     nodes: keyBy(initialNodes, (node) => node.id),
     edges: keyBy(initialEdges, (edge) => edge.id),
     selection: { nodeIds: [], edgeIds: [] },
+    clipboard: { nodeIds: [], edgeIds: [] },
 
     onNodesChange(changes) {
       const updatedNodesArray = applyNodeChanges(changes, values(get().nodes));
@@ -197,6 +202,74 @@ export const useStore = create<StoreState>()(
             }
           });
         });
+        return state;
+      });
+    },
+
+    onCopy: () => {
+      const { selection } = get();
+      set({
+        clipboard: {
+          nodeIds: selection.nodeIds,
+          edgeIds: selection.edgeIds,
+        },
+      });
+    },
+
+    onPaste: () => {
+      set((state) => {
+        const { nodes, edges, clipboard } = get();
+        const PASTE_OFFSET = 50; // Offset for pasted nodes
+        const nodeIdMap = new Map<string, string>(); // Map old IDs to new IDs
+
+        // First pass: create nodes with offset positions and build ID mapping
+        clipboard.nodeIds.forEach((nodeId) => {
+          const node = nodes[nodeId];
+          if (node) {
+            const newNodeId = nanoid(12);
+            nodeIdMap.set(nodeId, newNodeId);
+            state.nodes[newNodeId] = {
+              ...node,
+              id: newNodeId,
+              position: {
+                x: node.position.x + PASTE_OFFSET,
+                y: node.position.y + PASTE_OFFSET,
+              },
+              selected: true, // Select the new node
+            };
+            state.nodes[nodeId].selected = false; // Deselect the original node
+          } else {
+            console.warn(`[EVTree] Node with id ${nodeId} not found for paste`);
+          }
+        });
+
+        // Second pass: create edges with updated source/target IDs
+        const newEdgeIds: string[] = [];
+        clipboard.edgeIds.forEach((edgeId) => {
+          const edge = edges[edgeId];
+          if (edge) {
+            const newSourceId = nodeIdMap.get(edge.source);
+            const newTargetId = nodeIdMap.get(edge.target);
+
+            // Only create edge if both source and target nodes were pasted
+            if (newSourceId && newTargetId) {
+              const newEdgeId = nanoid(12);
+              state.edges[newEdgeId] = {
+                ...edge,
+                id: newEdgeId,
+                source: newSourceId,
+                target: newTargetId,
+                selected: true, // Select the new edge
+              };
+              // Deselect the original edge
+              state.edges[edgeId].selected = false;
+              newEdgeIds.push(newEdgeId);
+            }
+          } else {
+            console.warn(`[EVTree] Edge with id ${edgeId} not found for paste`);
+          }
+        });
+
         return state;
       });
     },
