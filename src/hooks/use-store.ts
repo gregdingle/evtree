@@ -118,6 +118,7 @@ const middlewares = (f: StateCreator<StoreState>) =>
       handleSet: (handleSet) =>
         // TODO: is throttle working as expected? the last char in a string
         // always triggers an undo save... it is not batched
+        // TODO: also the onDragEndCreateNodeAt is not always working to undo
         debounce<typeof handleSet>((state) => {
           handleSet(state);
         }, 1000),
@@ -128,6 +129,7 @@ const middlewares = (f: StateCreator<StoreState>) =>
           nodes: fromPairs(
             toPairs(state.nodes).map(([id, node]) => [
               id,
+              // TODO: better to omit or reset?
               omit(node, ["selected"]),
             ])
           ),
@@ -176,6 +178,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     // TODO: does onSelectionChange simply receive all nodes that have updated selected property?
+    // TODO: selecting rapidly nodes can cause glitchy multi select bug
     onSelectionChange: ({ nodes, edges }: OnSelectionChangeParams) => {
       set({
         nodes: { ...get().nodes, ...keyBy(nodes, (node) => node.id) },
