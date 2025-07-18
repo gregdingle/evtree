@@ -11,7 +11,7 @@ import {
   OnNodesDelete,
   Position,
 } from "@xyflow/react";
-import { debounce, isEqual, keyBy, omit } from "es-toolkit";
+import { isEqual, keyBy, omit } from "es-toolkit";
 import { fromPairs, keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
@@ -121,16 +121,17 @@ const initialEdges = [
 //   )
 const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
+    // TODO: bug in zundo onNodesDelete... edges do not come back!
     temporal(immer(f), {
-      handleSet: (handleSet) => {
-        // TODO: is throttle working as expected? the last char in a string
-        // always triggers an undo save... it is not batched
-        // TODO: also the onDragEndCreateNodeAt is not always working to undo
-        // TODO: also undoing a delete of a node takes two steps!
-        return debounce<typeof handleSet>((state) => {
-          handleSet(state);
-        }, 1000);
-      },
+      // handleSet: (handleSet) => {
+      //   // TODO: is throttle working as expected? the last char in a string
+      //   // always triggers an undo save... it is not batched
+      //   // TODO: also the onDragEndCreateNodeAt is not always working to undo
+      //   // TODO: also undoing a delete of a node takes two steps!
+      //   return debounce<typeof handleSet>((state) => {
+      //     handleSet(state);
+      //   }, 1000);
+      // },
       // NOTE: we don't want to track selection in history
       partialize: (state) => {
         return {
