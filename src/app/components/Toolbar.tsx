@@ -2,11 +2,20 @@
 
 import { useStore } from "@/hooks/use-store";
 import Image from "next/image";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste, onReset } = useStore.getState();
+
+  // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
+  // TODO: consider best hotkeys
+  useHotkeys("ctrl+z", () => undo(), { preventDefault: true });
+  useHotkeys("ctrl+y", () => redo(), { preventDefault: true });
+  useHotkeys("ctrl+c", () => onCopy(), { preventDefault: true });
+  useHotkeys("ctrl+v", () => onPaste(), { preventDefault: true });
+  useHotkeys("ctrl+r", () => onReset(), { preventDefault: true });
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">
@@ -21,11 +30,21 @@ export default function Toolbar() {
         <h2 className="text-lg font-semibold">EVTree</h2>
       </div>
       <div className="flex justify-start space-x-2">
-        <ToolbarButton onClick={() => undo()}>undo</ToolbarButton>
-        <ToolbarButton onClick={() => redo()}>redo</ToolbarButton>
-        <ToolbarButton onClick={() => onCopy()}>copy</ToolbarButton>
-        <ToolbarButton onClick={() => onPaste()}>paste</ToolbarButton>
-        <ToolbarButton onClick={() => onReset()}>reset</ToolbarButton>
+        <ToolbarButton onClick={() => undo()} tooltip="Ctrl+Z">
+          undo
+        </ToolbarButton>
+        <ToolbarButton onClick={() => redo()} tooltip="Ctrl+Y">
+          redo
+        </ToolbarButton>
+        <ToolbarButton onClick={() => onCopy()} tooltip="Ctrl+C">
+          copy
+        </ToolbarButton>
+        <ToolbarButton onClick={() => onPaste()} tooltip="Ctrl+V">
+          paste
+        </ToolbarButton>
+        <ToolbarButton onClick={() => onReset()} tooltip="Ctrl+R">
+          reset
+        </ToolbarButton>
       </div>
     </div>
   );
@@ -34,15 +53,23 @@ export default function Toolbar() {
 interface ToolbarButtonProps {
   onClick: () => void;
   children: React.ReactNode;
+  tooltip?: string;
 }
 
-function ToolbarButton({ onClick, children }: ToolbarButtonProps) {
+function ToolbarButton({ onClick, children, tooltip }: ToolbarButtonProps) {
   return (
-    <button
-      onClick={onClick}
-      className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
-    >
-      {children}
-    </button>
+    <div className="relative group">
+      <button
+        onClick={onClick}
+        className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
+      >
+        {children}
+      </button>
+      {tooltip && (
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+          {tooltip}
+        </div>
+      )}
+    </div>
   );
 }
