@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@xyflow/react": "^12.8.2",
+    "auto-zustand-selectors-hook": "^3.0.1",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "dayjs": "^1.11.13",
     "es-toolkit": "^1.39.7",
@@ -17,7 +18,8 @@
     "next": "15.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zundo": "^2.3.0"
+    "zundo": "^2.3.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
