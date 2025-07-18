@@ -63,7 +63,7 @@ const initialNodes = [
       label: "Input",
       description: "Starting point of the decision tree",
     },
-    position: { x: 0, y: 25 },
+    position: { x: 0, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -73,7 +73,7 @@ const initialNodes = [
       label: "Default",
       description: "Main decision node with multiple options",
     },
-    position: { x: 125, y: 100 },
+    position: { x: 225, y: -50 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -84,7 +84,7 @@ const initialNodes = [
       label: "Output",
       description: "Final outcome of the decision process",
     },
-    position: { x: 250, y: 175 },
+    position: { x: 225, y: 50 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -95,18 +95,20 @@ const initialEdges = [
     id: "e1-2",
     source: "1",
     target: "2",
+    type: "smoothstep",
     data: {
       label: "Edge 1-2",
       description: "Connection from input to main decision node",
     },
   },
   {
-    id: "e2-3",
-    source: "2",
+    id: "e1-3",
+    source: "1",
     target: "3",
+    type: "smoothstep",
     data: {
-      label: "Edge 2-3",
-      description: "Path from decision to final output",
+      label: "Edge 1-3",
+      description: "Path from input to final output",
     },
   },
 ] as AppEdge[];
@@ -330,6 +332,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           position,
           data: { label: `Node ${nodeId}`, description: "" },
           origin: [0.5, 0.0] as [number, number], // center horizontally, top vertically
+          // TODO: make this required by AppNode type?
           sourcePosition: Position.Right,
           targetPosition: Position.Left,
         };
@@ -339,6 +342,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           id: edgeId,
           source: fromNodeId,
           target: nodeId,
+          // TODO: make this required by AppEdge type?
+          type: "smoothstep",
           data: { label: `Edge ${fromNodeId}-${nodeId}`, description: "" },
         };
 

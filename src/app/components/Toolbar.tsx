@@ -11,6 +11,7 @@ export default function Toolbar() {
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
   // TODO: consider best hotkeys
+  // TODO: make hotkey usage also flash corresponding button
   useHotkeys("ctrl+z", () => undo(), { preventDefault: true });
   useHotkeys("ctrl+y", () => redo(), { preventDefault: true });
   useHotkeys("ctrl+c", () => onCopy(), { preventDefault: true });
