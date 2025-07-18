@@ -7,7 +7,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
-  const { onCopy, onPaste, onReset } = useStore.getState();
+  const { onCopy, onPaste, onReset, onArrange } = useStore.getState();
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
   // TODO: consider best hotkeys
@@ -16,7 +16,7 @@ export default function Toolbar() {
   useHotkeys("ctrl+c", () => onCopy(), { preventDefault: true });
   useHotkeys("ctrl+v", () => onPaste(), { preventDefault: true });
   useHotkeys("ctrl+r", () => onReset(), { preventDefault: true });
-  //   useHotkeys("ctrl+a", () => onArrange(), { preventDefault: true });
+  useHotkeys("ctrl+a", () => onArrange(), { preventDefault: true });
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">
@@ -46,9 +46,9 @@ export default function Toolbar() {
         <ToolbarButton onClick={() => onReset()} tooltip="Ctrl+R">
           reset
         </ToolbarButton>
-        {/* <ToolbarButton onClick={() => onArrange()} tooltip="Ctrl+R">
+        <ToolbarButton onClick={() => onArrange()} tooltip="Ctrl+R">
           arrange
-        </ToolbarButton> */}
+        </ToolbarButton>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ import { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
+import { getLayoutedElements } from "@/utils/layout";
 import {
   createSelectorFunctions,
   ZustandFuncSelectors,
@@ -52,6 +53,7 @@ export interface StoreState {
     position: { x: number; y: number },
     fromNodeId: string
   ) => void;
+  onArrange: () => void;
 }
 const initialNodes = [
   {
@@ -345,6 +347,19 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         state.edges[edgeId] = newEdge;
 
         return state;
+      });
+    },
+    onArrange: () => {
+      set((state) => {
+        const { nodes, edges } = getLayoutedElements(
+          values(get().nodes),
+          values(get().edges)
+        );
+        return {
+          ...state,
+          nodes: keyBy(nodes, (node) => node.id),
+          edges: keyBy(edges, (edge) => edge.id),
+        };
       });
     },
   })),
