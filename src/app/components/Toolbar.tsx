@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
-  const { onCopy, onPaste, onReset } = useStore((state) => state);
+  const { onCopy, onPaste, onReset } = useStore.getState();
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">

@@ -20,6 +20,10 @@ import { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
+import {
+  createSelectorFunctions,
+  ZustandFuncSelectors,
+} from "auto-zustand-selectors-hook";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
@@ -143,7 +147,7 @@ const middlewares = (f: StateCreator<StoreState>) =>
   );
 
 // NOTE: default selector changed to shallow for less re-renders
-export const useStore = createWithEqualityFn<StoreState>()(
+const useStoreBase = createWithEqualityFn<StoreState>()(
   middlewares((set, get) => ({
     nodes: keyBy(initialNodes, (node) => node.id),
     edges: keyBy(initialEdges, (edge) => edge.id),
@@ -334,9 +338,10 @@ export const useStore = createWithEqualityFn<StoreState>()(
   })),
   shallow
 );
-// TODO: consider 3rd party libs like shared-zustand or simple-zustand-devtools
+// TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
 
-//
-// TODO why not auto selectors working? See https://zustand.docs.pmnd.rs/guides/auto-generating-selectors
-//
+// NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
+export const useStore = createSelectorFunctions(
+  useStoreBase
+) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;

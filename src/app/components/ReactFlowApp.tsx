@@ -4,34 +4,20 @@ import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { OnConnectEnd, ReactFlow, useReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { pick, values } from "es-toolkit/compat";
-
-import type { StoreState } from "@/hooks/use-store";
+import { values } from "es-toolkit/compat";
 
 export default function ReactFlowApp() {
   const {
-    nodes,
-    edges,
     onNodesChange,
     onEdgesChange,
     onConnect,
     onSelectionChange,
     onNodesDelete,
     onDragEndCreateNodeAt,
-  } = useStore((state: StoreState) =>
-    pick(state, [
-      "nodes",
-      "edges",
-      "onNodesChange",
-      "onEdgesChange",
-      "onConnect",
-      "onSelectionChange",
-      "onNodesDelete",
-      "onDragEndCreateNodeAt",
-    ])
-  );
-  // TODO: why was this not working?
-  // const nodes = useStore.use.nodes()
+  } = useStore.getState();
+
+  const nodes = useStore.use.nodes();
+  const edges = useStore.use.edges();
 
   // Get system color mode preference
   const colorMode = useDarkMode() ? "dark" : "light";

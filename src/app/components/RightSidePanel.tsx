@@ -5,18 +5,12 @@ import { pickBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 export default function RightSidePanel() {
-  const { nodes, edges, onNodeDataUpdate, onEdgeDataUpdate } = useStore(
-    (state) => ({
-      nodes: values(
-        pickBy(state.nodes, (node) => !!node.selected)
-      ) as AppNode[],
-      edges: values(
-        pickBy(state.edges, (edge) => !!edge.selected)
-      ) as AppEdge[],
-      onNodeDataUpdate: state.onNodeDataUpdate,
-      onEdgeDataUpdate: state.onEdgeDataUpdate,
-    })
-  );
+  const { onNodeDataUpdate, onEdgeDataUpdate } = useStore.getState();
+
+  const { nodes, edges } = useStore((state) => ({
+    nodes: values(pickBy(state.nodes, (node) => !!node.selected)) as AppNode[],
+    edges: values(pickBy(state.edges, (edge) => !!edge.selected)) as AppEdge[],
+  }));
 
   return (
     <div className="p-4">
