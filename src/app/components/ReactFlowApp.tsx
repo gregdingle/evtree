@@ -17,7 +17,7 @@ export default function ReactFlowApp() {
     onConnect,
     onSelectionChange,
     onNodesDelete,
-    createNodeAt,
+    onDragEndCreateNodeAt,
   } = useStore((state: StoreState) =>
     pick(state, [
       "nodes",
@@ -27,7 +27,7 @@ export default function ReactFlowApp() {
       "onConnect",
       "onSelectionChange",
       "onNodesDelete",
-      "createNodeAt",
+      "onDragEndCreateNodeAt",
     ])
   );
   // TODO: why was this not working?
@@ -50,7 +50,7 @@ export default function ReactFlowApp() {
         y: clientY,
       });
 
-      createNodeAt(position, connectionState.fromNode.id);
+      onDragEndCreateNodeAt(position, connectionState.fromNode.id);
     }
   };
 

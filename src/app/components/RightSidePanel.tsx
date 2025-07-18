@@ -89,15 +89,17 @@ function PropertyInput({
 }: PropertyInputProps) {
   // TODO: how to do consistent global styles? use some tailwind component UI kit?
   return (
-    // TODO: grid layout?
     <div className="mb-2 flex space-x-2 items-center">
-      <label className="">{label}</label>
+      <label htmlFor={label} className="w-24">
+        {label}
+      </label>
       <input
+        id={label}
         type="text"
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border-2 p-1"
+        className="w-full border-2 p-1 rounded-md"
       />
     </div>
   );

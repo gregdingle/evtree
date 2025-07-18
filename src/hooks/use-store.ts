@@ -42,8 +42,8 @@ export interface StoreState {
   onNodesDelete: OnNodesDelete<AppNode>;
   onCopy: () => void;
   onPaste: () => void;
-  // TODO: rename to onCreateNodeAt?
-  createNodeAt: (
+  onReset: () => void;
+  onDragEndCreateNodeAt: (
     position: { x: number; y: number },
     fromNodeId: string
   ) => void;
@@ -294,7 +294,15 @@ export const useStore = createWithEqualityFn<StoreState>()(
       });
     },
 
-    createNodeAt: (position, fromNodeId) => {
+    onReset: () => {
+      set({
+        nodes: keyBy(initialNodes, (node) => node.id),
+        edges: keyBy(initialEdges, (edge) => edge.id),
+        clipboard: { nodeIds: [], edgeIds: [] },
+      });
+    },
+
+    onDragEndCreateNodeAt: (position, fromNodeId) => {
       set((state) => {
         // Generate unique IDs
         const nodeId = nanoid(12);

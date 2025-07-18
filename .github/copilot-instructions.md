@@ -29,6 +29,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Use React 19 features and patterns
 - Take advantage of React Compiler optimizations (no manual memoization needed)
 - Use proper JSX syntax and accessibility attributes
+- Put unexported helper components at the bottom of the file they are in
 
 ### Next.js Patterns
 
