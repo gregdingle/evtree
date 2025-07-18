@@ -6,6 +6,7 @@ import {
   Background,
   OnConnectEnd,
   ReactFlow,
+  SelectionMode,
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -16,7 +17,6 @@ export default function ReactFlowApp() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    onSelectionChange,
     onNodesDelete,
     onDragEndCreateNodeAt,
   } = useStore.getState();
@@ -51,14 +51,15 @@ export default function ReactFlowApp() {
         nodes={values(nodes)}
         edges={values(edges)}
         elementsSelectable={true}
+        selectionOnDrag={true}
+        selectionMode={SelectionMode.Partial}
+        colorMode={colorMode}
+        fitView
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onSelectionChange={onSelectionChange}
         onConnectEnd={onConnectEnd}
         onNodesDelete={onNodesDelete}
-        colorMode={colorMode}
-        fitView
       >
         <Background />
       </ReactFlow>

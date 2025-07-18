@@ -9,8 +9,6 @@ import {
   OnEdgesChange,
   OnNodesChange,
   OnNodesDelete,
-  OnSelectionChangeFunc,
-  OnSelectionChangeParams,
   Position,
 } from "@xyflow/react";
 import { debounce, isEqual, keyBy, omit } from "es-toolkit";
@@ -41,7 +39,6 @@ export interface StoreState {
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange<AppEdge>;
   onConnect: OnConnect;
-  onSelectionChange: OnSelectionChangeFunc;
   // NOTE: app-specific methods
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
@@ -186,15 +183,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       const updatedEdgesArray = addEdge(connection, values(get().edges));
       set({
         edges: keyBy(updatedEdgesArray, (edge) => edge.id),
-      });
-    },
-
-    // TODO: does onSelectionChange simply receive all nodes that have updated selected property?
-    // TODO: selecting rapidly nodes can cause glitchy multi select bug
-    onSelectionChange: ({ nodes, edges }: OnSelectionChangeParams) => {
-      set({
-        nodes: { ...get().nodes, ...keyBy(nodes, (node) => node.id) },
-        edges: { ...get().edges, ...keyBy(edges, (edge) => edge.id) },
       });
     },
 
