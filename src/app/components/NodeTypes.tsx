@@ -7,7 +7,7 @@ import { Handle, Position } from "@xyflow/react";
 // see also https://reactflow.dev/learn/customization/custom-nodes
 //
 
-const RectangleNode = ({ data }: { data: AppNode["data"] }) => {
+const SquareNode = ({ data }: { data: AppNode["data"] }) => {
   return (
     <div style={{ background: "#9ca8b3", padding: "14px" }}>
       <Handle type="target" position={Position.Left} />
@@ -36,25 +36,24 @@ const CircleNode = ({ data }: { data: AppNode["data"] }) => {
 const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
   return (
     <div className="relative">
-      <Handle type="target" position={Position.Top} />
       <div
         style={{
-          borderLeft: "50px solid transparent",
-          borderRight: "50px solid transparent",
-          borderBottom: "80px solid #9ca8b3",
+          borderTop: "50px solid transparent",
+          borderBottom: "50px solid transparent",
+          borderRight: "80px solid #9ca8b3",
         }}
       >
         <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center text-sm font-medium text-white w-12">
           {data.label}
         </div>
       </div>
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Left} />
     </div>
   );
 };
 
 export const nodeTypes = {
   circle: CircleNode,
-  rectangle: RectangleNode,
+  square: SquareNode,
   triangle: TriangleNode,
 };

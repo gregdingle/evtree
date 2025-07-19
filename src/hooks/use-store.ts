@@ -19,7 +19,9 @@ import { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
+import { cloneEdge, createEdge } from "@/utils/edge";
 import { getLayoutedElements } from "@/utils/layout";
+import { cloneNode, createNode } from "@/utils/node";
 import {
   createSelectorFunctions,
   ZustandFuncSelectors,
@@ -428,7 +430,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set((state) => {
         const tree = state.trees[currentTreeId];
         if (tree) {
-          const updatedEdgesArray = addEdge(connection, values(tree.edges));
+          const { source: fromNodeId, target: nodeId } = connection;
+          const newEdge = createEdge(fromNodeId, nodeId);
+          const updatedEdgesArray = addEdge(newEdge, values(tree.edges));
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
         } else {
@@ -545,17 +549,13 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         clipboard.nodeIds.forEach((nodeId) => {
           const node = tree.nodes[nodeId];
           if (node) {
-            const newNodeId = nanoid(12);
-            nodeIdMap.set(nodeId, newNodeId);
-            tree.nodes[newNodeId] = {
-              ...node,
-              id: newNodeId,
-              position: {
-                x: node.position.x + PASTE_OFFSET,
-                y: node.position.y + PASTE_OFFSET,
-              },
-              selected: true,
+            const position = {
+              x: node.position.x + PASTE_OFFSET,
+              y: node.position.y + PASTE_OFFSET,
             };
+            const newNode = cloneNode(node, position);
+            tree.nodes[newNode.id] = newNode;
+            nodeIdMap.set(nodeId, newNode.id);
             tree.nodes[nodeId].selected = false;
           } else {
             warnItemNotFound("Node", nodeId, "paste");
@@ -570,14 +570,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const newTargetId = nodeIdMap.get(edge.target);
 
             if (newSourceId && newTargetId) {
-              const newEdgeId = nanoid(12);
-              tree.edges[newEdgeId] = {
-                ...edge,
-                id: newEdgeId,
-                source: newSourceId,
-                target: newTargetId,
-                selected: true,
-              };
+              const newEdge = cloneEdge(edge, newSourceId, newTargetId);
+              tree.edges[newEdge.id] = newEdge;
               tree.edges[edgeId].selected = false;
             }
           } else {
@@ -622,28 +616,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set((state) => {
         const tree = state.trees[currentTreeId];
         if (tree) {
-          const nodeId = nanoid(12);
-          const edgeId = `e${fromNodeId}-${nodeId}`;
-
-          const newNode: AppNode = {
-            id: nodeId,
-            position,
-            data: { label: `Node ${nodeId}`, description: "" },
-            origin: [0.5, 0.0] as [number, number],
-            sourcePosition: Position.Right,
-            targetPosition: Position.Left,
-          };
-
-          const newEdge: AppEdge = {
-            id: edgeId,
-            source: fromNodeId,
-            target: nodeId,
-            type: "smoothstep",
-            data: { label: `Edge ${fromNodeId}-${nodeId}`, description: "" },
-          };
-
-          tree.nodes[nodeId] = newNode;
-          tree.edges[edgeId] = newEdge;
+          const newNode = createNode(position);
+          const newEdge = createEdge(fromNodeId, newNode.id);
+          // TODO: why not selected after create on canvas?
+          tree.nodes[newNode.id] = newNode;
+          tree.edges[newEdge.id] = newEdge;
           // TODO: use dayjs?
           tree.updatedAt = new Date().toISOString();
         } else {
