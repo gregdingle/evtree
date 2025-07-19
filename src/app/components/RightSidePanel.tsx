@@ -5,9 +5,10 @@ import { debounce } from "es-toolkit";
 import { useEffect, useState } from "react";
 
 export default function RightSidePanel() {
-  const { onNodeDataUpdate, onEdgeDataUpdate } = useStore.getState();
+  const { onNodeDataUpdate, onEdgeDataUpdate, onTreeDataUpdate } =
+    useStore.getState();
 
-  const { nodes, edges } = useStore((state) => {
+  const { nodes, edges, currentTree } = useStore((state) => {
     return {
       nodes: state
         .getCurrentNodes()
@@ -15,6 +16,7 @@ export default function RightSidePanel() {
       edges: state
         .getCurrentEdges()
         .filter((edge) => edge.selected) as AppEdge[],
+      currentTree: state.getCurrentTree(),
     };
   });
 
@@ -23,7 +25,25 @@ export default function RightSidePanel() {
       <h2 className="text-lg font-semibold mb-8">Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
-          <p className="">Select a node or edge to edit</p>
+          currentTree ? (
+            <div className="mb-8">
+              <h3 className="text-md font-medium mb-4">Tree Properties</h3>
+              <PropertyInput
+                label="Name"
+                value={currentTree.name}
+                onChange={(value) => onTreeDataUpdate({ name: value })}
+                placeholder="Enter tree name"
+              />
+              <PropertyInput
+                label="Description"
+                value={currentTree.description}
+                onChange={(value) => onTreeDataUpdate({ description: value })}
+                placeholder="Enter tree description"
+              />
+            </div>
+          ) : (
+            <p className="">No tree selected</p>
+          )
         ) : (
           <div className="">
             {nodes.map((node) => (

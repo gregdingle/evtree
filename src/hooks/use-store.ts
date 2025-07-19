@@ -260,7 +260,25 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     setCurrentTree: (treeId: string) => {
-      set({ currentTreeId: treeId });
+      set((state) => {
+        // Clear selections in current tree before switching
+        if (state.currentTreeId) {
+          const currentTree = state.trees[state.currentTreeId];
+          if (currentTree) {
+            // TODO: extract to shared function clearCurrentSelection
+            // Clear node and edge selections
+            [...values(currentTree.nodes), ...values(currentTree.edges)]
+              .filter((item) => item.selected)
+              .forEach((item) => {
+                item.selected = false;
+              });
+          }
+        }
+
+        // Switch to new tree
+        state.currentTreeId = treeId;
+        return state;
+      });
     },
 
     duplicateTree: (treeId: string, newName: string) => {
