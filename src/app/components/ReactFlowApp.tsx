@@ -4,6 +4,7 @@ import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import {
   Background,
+  Controls,
   OnConnectEnd,
   ReactFlow,
   SelectionMode,
@@ -61,6 +62,7 @@ export default function ReactFlowApp() {
         onNodesDelete={onNodesDelete}
       >
         <Background />
+        <Controls position="bottom-right" orientation="horizontal" />
       </ReactFlow>
     </div>
   );
