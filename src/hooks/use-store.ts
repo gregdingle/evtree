@@ -94,6 +94,39 @@ const warnItemNotFound = (
 
 const initialNodes = [
   {
+    id: "triangle",
+    type: "triangle",
+    data: {
+      label: "triangle",
+      description: "triangle description",
+    },
+    position: { x: 0, y: -200 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+  },
+  {
+    id: "rectangle",
+    type: "rectangle",
+    data: {
+      label: "rectangle",
+      description: "rectangle description",
+    },
+    position: { x: 150, y: -200 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+  },
+  {
+    id: "circle",
+    type: "circle",
+    data: {
+      label: "circle",
+      description: "circle description",
+    },
+    position: { x: 300, y: -200 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+  },
+  {
     id: "1",
     type: "input",
     data: {

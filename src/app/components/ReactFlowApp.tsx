@@ -11,6 +11,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { nodeTypes } from "./NodeTypes";
 
 export default function ReactFlowApp() {
   const {
@@ -50,6 +51,7 @@ export default function ReactFlowApp() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         elementsSelectable={true}
         selectionOnDrag={true}
         selectionMode={SelectionMode.Partial}
