@@ -11,7 +11,7 @@ import {
   OnNodesDelete,
   Position,
 } from "@xyflow/react";
-import { isEqual, keyBy, omit } from "es-toolkit";
+import { isEqual, keyBy, omit, throttle } from "es-toolkit";
 import { fromPairs, keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
@@ -105,11 +105,11 @@ const initialNodes = [
     targetPosition: Position.Left,
   },
   {
-    id: "rectangle",
-    type: "rectangle",
+    id: "square",
+    type: "square",
     data: {
-      label: "rectangle",
-      description: "rectangle description",
+      label: "square",
+      description: "square description",
     },
     position: { x: 150, y: -200 },
     sourcePosition: Position.Right,
@@ -199,17 +199,15 @@ const initialTrees: Record<string, DecisionTree> = {
 const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
     persist(
-      // TODO: bug in zundo onNodesDelete... edges do not come back!
+      // TODO: bug in zundo onNodesDelete... edges do take another undo to come back!
       temporal(immer(f), {
-        // handleSet: (handleSet) => {
-        //   // TODO: is throttle working as expected? the last char in a string
-        //   // always triggers an undo save... it is not batched
-        //   // TODO: also the onDragEndCreateNodeAt is not always working to undo
-        //   // TODO: also undoing a delete of a node takes two steps!
-        //   return debounce<typeof handleSet>((state) => {
-        //     handleSet(state);
-        //   }, 1000);
-        // },
+        // NOTE: throttling is needed for dragging nodes into position
+        handleSet: (handleSet) => {
+          // TODO: onDragEndCreateNodeAt sometimes takes 3 clicks to undo
+          return throttle<typeof handleSet>((state) => {
+            handleSet(state);
+          }, 1000);
+        },
         // NOTE: we don't want to track selection in history
         partialize: (state) => {
           // TODO: is going thru all the users trees necessary? why not just the current tree?
