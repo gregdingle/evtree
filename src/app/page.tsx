@@ -1,5 +1,6 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import CollapsiblePanel from "./components/CollapsiblePanel";
+import LeftSidePanel from "./components/LeftSidePanel";
 import ReactFlowApp from "./components/ReactFlowApp";
 import RightSidePanel from "./components/RightSidePanel";
 import Toolbar from "./components/Toolbar";
@@ -15,11 +16,16 @@ export default function Home() {
             <Toolbar />
           </div>
           <div className="flex flex-1">
+            <div className="border-r">
+              <CollapsiblePanel side="left">
+                <LeftSidePanel />
+              </CollapsiblePanel>
+            </div>
             <div className="flex-1 bg-amber-50">
               <ReactFlowApp />
             </div>
             <div className="border-l">
-              <CollapsiblePanel>
+              <CollapsiblePanel side="right">
                 <RightSidePanel />
               </CollapsiblePanel>
             </div>

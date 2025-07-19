@@ -14,7 +14,7 @@ export default function RightSidePanel() {
   }));
 
   return (
-    <div className="p-4">
+    <div className="p-4 w-80">
       <h2 className="text-lg font-semibold mb-8">Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (

@@ -30,8 +30,16 @@ import { immer } from "zustand/middleware/immer";
 // TODO: fill in AppNode and AppEdge types with custom data
 export type AppNode = Node<{ label?: string; description?: string }>;
 export type AppEdge = Edge<{ label?: string; description?: string }>;
+export interface DecisionTree {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
 
 export interface StoreState {
+  trees: Record<string, DecisionTree>;
   // TODO: AppNode type for custom data
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
@@ -52,6 +60,17 @@ export interface StoreState {
   ) => void;
   onArrange: () => void;
 }
+const initialTrees: Record<string, DecisionTree> = {
+  "tree-1": {
+    id: "tree-1",
+    name: "Default Tree",
+    description: "This is the default decision tree",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+};
+
+// TODO: hook up nodes and edges with trees
 const initialNodes = [
   {
     id: "1",
@@ -161,6 +180,7 @@ const middlewares = (f: StateCreator<StoreState>) =>
 // NOTE: default selector changed to shallow for less re-renders
 const useStoreBase = createWithEqualityFn<StoreState>()(
   middlewares((set, get) => ({
+    trees: initialTrees,
     nodes: keyBy(initialNodes, (node) => node.id),
     edges: keyBy(initialEdges, (edge) => edge.id),
     selection: { nodeIds: [], edgeIds: [] },

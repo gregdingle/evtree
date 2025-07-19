@@ -57,7 +57,10 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Follow modern CSS practices
 - Always implement dark mode support using Tailwind's `dark:` variant classes
 - Respect user's system preference for light/dark mode
-- When generating CSS classes for a new React component, generate only CSS classes that affect layout: margin, padding, flexbox, grid, etc.
+- Unless explicitly asked:
+  - Generate only CSS classes that affect layout: margin, padding, flexbox, grid, etc.
+  - Do not generate CSS classes that only affect color, background, or text styles
+  - Do not generate CSS classes related to animations
 
 ## Domain-Specific Context
 
