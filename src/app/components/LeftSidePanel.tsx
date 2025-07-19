@@ -6,8 +6,7 @@ import { values } from "es-toolkit/compat";
 import { useState } from "react";
 import Tooltip from "./Tooltip";
 
-// TODO: this is AI generated... refine!
-// TODO: do not allow delete last tree? or support zero trees? revert to initial tree or what?
+// TODO: allow delete last tree? or support zero trees? revert to initial tree or what?
 export default function LeftSidePanel() {
   const [newTreeName, setNewTreeName] = useState("");
 

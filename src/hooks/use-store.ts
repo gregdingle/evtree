@@ -51,6 +51,9 @@ export interface StoreState {
   deleteTree: (treeId: string) => void;
   setCurrentTree: (treeId: string) => void;
   duplicateTree: (treeId: string, newName: string) => string;
+  onTreeDataUpdate: (
+    treeData: Partial<Pick<DecisionTree, "name" | "description">>
+  ) => void;
 
   // TODO: consider separate selector functions like selectCurrentTree for memoization
   // TODO: shorten selector names
@@ -277,6 +280,30 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return state;
       });
       return newTreeId;
+    },
+
+    onTreeDataUpdate: (treeData) => {
+      const { currentTreeId } = get();
+      if (!currentTreeId) {
+        warnNoCurrentTree("tree data update");
+        return;
+      }
+
+      set((state) => {
+        const tree = state.trees[currentTreeId];
+        if (tree) {
+          if (treeData.name !== undefined) {
+            tree.name = treeData.name;
+          }
+          if (treeData.description !== undefined) {
+            tree.description = treeData.description;
+          }
+          tree.updatedAt = new Date().toISOString();
+        } else {
+          warnItemNotFound("Tree", currentTreeId, "tree data update");
+        }
+        return state;
+      });
     },
 
     // Selectors for current tree
