@@ -23,7 +23,7 @@ export default function RightSidePanel() {
       <h2 className="text-lg font-semibold mb-8">Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
-          <p className="">Select a node or edge to view its properties</p>
+          <p className="">Select a node or edge to edit</p>
         ) : (
           <div className="">
             {nodes.map((node) => (

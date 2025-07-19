@@ -1,18 +1,19 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import { sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import { useState } from "react";
+import Tooltip from "./Tooltip";
 
 // TODO: this is AI generated... refine!
 // TODO: do not allow delete last tree? or support zero trees? revert to initial tree or what?
 export default function LeftSidePanel() {
   const [newTreeName, setNewTreeName] = useState("");
 
-  const { trees, currentTreeId, currentTree } = useStore((state) => ({
-    trees: values(state.trees),
+  const { trees, currentTreeId } = useStore((state) => ({
+    trees: sortBy(values(state.trees), ["updatedAt"]).reverse(),
     currentTreeId: state.currentTreeId,
-    currentTree: state.getCurrentTree(),
   }));
 
   const { createTree, deleteTree, setCurrentTree, duplicateTree } =
@@ -26,7 +27,7 @@ export default function LeftSidePanel() {
   };
 
   const handleDuplicateTree = (treeId: string, treeName: string) => {
-    const newName = prompt(
+    const newName = window.prompt(
       "Enter name for duplicated tree:",
       `${treeName} (Copy)`
     );
@@ -37,7 +38,7 @@ export default function LeftSidePanel() {
 
   const handleDeleteTree = (treeId: string, treeName: string) => {
     if (trees.length <= 1) {
-      alert("Cannot delete the last tree");
+      window.alert("Cannot delete the last tree");
       return;
     }
 
@@ -50,11 +51,6 @@ export default function LeftSidePanel() {
     <div className="p-4 w-80">
       <div className="mb-4">
         <h2 className="text-lg font-semibold">Trees</h2>
-        {currentTree && (
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Current: <span className="font-medium">{currentTree.name}</span>
-          </p>
-        )}
       </div>
 
       {/* Create new tree */}
@@ -100,41 +96,42 @@ export default function LeftSidePanel() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium truncate">{tree.name}</h3>
+                    <h3 className="truncate">{tree.name}</h3>
                     {tree.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                      <p className=" text-gray-600 dark:text-gray-400 my-1">
                         {tree.description}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      Nodes: {values(tree.nodes).length}, Edges:{" "}
-                      {values(tree.edges).length}
-                    </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500">
-                      Updated: {new Date(tree.updatedAt).toLocaleDateString()}
+                      Updated {new Date(tree.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex space-x-1 ml-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDuplicateTree(tree.id, tree.name);
-                      }}
-                      className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-                      title="Duplicate tree"
-                    >
-                      📋
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteTree(tree.id, tree.name);
-                      }}
-                      className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
-                      title="Delete tree"
-                    >
-                      🗑️
-                    </button>
+                    <Tooltip text="Duplicate tree">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDuplicateTree(tree.id, tree.name);
+                        }}
+                        className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                      >
+                        <span className="rotate-45 inline-block">╳</span>
+                      </button>
+                    </Tooltip>
+                    <Tooltip text="Delete tree">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTree(tree.id, tree.name);
+                        }}
+                        className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+                      >
+                        {/* TODO: put commands in a menu?
+                        TODO: proper icons
+                         */}
+                        ╳
+                      </button>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

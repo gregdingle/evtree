@@ -5,6 +5,7 @@ import { downloadPNG } from "@/utils/download";
 import { useReactFlow } from "@xyflow/react";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
+import Tooltip from "./Tooltip";
 
 export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
@@ -77,19 +78,25 @@ interface ToolbarButtonProps {
 }
 
 function ToolbarButton({ onClick, children, tooltip }: ToolbarButtonProps) {
+  if (tooltip) {
+    return (
+      <Tooltip text={tooltip}>
+        <button
+          onClick={onClick}
+          className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
+        >
+          {children}
+        </button>
+      </Tooltip>
+    );
+  }
+
   return (
-    <div className="relative group">
-      <button
-        onClick={onClick}
-        className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
-      >
-        {children}
-      </button>
-      {tooltip && (
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 text-xs bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-          {tooltip}
-        </div>
-      )}
-    </div>
+    <button
+      onClick={onClick}
+      className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
+    >
+      {children}
+    </button>
   );
 }
