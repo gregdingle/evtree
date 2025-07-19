@@ -1,8 +1,9 @@
 "use client";
 
 import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
-import { pickBy } from "es-toolkit";
+import { debounce, pickBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
+import { useEffect, useState } from "react";
 
 export default function RightSidePanel() {
   const { onNodeDataUpdate, onEdgeDataUpdate } = useStore.getState();
@@ -81,6 +82,21 @@ function PropertyInput({
   onChange,
   placeholder,
 }: PropertyInputProps) {
+  const debouncedOnChange = debounce(onChange, 200);
+
+  // Use a local state for immediate UI updates
+  const [localValue, setLocalValue] = useState(value || "");
+
+  // Update local value when prop value changes
+  useEffect(() => {
+    setLocalValue(value || "");
+  }, [value]);
+
+  const handleChange = (newValue: string) => {
+    setLocalValue(newValue);
+    debouncedOnChange(newValue);
+  };
+
   // TODO: how to do consistent global styles? use some tailwind component UI kit?
   return (
     <div className="mb-2 flex space-x-2 items-center">
@@ -90,8 +106,8 @@ function PropertyInput({
       <input
         id={label}
         type="text"
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
+        value={localValue}
+        onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
         className="w-full border-2 p-1 rounded-md"
       />
