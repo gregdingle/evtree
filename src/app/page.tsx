@@ -1,4 +1,5 @@
 import { ReactFlowProvider } from "@xyflow/react";
+import CollapsiblePanel from "./components/CollapsiblePanel";
 import ReactFlowApp from "./components/ReactFlowApp";
 import RightSidePanel from "./components/RightSidePanel";
 import Toolbar from "./components/Toolbar";
@@ -8,16 +9,20 @@ export default function Home() {
   return (
     <ReactFlowProvider>
       <div className="">
-        <div className="grid grid-cols-3 grid-rows-12 h-screen">
+        <div className="flex flex-col h-screen">
           {/* // TODO: fix min height on resize vertical */}
-          <div className="col-span-3 row-span-1 border-b">
+          <div className="border-b">
             <Toolbar />
           </div>
-          <div className="col-span-2 row-span-11 bg-amber-50">
-            <ReactFlowApp />
-          </div>
-          <div className="col-span-1 row-span-11 border-l">
-            <RightSidePanel />
+          <div className="flex flex-1">
+            <div className="flex-1 bg-amber-50">
+              <ReactFlowApp />
+            </div>
+            <div className="border-l">
+              <CollapsiblePanel>
+                <RightSidePanel />
+              </CollapsiblePanel>
+            </div>
           </div>
         </div>
       </div>
