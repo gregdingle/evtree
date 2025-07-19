@@ -6,6 +6,7 @@ export function createNode(position: XYPosition): AppNode {
   const nodeId = nanoid(12);
   const newNode: AppNode = {
     id: nodeId,
+    type: "circle",
     position,
     data: { label: `Node ${nodeId}`, description: "" },
     origin: [0.5, 0.0] as [number, number],

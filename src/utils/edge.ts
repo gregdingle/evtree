@@ -6,7 +6,7 @@ export function createEdge(fromNodeId: string, toNodeId: string): AppEdge {
     id: edgeId,
     source: fromNodeId,
     target: toNodeId,
-    type: "smoothstep",
+    type: "custom",
     data: { label: `Edge ${fromNodeId}-${toNodeId}`, description: "" },
     selected: true, // Mark as selected by default
   };
