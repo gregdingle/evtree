@@ -16,6 +16,9 @@ const SquareNode = ({ data }: { data: AppNode["data"] }) => {
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
+      <div className="absolute -bottom-8 max-w-24">
+        {data.value?.toLocaleString()}
+      </div>
     </div>
   );
 };
@@ -28,6 +31,9 @@ const CircleNode = ({ data }: { data: AppNode["data"] }) => {
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
+      <div className="absolute -bottom-8 max-w-24">
+        {data.value?.toLocaleString()}
+      </div>
     </div>
   );
 };
@@ -35,7 +41,7 @@ const CircleNode = ({ data }: { data: AppNode["data"] }) => {
 const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
   return (
     <div className="relative">
-      <div className="absolute -top-8 max-w-24">{data.label}</div>
+      <div className="absolute -top-2 left-12 max-w-24">{data.label}</div>
       <div
         style={{
           // NOTE: this wacky CSS creates the triangle shape
@@ -43,8 +49,11 @@ const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
           borderBottom: "20px solid transparent",
           borderRight: "32px solid #9ca8b3",
         }}
-      ></div>
-      <Handle type="source" position={Position.Left} />
+      />
+      <Handle type="target" position={Position.Left} />
+      <div className="absolute top-6 left-12 max-w-24">
+        {data.value?.toLocaleString()}
+      </div>
     </div>
   );
 };

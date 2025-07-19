@@ -30,8 +30,16 @@ import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 // TODO: fill in AppNode and AppEdge types with custom data
-export type AppNode = Node<{ label?: string; description?: string }>;
-export type AppEdge = Edge<{ label?: string; description?: string }>;
+export type AppNode = Node<{
+  label?: string;
+  description?: string;
+  value?: number;
+}>;
+export type AppEdge = Edge<{
+  label?: string;
+  description?: string;
+  value?: number;
+}>;
 
 export interface DecisionTree {
   id: string;
@@ -96,24 +104,14 @@ const warnItemNotFound = (
 
 const initialNodes = [
   {
-    id: "triangle",
-    type: "triangle",
-    data: {
-      label: "triangle",
-      description: "triangle description",
-    },
-    position: { x: 0, y: -200 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
     id: "square",
     type: "square",
     data: {
       label: "square",
       description: "square description",
+      value: 1000,
     },
-    position: { x: 150, y: -200 },
+    position: { x: 150, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -123,40 +121,33 @@ const initialNodes = [
     data: {
       label: "circle",
       description: "circle description",
+      value: 1000,
     },
-    position: { x: 300, y: -200 },
+    position: { x: 300, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
   {
-    id: "1",
-    type: "input",
+    id: "triangle1",
+    type: "triangle",
     data: {
-      label: "Input",
-      description: "Starting point of the decision tree",
+      label: "triangle1",
+      description: "triangle1 description",
+      value: 1000,
     },
-    position: { x: 0, y: 0 },
+    position: { x: 450, y: -50 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
   {
-    id: "2",
+    id: "triangle2",
+    type: "triangle",
     data: {
-      label: "Default",
-      description: "Main decision node with multiple options",
+      label: "triangle2",
+      description: "triangle2 description",
+      value: 1000,
     },
-    position: { x: 225, y: -50 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "3",
-    type: "output",
-    data: {
-      label: "Output",
-      description: "Final outcome of the decision process",
-    },
-    position: { x: 225, y: 50 },
+    position: { x: 450, y: 50 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -164,23 +155,33 @@ const initialNodes = [
 
 const initialEdges = [
   {
-    id: "e1-2",
-    source: "1",
-    target: "2",
+    id: "square-circle",
+    source: "square",
+    target: "circle",
     type: "smoothstep",
     data: {
-      label: "Edge 1-2",
-      description: "Connection from input to main decision node",
+      label: "Edge square-circle",
+      description: "Connection from square to circle",
     },
   },
   {
-    id: "e1-3",
-    source: "1",
-    target: "3",
+    id: "circle-triangle1",
+    source: "circle",
+    target: "triangle1",
     type: "smoothstep",
     data: {
-      label: "Edge 1-3",
-      description: "Path from input to final output",
+      label: "Edge circle-triangle1",
+      description: "Path from circle to triangle1",
+    },
+  },
+  {
+    id: "circle-triangle2",
+    source: "circle",
+    target: "triangle2",
+    type: "smoothstep",
+    data: {
+      label: "Edge circle-triangle2",
+      description: "Path from circle to triangle2",
     },
   },
 ] as AppEdge[];
