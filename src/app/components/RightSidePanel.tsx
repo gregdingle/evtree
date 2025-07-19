@@ -1,17 +1,22 @@
 "use client";
 
 import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
-import { debounce, pickBy } from "es-toolkit";
-import { values } from "es-toolkit/compat";
+import { debounce } from "es-toolkit";
 import { useEffect, useState } from "react";
 
 export default function RightSidePanel() {
   const { onNodeDataUpdate, onEdgeDataUpdate } = useStore.getState();
 
-  const { nodes, edges } = useStore((state) => ({
-    nodes: values(pickBy(state.nodes, (node) => !!node.selected)) as AppNode[],
-    edges: values(pickBy(state.edges, (edge) => !!edge.selected)) as AppEdge[],
-  }));
+  const { nodes, edges } = useStore((state) => {
+    return {
+      nodes: state
+        .getCurrentNodes()
+        .filter((node) => node.selected) as AppNode[],
+      edges: state
+        .getCurrentEdges()
+        .filter((edge) => edge.selected) as AppEdge[],
+    };
+  });
 
   return (
     <div className="p-4 w-80">

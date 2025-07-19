@@ -10,7 +10,6 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { values } from "es-toolkit/compat";
 
 export default function ReactFlowApp() {
   const {
@@ -21,8 +20,8 @@ export default function ReactFlowApp() {
     onDragEndCreateNodeAt,
   } = useStore.getState();
 
-  const nodes = useStore.use.nodes();
-  const edges = useStore.use.edges();
+  const nodes = useStore((state) => state.getCurrentNodes());
+  const edges = useStore((state) => state.getCurrentEdges());
 
   // Get system color mode preference
   const colorMode = useDarkMode() ? "dark" : "light";
@@ -48,8 +47,8 @@ export default function ReactFlowApp() {
   return (
     <div className="h-full w-full">
       <ReactFlow
-        nodes={values(nodes)}
-        edges={values(edges)}
+        nodes={nodes}
+        edges={edges}
         elementsSelectable={true}
         selectionOnDrag={true}
         selectionMode={SelectionMode.Partial}
