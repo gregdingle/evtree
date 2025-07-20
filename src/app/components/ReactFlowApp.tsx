@@ -76,7 +76,11 @@ export default function ReactFlowApp() {
         // TODO: use isValidConnection to check for left-to-right connections only? check for cycles?
       >
         <Background />
-        <Controls position="bottom-right" orientation="horizontal" />
+        <Controls
+          position="bottom-right"
+          orientation="horizontal"
+          showInteractive={false}
+        />
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
       </ReactFlow>
     </div>

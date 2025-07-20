@@ -43,6 +43,6 @@ body {
 
 /* QUESTION: is this the best way to enlarge the controls buttons? */
 .evtree .react-flow__controls-button {
-  min-width: 30px !important;
-  min-height: 30px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
 }
