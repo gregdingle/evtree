@@ -1,4 +1,5 @@
 import { AppNode } from "@/hooks/use-store";
+import { formatValue } from "@/utils/format";
 import { Handle, Position } from "@xyflow/react";
 
 //
@@ -17,7 +18,7 @@ const SquareNode = ({ data }: { data: AppNode["data"] }) => {
         <Handle type="source" position={Position.Right} />
       </div>
       <div className="text-sm absolute -bottom-8 max-w-24">
-        {data.value?.toLocaleString()}
+        {formatValue(data.value)}
       </div>
     </div>
   );
@@ -32,7 +33,7 @@ const CircleNode = ({ data }: { data: AppNode["data"] }) => {
         <Handle type="source" position={Position.Right} />
       </div>
       <div className="text-sm absolute -bottom-8 max-w-24">
-        {data.value?.toLocaleString()}
+        {formatValue(data.value)}
       </div>
     </div>
   );
@@ -54,7 +55,7 @@ const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
       />
       <Handle type="target" position={Position.Left} />
       <div className="text-sm absolute top-6 left-12 max-w-24">
-        {data.value?.toLocaleString()}
+        {formatValue(data.value)}
       </div>
     </div>
   );

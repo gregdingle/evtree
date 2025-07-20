@@ -1,4 +1,5 @@
 import { AppEdge } from "@/hooks/use-store";
+import { formatValue } from "@/utils/format";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -59,7 +60,7 @@ export default function CustomEdge({
           }}
           className="absolute nodrag nopa text-xs top-3"
         >
-          {value?.toLocaleString()}
+          {formatValue(value)}
         </div>
       </EdgeLabelRenderer>
     </>
