@@ -47,7 +47,7 @@ export default function RightSidePanel() {
           )
         ) : (
           <div className="">
-            <h3 className="mb-4">Node Properties</h3>
+            {nodes.length ? <h3 className="mb-4">Node Properties</h3> : null}
             {nodes.map((node) => (
               <div key={node.id} className="mb-8">
                 <PropertyInput
@@ -76,7 +76,7 @@ export default function RightSidePanel() {
                 />
               </div>
             ))}
-            <h3 className="mb-4">Edge Properties</h3>
+            {edges.length ? <h3 className="mb-4">Edge Properties</h3> : null}
             {edges.map((edge) => (
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">

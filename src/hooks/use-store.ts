@@ -21,7 +21,7 @@ import { shallow } from "zustand/vanilla/shallow";
 
 import { cloneEdge, createEdge } from "@/utils/edge";
 import { getLayoutedElements } from "@/utils/layout";
-import { cloneNode, createNode } from "@/utils/node";
+import { cloneNode, createNode, NodeType } from "@/utils/node";
 import {
   createSelectorFunctions,
   ZustandFuncSelectors,
@@ -83,6 +83,10 @@ export interface StoreState {
   onCopy: () => void;
   onPaste: () => void;
   onReset: () => void;
+  onCreateNodeAt: (
+    position: { x: number; y: number },
+    nodeType: NodeType
+  ) => void;
   onDragEndCreateNodeAt: (
     position: { x: number; y: number },
     fromNodeId: string
@@ -612,6 +616,33 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       });
 
       set({ clipboard: { nodeIds: [], edgeIds: [] } });
+    },
+
+    onCreateNodeAt: (position, nodeType) => {
+      const { currentTreeId } = get();
+      if (!currentTreeId) {
+        warnNoCurrentTree("create node");
+        return;
+      }
+
+      set((state) => {
+        const tree = state.trees[currentTreeId];
+        if (tree) {
+          const newNode = createNode(position, nodeType);
+          tree.nodes[newNode.id] = newNode;
+          tree.updatedAt = new Date().toISOString();
+          // Clear current selection and select the new node
+          values(tree.nodes).forEach((node) => {
+            node.selected = node.id === newNode.id;
+          });
+          values(tree.edges).forEach((edge) => {
+            edge.selected = false;
+          });
+        } else {
+          warnItemNotFound("Tree", currentTreeId, "create node");
+        }
+        return state;
+      });
     },
 
     onDragEndCreateNodeAt: (position, fromNodeId) => {

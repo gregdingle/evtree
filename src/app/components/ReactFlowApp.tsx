@@ -1,5 +1,6 @@
 "use client";
 
+import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import {
@@ -11,6 +12,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import ContextMenu from "./ContextMenu";
 import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
 
@@ -30,6 +32,9 @@ export default function ReactFlowApp() {
   const colorMode = useDarkMode() ? "dark" : "light";
   const { screenToFlowPosition } = useReactFlow();
 
+  // Context menu hook
+  const { menu, ref, onContextMenu, closeMenu } = useContextMenu();
+
   // NOTE: adapted from https://reactflow.dev/examples/nodes/add-node-on-edge-drop
   const onConnectEnd: OnConnectEnd = (event, connectionState) => {
     // when a connection is dropped on the pane it's not valid
@@ -48,8 +53,9 @@ export default function ReactFlowApp() {
   };
 
   return (
-    <div className="h-full w-full">
+    <div ref={ref} className="h-full w-full relative">
       <ReactFlow
+        ref={ref}
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -64,9 +70,14 @@ export default function ReactFlowApp() {
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onNodesDelete={onNodesDelete}
+        onContextMenu={onContextMenu}
+        // TODO: is this best way to close context menu?
+        onClick={closeMenu}
+        // TODO: use isValidConnection to check for left-to-right connections only? check for cycles?
       >
         <Background />
         <Controls position="bottom-right" orientation="horizontal" />
+        {menu && <ContextMenu {...menu} onClose={closeMenu} />}
       </ReactFlow>
     </div>
   );

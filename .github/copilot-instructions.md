@@ -138,7 +138,10 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 ## Dependencies Management
 
 - Prefer using built-in Next.js and React features over external libraries
-- Prefer using es-toolkit for utility functions
+- Prefer using `es-toolkit` for utility functions over built-in utility functions or static methods.
+  - Prefer using `values` over `Object.values`
+  - Prefer using `entries` over `Object.entries`
+  - Prefer using `keys` over `Object.keys`
 - Prefer using dayjs for date functions
 - When adding new dependencies, consider bundle size impact
 - Use TypeScript-first libraries when available

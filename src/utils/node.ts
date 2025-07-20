@@ -2,11 +2,17 @@ import { AppNode } from "@/hooks/use-store";
 import { Position, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
-export function createNode(position: XYPosition): AppNode {
+// TODO: dedupe with NodeTypes.tsx somehow... where source of truth?
+export type NodeType = "square" | "circle" | "triangle";
+
+export function createNode(
+  position: XYPosition,
+  type: NodeType = "circle"
+): AppNode {
   const nodeId = nanoid(12);
   const newNode: AppNode = {
     id: nodeId,
-    type: "circle",
+    type,
     position,
     data: { label: "", description: "", value: 0 },
     origin: [0.5, 0.0] as [number, number],
