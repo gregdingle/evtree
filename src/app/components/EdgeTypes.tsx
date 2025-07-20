@@ -55,7 +55,7 @@ export default function CustomEdge({
 
   return (
     <>
-      <BaseEdge id={id} path={edgePath} />
+      <BaseEdge id={id} path={edgePath} style={{ strokeWidth: 3 }} />
       <EdgeLabelRenderer>
         <div className="nodrag nopa text-xs">
           <div
