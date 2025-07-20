@@ -1,5 +1,5 @@
 import { AppEdge } from "@/hooks/use-store";
-import { formatValue } from "@/utils/format";
+import { formatProbability, formatValue } from "@/utils/format";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -28,39 +28,57 @@ export default function CustomEdge({
   targetY,
   data,
 }: CustomEdgeProps) {
-  const { label, value } = data ?? {};
+  const { label, value, probability } = data ?? {};
   // NOTE: assumes the edge is always left to right
-  const [edgePath, labelX, labelY] = getSmoothStepPath({
+  // TODO: allow prefix unused vars lint rule
+  const [edgePath, labelX, labelY, _offsetX, offsetY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition: Position.Right,
     targetX,
     targetY,
     targetPosition: Position.Left,
+    stepPosition: 0, // bend at source
   });
+  // HACK: Adjust the default label position when at stepPosition=0 from the
+  // vertical segment to the horizontal. When the edge is not left-to-right,
+  // which should never happen, simply revert. Special-case when there is no
+  // bend, only a single horizontal segment.
+  const isLeftToRight = sourceX < targetX;
+  const midPointX = (targetX - sourceX) / 2;
+  const adjY = isLeftToRight ? (labelY > sourceY ? offsetY : -offsetY) : 0;
+  const adjX = isLeftToRight ? midPointX : 0;
+  const translateX = sourceY == targetY ? sourceX + midPointX : labelX + adjX;
+  const transform = `translate(-50%, -50%) translate(${translateX}px, ${
+    labelY + adjY
+  }px)`;
 
   return (
     <>
       <BaseEdge id={id} path={edgePath} />
       <EdgeLabelRenderer>
-        <div
-          style={{
-            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-            pointerEvents: "all",
-          }}
-          // TODO: add eslint tailwind something to detect non-existing classes
-          className="absolute nodrag nopa text-xs -top-3"
-        >
-          {label}
-        </div>
-        <div
-          style={{
-            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-            pointerEvents: "all",
-          }}
-          className="absolute nodrag nopa text-xs top-3"
-        >
-          {formatValue(value)}
+        <div className="nodrag nopa text-xs">
+          <div
+            style={{
+              transform,
+              pointerEvents: "all",
+            }}
+            // TODO: add eslint tailwind something to detect non-existing classes
+            className="absolute -top-3"
+          >
+            {label}
+          </div>
+          <div
+            style={{
+              transform,
+              pointerEvents: "all",
+            }}
+            className="absolute top-3"
+          >
+            {formatValue(value)}
+            &nbsp;&nbsp;
+            {formatProbability(probability)}
+          </div>
         </div>
       </EdgeLabelRenderer>
     </>

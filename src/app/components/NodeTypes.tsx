@@ -11,13 +11,15 @@ import { Handle, Position } from "@xyflow/react";
 
 const SquareNode = ({ data }: { data: AppNode["data"] }) => {
   return (
-    <div className="relative">
-      <div className="absolute -top-8 max-w-24 text-sm">{data.label}</div>
-      <div className="bg-[#9ca8b3] p-4">
+    <div className="relative text-xs">
+      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+        {data.label}
+      </div>
+      <div className="bg-[#9ca8b3] p-8">
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="text-sm absolute -bottom-8 max-w-24">
+      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {formatValue(data.value)}
       </div>
     </div>
@@ -26,13 +28,15 @@ const SquareNode = ({ data }: { data: AppNode["data"] }) => {
 
 const CircleNode = ({ data }: { data: AppNode["data"] }) => {
   return (
-    <div className="relative">
-      <div className="absolute -top-8 max-w-24 text-sm">{data.label}</div>
-      <div className="bg-[#9ca8b3] p-4 rounded-full">
+    <div className="relative text-xs">
+      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+        {data.label}
+      </div>
+      <div className="bg-[#9ca8b3] p-8 rounded-full">
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="text-sm absolute -bottom-8 max-w-24">
+      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {formatValue(data.value)}
       </div>
     </div>
@@ -41,20 +45,18 @@ const CircleNode = ({ data }: { data: AppNode["data"] }) => {
 
 const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
   return (
-    <div className="relative">
-      <div className="absolute -top-2 left-12 max-w-24 text-sm">
-        {data.label}
-      </div>
+    <div className="relative text-xs">
+      <div className="absolute -top-0 left-14 max-w-24">{data.label}</div>
       <div
         style={{
           // NOTE: this wacky CSS creates the triangle shape
-          borderTop: "20px solid transparent",
-          borderBottom: "20px solid transparent",
-          borderRight: "32px solid #9ca8b3",
+          borderTop: "30px solid transparent",
+          borderBottom: "30px solid transparent",
+          borderRight: "48px solid #9ca8b3",
         }}
       />
       <Handle type="target" position={Position.Left} />
-      <div className="text-sm absolute top-6 left-12 max-w-24">
+      <div className="absolute top-10 left-14 max-w-24">
         {formatValue(data.value)}
       </div>
     </div>

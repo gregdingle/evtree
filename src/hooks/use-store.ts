@@ -29,7 +29,7 @@ import {
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-// TODO: fill in AppNode and AppEdge types with custom data
+// TODO: fill in AppNode and AppEdge types with custom data, and tighten up
 export type AppNode = Node<{
   label?: string;
   description?: string;
@@ -39,6 +39,7 @@ export type AppEdge = Edge<{
   label?: string;
   description?: string;
   value?: number;
+  probability?: number;
 }>;
 
 export interface DecisionTree {
@@ -111,7 +112,7 @@ const initialNodes = [
       description: "square description",
       value: 1000,
     },
-    position: { x: 150, y: 0 },
+    position: { x: 100, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -135,7 +136,7 @@ const initialNodes = [
       description: "triangle1 description",
       value: 1000,
     },
-    position: { x: 450, y: -50 },
+    position: { x: 500, y: -75 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -147,7 +148,7 @@ const initialNodes = [
       description: "triangle2 description",
       value: 1000,
     },
-    position: { x: 450, y: 50 },
+    position: { x: 500, y: 75 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -162,6 +163,8 @@ const initialEdges = [
     data: {
       label: "s to c",
       description: "Connection from square to circle",
+      value: 500,
+      probability: 1.0,
     },
   },
   {
@@ -172,6 +175,8 @@ const initialEdges = [
     data: {
       label: "c to t1",
       description: "Path from circle to triangle1",
+      value: 1000,
+      probability: 0.5,
     },
   },
   {
@@ -182,6 +187,8 @@ const initialEdges = [
     data: {
       label: "c to t2",
       description: "Path from circle to triangle2",
+      value: 0,
+      probability: 0.5,
     },
   },
 ] as AppEdge[];

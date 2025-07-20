@@ -9,3 +9,18 @@ export function formatValue(value: number | undefined | null): string {
     maximumFractionDigits: 2,
   });
 }
+
+export function formatProbability(
+  probability: number | undefined | null
+): string {
+  if (probability === undefined || probability === null) {
+    return "";
+  }
+  return (
+    "P=" +
+    probability.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
+}
