@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <ReactFlowProvider>
       <div
-        className=""
+        className="evtree"
         // NOTE: Zustand will load the state from localStorage client-side,
         // resulting in a NextJS hydration mismatch warning, but we want the
         // client-side to be different. See

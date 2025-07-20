@@ -28,3 +28,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Make handles bigger as in https://reactflow.dev/examples/interaction/touch-device */
+.evtree .react-flow__handle {
+  width: 12px;
+  height: 12px;
+  background-color: var(--background);
+  border: var(--foreground) 1px solid;
+}
+
+.evtree .react-flow__handle:hover {
+  background-color: var(--foreground);
+}
+
+/* QUESTION: is this the best way to enlarge the controls buttons? */
+.evtree .react-flow__controls-button {
+  min-width: 30px !important;
+  min-height: 30px !important;
+}
