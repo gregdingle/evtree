@@ -8,7 +8,7 @@ export function createNode(position: XYPosition): AppNode {
     id: nodeId,
     type: "circle",
     position,
-    data: { label: `Node ${nodeId}`, description: "" },
+    data: { label: "", description: "", value: 0 },
     origin: [0.5, 0.0] as [number, number],
     sourcePosition: Position.Right,
     targetPosition: Position.Left,

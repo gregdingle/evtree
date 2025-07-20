@@ -2,6 +2,7 @@
 
 import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
 import { debounce } from "es-toolkit";
+import { toInteger } from "es-toolkit/compat";
 import { useEffect, useState } from "react";
 
 export default function RightSidePanel() {
@@ -27,7 +28,7 @@ export default function RightSidePanel() {
         {nodes.length === 0 && edges.length === 0 ? (
           currentTree ? (
             <div className="mb-8">
-              <h3 className="text-md font-medium mb-4">Tree Properties</h3>
+              <h3 className="mb-4">Tree Properties</h3>
               <PropertyInput
                 label="Name"
                 value={currentTree.name}
@@ -46,8 +47,17 @@ export default function RightSidePanel() {
           )
         ) : (
           <div className="">
+            <h3 className="mb-4">Node Properties</h3>
             {nodes.map((node) => (
               <div key={node.id} className="mb-8">
+                <PropertyInput
+                  label="Value"
+                  value={node.data.value?.toString()}
+                  onChange={(value) =>
+                    onNodeDataUpdate(node.id, { value: toInteger(value) })
+                  }
+                  placeholder="Enter node value"
+                />
                 <PropertyInput
                   label="Label"
                   value={node.data.label}
@@ -66,9 +76,18 @@ export default function RightSidePanel() {
                 />
               </div>
             ))}
+            <h3 className="mb-4">Edge Properties</h3>
             {edges.map((edge) => (
               // TODO: why is edge data optional?
-              <div key={edge.id} className="">
+              <div key={edge.id} className="mb-8">
+                <PropertyInput
+                  label="Value"
+                  value={edge.data?.value?.toString()}
+                  onChange={(value) =>
+                    onEdgeDataUpdate(edge.id, { value: toInteger(value) })
+                  }
+                  placeholder="Enter edge value"
+                />
                 <PropertyInput
                   label="Label"
                   value={edge.data?.label}

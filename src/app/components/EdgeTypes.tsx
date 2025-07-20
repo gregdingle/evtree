@@ -27,7 +27,7 @@ export default function CustomEdge({
   targetY,
   data,
 }: CustomEdgeProps) {
-  const { label } = data ?? {};
+  const { label, value } = data ?? {};
   // NOTE: assumes the edge is always left to right
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
@@ -44,13 +44,22 @@ export default function CustomEdge({
       <EdgeLabelRenderer>
         <div
           style={{
-            position: "absolute",
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             pointerEvents: "all",
           }}
-          className="nodrag nopa text-xs"
+          // TODO: add eslint tailwind something to detect non-existing classes
+          className="absolute nodrag nopa text-xs -top-3"
         >
           {label}
+        </div>
+        <div
+          style={{
+            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+            pointerEvents: "all",
+          }}
+          className="absolute nodrag nopa text-xs top-3"
+        >
+          {value?.toLocaleString()}
         </div>
       </EdgeLabelRenderer>
     </>
