@@ -117,6 +117,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Write self-documenting code when possible
 - When using the web browser API, always prefix `window.` for clarity
 - Prefer `??` over `||` for default values to avoid falsy value issues
+- Prefer using `===` for strict equality checks over `==`
 
 ### State Management
 

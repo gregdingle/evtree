@@ -2,7 +2,7 @@
 
 import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
 import { debounce } from "es-toolkit";
-import { toInteger } from "es-toolkit/compat";
+import { max, min, toInteger, toNumber } from "es-toolkit/compat";
 import { useEffect, useState } from "react";
 
 export default function RightSidePanel() {
@@ -81,6 +81,22 @@ export default function RightSidePanel() {
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
                 <PropertyInput
+                  type="number"
+                  label="Probability"
+                  value={edge.data?.probability?.toString()}
+                  onChange={(value) => {
+                    const probability =
+                      value === undefined
+                        ? undefined
+                        : max([min([toNumber(value), 1.0]), 0.0]);
+                    onEdgeDataUpdate(edge.id, { probability });
+                  }}
+                  placeholder="Enter edge probability"
+                  max={1.0}
+                  min={0.0}
+                  step={0.1}
+                />
+                <PropertyInput
                   label="Label"
                   value={edge.data?.label}
                   onChange={(value) =>
@@ -105,20 +121,20 @@ export default function RightSidePanel() {
   );
 }
 
-interface PropertyInputProps {
+interface PropertyInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label: string;
   value?: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
+  onChange?: (value: string) => void;
 }
 
 function PropertyInput({
   label,
   value,
   onChange,
-  placeholder,
+  ...props
 }: PropertyInputProps) {
-  const debouncedOnChange = debounce(onChange, 200);
+  const debouncedOnChange = debounce(onChange ?? (() => {}), 200);
 
   // Use a local state for immediate UI updates
   const [localValue, setLocalValue] = useState(value || "");
@@ -144,8 +160,8 @@ function PropertyInput({
         type="text"
         value={localValue}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder={placeholder}
         className="w-full border-2 p-1 rounded-md"
+        {...props}
       />
     </div>
   );

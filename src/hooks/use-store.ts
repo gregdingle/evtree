@@ -172,7 +172,6 @@ const initialEdges = keyBy(
       data: {
         label: "c to t1",
         description: "Path from circle to triangle1",
-        value: 1000,
         probability: 0.5,
       },
     },
@@ -184,7 +183,6 @@ const initialEdges = keyBy(
       data: {
         label: "c to t2",
         description: "Path from circle to triangle2",
-        value: 0,
         probability: 0.5,
       },
     },
