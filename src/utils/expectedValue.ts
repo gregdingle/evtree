@@ -1,4 +1,3 @@
-import { AppEdge, AppNode } from "@/hooks/use-store";
 import { values } from "es-toolkit/compat";
 
 type AdjacencyList = Record<
@@ -9,33 +8,59 @@ type AdjacencyList = Record<
   }[]
 >;
 
+// TODO: how to keep in sync with ComputeNode and AppEdge types?
+export interface ComputeNode {
+  id: string;
+  data: {
+    value: number | undefined;
+  };
+}
+
+export interface ComputeEdge {
+  id: string;
+  source: string;
+  target: string;
+  data?: {
+    probability?: number | undefined;
+  };
+}
+
 /**
  * Computes and assigns values recursively for input `nodes`. The value of a
  * node is defined as the average of its children's values weighted by the
  * probabilities of the associated edges.
  *
  * TODO: should we support edge values like silver decisions?
+ *
+ * TODO: hourlyRate The hourly rate for legal costs
+ * TODO: discountRate The annual discount rate (as a decimal, e.g., 0.05 for 5%)
+ * TODO: filingDate The filing date of the lawsuit
+ * TODO: partyRole The role of the party ("plaintiff" or "defendant")
+ * TODO: feeShiftingRate The percentage of legal costs that trial winners can recover (0 to 1)
+ * TODO: preJudgmentRate The annual pre-judgment interest rate (as a decimal, e.g., 0.03 for 3%)
+ * TODO: postJudgmentRate The annual post-judgment interest rate (as a decimal, e.g., 0.05 for 5%)
  */
 export function computeNodeValues(
-  nodes: Record<string, AppNode>,
-  edges: Record<string, AppEdge>
+  nodes: Record<string, ComputeNode>,
+  edges: Record<string, ComputeEdge>
 ): void {
-  const adjList = buildAdjacencyList(values(edges));
   const rootNodes = values(nodes).filter((node) => {
     // A root node has no incoming edges
-    return !adjList[node.id];
+    return !values(edges).some((edge) => edge.target === node.id);
   });
   if (rootNodes.length === 0) {
     console.warn("[EVTree] No root nodes found, cannot compute values.");
     return;
   }
 
+  const adjList = buildAdjacencyList(values(edges));
+
   rootNodes.forEach((rootNode) => {
     computeNodeValuesRecursive(nodes, edges, rootNode, adjList);
   });
 }
 
-function buildAdjacencyList(edges: AppEdge[]): AdjacencyList {
+function buildAdjacencyList(edges: ComputeEdge[]): AdjacencyList {
   const adjList: AdjacencyList = {};
   edges.forEach((edge) => {
     if (!adjList[edge.source]) {
@@ -47,9 +72,9 @@ function buildAdjacencyList(edges: AppEdge[]): AdjacencyList {
 }
 
 function computeNodeValuesRecursive(
-  nodes: Record<string, AppNode>,
-  edges: Record<string, AppEdge>,
-  parentNode: AppNode,
+  nodes: Record<string, ComputeNode>,
+  edges: Record<string, ComputeEdge>,
+  parentNode: ComputeNode,
   adjList: AdjacencyList
 ) {
   const children = adjList[parentNode.id] || [];
