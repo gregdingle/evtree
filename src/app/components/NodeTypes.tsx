@@ -12,14 +12,14 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {data.label}
       </div>
       <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {formatValue(data.value)}
       </div>
     </div>
@@ -29,7 +29,7 @@ const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
 const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {data.label}
       </div>
       <div
@@ -40,7 +40,7 @@ const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {formatValue(data.value)}
       </div>
     </div>
@@ -63,9 +63,14 @@ const TriangleNode = ({ data, selected }: NodeProps<AppNode>) => {
         }}
       />
       <Handle type="target" position={Position.Left} />
-      <div className="absolute top-10 left-14 max-w-24">
+      <div
+        className={`absolute left-14 max-w-24 ${
+          data.label ? "top-10" : "top-5"
+        }`}
+      >
         {formatValue(data.value)}
       </div>
+      {/* TODO: show the compound terminal probability here like silver decisions */}
     </div>
   );
 };
