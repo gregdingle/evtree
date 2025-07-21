@@ -26,6 +26,28 @@ export interface ComputeEdge {
 }
 
 /**
+ * Subset of AppNode needed for computeNodeValues.
+ */
+export interface ComputeNode {
+  id: string;
+  data: {
+    value: number | undefined;
+  };
+}
+
+/**
+ * Subset of AppEdge needed for computeNodeValues.
+ */
+export interface ComputeEdge {
+  id: string;
+  source: string;
+  target: string;
+  data?: {
+    probability?: number | undefined;
+  };
+}
+
+/**
  * Computes and assigns values recursively for input `nodes`. The value of a
  * node is defined as the average of its children's values weighted by the
  * probabilities of the associated edges.
@@ -82,7 +104,8 @@ function computeNodeValuesRecursive(
   // Base case: if no children, use node's value directly
   if (children.length === 0) {
     if (parentNode.data.value === undefined) {
-      console.warn(
+      // eslint-disable-next-line no-console
+      console.debug(
         `[EVTree] Terminal node ${parentNode.id} has undefined value.`
       );
     }
@@ -93,26 +116,33 @@ function computeNodeValuesRecursive(
     computeNodeValuesRecursive(nodes, edges, nodes[nodeId], adjList);
   });
 
-  let totalValue = 0;
+  let totalValue: number | undefined = undefined;
   let totalProbability = 0;
+
   children.forEach(({ edgeId, nodeId }) => {
     const childNode = nodes[nodeId];
     const childEdge = edges[edgeId];
     if (childNode) {
       const childValue = childNode.data.value;
       const childProbability = childEdge.data?.probability;
-      if (childValue === undefined || childProbability === undefined) {
-        return;
+      if (childValue !== undefined && childProbability !== undefined) {
+        if (totalValue === undefined) {
+          totalValue = 0;
+        }
+        totalValue += childValue * childProbability;
+        totalProbability += childProbability;
       }
-      totalValue += childValue * childProbability;
-      totalProbability += childProbability;
     }
   });
+
   if (totalProbability < 1) {
-    console.warn(
+    // eslint-disable-next-line no-console
+    console.debug(
       `[EVTree] Node ${parentNode.id} has children with less than 1.0 total probability.`
     );
-    // TODO: what to do about missing probability?
+    // TODO: what to do about missing probability? highlight in UI somehow?
   }
+
+  // Assign the computed value (or leave as undefined if no defined children)
   parentNode.data.value = totalValue;
 }
