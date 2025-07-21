@@ -3,19 +3,10 @@ import { formatProbability } from "@/utils/format";
 import {
   BaseEdge,
   EdgeLabelRenderer,
+  EdgeProps,
   getSmoothStepPath,
   Position,
 } from "@xyflow/react";
-
-// TODO: better way to get input type?
-interface CustomEdgeProps {
-  id: string;
-  sourceX: number;
-  sourceY: number;
-  targetX: number;
-  targetY: number;
-  data: AppEdge["data"];
-}
 
 /**
  * @see https://reactflow.dev/learn/customization/edge-labels
@@ -27,7 +18,8 @@ export default function CustomEdge({
   targetX,
   targetY,
   data,
-}: CustomEdgeProps) {
+  selected,
+}: EdgeProps<AppEdge>) {
   const { label, probability } = data ?? {};
   // NOTE: assumes the edge is always left to right
   // TODO: allow prefix unused vars lint rule
@@ -56,7 +48,16 @@ export default function CustomEdge({
 
   return (
     <>
-      <BaseEdge id={id} path={edgePath} style={{ strokeWidth: 3 }} />
+      <BaseEdge
+        id={id}
+        path={edgePath}
+        style={{
+          strokeWidth: 3,
+          // TODO: sync selected color with tree selected color and tailwind color above
+          // TODO: fix bug of stacked color when multiple edges are selected
+          stroke: selected ? "rgba(0, 123, 255, 0.5)" : undefined,
+        }}
+      />
       <EdgeLabelRenderer>
         <div className="nodrag nopa text-xs">
           <div

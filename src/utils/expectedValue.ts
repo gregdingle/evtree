@@ -10,10 +10,11 @@ type AdjacencyList = Record<
 >;
 
 // TODO: how to keep in sync with ComputeNode and AppEdge types?
+// TODO: make more explicit `number | undefined`?
 export interface ComputeNode {
   id: string;
   data: {
-    value: number | undefined;
+    value?: number;
   };
 }
 
@@ -22,7 +23,7 @@ export interface ComputeEdge {
   source: string;
   target: string;
   data?: {
-    probability?: number | undefined;
+    probability?: number;
   };
 }
 

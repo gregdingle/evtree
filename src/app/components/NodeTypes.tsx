@@ -1,6 +1,6 @@
 import { AppNode } from "@/hooks/use-store";
 import { formatValue } from "@/utils/format";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, NodeProps, Position } from "@xyflow/react";
 
 //
 // NOTE: adapted from example at
@@ -9,13 +9,13 @@ import { Handle, Position } from "@xyflow/react";
 // see also https://github.com/SilverDecisions/SilverDecisions/wiki/Gallery
 //
 
-const SquareNode = ({ data }: { data: AppNode["data"] }) => {
+const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {data.label}
       </div>
-      <div className="bg-[#9ca8b3] p-8">
+      <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
@@ -26,13 +26,17 @@ const SquareNode = ({ data }: { data: AppNode["data"] }) => {
   );
 };
 
-const CircleNode = ({ data }: { data: AppNode["data"] }) => {
+const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {data.label}
       </div>
-      <div className="bg-[#9ca8b3] p-8 rounded-full">
+      <div
+        className={` p-8 rounded-full ${
+          selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
+        }`}
+      >
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
@@ -43,7 +47,7 @@ const CircleNode = ({ data }: { data: AppNode["data"] }) => {
   );
 };
 
-const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
+const TriangleNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
       <div className="absolute -top-0 left-14 max-w-24">{data.label}</div>
@@ -52,7 +56,10 @@ const TriangleNode = ({ data }: { data: AppNode["data"] }) => {
           // NOTE: this wacky CSS creates the triangle shape
           borderTop: "30px solid transparent",
           borderBottom: "30px solid transparent",
-          borderRight: "48px solid #9ca8b3",
+          borderRight: `48px solid ${
+            // TODO: sync selected color with tree selected color and tailwind color above
+            selected ? "rgba(0, 123, 255, 0.5)" : "#9ca8b3"
+          }`,
         }}
       />
       <Handle type="target" position={Position.Left} />
