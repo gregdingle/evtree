@@ -11,8 +11,8 @@ import {
   OnNodesDelete,
   Position,
 } from "@xyflow/react";
-import { isEqual, keyBy, mapValues, omit, throttle } from "es-toolkit";
-import { fromPairs, keys, toPairs, values } from "es-toolkit/compat";
+import { isEqual, keyBy, omit, throttle, toMerged } from "es-toolkit";
+import { fromPairs, isEmpty, keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
@@ -21,13 +21,11 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
 import { cloneEdge, createEdge } from "@/utils/edge";
-import {
-  ComputeEdge,
-  ComputeNode,
-  computeNodeValues,
-} from "@/utils/expectedValue";
+import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
 import { cloneNode, createNode, NodeType } from "@/utils/node";
+import { selectComputedNodesAndEdges } from "@/utils/selectors";
+import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import {
   createSelectorFunctions,
   ZustandFuncSelectors,
@@ -98,19 +96,6 @@ export interface StoreState {
   ) => void;
   onArrange: () => void;
 }
-
-// Utility function for consistent warning messages
-const warnNoCurrentTree = (operation: string) => {
-  console.warn(`[EVTree] No current tree selected for ${operation}`);
-};
-
-const warnItemNotFound = (
-  itemType: "Node" | "Edge" | "Tree",
-  id: string,
-  operation: string
-) => {
-  console.warn(`[EVTree] ${itemType} with id ${id} not found for ${operation}`);
-};
 
 const initialNodes = [
   {
@@ -701,43 +686,33 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
   shallow
 );
 
-// See https://zustand.docs.pmnd.rs/middlewares/subscribe-with-selector
+/**
+ * This is a store subscription that re-computes node values. It selects only the subset of node and edge data needed to
+ * trigger re-computation only when needed.
+ * @see https://zustand.docs.pmnd.rs/middlewares/subscribe-with-selector
+ *
+ * TODO: check worst-case performance of this subscription... it could be slow
+ */
 useStoreBase.subscribe(
-  (state) => {
-    function toComputeNode(node: AppNode): ComputeNode {
-      return {
-        id: node.id,
-        data: {
-          value: node.data.value,
+  selectComputedNodesAndEdges,
+  ({ computeNodes, computeEdges }) => {
+    if (isEmpty(computeNodes) && isEmpty(computeEdges)) {
+      return;
+    }
+    const updatedComputeNodes = computeNodeValues(computeNodes, computeEdges);
+    const state = useStoreBase.getState();
+    const currentTreeId = state.currentTreeId!;
+    const currentTree = state.trees[currentTreeId];
+    useStoreBase.setState({
+      trees: {
+        ...state.trees,
+        [currentTreeId]: {
+          ...currentTree,
+          nodes: toMerged(currentTree.nodes, updatedComputeNodes),
         },
-      };
-    }
-    function toComputeEdge(edge: AppEdge): ComputeEdge {
-      return {
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        data: {
-          probability: edge.data?.probability,
-        },
-      };
-    }
-    const { currentTreeId } = state;
-    if (!currentTreeId) {
-      warnNoCurrentTree("tree data update");
-      return { nodes: {}, edges: {} };
-    }
-    const tree = state.trees[currentTreeId!];
-    if (!tree) {
-      warnItemNotFound("Tree", currentTreeId, "tree data update");
-      return { nodes: {}, edges: {} };
-    }
-    return {
-      nodes: mapValues(tree.nodes, toComputeNode),
-      edges: mapValues(tree.edges, toComputeEdge),
-    };
+      },
+    });
   },
-  ({ nodes, edges }) => computeNodeValues(nodes, edges),
   // TODO: will the deep equal be too slow?
   { equalityFn: isEqual }
 );

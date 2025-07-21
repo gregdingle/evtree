@@ -66,14 +66,14 @@ export interface ComputeEdge {
 export function computeNodeValues(
   nodes: Record<string, ComputeNode>,
   edges: Record<string, ComputeEdge>
-): void {
+): Record<string, ComputeNode> {
   const rootNodes = values(nodes).filter((node) => {
     // A root node has no incoming edges
     return !values(edges).some((edge) => edge.target === node.id);
   });
   if (rootNodes.length === 0) {
     console.warn("[EVTree] No root nodes found, cannot compute values.");
-    return;
+    return nodes;
   }
 
   const adjList = buildAdjacencyList(values(edges));
@@ -81,6 +81,8 @@ export function computeNodeValues(
   rootNodes.forEach((rootNode) => {
     computeNodeValuesRecursive(nodes, edges, rootNode, adjList);
   });
+
+  return nodes;
 }
 
 function buildAdjacencyList(edges: ComputeEdge[]): AdjacencyList {
