@@ -11,15 +11,21 @@ import {
   OnNodesDelete,
   Position,
 } from "@xyflow/react";
-import { isEqual, keyBy, omit, throttle } from "es-toolkit";
+import { isEqual, keyBy, mapValues, omit, throttle } from "es-toolkit";
 import { fromPairs, keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
 import { cloneEdge, createEdge } from "@/utils/edge";
+import {
+  ComputeEdge,
+  ComputeNode,
+  computeNodeValues,
+} from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
 import { cloneNode, createNode, NodeType } from "@/utils/node";
 import {
@@ -212,7 +218,7 @@ const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
     persist(
       // TODO: bug in zundo onNodesDelete... edges do take another undo to come back!
-      temporal(immer(f), {
+      temporal(subscribeWithSelector(immer(f)), {
         // NOTE: throttling is needed for dragging nodes into position
         handleSet: (handleSet) => {
           // TODO: onDragEndCreateNodeAt sometimes takes 3 clicks to undo
@@ -271,6 +277,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     // Tree management functions
     createTree: (name: string, description?: string) => {
       // TODO: extract nanoid12 to a utility function
+      // TODO: extract to createTree
       const treeId = nanoid(12);
       const newTree: DecisionTree = {
         id: treeId,
@@ -693,6 +700,48 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
   })),
   shallow
 );
+
+// See https://zustand.docs.pmnd.rs/middlewares/subscribe-with-selector
+useStoreBase.subscribe(
+  (state) => {
+    function toComputeNode(node: AppNode): ComputeNode {
+      return {
+        id: node.id,
+        data: {
+          value: node.data.value,
+        },
+      };
+    }
+    function toComputeEdge(edge: AppEdge): ComputeEdge {
+      return {
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        data: {
+          probability: edge.data?.probability,
+        },
+      };
+    }
+    const { currentTreeId } = state;
+    if (!currentTreeId) {
+      warnNoCurrentTree("tree data update");
+      return { nodes: {}, edges: {} };
+    }
+    const tree = state.trees[currentTreeId!];
+    if (!tree) {
+      warnItemNotFound("Tree", currentTreeId, "tree data update");
+      return { nodes: {}, edges: {} };
+    }
+    return {
+      nodes: mapValues(tree.nodes, toComputeNode),
+      edges: mapValues(tree.edges, toComputeEdge),
+    };
+  },
+  ({ nodes, edges }) => computeNodeValues(nodes, edges),
+  // TODO: will the deep equal be too slow?
+  { equalityFn: isEqual }
+);
+
 // TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
 

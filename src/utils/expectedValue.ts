@@ -1,3 +1,4 @@
+import { AppEdge, AppNode } from "@/hooks/use-store";
 import { values } from "es-toolkit/compat";
 
 type AdjacencyList = Record<
@@ -145,4 +146,24 @@ function computeNodeValuesRecursive(
 
   // Assign the computed value (or leave as undefined if no defined children)
   parentNode.data.value = totalValue;
+}
+
+export function toComputeNode(node: AppNode): ComputeNode {
+  return {
+    id: node.id,
+    data: {
+      value: node.data.value,
+    },
+  };
+}
+
+export function toComputeEdge(edge: AppEdge): ComputeEdge {
+  return {
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+    data: {
+      probability: edge.data?.probability,
+    },
+  };
 }
