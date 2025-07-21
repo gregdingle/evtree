@@ -1,5 +1,5 @@
 import { AppEdge } from "@/hooks/use-store";
-import { formatProbability, formatValue } from "@/utils/format";
+import { formatProbability } from "@/utils/format";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -28,7 +28,7 @@ export default function CustomEdge({
   targetY,
   data,
 }: CustomEdgeProps) {
-  const { label, value, probability } = data ?? {};
+  const { label, probability } = data ?? {};
   // NOTE: assumes the edge is always left to right
   // TODO: allow prefix unused vars lint rule
   const [edgePath, labelX, labelY, _offsetX, offsetY] = getSmoothStepPath({
@@ -44,6 +44,7 @@ export default function CustomEdge({
   // vertical segment to the horizontal. When the edge is not left-to-right,
   // which should never happen, simply revert. Special-case when there is no
   // bend, only a single horizontal segment.
+  // TODO: contribute this upstream to xyflow
   const isLeftToRight = sourceX < targetX;
   const midPointX = (targetX - sourceX) / 2;
   const adjY = isLeftToRight ? (labelY > sourceY ? offsetY : -offsetY) : 0;
@@ -75,8 +76,6 @@ export default function CustomEdge({
             }}
             className="absolute top-3"
           >
-            {formatValue(value)}
-            &nbsp;&nbsp;
             {formatProbability(probability)}
           </div>
         </div>

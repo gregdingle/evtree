@@ -81,14 +81,6 @@ export default function RightSidePanel() {
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
                 <PropertyInput
-                  label="Value"
-                  value={edge.data?.value?.toString()}
-                  onChange={(value) =>
-                    onEdgeDataUpdate(edge.id, { value: toInteger(value) })
-                  }
-                  placeholder="Enter edge value"
-                />
-                <PropertyInput
                   label="Label"
                   value={edge.data?.label}
                   onChange={(value) =>

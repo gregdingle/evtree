@@ -38,7 +38,6 @@ export type AppNode = Node<{
 export type AppEdge = Edge<{
   label?: string;
   description?: string;
-  value?: number;
   probability?: number;
 }>;
 
@@ -167,7 +166,6 @@ const initialEdges = [
     data: {
       label: "s to c",
       description: "Connection from square to circle",
-      value: 500,
       probability: 1.0,
     },
   },
