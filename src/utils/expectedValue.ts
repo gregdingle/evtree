@@ -28,23 +28,25 @@ export interface ComputeEdge {
 
 /**
  * Subset of AppNode needed for computeNodeValues.
+ * TODO: make more explicit `number | undefined`?
  */
 export interface ComputeNode {
   id: string;
   data: {
-    value: number | undefined;
+    value?: number;
   };
 }
 
 /**
  * Subset of AppEdge needed for computeNodeValues.
+ * TODO: make more explicit `number | undefined`?
  */
 export interface ComputeEdge {
   id: string;
   source: string;
   target: string;
   data?: {
-    probability?: number | undefined;
+    probability?: number;
   };
 }
 

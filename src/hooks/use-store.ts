@@ -97,94 +97,102 @@ export interface StoreState {
   onArrange: () => void;
 }
 
-const initialNodes = [
-  {
-    id: "square",
-    type: "square",
-    data: {
-      label: "square",
-      description: "square description",
-      value: 1000,
+const initialNodes = keyBy(
+  [
+    {
+      id: "square",
+      type: "square",
+      data: {
+        label: "square",
+        description: "square description",
+        value: undefined,
+      },
+      position: { x: 100, y: 0 },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
     },
-    position: { x: 100, y: 0 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "circle",
-    type: "circle",
-    data: {
-      label: "circle",
-      description: "circle description",
-      value: 1000,
+    {
+      id: "circle",
+      type: "circle",
+      data: {
+        label: "circle",
+        description: "circle description",
+        value: undefined,
+      },
+      position: { x: 300, y: 0 },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
     },
-    position: { x: 300, y: 0 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "triangle1",
-    type: "triangle",
-    data: {
-      label: "triangle1",
-      description: "triangle1 description",
-      value: 1000,
+    {
+      id: "triangle1",
+      type: "triangle",
+      data: {
+        label: "triangle1",
+        description: "triangle1 description",
+        value: 500,
+      },
+      position: { x: 500, y: -75 },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
     },
-    position: { x: 500, y: -75 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "triangle2",
-    type: "triangle",
-    data: {
-      label: "triangle2",
-      description: "triangle2 description",
-      value: 1000,
+    {
+      id: "triangle2",
+      type: "triangle",
+      data: {
+        label: "triangle2",
+        description: "triangle2 description",
+        value: 1000,
+      },
+      position: { x: 500, y: 75 },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
     },
-    position: { x: 500, y: 75 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-] as AppNode[];
+  ] as AppNode[],
+  (node) => node.id
+);
 
-const initialEdges = [
-  {
-    id: "square-circle",
-    source: "square",
-    target: "circle",
-    type: "custom",
-    data: {
-      label: "s to c",
-      description: "Connection from square to circle",
-      probability: 1.0,
+const initialEdges = keyBy(
+  [
+    {
+      id: "square-circle",
+      source: "square",
+      target: "circle",
+      type: "custom",
+      data: {
+        label: "s to c",
+        description: "Connection from square to circle",
+        probability: 1.0,
+      },
     },
-  },
-  {
-    id: "circle-triangle1",
-    source: "circle",
-    target: "triangle1",
-    type: "custom",
-    data: {
-      label: "c to t1",
-      description: "Path from circle to triangle1",
-      value: 1000,
-      probability: 0.5,
+    {
+      id: "circle-triangle1",
+      source: "circle",
+      target: "triangle1",
+      type: "custom",
+      data: {
+        label: "c to t1",
+        description: "Path from circle to triangle1",
+        value: 1000,
+        probability: 0.5,
+      },
     },
-  },
-  {
-    id: "circle-triangle2",
-    source: "circle",
-    target: "triangle2",
-    type: "custom",
-    data: {
-      label: "c to t2",
-      description: "Path from circle to triangle2",
-      value: 0,
-      probability: 0.5,
+    {
+      id: "circle-triangle2",
+      source: "circle",
+      target: "triangle2",
+      type: "custom",
+      data: {
+        label: "c to t2",
+        description: "Path from circle to triangle2",
+        value: 0,
+        probability: 0.5,
+      },
     },
-  },
-] as AppEdge[];
+  ] as AppEdge[],
+  (edge) => edge.id
+);
+
+computeNodeValues(initialNodes, initialEdges);
 
 const initialTrees: Record<string, DecisionTree> = {
   "tree-1": {
@@ -193,8 +201,8 @@ const initialTrees: Record<string, DecisionTree> = {
     description: "This is the default decision tree",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    nodes: keyBy(initialNodes, (node) => node.id),
-    edges: keyBy(initialEdges, (edge) => edge.id),
+    nodes: initialNodes,
+    edges: initialEdges,
   },
 };
 
@@ -270,8 +278,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         description,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        nodes: keyBy(initialNodes, (node) => node.id),
-        edges: keyBy(initialEdges, (edge) => edge.id),
+        nodes: initialNodes,
+        edges: initialEdges,
       };
       set((state) => {
         state.trees[treeId] = newTree;
@@ -596,8 +604,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set((state) => {
         const tree = state.trees[currentTreeId];
         if (tree) {
-          tree.nodes = keyBy(initialNodes, (node) => node.id);
-          tree.edges = keyBy(initialEdges, (edge) => edge.id);
+          tree.nodes = initialNodes;
+          tree.edges = initialEdges;
           tree.updatedAt = new Date().toISOString();
         } else {
           warnItemNotFound("Tree", currentTreeId, "reset");
