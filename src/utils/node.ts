@@ -1,9 +1,6 @@
-import { AppNode } from "@/hooks/use-store";
+import { AppNode, NodeType } from "@/hooks/use-store";
 import { Position, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
-
-// TODO: dedupe with NodeTypes.tsx somehow... where source of truth?
-export type NodeType = "decision" | "chance" | "terminal";
 
 export function createNode(
   position: XYPosition,

@@ -1,4 +1,4 @@
-import { AppEdge, AppNode } from "@/hooks/use-store";
+import { AppEdge, AppNode, NodeType } from "@/hooks/use-store";
 import { values } from "es-toolkit/compat";
 
 type AdjacencyList = Record<
@@ -13,6 +13,7 @@ type AdjacencyList = Record<
 // TODO: make more explicit `number | undefined`?
 export interface ComputeNode {
   id: string;
+  type?: NodeType;
   data: {
     value?: number | undefined;
     cost?: number | undefined;
@@ -32,6 +33,12 @@ export interface ComputeEdge {
  * Computes and assigns values recursively for input `nodes`. The value of a
  * node is defined as the average of its children's values weighted by the
  * probabilities of the associated edges.
+ *
+ * The probabilities following a decision node will also be updated according to
+ * expected value. The probability of the edge that has the highest expected
+ * value out of a decision node will be set to 1.0, while the others will be set
+ * to 0.0. When there is a tie, the probabilities will be set to 1 / n, where n
+ * is the number of edges with the highest expected value.
  *
  * TODO: should we support edge values like silver decisions?
  *
@@ -134,6 +141,7 @@ function computeNodeValuesRecursive(
 export function toComputeNode(node: AppNode): ComputeNode {
   return {
     id: node.id,
+    type: node.type,
     data: {
       value: node.data.value,
       cost: node.data.cost,

@@ -1,5 +1,4 @@
-import { useStore } from "@/hooks/use-store";
-import { NodeType } from "@/utils/node";
+import { NodeType, useStore } from "@/hooks/use-store";
 import { useReactFlow } from "@xyflow/react";
 
 export interface ContextMenuProps {

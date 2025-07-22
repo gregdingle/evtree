@@ -23,7 +23,7 @@ import { shallow } from "zustand/vanilla/shallow";
 import { cloneEdge, createEdge } from "@/utils/edge";
 import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
-import { cloneNode, createNode, NodeType } from "@/utils/node";
+import { cloneNode, createNode } from "@/utils/node";
 import { selectComputedNodesAndEdges } from "@/utils/selectors";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import {
@@ -33,13 +33,18 @@ import {
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
+export type NodeType = "decision" | "chance" | "terminal";
+
 // TODO: fill in AppNode and AppEdge types with custom data, and tighten up
-export type AppNode = Node<{
-  label?: string;
-  description?: string;
-  value?: number;
-  cost?: number;
-}>;
+export type AppNode = Node<
+  {
+    label?: string;
+    description?: string;
+    value?: number;
+    cost?: number;
+  },
+  NodeType
+>;
 export type AppEdge = Edge<{
   label?: string;
   description?: string;

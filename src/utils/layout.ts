@@ -1,5 +1,6 @@
 import dagre from "@dagrejs/dagre";
-import { Edge, Node, Position } from "@xyflow/react";
+import { Position } from "@xyflow/react";
+import { AppEdge, AppNode } from "@/hooks/use-store";
 
 //
 // NOTE: see https://reactflow.dev/examples/layout/dagre
@@ -11,10 +12,10 @@ const nodeWidth = 172;
 const nodeHeight = 36;
 
 export const getLayoutedElements = (
-  nodes: Node[],
-  edges: Edge[],
+  nodes: AppNode[],
+  edges: AppEdge[],
   direction = "LR"
-) => {
+): { nodes: AppNode[]; edges: AppEdge[] } => {
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
@@ -28,9 +29,9 @@ export const getLayoutedElements = (
 
   dagre.layout(dagreGraph);
 
-  const newNodes = nodes.map((node) => {
+  const newNodes: AppNode[] = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
-    const newNode = {
+    const newNode: AppNode = {
       ...node,
       targetPosition: isHorizontal ? Position.Left : Position.Top,
       sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
