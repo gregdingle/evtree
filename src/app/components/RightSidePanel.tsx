@@ -3,7 +3,7 @@
 import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
 import { debounce } from "es-toolkit";
 import { max, min, toInteger, toNumber } from "es-toolkit/compat";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function RightSidePanel() {
   const { onNodeDataUpdate, onEdgeDataUpdate, onTreeDataUpdate } =
@@ -20,6 +20,21 @@ export default function RightSidePanel() {
       currentTree: state.getCurrentTree(),
     };
   });
+
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus first input when selection changes
+  useEffect(() => {
+    if ((nodes.length > 0 || edges.length > 0) && firstInputRef.current) {
+      // Only focus if no input is currently focused
+      const activeElement = window.document.activeElement;
+      const isInputFocused = activeElement && activeElement.tagName === "INPUT";
+
+      if (!isInputFocused) {
+        firstInputRef.current.focus();
+      }
+    }
+  }, [nodes, edges]);
 
   return (
     <div className="p-4 w-80">
@@ -48,9 +63,10 @@ export default function RightSidePanel() {
         ) : (
           <div className="">
             {nodes.length ? <h3 className="mb-4">Node Properties</h3> : null}
-            {nodes.map((node) => (
+            {nodes.map((node, index) => (
               <div key={node.id} className="mb-8">
                 <PropertyInput
+                  ref={index === 0 ? firstInputRef : undefined}
                   label="Value"
                   value={node.data.value?.toString()}
                   onChange={(value) =>
@@ -77,10 +93,15 @@ export default function RightSidePanel() {
               </div>
             ))}
             {edges.length ? <h3 className="mb-4">Edge Properties</h3> : null}
-            {edges.map((edge) => (
+            {edges.map((edge, index) => (
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
                 <PropertyInput
+                  ref={
+                    nodes.length === 0 && index === 0
+                      ? firstInputRef
+                      : undefined
+                  }
                   type="number"
                   label="Probability"
                   value={edge.data?.probability?.toString()}
@@ -128,41 +149,41 @@ interface PropertyInputProps
   onChange?: (value: string) => void;
 }
 
-function PropertyInput({
-  label,
-  value,
-  onChange,
-  ...props
-}: PropertyInputProps) {
-  const debouncedOnChange = debounce(onChange ?? (() => {}), 200);
+const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
+  ({ label, value, onChange, ...props }, ref) => {
+    const debouncedOnChange = debounce(onChange ?? (() => {}), 200);
 
-  // Use a local state for immediate UI updates
-  const [localValue, setLocalValue] = useState(value || "");
+    // Use a local state for immediate UI updates
+    const [localValue, setLocalValue] = useState(value || "");
 
-  // Update local value when prop value changes
-  useEffect(() => {
-    setLocalValue(value || "");
-  }, [value]);
+    // Update local value when prop value changes
+    useEffect(() => {
+      setLocalValue(value || "");
+    }, [value]);
 
-  const handleChange = (newValue: string) => {
-    setLocalValue(newValue);
-    debouncedOnChange(newValue);
-  };
+    const handleChange = (newValue: string) => {
+      setLocalValue(newValue);
+      debouncedOnChange(newValue);
+    };
 
-  // TODO: how to do consistent global styles? use some tailwind component UI kit?
-  return (
-    <div className="mb-2 flex space-x-2 items-center">
-      <label htmlFor={label} className="w-24">
-        {label}
-      </label>
-      <input
-        id={label}
-        type="text"
-        value={localValue}
-        onChange={(e) => handleChange(e.target.value)}
-        className="w-full border-2 p-1 rounded-md"
-        {...props}
-      />
-    </div>
-  );
-}
+    // TODO: how to do consistent global styles? use some tailwind component UI kit?
+    return (
+      <div className="mb-2 flex space-x-2 items-center">
+        <label htmlFor={label} className="w-24">
+          {label}
+        </label>
+        <input
+          ref={ref}
+          id={label}
+          type="text"
+          value={localValue}
+          onChange={(e) => handleChange(e.target.value)}
+          className="w-full border-2 p-1 rounded-md"
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+
+PropertyInput.displayName = "PropertyInput";

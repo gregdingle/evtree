@@ -14,7 +14,7 @@ export function formatProbability(
   probability: number | undefined | null
 ): string {
   if (probability === undefined || probability === null) {
-    return "";
+    return "???";
   }
   return (
     "P=" +
