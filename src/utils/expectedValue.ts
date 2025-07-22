@@ -94,7 +94,7 @@ function buildAdjacencyList(edges: ComputeEdge[]): AdjacencyList {
     if (!adjList[edge.source]) {
       adjList[edge.source] = [];
     }
-    adjList[edge.source].push({ edgeId: edge.id, nodeId: edge.target });
+    adjList[edge.source]!.push({ edgeId: edge.id, nodeId: edge.target });
   });
   return adjList;
 }
@@ -119,15 +119,15 @@ function computeNodeValuesRecursive(
   }
 
   children.forEach(({ nodeId }) => {
-    computeNodeValuesRecursive(nodes, edges, nodes[nodeId], adjList);
+    computeNodeValuesRecursive(nodes, edges, nodes[nodeId]!, adjList);
   });
 
   let totalValue: number | undefined = undefined;
   let totalProbability = 0;
 
   children.forEach(({ edgeId, nodeId }) => {
-    const childNode = nodes[nodeId];
-    const childEdge = edges[edgeId];
+    const childNode = nodes[nodeId]!;
+    const childEdge = edges[edgeId]!;
     if (childNode) {
       const childValue = childNode.data.value;
       const childProbability = childEdge.data?.probability;

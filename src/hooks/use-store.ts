@@ -302,7 +302,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         if (state.currentTreeId === treeId) {
           const remainingTreeIds = keys(state.trees);
           state.currentTreeId =
-            remainingTreeIds.length > 0 ? remainingTreeIds[0] : null;
+            remainingTreeIds.length > 0 ? remainingTreeIds[0]! : null;
         }
         return state;
       });
@@ -593,8 +593,12 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             // Remove edges connected to the deleted node
             keys(tree.edges).forEach((edgeId) => {
               const edge = tree.edges[edgeId];
-              if (edge.source === node.id || edge.target === node.id) {
-                delete tree.edges[edgeId];
+              if (edge) {
+                if (edge.source === node.id || edge.target === node.id) {
+                  delete tree.edges[edgeId];
+                }
+              } else {
+                warnItemNotFound("Edge", edgeId, "nodes delete");
               }
             });
           });
@@ -644,7 +648,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const newNode = cloneNode(node, position);
             tree.nodes[newNode.id] = newNode;
             nodeIdMap.set(nodeId, newNode.id);
-            tree.nodes[nodeId].selected = false;
+            node.selected = false;
           } else {
             warnItemNotFound("Node", nodeId, "paste");
           }
@@ -660,7 +664,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (newSourceId && newTargetId) {
               const newEdge = cloneEdge(edge, newSourceId, newTargetId);
               tree.edges[newEdge.id] = newEdge;
-              tree.edges[edgeId].selected = false;
+              edge.selected = false;
             }
           } else {
             warnItemNotFound("Edge", edgeId, "paste");
@@ -787,14 +791,22 @@ useStoreBase.subscribe(
     }
     const updatedComputeNodes = computeNodeValues(computeNodes, computeEdges);
     const state = useStoreBase.getState();
-    const currentTreeId = state.currentTreeId!;
-    const currentTree = state.trees[currentTreeId];
+    const currentTreeId = state.currentTreeId;
+    if (!currentTreeId) {
+      warnNoCurrentTree("compute nodes update");
+      return;
+    }
+    const tree = state.trees[currentTreeId];
+    if (!tree) {
+      warnItemNotFound("Tree", currentTreeId, "compute nodes update");
+      return;
+    }
     useStoreBase.setState({
       trees: {
         ...state.trees,
         [currentTreeId]: {
-          ...currentTree,
-          nodes: toMerged(currentTree.nodes, updatedComputeNodes),
+          ...tree,
+          nodes: toMerged(tree.nodes, updatedComputeNodes),
         },
       },
     });

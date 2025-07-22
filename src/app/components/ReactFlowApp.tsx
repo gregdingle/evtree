@@ -41,7 +41,7 @@ export default function ReactFlowApp() {
     if (!connectionState.isValid && connectionState.fromNode) {
       // we need to remove the wrapper bounds, in order to get the correct position
       const { clientX, clientY } =
-        "changedTouches" in event ? event.changedTouches[0] : event;
+        "changedTouches" in event ? event.changedTouches[0]! : event;
 
       const position = screenToFlowPosition({
         x: clientX,
