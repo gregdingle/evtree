@@ -1,5 +1,6 @@
-import { AppNode } from "@/hooks/use-store";
-import { formatValue } from "@/utils/format";
+import { AppNode, useStore } from "@/hooks/use-store";
+import { formatProbability, formatValue } from "@/utils/format";
+import { selectPathProbability } from "@/utils/selectors";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
 //
@@ -47,7 +48,8 @@ const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
   );
 };
 
-const TriangleNode = ({ data, selected }: NodeProps<AppNode>) => {
+const TriangleNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+  const pathProbability = useStore((state) => selectPathProbability(state, id));
   return (
     <div className="relative text-xs">
       <div className="absolute -top-0 left-14 max-w-24">{data.label}</div>
@@ -63,14 +65,13 @@ const TriangleNode = ({ data, selected }: NodeProps<AppNode>) => {
         }}
       />
       <Handle type="target" position={Position.Left} />
-      <div
-        className={`absolute left-14 max-w-24 ${
-          data.label ? "top-10" : "top-5"
-        }`}
-      >
+      <div className={`absolute left-14 max-w-24 top-5`}>
         {formatValue(data.value)}
       </div>
-      {/* TODO: show the compound terminal probability here like silver decisions */}
+      <div className="absolute top-10 left-14">
+        {/* // TODO: always show pathProbability? */}
+        {formatProbability(pathProbability)}
+      </div>
     </div>
   );
 };

@@ -66,3 +66,46 @@ export function selectCurrentEdges(state: StoreState) {
   const currentTree = selectCurrentTree(state);
   return currentTree ? values(currentTree.edges) : [];
 }
+
+/**
+ * Returns the probability of a node being reached from it's root parent.
+ */
+export function selectPathProbability(
+  state: StoreState,
+  nodeId: string
+): number {
+  const currentTree = selectCurrentTree(state);
+  if (!currentTree) {
+    return 0;
+  }
+
+  const node = currentTree.nodes[nodeId];
+  if (!node) {
+    warnItemNotFound("Node", nodeId, "path probability calculation");
+    return 0;
+  }
+
+  // Find all edges that target this node (incoming edges)
+  const incomingEdges = values(currentTree.edges).filter(
+    (edge) => edge.target === nodeId
+  );
+
+  // If no incoming edges, this is a root node with probability 1
+  if (incomingEdges.length === 0) {
+    return 1;
+  }
+
+  // Calculate the sum of probabilities from all incoming paths
+  // NOTE: in a normal decision tree, incomingEdges.length should never be more
+  // than 1
+  let totalProbability = 0;
+  for (const edge of incomingEdges) {
+    const edgeProbability = edge.data?.probability ?? 0;
+    // Recursively calculate the probability of reaching the source node
+    const sourceProbability = selectPathProbability(state, edge.source);
+    // Multiply the source probability by this edge's probability
+    totalProbability += sourceProbability * edgeProbability;
+  }
+
+  return totalProbability;
+}
