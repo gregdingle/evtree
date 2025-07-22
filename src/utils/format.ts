@@ -30,5 +30,5 @@ export function formatCost(cost: number | undefined | null): string {
   if (cost === undefined || cost === null || cost == 0) {
     return "";
   }
-  return formatValue(cost * -1);
+  return " " + formatValue(cost * -1);
 }
