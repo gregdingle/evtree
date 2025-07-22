@@ -1,5 +1,5 @@
 interface TooltipProps {
-  text: string;
+  text: string | React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }

@@ -5,7 +5,7 @@ import { downloadPNG } from "@/utils/download";
 import { useReactFlow } from "@xyflow/react";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
-import Tooltip from "./Tooltip";
+import { ToolbarButton } from "./ToolbarButton";
 
 export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
@@ -68,35 +68,5 @@ export default function Toolbar() {
         </ToolbarButton>
       </div>
     </div>
-  );
-}
-
-interface ToolbarButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
-  tooltip?: string;
-}
-
-function ToolbarButton({ onClick, children, tooltip }: ToolbarButtonProps) {
-  if (tooltip) {
-    return (
-      <Tooltip text={tooltip}>
-        <button
-          onClick={onClick}
-          className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
-        >
-          {children}
-        </button>
-      </Tooltip>
-    );
-  }
-
-  return (
-    <button
-      onClick={onClick}
-      className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
-    >
-      {children}
-    </button>
   );
 }

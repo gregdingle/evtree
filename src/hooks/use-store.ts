@@ -11,8 +11,15 @@ import {
   OnNodesDelete,
   Position,
 } from "@xyflow/react";
-import { isEqual, keyBy, omit, throttle, toMerged } from "es-toolkit";
-import { fromPairs, isEmpty, keys, toPairs, values } from "es-toolkit/compat";
+import { isEqual, keyBy, omit, round, throttle, toMerged } from "es-toolkit";
+import {
+  fromPairs,
+  isEmpty,
+  keys,
+  max,
+  toPairs,
+  values,
+} from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
@@ -72,7 +79,7 @@ export interface StoreState {
   // TODO: consider separate selector functions like selectCurrentTree for memoization
   // TODO: shorten selector names
   // Selectors for current tree
-  getCurrentTree: () => DecisionTree | null;
+  getCurrentTree: () => DecisionTree | undefined;
   getCurrentNodes: () => AppNode[];
   getCurrentEdges: () => AppEdge[];
 
@@ -82,6 +89,7 @@ export interface StoreState {
   onConnect: OnConnect;
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
+  balanceEdgeProbability: (id: string) => void;
   onNodesDelete: OnNodesDelete<AppNode>;
   onCopy: () => void;
   onPaste: () => void;
@@ -368,7 +376,20 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     // Selectors for current tree
     getCurrentTree: () => {
       const { trees, currentTreeId } = get();
-      return currentTreeId ? trees[currentTreeId] || null : null;
+      if (!currentTreeId) {
+        // NOTE: this should never happen
+        warnNoCurrentTree();
+        return;
+      }
+
+      const tree = get().trees[currentTreeId];
+      if (!tree) {
+        // NOTE: this should never happen
+        warnItemNotFound("Tree", currentTreeId);
+        return;
+      }
+
+      return trees[currentTreeId];
     },
 
     getCurrentNodes: () => {
@@ -487,6 +508,65 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           const edge = tree.edges[id];
           if (edge) {
             edge.data = { ...edge.data, ...edgeData };
+            tree.updatedAt = new Date().toISOString();
+          } else {
+            warnItemNotFound("Edge", id, "data update");
+          }
+        } else {
+          warnItemNotFound("Tree", currentTreeId, "edge data update");
+        }
+        return state;
+      });
+    },
+
+    balanceEdgeProbability(id) {
+      const { currentTreeId } = get();
+      if (!currentTreeId) {
+        warnNoCurrentTree("balance edge probability");
+        return;
+      }
+
+      const tree = get().trees[currentTreeId];
+      if (!tree) {
+        warnItemNotFound("Tree", currentTreeId, "balance edge probability");
+        return;
+      }
+
+      const targetEdge = tree.edges[id];
+      if (!targetEdge) {
+        warnItemNotFound("Edge", id, "balance edge probability");
+        return;
+      }
+
+      // Find all sibling edges (edges from the same source node)
+      const siblingEdges = values(tree.edges).filter(
+        (edge) => edge.source === targetEdge.source
+      );
+
+      // Calculate sum of existing probabilities (excluding the target edge)
+      const existingProbabilitySum = siblingEdges
+        .filter(
+          (edge) => edge.id !== id && edge.data?.probability !== undefined
+        )
+        .reduce((sum, edge) => sum + (edge.data?.probability ?? 0), 0);
+
+      // Count undefined probabilities (including the target edge)
+      const undefinedProbabilityCount = siblingEdges.filter(
+        (edge) => edge.data?.probability === undefined || edge.id === id
+      ).length;
+
+      // Calculate balanced probability, round to 2 decimals
+      const balancedProbability = round(
+        max([0, 1.0 - existingProbabilitySum])! / undefinedProbabilityCount,
+        2
+      );
+
+      set((state) => {
+        const tree = state.trees[currentTreeId];
+        if (tree) {
+          const edge = tree.edges[id];
+          if (edge && edge.data) {
+            edge.data.probability = balancedProbability;
             tree.updatedAt = new Date().toISOString();
           } else {
             warnItemNotFound("Edge", id, "data update");

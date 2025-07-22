@@ -4,10 +4,15 @@ import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
 import { debounce } from "es-toolkit";
 import { max, min, toInteger, toNumber } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
+import { ToolbarButton } from "./ToolbarButton";
 
 export default function RightSidePanel() {
-  const { onNodeDataUpdate, onEdgeDataUpdate, onTreeDataUpdate } =
-    useStore.getState();
+  const {
+    onNodeDataUpdate,
+    onEdgeDataUpdate,
+    onTreeDataUpdate,
+    balanceEdgeProbability,
+  } = useStore.getState();
 
   const { nodes, edges, currentTree } = useStore((state) => {
     return {
@@ -27,6 +32,7 @@ export default function RightSidePanel() {
   useEffect(() => {
     if ((nodes.length > 0 || edges.length > 0) && firstInputRef.current) {
       // Only focus if no input is currently focused
+      // TODO: is this good logic? what could go wrong?
       const activeElement = window.document.activeElement;
       const isInputFocused = activeElement && activeElement.tagName === "INPUT";
 
@@ -106,6 +112,7 @@ export default function RightSidePanel() {
                   label="Probability"
                   value={edge.data?.probability?.toString()}
                   onChange={(value) => {
+                    // TODO: should this min-max clamping be moved into domain logic somehow?
                     const probability =
                       value === undefined
                         ? undefined
@@ -116,7 +123,22 @@ export default function RightSidePanel() {
                   max={1.0}
                   min={0.0}
                   step={0.1}
-                />
+                >
+                  {" "}
+                  <ToolbarButton
+                    tooltip={
+                      // TODO: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
+                      <span>
+                        Set the probability
+                        <br /> based on other
+                        <br /> branches
+                      </span>
+                    }
+                    onClick={() => balanceEdgeProbability(edge.id)}
+                  >
+                    balance
+                  </ToolbarButton>
+                </PropertyInput>
                 <PropertyInput
                   label="Label"
                   value={edge.data?.label}
@@ -150,7 +172,7 @@ interface PropertyInputProps
 }
 
 const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
-  ({ label, value, onChange, ...props }, ref) => {
+  ({ label, value, onChange, children, ...props }, ref) => {
     const debouncedOnChange = debounce(onChange ?? (() => {}), 200);
 
     // Use a local state for immediate UI updates
@@ -181,6 +203,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           className="w-full border-2 p-1 rounded-md"
           {...props}
         />
+        {children}
       </div>
     );
   }
