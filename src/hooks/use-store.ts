@@ -350,15 +350,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onTreeDataUpdate: (treeData) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("tree data update");
-        return;
-      }
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           if (treeData.name !== undefined) {
             tree.name = treeData.name;
           }
@@ -366,11 +359,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.description = treeData.description;
           }
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "tree data update");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     // Selectors for current tree
@@ -404,83 +394,46 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
     // ReactFlow operations (work on current tree)
     onNodesChange(changes) {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("nodes change");
-        return;
-      }
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const updatedNodesArray = applyNodeChanges(
             changes,
             values(tree.nodes)
           );
           tree.nodes = keyBy(updatedNodesArray, (node) => node.id);
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "nodes change");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onEdgesChange(changes) {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("edges change");
-        return;
-      }
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const updatedEdgesArray = applyEdgeChanges(
             changes,
             values(tree.edges)
           );
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "edges change");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onConnect: (connection) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("connection");
-        return;
-      }
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const { source: fromNodeId, target: nodeId } = connection;
           const newEdge = createEdge(fromNodeId, nodeId);
           const updatedEdgesArray = addEdge(newEdge, values(tree.edges));
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "connection");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onNodeDataUpdate: (id, nodeData) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("node data update");
-        return;
-      }
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const node = tree.nodes[id];
           if (node) {
             node.data = { ...node.data, ...nodeData };
@@ -488,23 +441,13 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           } else {
             warnItemNotFound("Node", id, "data update");
           }
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "node data update");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onEdgeDataUpdate: (id, edgeData) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("edge data update");
-        return;
-      }
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const edge = tree.edges[id];
           if (edge) {
             edge.data = { ...edge.data, ...edgeData };
@@ -512,11 +455,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           } else {
             warnItemNotFound("Edge", id, "data update");
           }
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "edge data update");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     balanceEdgeProbability(id) {
@@ -822,3 +762,21 @@ useStoreBase.subscribe(
 export const useStore = createSelectorFunctions(
   useStoreBase
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
+
+function withCurrentTree(
+  state: StoreState,
+  callback: (tree: DecisionTree) => void
+): StoreState {
+  const { currentTreeId } = state;
+  if (!currentTreeId) {
+    warnNoCurrentTree();
+    return state;
+  }
+  const tree = state.trees[currentTreeId];
+  if (tree) {
+    callback(tree);
+  } else {
+    warnItemNotFound("Tree", currentTreeId);
+  }
+  return state;
+}
