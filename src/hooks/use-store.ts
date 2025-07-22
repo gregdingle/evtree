@@ -95,11 +95,11 @@ export interface StoreState {
 const initialNodes = keyBy(
   [
     {
-      id: "square",
-      type: "square",
+      id: "decision",
+      type: "decision",
       data: {
-        label: "square",
-        description: "square description",
+        label: "decision",
+        description: "decision description",
         value: undefined,
       },
       position: { x: 100, y: 0 },
@@ -107,11 +107,11 @@ const initialNodes = keyBy(
       targetPosition: Position.Left,
     },
     {
-      id: "circle",
-      type: "circle",
+      id: "chance",
+      type: "chance",
       data: {
-        label: "circle",
-        description: "circle description",
+        label: "chance",
+        description: "chance description",
         value: undefined,
       },
       position: { x: 300, y: 0 },
@@ -119,11 +119,11 @@ const initialNodes = keyBy(
       targetPosition: Position.Left,
     },
     {
-      id: "triangle1",
-      type: "triangle",
+      id: "terminal1",
+      type: "terminal",
       data: {
-        label: "triangle1",
-        description: "triangle1 description",
+        label: "terminal1",
+        description: "terminal1 description",
         value: 500,
       },
       position: { x: 500, y: -75 },
@@ -131,11 +131,11 @@ const initialNodes = keyBy(
       targetPosition: Position.Left,
     },
     {
-      id: "triangle2",
-      type: "triangle",
+      id: "terminal2",
+      type: "terminal",
       data: {
-        label: "triangle2",
-        description: "triangle2 description",
+        label: "terminal2",
+        description: "terminal2 description",
         value: 1000,
       },
       position: { x: 500, y: 75 },
@@ -149,35 +149,35 @@ const initialNodes = keyBy(
 const initialEdges = keyBy(
   [
     {
-      id: "square-circle",
-      source: "square",
-      target: "circle",
+      id: "decision-chance",
+      source: "decision",
+      target: "chance",
       type: "custom",
       data: {
-        label: "s to c",
-        description: "Connection from square to circle",
+        label: "d to c",
+        description: "Connection from decision to chance",
         probability: 1.0,
       },
     },
     {
-      id: "circle-triangle1",
-      source: "circle",
-      target: "triangle1",
+      id: "chance-terminal1",
+      source: "chance",
+      target: "terminal1",
       type: "custom",
       data: {
         label: "c to t1",
-        description: "Path from circle to triangle1",
+        description: "Path from chance to terminal1",
         probability: 0.5,
       },
     },
     {
-      id: "circle-triangle2",
-      source: "circle",
-      target: "triangle2",
+      id: "chance-terminal2",
+      source: "chance",
+      target: "terminal2",
       type: "custom",
       data: {
         label: "c to t2",
-        description: "Path from circle to triangle2",
+        description: "Path from chance to terminal2",
         probability: 0.5,
       },
     },

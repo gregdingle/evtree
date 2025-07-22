@@ -47,22 +47,22 @@ export default function ContextMenu({
       className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg py-1"
     >
       <button
-        onClick={() => handleCreateNode("square")}
+        onClick={() => handleCreateNode("decision")}
         className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
       >
-        Create Square
+        Create Decision Node
       </button>
       <button
-        onClick={() => handleCreateNode("circle")}
+        onClick={() => handleCreateNode("chance")}
         className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
       >
-        Create Circle
+        Create Chance Node
       </button>
       <button
-        onClick={() => handleCreateNode("triangle")}
+        onClick={() => handleCreateNode("terminal")}
         className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
       >
-        Create Triangle
+        Create Terminal Node
       </button>
     </div>
   );

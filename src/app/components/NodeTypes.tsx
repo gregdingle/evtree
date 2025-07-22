@@ -10,7 +10,7 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 // see also https://github.com/SilverDecisions/SilverDecisions/wiki/Gallery
 //
 
-const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
+const DecisionNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
@@ -28,7 +28,7 @@ const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
   );
 };
 
-const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
+const ChanceNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
     <div className="relative text-xs">
       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
@@ -50,7 +50,7 @@ const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
   );
 };
 
-const TriangleNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   return (
     <div className="relative text-xs">
@@ -80,7 +80,7 @@ const TriangleNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 export const nodeTypes = {
-  circle: CircleNode,
-  square: SquareNode,
-  triangle: TriangleNode,
+  chance: ChanceNode,
+  decision: DecisionNode,
+  terminal: TerminalNode,
 };

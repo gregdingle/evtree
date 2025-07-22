@@ -3,11 +3,11 @@ import { Position, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
 // TODO: dedupe with NodeTypes.tsx somehow... where source of truth?
-export type NodeType = "square" | "circle" | "triangle";
+export type NodeType = "decision" | "chance" | "terminal";
 
 export function createNode(
   position: XYPosition,
-  type: NodeType = "circle"
+  type: NodeType = "chance"
 ): AppNode {
   const nodeId = nanoid(12);
   const newNode: AppNode = {

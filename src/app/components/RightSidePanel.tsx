@@ -72,7 +72,7 @@ export default function RightSidePanel() {
             {nodes.length ? <h3 className="mb-4">Node Properties</h3> : null}
             {nodes.map((node, index) => (
               <div key={node.id} className="mb-8">
-                {node.type === "triangle" ? (
+                {node.type === "terminal" ? (
                   <PropertyInput
                     ref={index === 0 ? firstInputRef : undefined}
                     label="Value"
@@ -85,8 +85,8 @@ export default function RightSidePanel() {
                 ) : null}
                 <PropertyInput
                   ref={
-                    // NOTE: see above for special case for triangle nodes
-                    node.type !== "triangle" && index === 0
+                    // NOTE: see above for special case for terminal nodes
+                    node.type !== "terminal" && index === 0
                       ? firstInputRef
                       : undefined
                   }
