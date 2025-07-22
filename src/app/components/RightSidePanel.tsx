@@ -72,16 +72,24 @@ export default function RightSidePanel() {
             {nodes.length ? <h3 className="mb-4">Node Properties</h3> : null}
             {nodes.map((node, index) => (
               <div key={node.id} className="mb-8">
+                {node.type === "triangle" ? (
+                  <PropertyInput
+                    ref={index === 0 ? firstInputRef : undefined}
+                    label="Value"
+                    value={node.data.value?.toString()}
+                    onChange={(value) =>
+                      onNodeDataUpdate(node.id, { value: toInteger(value) })
+                    }
+                    placeholder="Enter node value"
+                  />
+                ) : null}
                 <PropertyInput
-                  ref={index === 0 ? firstInputRef : undefined}
-                  label="Value"
-                  value={node.data.value?.toString()}
-                  onChange={(value) =>
-                    onNodeDataUpdate(node.id, { value: toInteger(value) })
+                  ref={
+                    // NOTE: see above for special case for triangle nodes
+                    node.type !== "triangle" && index === 0
+                      ? firstInputRef
+                      : undefined
                   }
-                  placeholder="Enter node value"
-                />
-                <PropertyInput
                   label="Label"
                   value={node.data.label}
                   onChange={(value) =>

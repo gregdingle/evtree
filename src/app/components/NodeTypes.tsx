@@ -1,5 +1,5 @@
 import { AppNode, useStore } from "@/hooks/use-store";
-import { formatProbability, formatValue } from "@/utils/format";
+import { formatCost, formatProbability, formatValue } from "@/utils/format";
 import { selectPathProbability } from "@/utils/selectors";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
@@ -22,7 +22,7 @@ const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
       </div>
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
         {formatValue(data.value)}
-        {data.cost && ` ${formatValue(data.cost * -1)}`}
+        {formatCost(data.cost)}
       </div>
     </div>
   );
@@ -44,7 +44,7 @@ const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
       </div>
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
         {formatValue(data.value)}
-        {data.cost && ` ${formatValue(data.cost * -1)}`}
+        {formatCost(data.cost)}
       </div>
     </div>
   );
@@ -69,7 +69,7 @@ const TriangleNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <Handle type="target" position={Position.Left} />
       <div className={`absolute left-14 max-w-32 top-5 whitespace-nowrap`}>
         {formatValue(data.value)}
-        {data.cost && ` ${formatValue(data.cost * -1)}`}
+        {formatCost(data.cost)}
       </div>
       <div className="absolute top-10 left-14">
         {/* // TODO: always show pathProbability? */}
