@@ -3,6 +3,7 @@
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
+import { selectCurrentEdges, selectCurrentNodes } from "@/utils/selectors";
 import {
   Background,
   Controls,
@@ -25,8 +26,8 @@ export default function ReactFlowApp() {
     onDragEndCreateNodeAt,
   } = useStore.getState();
 
-  const nodes = useStore((state) => state.getCurrentNodes());
-  const edges = useStore((state) => state.getCurrentEdges());
+  const nodes = useStore(selectCurrentNodes);
+  const edges = useStore(selectCurrentEdges);
 
   // Get system color mode preference
   const colorMode = useDarkMode() ? "dark" : "light";

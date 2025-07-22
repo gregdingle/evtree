@@ -1,6 +1,11 @@
 "use client";
 
-import { AppEdge, AppNode, useStore } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
+import {
+  selectCurrentEdges,
+  selectCurrentNodes,
+  selectCurrentTree,
+} from "@/utils/selectors";
 import { debounce } from "es-toolkit";
 import { max, min, toInteger, toNumber } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
@@ -16,13 +21,9 @@ export default function RightSidePanel() {
 
   const { nodes, edges, currentTree } = useStore((state) => {
     return {
-      nodes: state
-        .getCurrentNodes()
-        .filter((node) => node.selected) as AppNode[],
-      edges: state
-        .getCurrentEdges()
-        .filter((edge) => edge.selected) as AppEdge[],
-      currentTree: state.getCurrentTree(),
+      nodes: selectCurrentNodes(state).filter((node) => node.selected),
+      edges: selectCurrentEdges(state).filter((edge) => edge.selected),
+      currentTree: selectCurrentTree(state),
     };
   });
 

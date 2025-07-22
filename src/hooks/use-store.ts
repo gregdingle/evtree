@@ -12,14 +12,7 @@ import {
   Position,
 } from "@xyflow/react";
 import { isEqual, keyBy, omit, round, throttle, toMerged } from "es-toolkit";
-import {
-  fromPairs,
-  isEmpty,
-  keys,
-  max,
-  toPairs,
-  values,
-} from "es-toolkit/compat";
+import { fromPairs, keys, max, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
@@ -75,13 +68,6 @@ export interface StoreState {
   onTreeDataUpdate: (
     treeData: Partial<Pick<DecisionTree, "name" | "description">>
   ) => void;
-
-  // TODO: consider separate selector functions like selectCurrentTree for memoization
-  // TODO: shorten selector names
-  // Selectors for current tree
-  getCurrentTree: () => DecisionTree | undefined;
-  getCurrentNodes: () => AppNode[];
-  getCurrentEdges: () => AppEdge[];
 
   // Node/Edge operations (work on current tree)
   onNodesChange: OnNodesChange<AppNode>;
@@ -363,35 +349,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // Selectors for current tree
-    getCurrentTree: () => {
-      const { trees, currentTreeId } = get();
-      if (!currentTreeId) {
-        // NOTE: this should never happen
-        warnNoCurrentTree();
-        return;
-      }
-
-      const tree = get().trees[currentTreeId];
-      if (!tree) {
-        // NOTE: this should never happen
-        warnItemNotFound("Tree", currentTreeId);
-        return;
-      }
-
-      return trees[currentTreeId];
-    },
-
-    getCurrentNodes: () => {
-      const currentTree = get().getCurrentTree();
-      return currentTree ? values(currentTree.nodes) : [];
-    },
-
-    getCurrentEdges: () => {
-      const currentTree = get().getCurrentTree();
-      return currentTree ? values(currentTree.edges) : [];
-    },
-
     // ReactFlow operations (work on current tree)
     onNodesChange(changes) {
       set((state) =>
@@ -551,16 +508,27 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onCopy: () => {
-      const { getCurrentNodes, getCurrentEdges } = get();
-      const nodes = getCurrentNodes();
-      const edges = getCurrentEdges();
+      const { currentTreeId } = get();
+      if (!currentTreeId) {
+        warnNoCurrentTree("copy");
+        return;
+      }
 
-      set({
-        clipboard: {
-          nodeIds: nodes.filter((node) => node.selected).map((node) => node.id),
-          edgeIds: edges.filter((edge) => edge.selected).map((edge) => edge.id),
-        },
-      });
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const nodes = values(tree.nodes);
+          const edges = values(tree.edges);
+
+          state.clipboard = {
+            nodeIds: nodes
+              .filter((node) => node.selected)
+              .map((node) => node.id),
+            edgeIds: edges
+              .filter((edge) => edge.selected)
+              .map((edge) => edge.id),
+          };
+        })
+      );
     },
 
     onPaste: () => {
@@ -690,7 +658,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onArrange: () => {
-      const { currentTreeId, getCurrentNodes, getCurrentEdges } = get();
+      const { currentTreeId } = get();
       if (!currentTreeId) {
         warnNoCurrentTree("arrange");
         return;
@@ -700,8 +668,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         const tree = state.trees[currentTreeId];
         if (tree) {
           const { nodes, edges } = getLayoutedElements(
-            getCurrentNodes(),
-            getCurrentEdges()
+            values(tree.nodes),
+            values(tree.edges)
           );
           tree.nodes = keyBy(nodes, (node) => node.id);
           tree.edges = keyBy(edges, (edge) => edge.id);
@@ -726,29 +694,19 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 useStoreBase.subscribe(
   selectComputedNodesAndEdges,
   ({ computeNodes, computeEdges }) => {
-    if (isEmpty(computeNodes) && isEmpty(computeEdges)) {
-      return;
-    }
     const updatedComputeNodes = computeNodeValues(computeNodes, computeEdges);
     const state = useStoreBase.getState();
-    const currentTreeId = state.currentTreeId;
-    if (!currentTreeId) {
-      warnNoCurrentTree("compute nodes update");
-      return;
-    }
-    const tree = state.trees[currentTreeId];
-    if (!tree) {
-      warnItemNotFound("Tree", currentTreeId, "compute nodes update");
-      return;
-    }
-    useStoreBase.setState({
-      trees: {
-        ...state.trees,
-        [currentTreeId]: {
-          ...tree,
-          nodes: toMerged(tree.nodes, updatedComputeNodes),
+    withCurrentTree(state, (tree) => {
+      // NOTE: need to maintain immutability here
+      useStoreBase.setState({
+        trees: {
+          ...state.trees,
+          [tree.id]: {
+            ...tree,
+            nodes: toMerged(tree.nodes, updatedComputeNodes),
+          },
         },
-      },
+      });
     });
   },
   // TODO: will the deep equal be too slow?
