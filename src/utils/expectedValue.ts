@@ -1,5 +1,5 @@
 import { AppEdge, AppNode, NodeType } from "@/hooks/use-store";
-import { values } from "es-toolkit/compat";
+import { max, values } from "es-toolkit/compat";
 
 type AdjacencyList = Record<
   string,
@@ -10,13 +10,12 @@ type AdjacencyList = Record<
 >;
 
 // TODO: how to keep in sync with ComputeNode and AppEdge types?
-// TODO: make more explicit `number | undefined`?
 export interface ComputeNode {
   id: string;
   type?: NodeType;
   data: {
-    value?: number | undefined;
-    cost?: number | undefined;
+    value: number | null;
+    cost: number | null;
   };
 }
 
@@ -25,7 +24,7 @@ export interface ComputeEdge {
   source: string;
   target: string;
   data?: {
-    probability?: number | undefined;
+    probability: number | null;
   };
 }
 
@@ -53,14 +52,14 @@ export interface ComputeEdge {
 export function computeNodeValues(
   nodes: Record<string, ComputeNode>,
   edges: Record<string, ComputeEdge>
-): Record<string, ComputeNode> {
+): { nodes: Record<string, ComputeNode>; edges: Record<string, ComputeEdge> } {
   const rootNodes = values(nodes).filter((node) => {
     // A root node has no incoming edges
     return !values(edges).some((edge) => edge.target === node.id);
   });
   if (rootNodes.length === 0) {
     console.warn("[EVTree] No root nodes found, cannot compute values.");
-    return nodes;
+    return { nodes, edges };
   }
 
   const adjList = buildAdjacencyList(values(edges));
@@ -69,7 +68,7 @@ export function computeNodeValues(
     computeNodeValuesRecursive(nodes, edges, rootNode, adjList);
   });
 
-  return nodes;
+  return { nodes, edges };
 }
 
 function buildAdjacencyList(edges: ComputeEdge[]): AdjacencyList {
@@ -93,11 +92,9 @@ function computeNodeValuesRecursive(
 
   // Base case: if no children, use node's value directly
   if (children.length === 0) {
-    if (parentNode.data.value === undefined) {
+    if (parentNode.data.value === null) {
       // eslint-disable-next-line no-console
-      console.debug(
-        `[EVTree] Terminal node ${parentNode.id} has undefined value.`
-      );
+      console.debug(`[EVTree] Terminal node ${parentNode.id} has null value.`);
     }
     return;
   }
@@ -106,23 +103,42 @@ function computeNodeValuesRecursive(
     computeNodeValuesRecursive(nodes, edges, nodes[nodeId]!, adjList);
   });
 
-  let totalValue: number | undefined = undefined;
+  // If this is a decision node, we need to update the edge probability
+  const { maxChildValue, bestProbability } =
+    parentNode.type === "decision"
+      ? getBestChild(children, nodes)
+      : { maxChildValue: null, bestProbability: null };
+
+  let totalValue: number | null = null;
   let totalProbability = 0;
 
   children.forEach(({ edgeId, nodeId }) => {
     const childNode = nodes[nodeId]!;
     const childEdge = edges[edgeId]!;
-    if (childNode) {
-      const childValue = childNode.data.value;
-      const childCost = childNode.data.cost;
-      const childProbability = childEdge.data?.probability;
-      if (childValue !== undefined && childProbability !== undefined) {
-        if (totalValue === undefined) {
-          totalValue = 0;
+    const childValue = childNode.data.value;
+    const childCost = childNode.data.cost;
+
+    // For decision nodes, update edge probabilities based on expected value
+    if (parentNode.type === "decision") {
+      if (maxChildValue !== null && bestProbability !== null) {
+        if (
+          childValue !== null &&
+          childValue - (childCost ?? 0) === maxChildValue
+        ) {
+          childEdge.data!.probability = bestProbability;
+        } else {
+          childEdge.data!.probability = 0;
         }
-        totalValue += (childValue - (childCost ?? 0)) * childProbability;
-        totalProbability += childProbability;
       }
+    }
+
+    const childProbability = childEdge.data?.probability ?? null;
+    if (childValue !== null && childProbability !== null) {
+      if (totalValue === null) {
+        totalValue = 0;
+      }
+      totalValue += (childValue - (childCost ?? 0)) * childProbability;
+      totalProbability += childProbability;
     }
   });
 
@@ -136,6 +152,29 @@ function computeNodeValuesRecursive(
 
   // Assign the computed value (or leave as undefined if no defined children)
   parentNode.data.value = totalValue;
+}
+
+function getBestChild(
+  children: { edgeId: string; nodeId: string }[],
+  nodes: Record<string, ComputeNode>
+) {
+  const childNetValues = children
+    .map(({ nodeId }) => nodes[nodeId]!.data)
+    .filter((data) => data.value !== null)
+    .map((data) => data.value! - (data.cost ?? 0));
+  if (childNetValues.length === 0) {
+    return { maxChildValue: null, bestProbability: null };
+  }
+
+  // Find the maximum net value of children for decision node
+  const maxChildValue = max(childNetValues);
+
+  // Find all edges with the maximum net value (to handle ties)
+  const bestCount = childNetValues.filter(
+    (netValue) => netValue === maxChildValue
+  ).length;
+  const bestProbability = 1.0 / bestCount;
+  return { maxChildValue, bestProbability };
 }
 
 export function toComputeNode(node: AppNode): ComputeNode {
@@ -155,7 +194,7 @@ export function toComputeEdge(edge: AppEdge): ComputeEdge {
     source: edge.source,
     target: edge.target,
     data: {
-      probability: edge.data?.probability,
+      probability: edge.data?.probability ?? null,
     },
   };
 }

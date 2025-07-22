@@ -4,9 +4,9 @@ import { ComputeEdge, ComputeNode, computeNodeValues } from "./expectedValue";
 describe("computeNodeValues", () => {
   test("should copy values for a simple sequence of 1.0 probabilities", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } },
-      { id: "2", data: { value: undefined } },
-      { id: "3", data: { value: 30 } },
+      { id: "1", data: { value: null, cost: null } },
+      { id: "2", data: { value: null, cost: null } },
+      { id: "3", data: { value: 30, cost: null } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 1.0 } },
@@ -18,16 +18,16 @@ describe("computeNodeValues", () => {
       keyBy(edges, (edge) => edge.id)
     );
 
-    expect(nodes[0].data.value).toEqual(30);
-    expect(nodes[1].data.value).toEqual(30);
-    expect(nodes[2].data.value).toEqual(30);
+    expect(nodes[0]!.data.value).toEqual(30);
+    expect(nodes[1]!.data.value).toEqual(30);
+    expect(nodes[2]!.data.value).toEqual(30);
   });
 
   test("should weight values for a simple sequence", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } },
-      { id: "2", data: { value: undefined } },
-      { id: "3", data: { value: 40 } },
+      { id: "1", data: { value: null, cost: null } },
+      { id: "2", data: { value: null, cost: null } },
+      { id: "3", data: { value: 40, cost: null } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 0.5 } },
@@ -39,17 +39,17 @@ describe("computeNodeValues", () => {
       keyBy(edges, (edge) => edge.id)
     );
 
-    expect(nodes[0].data.value).toEqual(10);
-    expect(nodes[1].data.value).toEqual(20);
-    expect(nodes[2].data.value).toEqual(40);
+    expect(nodes[0]!.data.value).toEqual(10);
+    expect(nodes[1]!.data.value).toEqual(20);
+    expect(nodes[2]!.data.value).toEqual(40);
   });
 
   test("should compute expected value for a simple decision tree", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } }, // Root decision node
-      { id: "2a", data: { value: 100 } }, // Outcome A
-      { id: "2b", data: { value: 50 } }, // Outcome B
-      { id: "2c", data: { value: 0 } }, // Outcome C
+      { id: "1", data: { value: null, cost: null } }, // Root decision node
+      { id: "2a", data: { value: 100, cost: null } }, // Outcome A
+      { id: "2b", data: { value: 50, cost: null } }, // Outcome B
+      { id: "2c", data: { value: 0, cost: null } }, // Outcome C
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.5 } },
@@ -63,17 +63,17 @@ describe("computeNodeValues", () => {
     );
 
     // Expected value = (100 * 0.5) + (50 * 0.3) + (0 * 0.2) = 50 + 15 + 0 = 65
-    expect(nodes[0].data.value).toEqual(65);
-    expect(nodes[1].data.value).toEqual(100);
-    expect(nodes[2].data.value).toEqual(50);
-    expect(nodes[3].data.value).toEqual(0);
+    expect(nodes[0]!.data.value).toEqual(65);
+    expect(nodes[1]!.data.value).toEqual(100);
+    expect(nodes[2]!.data.value).toEqual(50);
+    expect(nodes[3]!.data.value).toEqual(0);
   });
 
-  test("should handle all undefined values gracefully", () => {
+  test("should handle all null values gracefully", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } },
-      { id: "2", data: { value: undefined } },
-      { id: "3", data: { value: undefined } },
+      { id: "1", data: { value: null, cost: null } },
+      { id: "2", data: { value: null, cost: null } },
+      { id: "3", data: { value: null, cost: null } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 1.0 } },
@@ -85,17 +85,17 @@ describe("computeNodeValues", () => {
       keyBy(edges, (edge) => edge.id)
     );
 
-    // When terminal node has undefined value, all parent nodes remain undefined
-    expect(nodes[0].data.value).toBeUndefined();
-    expect(nodes[1].data.value).toBeUndefined();
-    expect(nodes[2].data.value).toBeUndefined(); // Terminal node remains undefined
+    // When terminal node has null value, all parent nodes remain null
+    expect(nodes[0]!.data.value).toBeNull();
+    expect(nodes[1]!.data.value).toBeNull();
+    expect(nodes[2]!.data.value).toBeNull(); // Terminal node remains null
   });
 
   test("should handle negative values correctly", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } }, // Root decision node
-      { id: "2a", data: { value: -50 } }, // Negative outcome A
-      { id: "2b", data: { value: 100 } }, // Positive outcome B
+      { id: "1", data: { value: null, cost: null } }, // Root decision node
+      { id: "2a", data: { value: -50, cost: null } }, // Negative outcome A
+      { id: "2b", data: { value: 100, cost: null } }, // Positive outcome B
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.4 } },
@@ -108,16 +108,16 @@ describe("computeNodeValues", () => {
     );
 
     // Expected value = (-50 * 0.4) + (100 * 0.6) = -20 + 60 = 40
-    expect(nodes[0].data.value).toEqual(40);
-    expect(nodes[1].data.value).toEqual(-50);
-    expect(nodes[2].data.value).toEqual(100);
+    expect(nodes[0]!.data.value).toEqual(40);
+    expect(nodes[1]!.data.value).toEqual(-50);
+    expect(nodes[2]!.data.value).toEqual(100);
   });
 
-  test("should ignore undefined children and compute from defined ones", () => {
+  test("should ignore null children and compute from defined ones", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } }, // Root decision node
-      { id: "2a", data: { value: 100 } }, // Defined outcome A
-      { id: "2b", data: { value: undefined } }, // Undefined outcome B
+      { id: "1", data: { value: null, cost: null } }, // Root decision node
+      { id: "2a", data: { value: 100, cost: null } }, // Defined outcome A
+      { id: "2b", data: { value: null, cost: null } }, // Null outcome B
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.6 } },
@@ -130,18 +130,18 @@ describe("computeNodeValues", () => {
     );
 
     // Root should get value from defined child only: 100 * 0.6 = 60
-    expect(nodes[0].data.value).toEqual(60);
-    expect(nodes[1].data.value).toEqual(100);
-    expect(nodes[2].data.value).toBeUndefined();
+    expect(nodes[0]!.data.value).toEqual(60);
+    expect(nodes[1]!.data.value).toEqual(100);
+    expect(nodes[2]!.data.value).toBeNull();
   });
 
   test("should handle multiple root nodes correctly", () => {
     const nodes: ComputeNode[] = [
-      { id: "root1", data: { value: undefined } }, // First root
-      { id: "child1a", data: { value: 80 } }, // Child of root1
-      { id: "child1b", data: { value: 20 } }, // Child of root1
-      { id: "root2", data: { value: undefined } }, // Second root
-      { id: "child2", data: { value: 150 } }, // Child of root2
+      { id: "root1", data: { value: null, cost: null } }, // First root
+      { id: "child1a", data: { value: 80, cost: null } }, // Child of root1
+      { id: "child1b", data: { value: 20, cost: null } }, // Child of root1
+      { id: "root2", data: { value: null, cost: null } }, // Second root
+      { id: "child2", data: { value: 150, cost: null } }, // Child of root2
     ];
     const edges: ComputeEdge[] = [
       {
@@ -170,20 +170,20 @@ describe("computeNodeValues", () => {
     );
 
     // First tree: (80 * 0.7) + (20 * 0.3) = 56 + 6 = 62
-    expect(nodes[0].data.value).toEqual(62);
-    expect(nodes[1].data.value).toEqual(80);
-    expect(nodes[2].data.value).toEqual(20);
+    expect(nodes[0]!.data.value).toEqual(62);
+    expect(nodes[1]!.data.value).toEqual(80);
+    expect(nodes[2]!.data.value).toEqual(20);
 
     // Second tree: 150 * 1.0 = 150
-    expect(nodes[3].data.value).toEqual(150);
-    expect(nodes[4].data.value).toEqual(150);
+    expect(nodes[3]!.data.value).toEqual(150);
+    expect(nodes[4]!.data.value).toEqual(150);
   });
 
   test("should handle zero root nodes gracefully", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: undefined } },
-      { id: "2", data: { value: undefined } },
-      { id: "3", data: { value: 30 } },
+      { id: "1", data: { value: null, cost: null } },
+      { id: "2", data: { value: null, cost: null } },
+      { id: "3", data: { value: 30, cost: null } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 1.0 } },
@@ -203,10 +203,184 @@ describe("computeNodeValues", () => {
     expect(consoleSpy).toHaveBeenCalledWith(
       "[EVTree] No root nodes found, cannot compute values."
     );
-    expect(nodes[0].data.value).toBeUndefined();
-    expect(nodes[1].data.value).toBeUndefined();
-    expect(nodes[2].data.value).toEqual(30); // Original value preserved
+    expect(nodes[0]!.data.value).toBeNull();
+    expect(nodes[1]!.data.value).toBeNull();
+    expect(nodes[2]!.data.value).toEqual(30); // Original value preserved
 
     consoleSpy.mockRestore();
+  });
+
+  test("should update probabilities for decision nodes based on expected value", () => {
+    const nodes: ComputeNode[] = [
+      { id: "decision", type: "decision", data: { value: null, cost: null } }, // Decision node
+      { id: "outcome1", type: "terminal", data: { value: 100, cost: 20 } }, // Net value: 80
+      { id: "outcome2", type: "terminal", data: { value: 60, cost: 10 } }, // Net value: 50
+      { id: "outcome3", type: "terminal", data: { value: 120, cost: 40 } }, // Net value: 80
+    ];
+    const edges: ComputeEdge[] = [
+      {
+        id: "e1",
+        source: "decision",
+        target: "outcome1",
+        data: { probability: null },
+      },
+      {
+        id: "e2",
+        source: "decision",
+        target: "outcome2",
+        data: { probability: null },
+      },
+      {
+        id: "e3",
+        source: "decision",
+        target: "outcome3",
+        data: { probability: null },
+      },
+    ];
+
+    const edgesByKey = keyBy(edges, (edge) => edge.id);
+
+    computeNodeValues(
+      keyBy(nodes, (node) => node.id),
+      edgesByKey
+    );
+
+    // Outcome1 and outcome3 both have highest expected value (80)
+    // So they should get probability 0.5 each, outcome2 should get 0.0
+    expect(edgesByKey["e1"]!.data?.probability).toEqual(0.5); // to outcome1 (value: 80)
+    expect(edgesByKey["e2"]!.data?.probability).toEqual(0.0); // to outcome2 (value: 50)
+    expect(edgesByKey["e3"]!.data?.probability).toEqual(0.5); // to outcome3 (value: 80)
+
+    // Decision node should have expected value of best outcomes: 80
+    expect(nodes[0]!.data.value).toEqual(80);
+  });
+
+  test("should update probabilities for decision nodes with single best outcome", () => {
+    const nodes: ComputeNode[] = [
+      { id: "decision", type: "decision", data: { value: null, cost: null } }, // Decision node
+      { id: "outcome1", type: "terminal", data: { value: 100, cost: null } }, // Expected value: 100
+      { id: "outcome2", type: "terminal", data: { value: 50, cost: null } }, // Expected value: 50
+      { id: "outcome3", type: "terminal", data: { value: 30, cost: null } }, // Expected value: 30
+    ];
+    const edges: ComputeEdge[] = [
+      {
+        id: "e1",
+        source: "decision",
+        target: "outcome1",
+        data: { probability: null },
+      },
+      {
+        id: "e2",
+        source: "decision",
+        target: "outcome2",
+        data: { probability: null },
+      },
+      {
+        id: "e3",
+        source: "decision",
+        target: "outcome3",
+        data: { probability: null },
+      },
+    ];
+
+    const edgesByKey = keyBy(edges, (edge) => edge.id);
+
+    computeNodeValues(
+      keyBy(nodes, (node) => node.id),
+      edgesByKey
+    );
+
+    // Only outcome1 has the highest expected value (100)
+    // So it should get probability 1.0, others should get 0.0
+    expect(edgesByKey["e1"]!.data?.probability).toEqual(1.0); // to outcome1 (value: 100)
+    expect(edgesByKey["e2"]!.data?.probability).toEqual(0.0); // to outcome2 (value: 50)
+    expect(edgesByKey["e3"]!.data?.probability).toEqual(0.0); // to outcome3 (value: 30)
+
+    // Decision node should have expected value of best outcome: 100
+    expect(nodes[0]!.data.value).toEqual(100);
+  });
+
+  test("should not update probabilities for non-decision nodes", () => {
+    const nodes: ComputeNode[] = [
+      { id: "chance", type: "chance", data: { value: null, cost: null } }, // Chance node
+      { id: "outcome1", type: "terminal", data: { value: 100, cost: null } },
+      { id: "outcome2", type: "terminal", data: { value: 50, cost: null } },
+    ];
+    const edges: ComputeEdge[] = [
+      {
+        id: "e1",
+        source: "chance",
+        target: "outcome1",
+        data: { probability: 0.7 },
+      },
+      {
+        id: "e2",
+        source: "chance",
+        target: "outcome2",
+        data: { probability: 0.3 },
+      },
+    ];
+
+    const edgesByKey = keyBy(edges, (edge) => edge.id);
+
+    computeNodeValues(
+      keyBy(nodes, (node) => node.id),
+      edgesByKey
+    );
+
+    // Probabilities should remain unchanged for chance nodes
+    expect(edgesByKey["e1"]!.data?.probability).toEqual(0.7);
+    expect(edgesByKey["e2"]!.data?.probability).toEqual(0.3);
+
+    // Chance node should have weighted expected value: (100 * 0.7) + (50 * 0.3) = 85
+    expect(nodes[0]!.data.value).toEqual(85);
+  });
+
+  test("should handle decision node with one null and one valued child without infinite loop", () => {
+    const nodes: ComputeNode[] = [
+      { id: "decision", type: "decision", data: { value: null, cost: null } },
+      { id: "child1", type: "terminal", data: { value: null, cost: null } },
+      { id: "child2", type: "terminal", data: { value: 100, cost: null } },
+    ];
+    const edges: ComputeEdge[] = [
+      {
+        id: "e1",
+        source: "decision",
+        target: "child1",
+        data: { probability: null },
+      },
+      {
+        id: "e2",
+        source: "decision",
+        target: "child2",
+        data: { probability: null },
+      },
+    ];
+
+    const edgesByKey = keyBy(edges, (edge) => edge.id);
+    const nodesByKey = keyBy(nodes, (node) => node.id);
+
+    // First computation
+    computeNodeValues(nodesByKey, edgesByKey);
+
+    const firstE1Prob = edgesByKey["e1"]!.data?.probability;
+    const firstE2Prob = edgesByKey["e2"]!.data?.probability;
+
+    // Second computation should be idempotent
+    computeNodeValues(nodesByKey, edgesByKey);
+
+    const secondE1Prob = edgesByKey["e1"]!.data?.probability;
+    const secondE2Prob = edgesByKey["e2"]!.data?.probability;
+
+    // Probabilities should remain stable across multiple computations
+    expect(secondE1Prob).toEqual(firstE1Prob);
+    expect(secondE2Prob).toEqual(firstE2Prob);
+
+    // Only the edge to the valued child should get probability
+    expect(edgesByKey["e1"]!.data?.probability).toEqual(0); // to null child
+    expect(edgesByKey["e2"]!.data?.probability).toEqual(1); // to valued child
+
+    // Decision node should get the value of the only viable child
+    expect(nodesByKey["decision"]!.data.value).toEqual(100);
   });
 });

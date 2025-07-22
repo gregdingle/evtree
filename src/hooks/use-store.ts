@@ -11,7 +11,15 @@ import {
   OnNodesDelete,
   Position,
 } from "@xyflow/react";
-import { isEqual, keyBy, omit, round, throttle, toMerged } from "es-toolkit";
+import {
+  isEqual,
+  keyBy,
+  mapValues,
+  omit,
+  round,
+  throttle,
+  toMerged,
+} from "es-toolkit";
 import { fromPairs, keys, max, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
@@ -40,15 +48,19 @@ export type AppNode = Node<
   {
     label?: string;
     description?: string;
-    value?: number;
-    cost?: number;
+    // NOTE: it's important for value to have a null value so computed nulls
+    // will be merged in. see computeNodeValues
+    value: number | null;
+    cost: number | null;
   },
   NodeType
 >;
+
+// TODO: rename to branch be consistent with decision tree terminology?
 export type AppEdge = Edge<{
   label?: string;
   description?: string;
-  probability?: number;
+  probability: number | null;
 }>;
 
 export interface DecisionTree {
@@ -105,7 +117,8 @@ const initialNodes = keyBy(
       data: {
         label: "decision",
         description: "decision description",
-        value: undefined,
+        value: null,
+        cost: null,
       },
       position: { x: 100, y: 0 },
       sourcePosition: Position.Right,
@@ -117,7 +130,8 @@ const initialNodes = keyBy(
       data: {
         label: "chance",
         description: "chance description",
-        value: undefined,
+        value: null,
+        cost: null,
       },
       position: { x: 300, y: 0 },
       sourcePosition: Position.Right,
@@ -130,6 +144,7 @@ const initialNodes = keyBy(
         label: "terminal1",
         description: "terminal1 description",
         value: 500,
+        cost: null,
       },
       position: { x: 500, y: -75 },
       sourcePosition: Position.Right,
@@ -142,6 +157,7 @@ const initialNodes = keyBy(
         label: "terminal2",
         description: "terminal2 description",
         value: 1000,
+        cost: null,
       },
       position: { x: 500, y: 75 },
       sourcePosition: Position.Right,
@@ -190,7 +206,41 @@ const initialEdges = keyBy(
   (edge) => edge.id
 );
 
-computeNodeValues(initialNodes, initialEdges);
+// Apply initial computations
+const { nodes: computedNodes, edges: computedEdges } = computeNodeValues(
+  mapValues(initialNodes, (node: AppNode) => ({
+    id: node.id,
+    type: node.type,
+    data: { value: node.data.value, cost: node.data.cost },
+  })),
+  mapValues(initialEdges, (edge: AppEdge) => ({
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+    data: { probability: edge.data?.probability ?? null },
+  }))
+);
+
+// Merge computed values back into initial nodes and edges
+Object.keys(computedNodes).forEach((nodeId) => {
+  if (initialNodes[nodeId]) {
+    initialNodes[nodeId]!.data.value = computedNodes[nodeId]!.data.value;
+  }
+});
+
+Object.keys(computedEdges).forEach((edgeId) => {
+  if (initialEdges[edgeId] && computedEdges[edgeId]!.data) {
+    if (!initialEdges[edgeId]!.data) {
+      initialEdges[edgeId]!.data = {
+        label: undefined,
+        description: undefined,
+        probability: null,
+      };
+    }
+    initialEdges[edgeId]!.data!.probability =
+      computedEdges[edgeId]!.data!.probability;
+  }
+});
 
 const initialTrees: Record<string, DecisionTree> = {
   "tree-1": {
@@ -413,7 +463,19 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         withCurrentTree(state, (tree) => {
           const edge = tree.edges[id];
           if (edge) {
-            edge.data = { ...edge.data, ...edgeData };
+            const currentData = edge.data ?? {
+              label: undefined,
+              description: undefined,
+              probability: null,
+            };
+            edge.data = {
+              ...currentData,
+              ...edgeData,
+              probability:
+                edgeData?.probability !== undefined
+                  ? edgeData.probability
+                  : currentData.probability,
+            };
             tree.updatedAt = new Date().toISOString();
           } else {
             warnItemNotFound("Edge", id, "data update");
@@ -696,11 +758,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
  * @see https://zustand.docs.pmnd.rs/middlewares/subscribe-with-selector
  *
  * TODO: check worst-case performance of this subscription... it could be slow
+ *
+ * TODO: how to guarantee idempotentcy of this subscription to prevent infinite loops?
  */
 useStoreBase.subscribe(
   selectComputedNodesAndEdges,
   ({ computeNodes, computeEdges }) => {
-    const updatedComputeNodes = computeNodeValues(computeNodes, computeEdges);
+    const { nodes: updatedComputeNodes, edges: updatedComputeEdges } =
+      computeNodeValues(computeNodes, computeEdges);
     const state = useStoreBase.getState();
     withCurrentTree(state, (tree) => {
       // NOTE: need to maintain immutability here
@@ -710,13 +775,15 @@ useStoreBase.subscribe(
           [tree.id]: {
             ...tree,
             nodes: toMerged(tree.nodes, updatedComputeNodes),
+            edges: toMerged(tree.edges, updatedComputeEdges),
           },
         },
       });
     });
   },
   // TODO: will the deep equal be too slow?
-  { equalityFn: isEqual }
+  // { equalityFn: isEqual }
+  { equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b) }
 );
 
 // TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools

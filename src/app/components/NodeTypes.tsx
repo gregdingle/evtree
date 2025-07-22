@@ -72,8 +72,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         {formatCost(data.cost)}
       </div>
       <div className="absolute top-10 left-14">
-        {/* // TODO: always show pathProbability? */}
-        {formatProbability(pathProbability)}
+        {/*
+         TODO: always show pathProbability?
+         NOTE: don't show the ??? placeholder for null pathProbability
+         */}
+        {pathProbability === null ? "" : formatProbability(pathProbability)}
       </div>
     </div>
   );

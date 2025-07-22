@@ -1,6 +1,6 @@
+import { AppEdge, AppNode } from "@/hooks/use-store";
 import dagre from "@dagrejs/dagre";
 import { Position } from "@xyflow/react";
-import { AppEdge, AppNode } from "@/hooks/use-store";
 
 //
 // NOTE: see https://reactflow.dev/examples/layout/dagre

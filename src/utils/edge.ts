@@ -7,7 +7,7 @@ export function createEdge(fromNodeId: string, toNodeId: string): AppEdge {
     source: fromNodeId,
     target: toNodeId,
     type: "custom",
-    data: { label: "", description: "", probability: undefined },
+    data: { label: "", description: "", probability: null },
     selected: true, // Mark as selected by default
   };
   return newEdge;
