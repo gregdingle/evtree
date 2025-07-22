@@ -1,28 +1,10 @@
-import { AppEdge, AppNode, StoreState } from "@/hooks/use-store";
+import { StoreState } from "@/hooks/use-store";
 import { mapValues } from "es-toolkit";
 import { values } from "es-toolkit/compat";
-import { ComputeEdge, ComputeNode } from "./expectedValue";
+import { toComputeEdge, toComputeNode } from "./expectedValue";
 import { warnItemNotFound, warnNoCurrentTree } from "./warn";
 
 export function selectComputedNodesAndEdges(state: StoreState) {
-  function toComputeNode(node: AppNode): ComputeNode {
-    return {
-      id: node.id,
-      data: {
-        value: node.data.value,
-      },
-    };
-  }
-  function toComputeEdge(edge: AppEdge): ComputeEdge {
-    return {
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      data: {
-        probability: edge.data?.probability,
-      },
-    };
-  }
   const { currentTreeId } = state;
   if (!currentTreeId) {
     warnNoCurrentTree("computeNodeValues");

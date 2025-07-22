@@ -14,7 +14,8 @@ type AdjacencyList = Record<
 export interface ComputeNode {
   id: string;
   data: {
-    value?: number;
+    value?: number | undefined;
+    cost?: number | undefined;
   };
 }
 
@@ -23,31 +24,7 @@ export interface ComputeEdge {
   source: string;
   target: string;
   data?: {
-    probability?: number;
-  };
-}
-
-/**
- * Subset of AppNode needed for computeNodeValues.
- * TODO: make more explicit `number | undefined`?
- */
-export interface ComputeNode {
-  id: string;
-  data: {
-    value?: number;
-  };
-}
-
-/**
- * Subset of AppEdge needed for computeNodeValues.
- * TODO: make more explicit `number | undefined`?
- */
-export interface ComputeEdge {
-  id: string;
-  source: string;
-  target: string;
-  data?: {
-    probability?: number;
+    probability?: number | undefined;
   };
 }
 
@@ -130,12 +107,13 @@ function computeNodeValuesRecursive(
     const childEdge = edges[edgeId]!;
     if (childNode) {
       const childValue = childNode.data.value;
+      const childCost = childNode.data.cost;
       const childProbability = childEdge.data?.probability;
       if (childValue !== undefined && childProbability !== undefined) {
         if (totalValue === undefined) {
           totalValue = 0;
         }
-        totalValue += childValue * childProbability;
+        totalValue += (childValue - (childCost ?? 0)) * childProbability;
         totalProbability += childProbability;
       }
     }
@@ -158,6 +136,7 @@ export function toComputeNode(node: AppNode): ComputeNode {
     id: node.id,
     data: {
       value: node.data.value,
+      cost: node.data.cost,
     },
   };
 }

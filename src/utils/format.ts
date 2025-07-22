@@ -1,3 +1,4 @@
+// TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
 export function formatValue(value: number | undefined | null): string {
   if (value === undefined || value === null) {
     return "";

@@ -38,6 +38,7 @@ export type AppNode = Node<{
   label?: string;
   description?: string;
   value?: number;
+  cost?: number;
 }>;
 export type AppEdge = Edge<{
   label?: string;

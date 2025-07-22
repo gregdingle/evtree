@@ -90,12 +90,12 @@ export default function RightSidePanel() {
                   placeholder="Enter node label"
                 />
                 <PropertyInput
-                  label="Description"
-                  value={node.data.description}
+                  label="Cost"
+                  value={node.data.cost?.toString()}
                   onChange={(value) =>
-                    onNodeDataUpdate(node.id, { description: value })
+                    onNodeDataUpdate(node.id, { cost: toInteger(value) })
                   }
-                  placeholder="Enter node description"
+                  placeholder="Enter node cost"
                 />
               </div>
             ))}

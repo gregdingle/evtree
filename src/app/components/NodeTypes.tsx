@@ -20,8 +20,9 @@ const SquareNode = ({ data, selected }: NodeProps<AppNode>) => {
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
         {formatValue(data.value)}
+        {data.cost && ` ${formatValue(data.cost * -1)}`}
       </div>
     </div>
   );
@@ -41,8 +42,9 @@ const CircleNode = ({ data, selected }: NodeProps<AppNode>) => {
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
         {formatValue(data.value)}
+        {data.cost && ` ${formatValue(data.cost * -1)}`}
       </div>
     </div>
   );
@@ -65,8 +67,9 @@ const TriangleNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         }}
       />
       <Handle type="target" position={Position.Left} />
-      <div className={`absolute left-14 max-w-24 top-5`}>
+      <div className={`absolute left-14 max-w-32 top-5 whitespace-nowrap`}>
         {formatValue(data.value)}
+        {data.cost && ` ${formatValue(data.cost * -1)}`}
       </div>
       <div className="absolute top-10 left-14">
         {/* // TODO: always show pathProbability? */}
