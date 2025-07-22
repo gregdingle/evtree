@@ -757,9 +757,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
  * trigger re-computation only when needed.
  * @see https://zustand.docs.pmnd.rs/middlewares/subscribe-with-selector
  *
- * TODO: check worst-case performance of this subscription... it could be slow
+ * NOTE: needs to be idempotent to prevent infinite loops
  *
- * TODO: how to guarantee idempotentcy of this subscription to prevent infinite loops?
+ * TODO: check worst-case performance of this subscription... it could be
+ * slow... it would be better if we just passed patches back and forth
  */
 useStoreBase.subscribe(
   selectComputedNodesAndEdges,
@@ -781,9 +782,7 @@ useStoreBase.subscribe(
       });
     });
   },
-  // TODO: will the deep equal be too slow?
-  // { equalityFn: isEqual }
-  { equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b) }
+  { equalityFn: isEqual }
 );
 
 // TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools

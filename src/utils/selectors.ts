@@ -51,6 +51,8 @@ export function selectCurrentEdges(state: StoreState) {
 
 /**
  * Returns the probability of a node being reached from it's root parent.
+ * TODO: for reducing UI noise, make #selectPathProbability return null when
+ * path length is 1 edge
  */
 export function selectPathProbability(
   state: StoreState,
