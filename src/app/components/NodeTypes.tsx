@@ -63,7 +63,9 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-0 left-14 max-w-24">{data.label}</div>
+      <div className="absolute -top-0 left-14 whitespace-nowrap">
+        {data.label}
+      </div>
       <div
         style={{
           // NOTE: this wacky CSS creates the triangle shape

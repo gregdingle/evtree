@@ -440,6 +440,13 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           const updatedEdgesArray = addEdge(newEdge, values(tree.edges));
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
+          const sourceNode = tree.nodes[nodeId];
+          if (sourceNode) {
+            // Deselect the source node after connecting
+            sourceNode.selected = false;
+          } else {
+            warnItemNotFound("Node", nodeId, "onConnect");
+          }
         })
       );
     },
