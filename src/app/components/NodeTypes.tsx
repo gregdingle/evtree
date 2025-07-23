@@ -2,6 +2,7 @@ import { AppNode, useStore } from "@/hooks/use-store";
 import { formatCost, formatProbability, formatValue } from "@/utils/format";
 import { selectPathProbability } from "@/utils/selectors";
 import { Handle, NodeProps, Position } from "@xyflow/react";
+import { ReactNode } from "react";
 
 //
 // NOTE: adapted from example at
@@ -10,16 +11,18 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 // see also https://github.com/SilverDecisions/SilverDecisions/wiki/Gallery
 //
 
-const DecisionNode = ({ data, selected }: NodeProps<AppNode>) => {
+interface BaseNodeProps {
+  data: AppNode["data"];
+  children: ReactNode;
+}
+
+const BaseNode = ({ data, children }: BaseNodeProps) => {
   return (
     <div className="relative text-xs">
       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
         {data.label}
       </div>
-      <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
-        <Handle type="target" position={Position.Left} />
-        <Handle type="source" position={Position.Right} />
-      </div>
+      {children}
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
         {formatValue(data.value)}
         {formatCost(data.cost)}
@@ -28,12 +31,20 @@ const DecisionNode = ({ data, selected }: NodeProps<AppNode>) => {
   );
 };
 
+const DecisionNode = ({ data, selected }: NodeProps<AppNode>) => {
+  return (
+    <BaseNode data={data}>
+      <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
+        <Handle type="target" position={Position.Left} />
+        <Handle type="source" position={Position.Right} />
+      </div>
+    </BaseNode>
+  );
+};
+
 const ChanceNode = ({ data, selected }: NodeProps<AppNode>) => {
   return (
-    <div className="relative text-xs">
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
-        {data.label}
-      </div>
+    <BaseNode data={data}>
       <div
         className={` p-8 rounded-full ${
           selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
@@ -42,11 +53,7 @@ const ChanceNode = ({ data, selected }: NodeProps<AppNode>) => {
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
-      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
-        {formatValue(data.value)}
-        {formatCost(data.cost)}
-      </div>
-    </div>
+    </BaseNode>
   );
 };
 
