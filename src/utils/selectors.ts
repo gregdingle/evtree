@@ -65,7 +65,7 @@ export function selectPathProbability(
 
   const node = currentTree.nodes[nodeId];
   if (!node) {
-    warnItemNotFound("Node", nodeId, "path probability calculation");
+    // NOTE: this happens when switching current tree because of stale react components
     return null;
   }
 
@@ -123,7 +123,7 @@ export function selectPathValue(
 
   const node = currentTree.nodes[nodeId];
   if (!node) {
-    warnItemNotFound("Node", nodeId, "path value calculation");
+    // NOTE: this happens when switching current tree because of stale react components
     return null;
   }
 
