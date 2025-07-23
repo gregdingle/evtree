@@ -15,7 +15,6 @@ import {
   cloneDeep,
   isEqual,
   keyBy,
-  mapValues,
   omit,
   round,
   throttle,
@@ -29,13 +28,13 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
+import demoTreeData from "@/utils/demo-tree.json";
 import { cloneEdge, createEdge } from "@/utils/edge";
 import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
 import { cloneNode, createNode } from "@/utils/node";
 import { selectComputedNodesAndEdges } from "@/utils/selectors";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
-import demoTreeData from "@/utils/demo-tree.json";
 import {
   createSelectorFunctions,
   ZustandFuncSelectors,
@@ -165,6 +164,19 @@ const initialNodes = keyBy(
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
     },
+    {
+      id: "terminal3",
+      type: "terminal",
+      data: {
+        label: "terminal3",
+        description: "terminal3 description",
+        value: 250,
+        cost: null,
+      },
+      position: { x: 300, y: 150 },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    },
   ] as AppNode[],
   (node) => node.id
 );
@@ -179,7 +191,7 @@ const initialEdges = keyBy(
       data: {
         label: "d to c",
         description: "Connection from decision to chance",
-        probability: 1.0,
+        probability: null,
       },
     },
     {
@@ -204,51 +216,30 @@ const initialEdges = keyBy(
         probability: 0.5,
       },
     },
+    {
+      id: "decision-terminal3",
+      source: "decision",
+      target: "terminal3",
+      type: "custom",
+      data: {
+        label: "d to t3",
+        description: "Path from decision to terminal3",
+        probability: null,
+      },
+    },
   ] as AppEdge[],
   (edge) => edge.id
 );
 
 // Apply initial computations
-const { nodes: computedNodes, edges: computedEdges } = computeNodeValues(
-  mapValues(initialNodes, (node: AppNode) => ({
-    id: node.id,
-    type: node.type,
-    data: { value: node.data.value, cost: node.data.cost },
-  })),
-  mapValues(initialEdges, (edge: AppEdge) => ({
-    id: edge.id,
-    source: edge.source,
-    target: edge.target,
-    data: { probability: edge.data?.probability ?? null },
-  }))
-);
-
-// Merge computed values back into initial nodes and edges
-Object.keys(computedNodes).forEach((nodeId) => {
-  if (initialNodes[nodeId]) {
-    initialNodes[nodeId]!.data.value = computedNodes[nodeId]!.data.value;
-  }
-});
-
-Object.keys(computedEdges).forEach((edgeId) => {
-  if (initialEdges[edgeId] && computedEdges[edgeId]!.data) {
-    if (!initialEdges[edgeId]!.data) {
-      initialEdges[edgeId]!.data = {
-        label: undefined,
-        description: undefined,
-        probability: null,
-      };
-    }
-    initialEdges[edgeId]!.data!.probability =
-      computedEdges[edgeId]!.data!.probability;
-  }
-});
+computeNodeValues(initialNodes, initialEdges);
 
 const initialTrees: Record<string, DecisionTree> = {
   "tree-1": {
     id: "tree-1",
-    name: "Default Tree",
-    description: "This is the default decision tree",
+    name: "Hello World Tree",
+    description:
+      "This is a demo tree that has all the various types of nodes arranged in a typical pattern",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     nodes: initialNodes,
