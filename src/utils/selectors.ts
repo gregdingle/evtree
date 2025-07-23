@@ -1,5 +1,5 @@
-import { StoreState } from "@/hooks/use-store";
-import { mapValues } from "es-toolkit";
+import { AppEdge, StoreState } from "@/hooks/use-store";
+import { mapValues, memoize } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import { toComputeEdge, toComputeNode } from "./expectedValue";
 import { warnItemNotFound, warnNoCurrentTree } from "./warn";
@@ -69,42 +69,39 @@ export function selectPathProbability(
     return null;
   }
 
-  // Find all edges that target this node (incoming edges)
-  const incomingEdges = values(currentTree.edges).filter(
-    (edge) => edge.target === nodeId
-  );
+  // Build maps for efficient traversal
+  const nodeToIncomingEdge = buildNodeToIncomingEdgeMap(currentTree.edges);
+  const childToParentEdgeMap = buildChildToParentEdgeMap(currentTree.edges);
 
-  // If no incoming edges, check if this is a true root node or disconnected
-  if (incomingEdges.length === 0) {
-    // Find all edges that originate from this node (outgoing edges)
-    const outgoingEdges = values(currentTree.edges).filter(
-      (edge) => edge.source === nodeId
-    );
+  // Find the edge that leads to this node
+  const incomingEdgeId = nodeToIncomingEdge[nodeId];
 
-    // If no outgoing edges either, this is a disconnected node
-    if (outgoingEdges.length === 0) {
+  // If no incoming edge, this is a root node or disconnected
+  if (!incomingEdgeId) {
+    return null;
+  }
+
+  // Traverse the path from this node back to root, multiplying probabilities
+  let totalProbability = 1;
+  let currentEdgeId: string | undefined = incomingEdgeId;
+
+  while (currentEdgeId) {
+    const edge = currentTree.edges[currentEdgeId];
+    if (!edge) {
+      warnItemNotFound("Edge", currentEdgeId, "path probability calculation");
       return null;
     }
 
-    // This is a true root node (has outgoing edges but no incoming)
-    return 1;
-  }
-
-  // Calculate the sum of probabilities from all incoming paths
-  // NOTE: in a normal decision tree, incomingEdges.length should never be more
-  // than 1
-  let totalProbability = null;
-  for (const edge of incomingEdges) {
     const edgeProbability = edge.data?.probability ?? null;
-    // Recursively calculate the probability of reaching the source node
-    const sourceProbability = selectPathProbability(state, edge.source);
-    if (sourceProbability !== null && edgeProbability !== null) {
-      if (totalProbability === null) {
-        totalProbability = 0;
-      }
-      // Multiply the source probability by this edge's probability
-      totalProbability += sourceProbability * edgeProbability;
+    if (edgeProbability === null) {
+      // If any edge in the path has no probability, the total is null
+      return null;
     }
+
+    totalProbability *= edgeProbability;
+
+    // Move to the parent edge
+    currentEdgeId = childToParentEdgeMap[currentEdgeId];
   }
 
   return totalProbability;
@@ -137,8 +134,8 @@ export function selectPathValue(
   }
 
   let pathValue = node.data.value;
-  let currentNodeId = nodeId;
-  const edges = values(currentTree.edges);
+  let currentNodeId: string | undefined = nodeId;
+  const childToParentMap = buildChildToParentNodeMap(currentTree.edges);
   while (currentNodeId) {
     const currentNode = currentTree.nodes[currentNodeId];
     if (!currentNode) {
@@ -151,21 +148,59 @@ export function selectPathValue(
       pathValue -= currentNode.data.cost;
     }
 
-    // Move to the parent node (the source of the incoming edge)
-    // TODO: use an adjList here instead? see buildAdjacencyList
-    const incomingEdges = edges.filter((edge) => edge.target === currentNodeId);
-    if (incomingEdges.length === 0) {
-      // No incoming edges means this is a root node
-      break;
-    }
-    // For simplicity, we assume only one incoming edge per node
-    if (incomingEdges.length > 1) {
-      console.warn(
-        `[EVTree] Multiple incoming edges found for node ${currentNodeId}, using the first one.`
-      );
-    }
-    currentNodeId = incomingEdges[0]!.source;
+    // Move to the parent node
+    currentNodeId = childToParentMap[currentNodeId];
   }
 
   return pathValue;
 }
+
+/**
+ * NOTE: assumes a single incoming edge per node
+ * NOTE: memoize is important to save nodes.length-1 calls per store update.
+ * otherwise, selectPathValue is O(n^2) per store update.
+ *
+ * TODO: extract to new utils file along with buildAdjacencyList?
+ */
+const buildChildToParentNodeMap = memoize(function (
+  edges: Record<string, AppEdge>
+): Record<string, string> {
+  const childToParentMap: Record<string, string> = {};
+  values(edges).forEach((edge) => {
+    childToParentMap[edge.target] = edge.source;
+  });
+  return childToParentMap;
+});
+
+const buildNodeToIncomingEdgeMap = memoize(function (
+  edges: Record<string, AppEdge>
+): Record<string, string> {
+  const nodeToIncomingEdge: Record<string, string> = {};
+  values(edges).forEach((edge) => {
+    nodeToIncomingEdge[edge.target] = edge.id;
+  });
+  return nodeToIncomingEdge;
+});
+
+const buildChildToParentEdgeMap = memoize(function (
+  edges: Record<string, AppEdge>
+): Record<string, string> {
+  const childToParentMap: Record<string, string> = {};
+
+  // First pass: build a lookup map from target node to edge ID (O(n))
+  const nodeToIncomingEdge: Record<string, string> = {};
+  values(edges).forEach((edge) => {
+    nodeToIncomingEdge[edge.target] = edge.id;
+  });
+
+  // Second pass: for each edge, find its parent edge using the lookup map (O(n))
+  values(edges).forEach((childEdge) => {
+    const parentEdgeId = nodeToIncomingEdge[childEdge.source];
+    if (parentEdgeId) {
+      childToParentMap[childEdge.id] = parentEdgeId;
+    }
+    // If no parent edge found, this edge starts from a root node
+  });
+
+  return childToParentMap;
+});
