@@ -619,15 +619,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) =>
-        withCurrentTree(state, (tree) => {
-          tree.nodes = initialNodes;
-          tree.edges = initialEdges;
-          tree.updatedAt = new Date().toISOString();
-        })
-      );
-
-      set({ clipboard: { nodes: [], edges: [] } });
+      set((state) => ({
+        ...state,
+        trees: initialTrees,
+        clipboard: { nodes: [], edges: [] },
+      }));
     },
 
     onCreateNodeAt: (position, nodeType) => {
