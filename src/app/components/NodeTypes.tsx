@@ -13,12 +13,17 @@ import { ReactNode } from "react";
 
 interface BaseNodeProps {
   data: AppNode["data"];
+  id: string;
   children: ReactNode;
 }
 
-const BaseNode = ({ data, children }: BaseNodeProps) => {
+const BaseNode = ({ data, children, id }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
+  // TODO: good idea to add in intermediate costs in this way? or do it in
+  // computeNodeValues? The important thing is that parent costs are added 100%
+  // and child costs are weighted by child probabilities. at least cache somehow?
+  const pathValue = useStore((state) => selectPathValue(state, id));
   return (
     <div className="relative text-xs">
       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap">
@@ -26,18 +31,16 @@ const BaseNode = ({ data, children }: BaseNodeProps) => {
       </div>
       {children}
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center whitespace-nowrap">
-        {formatValue(
-          data.value ? (data.cost ? data.value - data.cost : data.value) : null
-        )}
+        {formatValue(pathValue)}
         {/* TODO: show cost separately? {formatCost(data.cost)} */}
       </div>
     </div>
   );
 };
 
-const DecisionNode = ({ data, selected }: NodeProps<AppNode>) => {
+const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
-    <BaseNode data={data}>
+    <BaseNode data={data} id={id}>
       <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
@@ -46,9 +49,9 @@ const DecisionNode = ({ data, selected }: NodeProps<AppNode>) => {
   );
 };
 
-const ChanceNode = ({ data, selected }: NodeProps<AppNode>) => {
+const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
-    <BaseNode data={data}>
+    <BaseNode data={data} id={id}>
       <div
         className={` p-8 rounded-full ${
           selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
@@ -93,7 +96,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
          TODO: always show pathProbability?
          NOTE: don't show the ??? placeholder for null pathProbability
          */}
-        {pathProbability === null ? "" : formatProbability(pathProbability)}
+        {formatProbability(pathProbability, 3, "")}
       </div>
     </div>
   );

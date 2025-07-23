@@ -3,7 +3,7 @@
   "name": "Sexual H Demo Tree",
   "description": "Defense Perspective:\n\nCost and Fees Assumptions\n$30,000 atty's fees through\n\nSummary Judgment\n$100,000 in attorneys fees\nland costs through trial\n\n$100,000 - $300,0000 plaintif!\nIs statutory attorneys fee\nlaward, depending upon\ndamages level. \n",
   "createdAt": "2025-07-23T07:28:13.573Z",
-  "updatedAt": "2025-07-23T08:52:58.530Z",
+  "updatedAt": "2025-07-23T20:02:45.635Z",
   "nodes": {
     "decision": {
       "id": "decision",
@@ -11,7 +11,7 @@
       "data": {
         "label": "Broker's Sexual Harassment",
         "description": "decision description",
-        "value": -991288.375,
+        "value": -501808,
         "cost": null
       },
       "position": {
@@ -56,8 +56,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -991288.375,
-        "cost": null
+        "value": -501808,
+        "cost": 0
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -65,13 +65,14 @@
       "measured": {
         "width": 64,
         "height": 64
-      }
+      },
+      "selected": false
     },
     "4s1dOkFhDz1P": {
       "id": "4s1dOkFhDz1P",
       "type": "terminal",
       "position": {
-        "x": 444,
+        "x": 403.0022971939593,
         "y": 878
       },
       "data": {
@@ -86,7 +87,9 @@
       "measured": {
         "width": 48,
         "height": 60
-      }
+      },
+      "selected": false,
+      "dragging": false
     },
     "j9ZYCT78n0Hg": {
       "id": "j9ZYCT78n0Hg",
@@ -98,8 +101,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -1041882.5,
-        "cost": null
+        "value": -426640,
+        "cost": 100000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -107,7 +110,8 @@
       "measured": {
         "width": 64,
         "height": 64
-      }
+      },
+      "selected": false
     },
     "-OtK3EoHaQLQ": {
       "id": "-OtK3EoHaQLQ",
@@ -119,7 +123,7 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -1983765,
+        "value": -2133200,
         "cost": null
       },
       "origin": [0.5, 0],
@@ -135,13 +139,13 @@
       "id": "AvazVf7EPf0a",
       "type": "terminal",
       "position": {
-        "x": 666,
-        "y": 1136
+        "x": 625.0022971939594,
+        "y": 1149.044723620104
       },
       "data": {
         "label": "",
         "description": "",
-        "value": -100000,
+        "value": 0,
         "cost": null
       },
       "origin": [0.5, 0],
@@ -150,7 +154,9 @@
       "measured": {
         "width": 48,
         "height": 60
-      }
+      },
+      "selected": true,
+      "dragging": false
     },
     "oIGw-I1ZGspg": {
       "id": "oIGw-I1ZGspg",
@@ -162,8 +168,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2877200,
-        "cost": null
+        "value": -886000,
+        "cost": 3000000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -172,7 +178,8 @@
         "width": 64,
         "height": 64
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "f4UvjS8okevK": {
       "id": "f4UvjS8okevK",
@@ -184,8 +191,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2122000,
-        "cost": null
+        "value": -522000,
+        "cost": 1500000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -194,7 +201,8 @@
         "width": 64,
         "height": 64
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "8LzWw8vWytu2": {
       "id": "8LzWw8vWytu2",
@@ -206,8 +214,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -1157750,
-        "cost": null
+        "value": -400000,
+        "cost": 750000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -216,7 +224,8 @@
         "width": 64,
         "height": 64
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "ojy-9iVmHVGb": {
       "id": "ojy-9iVmHVGb",
@@ -228,7 +237,7 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2696000,
+        "value": -1180000,
         "cost": null
       },
       "origin": [0.5, 0],
@@ -238,20 +247,21 @@
         "width": 64,
         "height": 64
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "EGdAkaMQvGBc": {
       "id": "EGdAkaMQvGBc",
       "type": "terminal",
       "position": {
-        "x": 1110,
-        "y": 448
+        "x": 1113.7270638914583,
+        "y": 436.81880832562524
       },
       "data": {
         "label": "",
         "description": "",
-        "value": -3300000,
-        "cost": null
+        "value": 0,
+        "cost": 200000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -260,7 +270,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "9tWlIrjE7rbZ": {
       "id": "9tWlIrjE7rbZ",
@@ -272,8 +283,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -4900000,
-        "cost": null
+        "value": -1500000,
+        "cost": 300000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -282,7 +293,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "qTcoh2NXhx46": {
       "id": "qTcoh2NXhx46",
@@ -294,8 +306,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -4400000,
-        "cost": null
+        "value": -1000000,
+        "cost": 300000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -305,7 +317,7 @@
         "height": 60
       },
       "dragging": false,
-      "selected": true
+      "selected": false
     },
     "tnLpC1Z_k30a": {
       "id": "tnLpC1Z_k30a",
@@ -317,8 +329,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -3850000,
-        "cost": null
+        "value": -500000,
+        "cost": 250000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -327,7 +339,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "t_EuoCI7H4Hr": {
       "id": "t_EuoCI7H4Hr",
@@ -339,7 +352,7 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2370000,
+        "value": -770000,
         "cost": null
       },
       "origin": [0.5, 0],
@@ -349,20 +362,21 @@
         "width": 64,
         "height": 64
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "mSLuYP3YfQpi": {
       "id": "mSLuYP3YfQpi",
       "type": "terminal",
       "position": {
-        "x": 1110,
-        "y": 964
+        "x": 1109.9999999999998,
+        "y": 952.8188083256252
       },
       "data": {
         "label": "",
         "description": "",
-        "value": -1750000,
-        "cost": null
+        "value": 0,
+        "cost": 150000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -371,7 +385,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "1JzA4Spf_dXx": {
       "id": "1JzA4Spf_dXx",
@@ -383,8 +398,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2900000,
-        "cost": null
+        "value": -1000000,
+        "cost": 300000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -393,7 +408,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "BcJWodUDf8XB": {
       "id": "BcJWodUDf8XB",
@@ -405,8 +421,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2350000,
-        "cost": null
+        "value": -500000,
+        "cost": 250000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -415,7 +431,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "e2ID4ujt3dNx": {
       "id": "e2ID4ujt3dNx",
@@ -427,8 +444,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -2050000,
-        "cost": null
+        "value": -250000,
+        "cost": 200000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -437,7 +454,8 @@
         "width": 48,
         "height": 60
       },
-      "dragging": false
+      "dragging": false,
+      "selected": false
     },
     "rrVX3mZ1mPqe": {
       "id": "rrVX3mZ1mPqe",
@@ -449,7 +467,7 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -1315500,
+        "value": -650000,
         "cost": null
       },
       "origin": [0.5, 0],
@@ -466,14 +484,14 @@
       "id": "ZeeqiwFdWfDw",
       "type": "terminal",
       "position": {
-        "x": 1110,
-        "y": 1394
+        "x": 1113.7270638914583,
+        "y": 1457.36008615479
       },
       "data": {
         "label": "",
         "description": "",
-        "value": -1000000,
-        "cost": null
+        "value": 0,
+        "cost": 150000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -495,8 +513,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -205000,
-        "cost": null
+        "value": -1000000,
+        "cost": 200000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -518,8 +536,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -1550000,
-        "cost": null
+        "value": -500000,
+        "cost": 200000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -541,8 +559,8 @@
       "data": {
         "label": "",
         "description": "",
-        "value": -1300000,
-        "cost": null
+        "value": -250000,
+        "cost": 200000
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -608,8 +626,9 @@
       "data": {
         "label": "Liability",
         "description": "",
-        "probability": 0.5
-      }
+        "probability": 0.2
+      },
+      "selected": false
     },
     "ej9ZYCT78n0Hg-AvazVf7EPf0a": {
       "id": "ej9ZYCT78n0Hg-AvazVf7EPf0a",
@@ -619,8 +638,9 @@
       "data": {
         "label": "No liability",
         "description": "",
-        "probability": 0.5
-      }
+        "probability": 0.8
+      },
+      "selected": false
     },
     "e-OtK3EoHaQLQ-oIGw-I1ZGspg": {
       "id": "e-OtK3EoHaQLQ-oIGw-I1ZGspg",
@@ -741,7 +761,8 @@
         "label": "$250k",
         "description": "",
         "probability": 0.3
-      }
+      },
+      "selected": false
     },
     "ef4UvjS8okevK-t_EuoCI7H4Hr": {
       "id": "ef4UvjS8okevK-t_EuoCI7H4Hr",
@@ -752,7 +773,8 @@
         "label": "Puni",
         "description": "",
         "probability": 0.6
-      }
+      },
+      "selected": false
     },
     "ef4UvjS8okevK-mSLuYP3YfQpi": {
       "id": "ef4UvjS8okevK-mSLuYP3YfQpi",

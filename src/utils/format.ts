@@ -1,6 +1,6 @@
 // TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
-export function formatValue(value: number | undefined | null): string {
-  if (value === undefined || value === null) {
+export function formatValue(value: number | null): string {
+  if (value === null) {
     return "";
   }
   return value.toLocaleString(undefined, {
@@ -12,16 +12,18 @@ export function formatValue(value: number | undefined | null): string {
 }
 
 export function formatProbability(
-  probability: number | undefined | null
+  probability: number | null,
+  sigDigits: number = 2,
+  placeholder: string = "???"
 ): string {
-  if (probability === undefined || probability === null) {
-    return "???";
+  if (probability === null) {
+    return placeholder;
   }
   return (
     "P=" +
     probability.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: sigDigits,
+      maximumFractionDigits: sigDigits,
     })
   );
 }
