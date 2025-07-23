@@ -1,6 +1,6 @@
 import { AppNode, useStore } from "@/hooks/use-store";
 import { formatCost, formatProbability, formatValue } from "@/utils/format";
-import { selectPathProbability } from "@/utils/selectors";
+import { selectPathProbability, selectPathValue } from "@/utils/selectors";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import { ReactNode } from "react";
 
@@ -61,6 +61,7 @@ const ChanceNode = ({ data, selected }: NodeProps<AppNode>) => {
 
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
+  const pathValue = useStore((state) => selectPathValue(state, id));
   return (
     <div className="relative text-xs">
       <div className="absolute -top-0 left-14 whitespace-nowrap">
@@ -79,7 +80,9 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       />
       <Handle type="target" position={Position.Left} />
       <div className={`absolute left-14 max-w-32 top-5 whitespace-nowrap`}>
-        {formatValue(data.value)}
+        {/* NOTE: we only show the net path value, following silver decisions
+        {formatValue(data.value)} */}
+        {formatValue(pathValue)}
         {formatCost(data.cost)}
       </div>
       <div className="absolute top-10 left-14">
