@@ -17,13 +17,15 @@ interface BaseNodeProps {
 }
 
 const BaseNode = ({ data, children }: BaseNodeProps) => {
+  // TODO: make the labels allowed to be wider than children shape, but still
+  // line-break at some max limit
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center">
+      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap">
         {data.label}
       </div>
       {children}
-      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-24 text-center whitespace-nowrap">
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center whitespace-nowrap">
         {formatValue(data.value)}
         {formatCost(data.cost)}
       </div>
