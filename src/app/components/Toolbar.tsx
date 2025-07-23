@@ -19,13 +19,13 @@ export default function Toolbar() {
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
   // TODO: consider best hotkeys
   // TODO: make hotkey usage also flash corresponding button
-  useHotkeys("ctrl+z", () => undo());
-  useHotkeys("ctrl+y", () => redo());
-  useHotkeys("ctrl+c", onCopy);
-  useHotkeys("ctrl+v", onPaste);
-  useHotkeys("ctrl+r", onReset);
-  useHotkeys("ctrl+a", onArrange);
-  useHotkeys("ctrl+e", onDownloadClick);
+  useHotkeys("ctrl+z", () => undo(), { enableOnFormTags: true });
+  useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
+  useHotkeys("ctrl+c", onCopy, { enableOnFormTags: true });
+  useHotkeys("ctrl+v", onPaste, { enableOnFormTags: true });
+  useHotkeys("ctrl+r", onReset, { enableOnFormTags: true });
+  useHotkeys("ctrl+a", onArrange, { enableOnFormTags: true });
+  useHotkeys("ctrl+e", onDownloadClick, { enableOnFormTags: true });
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">

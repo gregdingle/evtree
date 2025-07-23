@@ -78,9 +78,16 @@ export default function RightSidePanel() {
                     ref={index === 0 ? firstInputRef : undefined}
                     label="Value"
                     value={node.data.value?.toString()}
-                    onChange={(value) =>
-                      onNodeDataUpdate(node.id, { value: toInteger(value) })
-                    }
+                    onChange={(value) => {
+                      if (value == "-") {
+                        // ignore a single negative sign so we don't set value to empty string
+                        // TODO: is this the best way to handle this?
+                        // TODO: the root cause is that invalid values are set to zero... is that good?
+                        return;
+                      } else {
+                        onNodeDataUpdate(node.id, { value: toInteger(value) });
+                      }
+                    }}
                     placeholder="Enter node value"
                   />
                 ) : null}

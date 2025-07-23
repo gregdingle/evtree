@@ -1,0 +1,829 @@
+{
+  "id": "brpHOQLykwaX",
+  "name": "Sexual H Demo Tree",
+  "description": "Defense Perspective:\n\nCost and Fees Assumptions\n$30,000 atty's fees through\n\nSummary Judgment\n$100,000 in attorneys fees\nland costs through trial\n\n$100,000 - $300,0000 plaintif!\nIs statutory attorneys fee\nlaward, depending upon\ndamages level. \n",
+  "createdAt": "2025-07-23T07:28:13.573Z",
+  "updatedAt": "2025-07-23T08:52:58.530Z",
+  "nodes": {
+    "decision": {
+      "id": "decision",
+      "type": "decision",
+      "data": {
+        "label": "Broker's Sexual Harassment",
+        "description": "decision description",
+        "value": -991288.375,
+        "cost": null
+      },
+      "position": {
+        "x": 0,
+        "y": 878
+      },
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    "KgnMCdBQM_PW": {
+      "id": "KgnMCdBQM_PW",
+      "type": "terminal",
+      "position": {
+        "x": 222,
+        "y": 792
+      },
+      "data": {
+        "label": "Settle for $",
+        "description": "",
+        "value": -1500000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      }
+    },
+    "bKOhJDHYplnI": {
+      "id": "bKOhJDHYplnI",
+      "type": "chance",
+      "position": {
+        "x": 222,
+        "y": 964
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -991288.375,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    "4s1dOkFhDz1P": {
+      "id": "4s1dOkFhDz1P",
+      "type": "terminal",
+      "position": {
+        "x": 444,
+        "y": 878
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -30000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      }
+    },
+    "j9ZYCT78n0Hg": {
+      "id": "j9ZYCT78n0Hg",
+      "type": "chance",
+      "position": {
+        "x": 444,
+        "y": 1050
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1041882.5,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    "-OtK3EoHaQLQ": {
+      "id": "-OtK3EoHaQLQ",
+      "type": "chance",
+      "position": {
+        "x": 666,
+        "y": 792
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1983765,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false
+    },
+    "AvazVf7EPf0a": {
+      "id": "AvazVf7EPf0a",
+      "type": "terminal",
+      "position": {
+        "x": 666,
+        "y": 1136
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -100000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      }
+    },
+    "oIGw-I1ZGspg": {
+      "id": "oIGw-I1ZGspg",
+      "type": "chance",
+      "position": {
+        "x": 888,
+        "y": 276
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2877200,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false
+    },
+    "f4UvjS8okevK": {
+      "id": "f4UvjS8okevK",
+      "type": "chance",
+      "position": {
+        "x": 888,
+        "y": 792
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2122000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false
+    },
+    "8LzWw8vWytu2": {
+      "id": "8LzWw8vWytu2",
+      "type": "chance",
+      "position": {
+        "x": 888,
+        "y": 1308
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1157750,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false
+    },
+    "ojy-9iVmHVGb": {
+      "id": "ojy-9iVmHVGb",
+      "type": "chance",
+      "position": {
+        "x": 1110,
+        "y": 190
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2696000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false
+    },
+    "EGdAkaMQvGBc": {
+      "id": "EGdAkaMQvGBc",
+      "type": "terminal",
+      "position": {
+        "x": 1110,
+        "y": 448
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -3300000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "9tWlIrjE7rbZ": {
+      "id": "9tWlIrjE7rbZ",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 18
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -4900000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "qTcoh2NXhx46": {
+      "id": "qTcoh2NXhx46",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 190
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -4400000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false,
+      "selected": true
+    },
+    "tnLpC1Z_k30a": {
+      "id": "tnLpC1Z_k30a",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 362
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -3850000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "t_EuoCI7H4Hr": {
+      "id": "t_EuoCI7H4Hr",
+      "type": "chance",
+      "position": {
+        "x": 1110,
+        "y": 706
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2370000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false
+    },
+    "mSLuYP3YfQpi": {
+      "id": "mSLuYP3YfQpi",
+      "type": "terminal",
+      "position": {
+        "x": 1110,
+        "y": 964
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1750000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "1JzA4Spf_dXx": {
+      "id": "1JzA4Spf_dXx",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 534
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2900000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "BcJWodUDf8XB": {
+      "id": "BcJWodUDf8XB",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 706
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2350000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "e2ID4ujt3dNx": {
+      "id": "e2ID4ujt3dNx",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 878
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -2050000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false
+    },
+    "rrVX3mZ1mPqe": {
+      "id": "rrVX3mZ1mPqe",
+      "type": "chance",
+      "position": {
+        "x": 1110,
+        "y": 1222
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1315500,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 64,
+        "height": 64
+      },
+      "dragging": false,
+      "selected": false
+    },
+    "ZeeqiwFdWfDw": {
+      "id": "ZeeqiwFdWfDw",
+      "type": "terminal",
+      "position": {
+        "x": 1110,
+        "y": 1394
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1000000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false,
+      "selected": false
+    },
+    "l9dtFsFPHYsI": {
+      "id": "l9dtFsFPHYsI",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 1050
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -205000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false,
+      "selected": false
+    },
+    "NJB0EUzSVK9y": {
+      "id": "NJB0EUzSVK9y",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 1222
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1550000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false,
+      "selected": false
+    },
+    "VLtk5D1LzPMy": {
+      "id": "VLtk5D1LzPMy",
+      "type": "terminal",
+      "position": {
+        "x": 1332,
+        "y": 1394
+      },
+      "data": {
+        "label": "",
+        "description": "",
+        "value": -1300000,
+        "cost": null
+      },
+      "origin": [0.5, 0],
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "measured": {
+        "width": 48,
+        "height": 60
+      },
+      "dragging": false,
+      "selected": false
+    }
+  },
+  "edges": {
+    "edecision-KgnMCdBQM_PW": {
+      "id": "edecision-KgnMCdBQM_PW",
+      "source": "decision",
+      "target": "KgnMCdBQM_PW",
+      "type": "custom",
+      "data": {
+        "label": "",
+        "description": "",
+        "probability": 0
+      }
+    },
+    "edecision-bKOhJDHYplnI": {
+      "id": "edecision-bKOhJDHYplnI",
+      "source": "decision",
+      "target": "bKOhJDHYplnI",
+      "type": "custom",
+      "data": {
+        "label": "Litigate",
+        "description": "",
+        "probability": 1
+      }
+    },
+    "ebKOhJDHYplnI-4s1dOkFhDz1P": {
+      "id": "ebKOhJDHYplnI-4s1dOkFhDz1P",
+      "source": "bKOhJDHYplnI",
+      "target": "4s1dOkFhDz1P",
+      "type": "custom",
+      "data": {
+        "label": "Summary J",
+        "description": "",
+        "probability": 0.05
+      }
+    },
+    "ebKOhJDHYplnI-j9ZYCT78n0Hg": {
+      "id": "ebKOhJDHYplnI-j9ZYCT78n0Hg",
+      "source": "bKOhJDHYplnI",
+      "target": "j9ZYCT78n0Hg",
+      "type": "custom",
+      "data": {
+        "label": "No SJ",
+        "description": "",
+        "probability": 0.95
+      }
+    },
+    "ej9ZYCT78n0Hg--OtK3EoHaQLQ": {
+      "id": "ej9ZYCT78n0Hg--OtK3EoHaQLQ",
+      "source": "j9ZYCT78n0Hg",
+      "target": "-OtK3EoHaQLQ",
+      "type": "custom",
+      "data": {
+        "label": "Liability",
+        "description": "",
+        "probability": 0.5
+      }
+    },
+    "ej9ZYCT78n0Hg-AvazVf7EPf0a": {
+      "id": "ej9ZYCT78n0Hg-AvazVf7EPf0a",
+      "source": "j9ZYCT78n0Hg",
+      "target": "AvazVf7EPf0a",
+      "type": "custom",
+      "data": {
+        "label": "No liability",
+        "description": "",
+        "probability": 0.5
+      }
+    },
+    "e-OtK3EoHaQLQ-oIGw-I1ZGspg": {
+      "id": "e-OtK3EoHaQLQ-oIGw-I1ZGspg",
+      "source": "-OtK3EoHaQLQ",
+      "target": "oIGw-I1ZGspg",
+      "type": "custom",
+      "data": {
+        "label": "High",
+        "description": "",
+        "probability": 0.2
+      }
+    },
+    "e-OtK3EoHaQLQ-f4UvjS8okevK": {
+      "id": "e-OtK3EoHaQLQ-f4UvjS8okevK",
+      "source": "-OtK3EoHaQLQ",
+      "target": "f4UvjS8okevK",
+      "type": "custom",
+      "data": {
+        "label": "Med",
+        "description": "",
+        "probability": 0.5
+      }
+    },
+    "e-OtK3EoHaQLQ-8LzWw8vWytu2": {
+      "id": "e-OtK3EoHaQLQ-8LzWw8vWytu2",
+      "source": "-OtK3EoHaQLQ",
+      "target": "8LzWw8vWytu2",
+      "type": "custom",
+      "data": {
+        "label": "Low",
+        "description": "",
+        "probability": 0.3
+      }
+    },
+    "eoIGw-I1ZGspg-ojy-9iVmHVGb": {
+      "id": "eoIGw-I1ZGspg-ojy-9iVmHVGb",
+      "source": "oIGw-I1ZGspg",
+      "target": "ojy-9iVmHVGb",
+      "type": "custom",
+      "data": {
+        "label": "Puni",
+        "description": "",
+        "probability": 0.7
+      }
+    },
+    "eoIGw-I1ZGspg-EGdAkaMQvGBc": {
+      "id": "eoIGw-I1ZGspg-EGdAkaMQvGBc",
+      "source": "oIGw-I1ZGspg",
+      "target": "EGdAkaMQvGBc",
+      "type": "custom",
+      "data": {
+        "label": "No Puni",
+        "description": "",
+        "probability": 0.3
+      }
+    },
+    "eojy-9iVmHVGb-9tWlIrjE7rbZ": {
+      "id": "eojy-9iVmHVGb-9tWlIrjE7rbZ",
+      "source": "ojy-9iVmHVGb",
+      "target": "9tWlIrjE7rbZ",
+      "type": "custom",
+      "data": {
+        "label": "$1.5m",
+        "description": "",
+        "probability": 0.2
+      }
+    },
+    "eojy-9iVmHVGb-qTcoh2NXhx46": {
+      "id": "eojy-9iVmHVGb-qTcoh2NXhx46",
+      "source": "ojy-9iVmHVGb",
+      "target": "qTcoh2NXhx46",
+      "type": "custom",
+      "data": {
+        "label": "$1.0m",
+        "description": "",
+        "probability": 0.4
+      }
+    },
+    "eojy-9iVmHVGb-tnLpC1Z_k30a": {
+      "id": "eojy-9iVmHVGb-tnLpC1Z_k30a",
+      "source": "ojy-9iVmHVGb",
+      "target": "tnLpC1Z_k30a",
+      "type": "custom",
+      "data": {
+        "label": "$500k",
+        "description": "",
+        "probability": 0.4
+      }
+    },
+    "et_EuoCI7H4Hr-1JzA4Spf_dXx": {
+      "id": "et_EuoCI7H4Hr-1JzA4Spf_dXx",
+      "source": "t_EuoCI7H4Hr",
+      "target": "1JzA4Spf_dXx",
+      "type": "custom",
+      "data": {
+        "label": "$1.0m",
+        "description": "",
+        "probability": 0.2
+      }
+    },
+    "et_EuoCI7H4Hr-BcJWodUDf8XB": {
+      "id": "et_EuoCI7H4Hr-BcJWodUDf8XB",
+      "source": "t_EuoCI7H4Hr",
+      "target": "BcJWodUDf8XB",
+      "type": "custom",
+      "data": {
+        "label": "$500k",
+        "description": "",
+        "probability": 0.5
+      }
+    },
+    "et_EuoCI7H4Hr-e2ID4ujt3dNx": {
+      "id": "et_EuoCI7H4Hr-e2ID4ujt3dNx",
+      "source": "t_EuoCI7H4Hr",
+      "target": "e2ID4ujt3dNx",
+      "type": "custom",
+      "data": {
+        "label": "$250k",
+        "description": "",
+        "probability": 0.3
+      }
+    },
+    "ef4UvjS8okevK-t_EuoCI7H4Hr": {
+      "id": "ef4UvjS8okevK-t_EuoCI7H4Hr",
+      "source": "f4UvjS8okevK",
+      "target": "t_EuoCI7H4Hr",
+      "type": "custom",
+      "data": {
+        "label": "Puni",
+        "description": "",
+        "probability": 0.6
+      }
+    },
+    "ef4UvjS8okevK-mSLuYP3YfQpi": {
+      "id": "ef4UvjS8okevK-mSLuYP3YfQpi",
+      "source": "f4UvjS8okevK",
+      "target": "mSLuYP3YfQpi",
+      "type": "custom",
+      "data": {
+        "label": "No Puni",
+        "description": "",
+        "probability": 0.4
+      }
+    },
+    "errVX3mZ1mPqe-l9dtFsFPHYsI": {
+      "id": "errVX3mZ1mPqe-l9dtFsFPHYsI",
+      "source": "rrVX3mZ1mPqe",
+      "target": "l9dtFsFPHYsI",
+      "type": "custom",
+      "data": {
+        "label": "$1.0m",
+        "description": "",
+        "probability": 0.1
+      },
+      "selected": false
+    },
+    "errVX3mZ1mPqe-NJB0EUzSVK9y": {
+      "id": "errVX3mZ1mPqe-NJB0EUzSVK9y",
+      "source": "rrVX3mZ1mPqe",
+      "target": "NJB0EUzSVK9y",
+      "type": "custom",
+      "data": {
+        "label": "$500k",
+        "description": "",
+        "probability": 0.5
+      },
+      "selected": false
+    },
+    "errVX3mZ1mPqe-VLtk5D1LzPMy": {
+      "id": "errVX3mZ1mPqe-VLtk5D1LzPMy",
+      "source": "rrVX3mZ1mPqe",
+      "target": "VLtk5D1LzPMy",
+      "type": "custom",
+      "data": {
+        "label": "$250k",
+        "description": "",
+        "probability": 0.4
+      },
+      "selected": false
+    },
+    "e8LzWw8vWytu2-rrVX3mZ1mPqe": {
+      "id": "e8LzWw8vWytu2-rrVX3mZ1mPqe",
+      "source": "8LzWw8vWytu2",
+      "target": "rrVX3mZ1mPqe",
+      "type": "custom",
+      "data": {
+        "label": "Puni",
+        "description": "",
+        "probability": 0.5
+      },
+      "selected": false
+    },
+    "e8LzWw8vWytu2-ZeeqiwFdWfDw": {
+      "id": "e8LzWw8vWytu2-ZeeqiwFdWfDw",
+      "source": "8LzWw8vWytu2",
+      "target": "ZeeqiwFdWfDw",
+      "type": "custom",
+      "data": {
+        "label": "No Puni",
+        "description": "",
+        "probability": 0.5
+      },
+      "selected": false
+    }
+  }
+}

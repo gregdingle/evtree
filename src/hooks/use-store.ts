@@ -12,6 +12,7 @@ import {
   Position,
 } from "@xyflow/react";
 import {
+  cloneDeep,
   isEqual,
   keyBy,
   mapValues,
@@ -34,6 +35,7 @@ import { getLayoutedElements } from "@/utils/layout";
 import { cloneNode, createNode } from "@/utils/node";
 import { selectComputedNodesAndEdges } from "@/utils/selectors";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
+import demoTreeData from "@/utils/demo-tree.json";
 import {
   createSelectorFunctions,
   ZustandFuncSelectors,
@@ -76,7 +78,7 @@ export interface DecisionTree {
 export interface StoreState {
   trees: Record<string, DecisionTree>;
   currentTreeId: string | null;
-  clipboard: { nodeIds: AppNode["id"][]; edgeIds: AppEdge["id"][] };
+  clipboard: { nodes: AppNode[]; edges: AppEdge[] };
 
   // Tree management
   createTree: (name: string, description?: string) => string;
@@ -252,6 +254,7 @@ const initialTrees: Record<string, DecisionTree> = {
     nodes: initialNodes,
     edges: initialEdges,
   },
+  [demoTreeData.id]: demoTreeData as unknown as DecisionTree,
 };
 
 // TODO: should exclude selection from being persisted?
@@ -313,7 +316,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
   middlewares((set, get) => ({
     trees: initialTrees,
     currentTreeId: "tree-1", // Default to the first tree
-    clipboard: { nodeIds: [], edgeIds: [] },
+    clipboard: { nodes: [], edges: [] },
 
     // Tree management functions
     createTree: (name: string, description?: string) => {
@@ -356,13 +359,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         if (state.currentTreeId) {
           const currentTree = state.trees[state.currentTreeId];
           if (currentTree) {
-            // TODO: extract to shared function clearCurrentSelection
             // Clear node and edge selections
-            [...values(currentTree.nodes), ...values(currentTree.edges)]
-              .filter((item) => item.selected)
-              .forEach((item) => {
-                item.selected = false;
-              });
+            clearSelections(currentTree);
           }
         }
 
@@ -432,21 +430,16 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
+    // TODO: still not selecting newEdge always!
     onConnect: (connection) => {
       set((state) =>
         withCurrentTree(state, (tree) => {
           const { source: fromNodeId, target: nodeId } = connection;
+          clearSelections(tree);
           const newEdge = createEdge(fromNodeId, nodeId);
           const updatedEdgesArray = addEdge(newEdge, values(tree.edges));
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-          const sourceNode = tree.nodes[nodeId];
-          if (sourceNode) {
-            // Deselect the source node after connecting
-            sourceNode.selected = false;
-          } else {
-            warnItemNotFound("Node", nodeId, "onConnect");
-          }
         })
       );
     },
@@ -574,12 +567,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           const edges = values(tree.edges);
 
           state.clipboard = {
-            nodeIds: nodes
-              .filter((node) => node.selected)
-              .map((node) => node.id),
-            edgeIds: edges
-              .filter((edge) => edge.selected)
-              .map((edge) => edge.id),
+            // NOTE: important to cloneDeep to avoid reference issues!
+            nodes: cloneDeep(nodes.filter((node) => node.selected)),
+            edges: cloneDeep(edges.filter((edge) => edge.selected)),
           };
         })
       );
@@ -597,37 +587,32 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           const PASTE_OFFSET = 50;
           const nodeIdMap = new Map<string, string>();
 
+          // Clear current selections
+          clearSelections(tree);
+
           // First pass: create nodes with offset positions and build ID mapping
-          clipboard.nodeIds.forEach((nodeId) => {
-            const node = tree.nodes[nodeId];
-            if (node) {
-              const position = {
-                x: node.position.x + PASTE_OFFSET,
-                y: node.position.y + PASTE_OFFSET,
-              };
-              const newNode = cloneNode(node, position);
-              tree.nodes[newNode.id] = newNode;
-              nodeIdMap.set(nodeId, newNode.id);
-              node.selected = false;
-            } else {
-              warnItemNotFound("Node", nodeId, "paste");
-            }
+          clipboard.nodes.forEach((clipboardNode) => {
+            const position = {
+              x: clipboardNode.position.x + PASTE_OFFSET,
+              y: clipboardNode.position.y + PASTE_OFFSET,
+            };
+            const newNode = cloneNode(clipboardNode, position);
+            tree.nodes[newNode.id] = newNode;
+            nodeIdMap.set(clipboardNode.id, newNode.id);
           });
 
           // Second pass: create edges with updated source/target IDs
-          clipboard.edgeIds.forEach((edgeId) => {
-            const edge = tree.edges[edgeId];
-            if (edge) {
-              const newSourceId = nodeIdMap.get(edge.source);
-              const newTargetId = nodeIdMap.get(edge.target);
+          clipboard.edges.forEach((clipboardEdge) => {
+            const newSourceId = nodeIdMap.get(clipboardEdge.source);
+            const newTargetId = nodeIdMap.get(clipboardEdge.target);
 
-              if (newSourceId && newTargetId) {
-                const newEdge = cloneEdge(edge, newSourceId, newTargetId);
-                tree.edges[newEdge.id] = newEdge;
-                edge.selected = false;
-              }
-            } else {
-              warnItemNotFound("Edge", edgeId, "paste");
+            if (newSourceId && newTargetId) {
+              const newEdge = cloneEdge(
+                clipboardEdge,
+                newSourceId,
+                newTargetId
+              );
+              tree.edges[newEdge.id] = newEdge;
             }
           });
 
@@ -651,7 +636,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         })
       );
 
-      set({ clipboard: { nodeIds: [], edgeIds: [] } });
+      set({ clipboard: { nodes: [], edges: [] } });
     },
 
     onCreateNodeAt: (position, nodeType) => {
@@ -664,15 +649,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set((state) =>
         withCurrentTree(state, (tree) => {
           const newNode = createNode(position, nodeType);
+          clearSelections(tree);
           tree.nodes[newNode.id] = newNode;
           tree.updatedAt = new Date().toISOString();
-          // Clear current selection and select the new node
-          values(tree.nodes).forEach((node) => {
-            node.selected = node.id === newNode.id;
-          });
-          values(tree.edges).forEach((edge) => {
-            edge.selected = false;
-          });
         })
       );
     },
@@ -730,6 +709,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
  *
  * TODO: check worst-case performance of this subscription... it could be
  * slow... it would be better if we just passed patches back and forth
+ *
+ * TODO: is this messing up undo history? It seems like it is, because it is
+ * adding extra states
  */
 useStoreBase.subscribe(
   selectComputedNodesAndEdges,
@@ -761,6 +743,14 @@ useStoreBase.subscribe(
 export const useStore = createSelectorFunctions(
   useStoreBase
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
+
+function clearSelections(currentTree: DecisionTree) {
+  [...values(currentTree.nodes), ...values(currentTree.edges)]
+    .filter((item) => item.selected)
+    .forEach((item) => {
+      item.selected = false;
+    });
+}
 
 function withCurrentTree(
   state: StoreState,
