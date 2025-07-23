@@ -1,5 +1,5 @@
 import { AppNode, useStore } from "@/hooks/use-store";
-import { formatCost, formatProbability, formatValue } from "@/utils/format";
+import { formatProbability, formatValue } from "@/utils/format";
 import { selectPathProbability, selectPathValue } from "@/utils/selectors";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import { ReactNode } from "react";
@@ -26,8 +26,10 @@ const BaseNode = ({ data, children }: BaseNodeProps) => {
       </div>
       {children}
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center whitespace-nowrap">
-        {formatValue(data.value)}
-        {formatCost(data.cost)}
+        {formatValue(
+          data.value ? (data.cost ? data.value - data.cost : data.value) : null
+        )}
+        {/* TODO: show cost separately? {formatCost(data.cost)} */}
       </div>
     </div>
   );
@@ -81,9 +83,10 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <Handle type="target" position={Position.Left} />
       <div className={`absolute left-14 max-w-32 top-5 whitespace-nowrap`}>
         {/* NOTE: we only show the net path value, following silver decisions
-        {formatValue(data.value)} */}
-        {formatValue(pathValue)}
+        {formatValue(data.value)}
         {formatCost(data.cost)}
+        */}
+        {formatValue(pathValue)}
       </div>
       <div className="absolute top-10 left-14">
         {/*
