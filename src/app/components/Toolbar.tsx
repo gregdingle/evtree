@@ -1,7 +1,8 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
-import { downloadPNG } from "@/utils/download";
+import { downloadJson, downloadPNG } from "@/utils/download";
+import { selectCurrentTree } from "@/utils/selectors";
 import { useReactFlow } from "@xyflow/react";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -11,10 +12,13 @@ export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste, onReset, onArrange } = useStore.getState();
+  const tree = useStore(selectCurrentTree);
   // TODO: why don't our app nodes work with the download?
   const { getNodes } = useReactFlow();
 
-  const onDownloadClick = () => downloadPNG(getNodes(), "evtree.png");
+  const onExportClick = () => downloadPNG(getNodes(), "evtree.png");
+  // TODO: implement a onLoadClick to load a tree from a file
+  const onDownloadClick = () => tree && downloadJson(tree, "evtree.json");
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
   // TODO: consider best hotkeys
@@ -25,7 +29,8 @@ export default function Toolbar() {
   useHotkeys("ctrl+v", onPaste, { enableOnFormTags: true });
   useHotkeys("ctrl+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: true });
-  useHotkeys("ctrl+e", onDownloadClick, { enableOnFormTags: true });
+  useHotkeys("ctrl+e", onExportClick, { enableOnFormTags: true });
+  useHotkeys("ctrl+d", onDownloadClick, { enableOnFormTags: true });
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">
@@ -61,10 +66,18 @@ export default function Toolbar() {
         <ToolbarButton
           // TODO: change filename once we support multiple trees
           // TODO: how to make it work with dark mode?
-          onClick={onDownloadClick}
+          onClick={onExportClick}
           tooltip="Ctrl+R"
         >
           export
+        </ToolbarButton>
+        <ToolbarButton
+          // TODO: change filename once we support multiple trees
+          // TODO: how to make it work with dark mode?
+          onClick={onDownloadClick}
+          tooltip="Ctrl+D"
+        >
+          download
         </ToolbarButton>
       </div>
     </div>

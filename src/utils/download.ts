@@ -1,3 +1,4 @@
+import { DecisionTree } from "@/hooks/use-store";
 import { getNodesBounds, getViewportForBounds } from "@xyflow/react";
 import { NodeBase } from "@xyflow/system";
 import { toPng } from "html-to-image";
@@ -43,3 +44,14 @@ function downloadImage(dataUrl: string, filename: string) {
   a.setAttribute("href", dataUrl);
   a.click();
 }
+
+export const downloadJson = (tree: DecisionTree, filename: string) => {
+  const json = JSON.stringify(tree, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.setAttribute("download", filename);
+  a.setAttribute("href", url);
+  a.click();
+};
