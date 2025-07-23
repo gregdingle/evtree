@@ -97,7 +97,7 @@ export default function LeftSidePanel() {
                   <div className="flex-1 min-w-0">
                     <h3 className="truncate">{tree.name}</h3>
                     {tree.description && (
-                      <p className=" text-gray-600 dark:text-gray-400 my-1">
+                      <p className=" text-gray-600 dark:text-gray-400 my-1 truncate">
                         {tree.description}
                       </p>
                     )}

@@ -59,6 +59,7 @@ export default function RightSidePanel() {
               />
               <PropertyInput
                 label="Description"
+                textarea
                 value={currentTree.description}
                 onChange={(value) => onTreeDataUpdate({ description: value })}
                 placeholder="Enter tree description"
@@ -173,15 +174,21 @@ export default function RightSidePanel() {
   );
 }
 
-interface PropertyInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+interface PropertyInputProps {
   label: string;
   value?: string;
+  textarea?: boolean; // Optional prop to indicate if this is a textarea
   onChange?: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  max?: number;
+  min?: number;
+  step?: number;
+  children?: React.ReactNode;
 }
 
 const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
-  ({ label, value, onChange, children, ...props }, ref) => {
+  ({ label, value, onChange, textarea, children, ...props }, ref) => {
     const debouncedOnChange = debounce(onChange ?? (() => {}), 200);
 
     // Use a local state for immediate UI updates
@@ -199,19 +206,35 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
 
     // TODO: how to do consistent global styles? use some tailwind component UI kit?
     return (
-      <div className="mb-2 flex space-x-2 items-center">
+      <div
+        className={`mb-2 flex space-x-2 ${
+          textarea ? "flex-col" : "items-center"
+        }`}
+      >
         <label htmlFor={label} className="w-24">
           {label}
         </label>
-        <input
-          ref={ref}
-          id={label}
-          type="text"
-          value={localValue}
-          onChange={(e) => handleChange(e.target.value)}
-          className="w-full border-2 p-1 rounded-md"
-          {...props}
-        />
+        {textarea ? (
+          <textarea
+            ref={ref as React.Ref<HTMLTextAreaElement>}
+            id={label}
+            value={localValue}
+            onChange={(e) => handleChange(e.target.value)}
+            className="w-full border-2 p-1 rounded-md"
+            rows={10}
+            {...props}
+          />
+        ) : (
+          <input
+            ref={ref}
+            id={label}
+            type="text"
+            value={localValue}
+            onChange={(e) => handleChange(e.target.value)}
+            className="w-full border-2 p-1 rounded-md"
+            {...props}
+          />
+        )}
         {children}
       </div>
     );
