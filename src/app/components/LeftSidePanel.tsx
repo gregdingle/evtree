@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import { useReactFlow } from "@xyflow/react";
 import { sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import { useState } from "react";
@@ -9,6 +10,7 @@ import Tooltip from "./Tooltip";
 // TODO: allow delete last tree? or support zero trees? revert to initial tree or what?
 export default function LeftSidePanel() {
   const [newTreeName, setNewTreeName] = useState("");
+  const { fitView } = useReactFlow();
 
   const { trees, currentTreeId } = useStore((state) => ({
     trees: sortBy(values(state.trees), ["updatedAt"]).reverse(),
@@ -17,6 +19,14 @@ export default function LeftSidePanel() {
 
   const { createTree, deleteTree, setCurrentTree, duplicateTree } =
     useStore.getState();
+
+  const handleSetCurrentTree = (treeId: string) => {
+    setCurrentTree(treeId);
+    // Fit view after a brief delay to allow the tree to render
+    setTimeout(() => {
+      fitView();
+    }, 100);
+  };
 
   const handleCreateTree = () => {
     if (newTreeName.trim()) {
@@ -91,7 +101,7 @@ export default function LeftSidePanel() {
                     ? "bg-blue-100 border-blue-300 dark:bg-blue-900 dark:border-blue-600"
                     : "bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700"
                 }`}
-                onClick={() => setCurrentTree(tree.id)}
+                onClick={() => handleSetCurrentTree(tree.id)}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
