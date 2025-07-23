@@ -492,50 +492,36 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     balanceEdgeProbability(id) {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("balance edge probability");
-        return;
-      }
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const targetEdge = tree.edges[id];
+          if (!targetEdge) {
+            warnItemNotFound("Edge", id, "balance edge probability");
+            return;
+          }
 
-      const tree = get().trees[currentTreeId];
-      if (!tree) {
-        warnItemNotFound("Tree", currentTreeId, "balance edge probability");
-        return;
-      }
+          // Find all sibling edges (edges from the same source node)
+          const siblingEdges = values(tree.edges).filter(
+            (edge) => edge.source === targetEdge.source
+          );
 
-      const targetEdge = tree.edges[id];
-      if (!targetEdge) {
-        warnItemNotFound("Edge", id, "balance edge probability");
-        return;
-      }
+          // Calculate sum of existing probabilities (excluding the target edge)
+          const existingProbabilitySum = siblingEdges
+            .filter(
+              (edge) => edge.id !== id && edge.data?.probability !== undefined
+            )
+            .reduce((sum, edge) => sum + (edge.data?.probability ?? 0), 0);
 
-      // Find all sibling edges (edges from the same source node)
-      const siblingEdges = values(tree.edges).filter(
-        (edge) => edge.source === targetEdge.source
-      );
+          // Count undefined probabilities (including the target edge)
+          const undefinedProbabilityCount = siblingEdges.filter(
+            (edge) => edge.data?.probability === undefined || edge.id === id
+          ).length;
 
-      // Calculate sum of existing probabilities (excluding the target edge)
-      const existingProbabilitySum = siblingEdges
-        .filter(
-          (edge) => edge.id !== id && edge.data?.probability !== undefined
-        )
-        .reduce((sum, edge) => sum + (edge.data?.probability ?? 0), 0);
-
-      // Count undefined probabilities (including the target edge)
-      const undefinedProbabilityCount = siblingEdges.filter(
-        (edge) => edge.data?.probability === undefined || edge.id === id
-      ).length;
-
-      // Calculate balanced probability, round to 2 decimals
-      const balancedProbability = round(
-        max([0, 1.0 - existingProbabilitySum])! / undefinedProbabilityCount,
-        2
-      );
-
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+          // Calculate balanced probability, round to 2 decimals
+          const balancedProbability = round(
+            max([0, 1.0 - existingProbabilitySum])! / undefinedProbabilityCount,
+            2
+          );
           const edge = tree.edges[id];
           if (edge && edge.data) {
             edge.data.probability = balancedProbability;
@@ -543,11 +529,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           } else {
             warnItemNotFound("Edge", id, "data update");
           }
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "edge data update");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onNodesDelete: (deleted) => {
@@ -557,9 +540,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           deleted.forEach((node) => {
             delete tree.nodes[node.id];
             // Remove edges connected to the deleted node
@@ -575,11 +557,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             });
           });
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "nodes delete");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onCopy: () => {
@@ -613,50 +592,48 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (!tree) return state;
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const PASTE_OFFSET = 50;
+          const nodeIdMap = new Map<string, string>();
 
-        const PASTE_OFFSET = 50;
-        const nodeIdMap = new Map<string, string>();
-
-        // First pass: create nodes with offset positions and build ID mapping
-        clipboard.nodeIds.forEach((nodeId) => {
-          const node = tree.nodes[nodeId];
-          if (node) {
-            const position = {
-              x: node.position.x + PASTE_OFFSET,
-              y: node.position.y + PASTE_OFFSET,
-            };
-            const newNode = cloneNode(node, position);
-            tree.nodes[newNode.id] = newNode;
-            nodeIdMap.set(nodeId, newNode.id);
-            node.selected = false;
-          } else {
-            warnItemNotFound("Node", nodeId, "paste");
-          }
-        });
-
-        // Second pass: create edges with updated source/target IDs
-        clipboard.edgeIds.forEach((edgeId) => {
-          const edge = tree.edges[edgeId];
-          if (edge) {
-            const newSourceId = nodeIdMap.get(edge.source);
-            const newTargetId = nodeIdMap.get(edge.target);
-
-            if (newSourceId && newTargetId) {
-              const newEdge = cloneEdge(edge, newSourceId, newTargetId);
-              tree.edges[newEdge.id] = newEdge;
-              edge.selected = false;
+          // First pass: create nodes with offset positions and build ID mapping
+          clipboard.nodeIds.forEach((nodeId) => {
+            const node = tree.nodes[nodeId];
+            if (node) {
+              const position = {
+                x: node.position.x + PASTE_OFFSET,
+                y: node.position.y + PASTE_OFFSET,
+              };
+              const newNode = cloneNode(node, position);
+              tree.nodes[newNode.id] = newNode;
+              nodeIdMap.set(nodeId, newNode.id);
+              node.selected = false;
+            } else {
+              warnItemNotFound("Node", nodeId, "paste");
             }
-          } else {
-            warnItemNotFound("Edge", edgeId, "paste");
-          }
-        });
+          });
 
-        tree.updatedAt = new Date().toISOString();
-        return state;
-      });
+          // Second pass: create edges with updated source/target IDs
+          clipboard.edgeIds.forEach((edgeId) => {
+            const edge = tree.edges[edgeId];
+            if (edge) {
+              const newSourceId = nodeIdMap.get(edge.source);
+              const newTargetId = nodeIdMap.get(edge.target);
+
+              if (newSourceId && newTargetId) {
+                const newEdge = cloneEdge(edge, newSourceId, newTargetId);
+                tree.edges[newEdge.id] = newEdge;
+                edge.selected = false;
+              }
+            } else {
+              warnItemNotFound("Edge", edgeId, "paste");
+            }
+          });
+
+          tree.updatedAt = new Date().toISOString();
+        })
+      );
     },
 
     onReset: () => {
@@ -666,17 +643,13 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           tree.nodes = initialNodes;
           tree.edges = initialEdges;
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "reset");
-        }
-        return state;
-      });
+        })
+      );
 
       set({ clipboard: { nodeIds: [], edgeIds: [] } });
     },
@@ -688,9 +661,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const newNode = createNode(position, nodeType);
           tree.nodes[newNode.id] = newNode;
           tree.updatedAt = new Date().toISOString();
@@ -701,11 +673,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           values(tree.edges).forEach((edge) => {
             edge.selected = false;
           });
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "create node");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onDragEndCreateNodeAt: (position, fromNodeId) => {
@@ -715,9 +684,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          // TODO: why are newEdge and newNode not selected after create on canvas?
           const newNode = createNode(position);
           const newEdge = createEdge(fromNodeId, newNode.id);
           // TODO: why not selected after create on canvas?
@@ -725,11 +694,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           tree.edges[newEdge.id] = newEdge;
           // TODO: use dayjs?
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "drag end create node");
-        }
-        return state;
-      });
+        })
+      );
     },
 
     onArrange: () => {
@@ -739,9 +705,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         return;
       }
 
-      set((state) => {
-        const tree = state.trees[currentTreeId];
-        if (tree) {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
           const { nodes, edges } = getLayoutedElements(
             values(tree.nodes),
             values(tree.edges)
@@ -749,11 +714,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           tree.nodes = keyBy(nodes, (node) => node.id);
           tree.edges = keyBy(edges, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-        } else {
-          warnItemNotFound("Tree", currentTreeId, "arrange");
-        }
-        return state;
-      });
+        })
+      );
     },
   })),
   shallow
