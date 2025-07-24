@@ -18,6 +18,7 @@ export function cloneEdge(
   newSourceId: string,
   newTargetId: string
 ): AppEdge {
+  // TODO: change separator to something that is not in nano ID like ::
   const edgeId = `e${newSourceId}-${newTargetId}`;
   const newEdge: AppEdge = {
     ...edge,

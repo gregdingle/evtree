@@ -28,6 +28,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
+import bathtubTreeData from "@/utils/demo-bathtub-tree.json";
 import demoTreeData from "@/utils/demo-tree.json";
 import { cloneEdge, createEdge } from "@/utils/edge";
 import { computeNodeValues } from "@/utils/expectedValue";
@@ -247,6 +248,7 @@ const initialTrees: Record<string, DecisionTree> = {
     edges: initialEdges,
   },
   [demoTreeData.id]: demoTreeData as unknown as DecisionTree,
+  [bathtubTreeData.id]: bathtubTreeData as unknown as DecisionTree,
 };
 
 // TODO: should exclude selection from being persisted?
