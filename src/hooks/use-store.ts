@@ -110,6 +110,7 @@ export interface StoreState {
     fromNodeId: string
   ) => void;
   onArrange: () => void;
+  toggleNodeCollapse: (nodeId: string) => void;
 }
 
 const initialNodes = keyBy(
@@ -699,6 +700,60 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           );
           tree.nodes = keyBy(nodes, (node) => node.id);
           tree.edges = keyBy(edges, (edge) => edge.id);
+          tree.updatedAt = new Date().toISOString();
+        })
+      );
+    },
+
+    toggleNodeCollapse: (nodeId: string) => {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          // Find all descendant nodes and edges using a stack-based traversal
+          const outgoers: string[] = [];
+          const connectedEdges: string[] = [];
+          const stack = [nodeId];
+          const seen = new Set<string>();
+
+          while (stack.length > 0) {
+            const currentNodeId = stack.pop()!;
+            if (seen.has(currentNodeId)) continue;
+            seen.add(currentNodeId);
+
+            // Find all edges that start from this node
+            const childEdges = values(tree.edges).filter(
+              (edge) => edge.source === currentNodeId
+            );
+
+            childEdges.forEach((edge) => {
+              connectedEdges.push(edge.id);
+              const childNodeId = edge.target;
+
+              // Only add if it's not the original node
+              if (childNodeId !== nodeId) {
+                outgoers.push(childNodeId);
+                stack.push(childNodeId);
+              }
+            });
+          }
+
+          // Toggle hidden state for all descendant nodes and edges
+          const shouldHide =
+            outgoers.length > 0 ? !tree.nodes[outgoers[0]!]?.hidden : true;
+
+          outgoers.forEach((nodeId) => {
+            if (tree.nodes[nodeId]) {
+              tree.nodes[nodeId].hidden = shouldHide;
+            }
+          });
+
+          connectedEdges.forEach((edgeId) => {
+            if (tree.edges[edgeId]) {
+              tree.edges[edgeId].hidden = shouldHide;
+            }
+          });
+
+          // TODO: implement tree.updatedAt as a store subscription? or put in
+          // existing subscribe?
           tree.updatedAt = new Date().toISOString();
         })
       );

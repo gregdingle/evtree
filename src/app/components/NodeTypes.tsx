@@ -1,6 +1,10 @@
 import { AppNode, useStore } from "@/hooks/use-store";
 import { formatProbability, formatValue } from "@/utils/format";
-import { selectPathProbability, selectPathValue } from "@/utils/selectors";
+import {
+  selectCollapsible,
+  selectPathProbability,
+  selectPathValue,
+} from "@/utils/selectors";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import { ReactNode } from "react";
 
@@ -14,22 +18,70 @@ import { ReactNode } from "react";
 interface BaseNodeProps {
   data: AppNode["data"];
   id: string;
+  selected: boolean;
   children: ReactNode;
 }
 
-const BaseNode = ({ data, children, id }: BaseNodeProps) => {
+interface CollapseButtonProps {
+  nodeId: string;
+  hasChildren: boolean;
+  isCollapsed: boolean;
+  onToggle: (nodeId: string) => void;
+}
+
+const CollapseButton = ({
+  nodeId,
+  hasChildren,
+  isCollapsed,
+  onToggle,
+}: CollapseButtonProps) => {
+  if (!hasChildren) return null;
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle(nodeId);
+      }}
+      // TODO: center arrow better somehow
+      className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100 z-10"
+      style={{ pointerEvents: "all" }}
+    >
+      {/* // TODO: do these icons make sense? */}
+      {isCollapsed ? "◀" : "▶"}
+    </button>
+  );
+};
+
+const BaseNode = ({ data, children, id, selected }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
-  // TODO: good idea to add in intermediate costs in this way? or do it in
-  // computeNodeValues? The important thing is that parent costs are added 100%
-  // and child costs are weighted by child probabilities. at least cache somehow?
   const pathValue = useStore((state) => selectPathValue(state, id));
+  const { toggleNodeCollapse } = useStore.getState();
+
+  // Check if this node has children
+  const { hasChildren, isCollapsed } = useStore((state) =>
+    selectCollapsible(state, id)
+  );
+
   return (
     <div className="relative text-xs">
       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap">
         {data.label}
       </div>
       {children}
+      {
+        // TODO: is there is a risk of losing track of collapsed nodes when the
+        // button only shows when the node is selected?
+        selected && (
+          <CollapseButton
+            nodeId={id}
+            hasChildren={hasChildren}
+            isCollapsed={isCollapsed}
+            onToggle={toggleNodeCollapse}
+          />
+        )
+      }
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center whitespace-nowrap">
         {formatValue(pathValue)}
         {/* TODO: show cost separately? {formatCost(data.cost)} */}
@@ -40,7 +92,7 @@ const BaseNode = ({ data, children, id }: BaseNodeProps) => {
 
 const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
-    <BaseNode data={data} id={id}>
+    <BaseNode data={data} id={id} selected={selected}>
       <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
@@ -51,7 +103,7 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
 const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
-    <BaseNode data={data} id={id}>
+    <BaseNode data={data} id={id} selected={selected}>
       <div
         className={` p-8 rounded-full ${
           selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
@@ -67,6 +119,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const pathValue = useStore((state) => selectPathValue(state, id));
+
   return (
     <div className="relative text-xs">
       <div className="absolute -top-0 left-14 whitespace-nowrap">

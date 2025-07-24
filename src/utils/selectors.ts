@@ -210,3 +210,31 @@ const buildChildToParentEdgeMap = memoize(function (
 
   return childToParentMap;
 });
+
+const buildParentToChildNodeMap = memoize(function (
+  edges: Record<string, AppEdge>
+): Record<string, string[]> {
+  const parentToChildMap: Record<string, string[]> = {};
+  values(edges).forEach((edge) => {
+    if (!parentToChildMap[edge.source]) {
+      parentToChildMap[edge.source] = [];
+    }
+    parentToChildMap[edge.source]!.push(edge.target);
+  });
+  return parentToChildMap;
+});
+
+export function selectCollapsible(state: StoreState, nodeId: string) {
+  const tree = state.trees[state.currentTreeId!];
+  if (!tree) return { hasChildren: false, isCollapsed: false };
+
+  const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+  const children = parentToChildMap[nodeId];
+  const hasChildren = children ? children.length > 0 : false;
+
+  // Check if any child is hidden to determine collapsed state
+  const isCollapsed =
+    hasChildren && !!children?.some((nodeId) => tree.nodes[nodeId]?.hidden);
+
+  return { hasChildren, isCollapsed };
+}
