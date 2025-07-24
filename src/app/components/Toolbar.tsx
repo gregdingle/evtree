@@ -2,6 +2,7 @@
 
 import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/utils/download";
+import { openTreeFile } from "@/utils/load-tree";
 import { selectCurrentTree } from "@/utils/selectors";
 import { useReactFlow } from "@xyflow/react";
 import Image from "next/image";
@@ -11,13 +12,20 @@ import { ToolbarButton } from "./ToolbarButton";
 export default function Toolbar() {
   // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
-  const { onCopy, onPaste, onReset, onArrange } = useStore.getState();
+  const { onCopy, onPaste, onReset, onArrange, loadTree } = useStore.getState();
   const tree = useStore(selectCurrentTree);
   // TODO: why don't our app nodes work with the download?
   const { getNodes } = useReactFlow();
 
   const onExportClick = () => downloadPNG(getNodes(), "evtree.png");
-  // TODO: implement a onLoadClick to load a tree from a file
+  
+  const onOpenClick = async () => {
+    const treeData = await openTreeFile();
+    if (treeData) {
+      loadTree(treeData);
+    }
+  };
+  
   const onDownloadClick = () => tree && downloadJson(tree, "evtree.json");
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
@@ -31,6 +39,8 @@ export default function Toolbar() {
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
   useHotkeys("ctrl+e", onExportClick, { enableOnFormTags: false });
   useHotkeys("ctrl+d", onDownloadClick, { enableOnFormTags: false });
+  useHotkeys("ctrl+o", onOpenClick, { enableOnFormTags: false });
+  // TODO: add our own hotkey for delete that works when an input is focused and overrides the built-in react flow hotkeys
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">
@@ -78,6 +88,9 @@ export default function Toolbar() {
           tooltip="Ctrl+D"
         >
           download
+        </ToolbarButton>
+        <ToolbarButton onClick={onOpenClick} tooltip="Ctrl+O">
+          open
         </ToolbarButton>
       </div>
     </div>
