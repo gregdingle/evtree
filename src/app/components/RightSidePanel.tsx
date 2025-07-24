@@ -195,6 +195,8 @@ interface PropertyInputProps {
   children?: React.ReactNode;
 }
 
+// TODO: editing with the de bounce is not working perfectly. Sometimes it has the effect of snapping back. We need to fix this.
+// TODO: we also want to support more kinds of numeric input like 1.0M
 const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
   ({ label, value, onChange, textarea, children, ...props }, ref) => {
     const debouncedOnChange = debounce(onChange ?? (() => {}), 200);

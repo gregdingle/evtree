@@ -74,6 +74,8 @@ export default function ReactFlowApp() {
         onContextMenu={onContextMenu}
         // TODO: is this best way to close context menu?
         onClick={closeMenu}
+        maxZoom={4}
+        minZoom={0.1}
         // TODO: use isValidConnection to check for left-to-right connections only? check for cycles?
       >
         <Background />

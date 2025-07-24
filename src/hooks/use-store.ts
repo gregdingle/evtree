@@ -664,6 +664,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
+    // TODO: it would be great if auto arrange somehow preserve the relative order of nodes and edges
     onArrange: () => {
       const { currentTreeId } = get();
       if (!currentTreeId) {
