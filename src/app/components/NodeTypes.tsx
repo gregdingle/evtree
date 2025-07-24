@@ -20,23 +20,21 @@ interface BaseNodeProps {
   id: string;
   selected: boolean;
   children: ReactNode;
+  hasChildren: boolean;
+  isCollapsed: boolean;
 }
 
 interface CollapseButtonProps {
   nodeId: string;
-  hasChildren: boolean;
   isCollapsed: boolean;
   onToggle: (nodeId: string) => void;
 }
 
 const CollapseButton = ({
   nodeId,
-  hasChildren,
   isCollapsed,
   onToggle,
 }: CollapseButtonProps) => {
-  if (!hasChildren) return null;
-
   return (
     <button
       onClick={(e) => {
@@ -53,16 +51,18 @@ const CollapseButton = ({
   );
 };
 
-const BaseNode = ({ data, children, id, selected }: BaseNodeProps) => {
+const BaseNode = ({
+  data,
+  children,
+  id,
+  selected,
+  hasChildren,
+  isCollapsed,
+}: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectPathValue(state, id));
   const { toggleNodeCollapse } = useStore.getState();
-
-  // Check if this node has children
-  const { hasChildren, isCollapsed } = useStore((state) =>
-    selectCollapsible(state, id)
-  );
 
   return (
     <div className="relative text-xs">
@@ -73,10 +73,9 @@ const BaseNode = ({ data, children, id, selected }: BaseNodeProps) => {
       {
         // TODO: is there is a risk of losing track of collapsed nodes when the
         // button only shows when the node is selected?
-        selected && (
+        selected && hasChildren && (
           <CollapseButton
             nodeId={id}
-            hasChildren={hasChildren}
             isCollapsed={isCollapsed}
             onToggle={toggleNodeCollapse}
           />
@@ -91,8 +90,17 @@ const BaseNode = ({ data, children, id, selected }: BaseNodeProps) => {
 };
 
 const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+  const { hasChildren, isCollapsed } = useStore((state) =>
+    selectCollapsible(state, id)
+  );
   return (
-    <BaseNode data={data} id={id} selected={selected}>
+    <BaseNode
+      data={data}
+      id={id}
+      selected={selected}
+      hasChildren={hasChildren}
+      isCollapsed={isCollapsed}
+    >
       <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
@@ -102,15 +110,30 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+  const { hasChildren, isCollapsed } = useStore((state) =>
+    selectCollapsible(state, id)
+  );
   return (
-    <BaseNode data={data} id={id} selected={selected}>
+    <BaseNode
+      data={data}
+      id={id}
+      selected={selected}
+      hasChildren={hasChildren}
+      isCollapsed={isCollapsed}
+    >
       <div
         className={` p-8 rounded-full ${
           selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
-        }`}
+        }
+        `}
       >
         <Handle type="target" position={Position.Left} />
-        <Handle type="source" position={Position.Right} />
+        <Handle
+          type="source"
+          position={Position.Right}
+          className={isCollapsed ? "collapsed" : ""}
+          isConnectable={isCollapsed ? false : true}
+        />
       </div>
     </BaseNode>
   );

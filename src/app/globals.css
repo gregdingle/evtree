@@ -38,7 +38,11 @@ body {
 }
 
 .evtree .react-flow__handle:hover {
-  background-color: var(--foreground);
+  background-color: var(--foreground) !important;
+}
+
+.evtree .react-flow__handle.collapsed {
+  background-color: #9ca8b3 !important;
 }
 
 /* QUESTION: is this the best way to enlarge the controls buttons? */

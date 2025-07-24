@@ -11,6 +11,8 @@ export const downloadPNG = (nodes: AppNode[], filename: string) => {
     return;
   }
 
+  nodes = nodes.filter((node) => !node.hidden);
+
   // Calculate bounding box first to determine dynamic image size
   const bounds = calculateNodesBounds(nodes);
 
