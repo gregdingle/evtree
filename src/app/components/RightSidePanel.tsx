@@ -77,6 +77,7 @@ export default function RightSidePanel() {
                   <PropertyInput
                     ref={index === 0 ? firstInputRef : undefined}
                     label="Value"
+                    type="number"
                     value={node.data.value?.toString()}
                     onChange={(value) => {
                       if (value == "-") {
@@ -85,7 +86,13 @@ export default function RightSidePanel() {
                         // TODO: the root cause is that invalid values are set to zero... is that good?
                         return;
                       } else {
-                        onNodeDataUpdate(node.id, { value: toInteger(value) });
+                        if (value === "") {
+                          onNodeDataUpdate(node.id, { value: null });
+                        } else {
+                          onNodeDataUpdate(node.id, {
+                            value: toInteger(value),
+                          });
+                        }
                       }
                     }}
                     placeholder="Enter node value"
@@ -107,10 +114,15 @@ export default function RightSidePanel() {
                 />
                 <PropertyInput
                   label="Cost"
+                  type="number"
                   value={node.data.cost?.toString()}
-                  onChange={(value) =>
-                    onNodeDataUpdate(node.id, { cost: toInteger(value) })
-                  }
+                  onChange={(value) => {
+                    if (value === "") {
+                      onNodeDataUpdate(node.id, { cost: null });
+                    } else {
+                      onNodeDataUpdate(node.id, { cost: toInteger(value) });
+                    }
+                  }}
                   placeholder="Enter node cost"
                 />
               </div>
