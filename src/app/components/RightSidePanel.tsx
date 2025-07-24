@@ -126,6 +126,7 @@ export default function RightSidePanel() {
                       : undefined
                   }
                   type="number"
+                  // TODO: should probability really go first? why not label like nodes?
                   label="Probability"
                   value={edge.data?.probability?.toString()}
                   onChange={(value) => {

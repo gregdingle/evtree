@@ -40,17 +40,18 @@ export interface ComputeEdge {
  * is the number of edges with the highest expected value.
  *
  * NOTE: Any cost associated with a node is subtracted from its value before being
- * added to the expected value of the parent. However, the parent's own cost and
- * it's ancestors's costs are NOT added in.
+ * added to the expected value of the parent. However, the parent's OWN COST and
+ * it's ANCESTORS's costs are NOT added in. You can think of the expected value
+ * at a node as the FORWARD-LOOKING VALUE only.
  *
- * TODO: Make a plan to replace selectPathValue with cumulative costs here for
- * gain in code simplicity and performance. We will also probably want to do
- * this to support feeShiftingRate or other features. For each node, the cost
- * from parents should be added to the expected net value from children to get
- * the final node value. BUT we need to keep the user inputted terminal node
- * value somehow, and not just overwrite it. see #sym:selectPathValue . Look at
- * the snapshot test data at #file:demo-tree.json It has correct cumulative
- * calcs from #sym:selectPathValue .
+ * TODO: Figure out how and whether to replace selectPathValue with cumulative
+ * costs here for gain in code simplicity and performance. We will also probably
+ * want to do this to support feeShiftingRate or other features. For each node,
+ * the cost from parents should be added to the expected net value from children
+ * to get the final node value. BUT we need to keep the user inputted terminal
+ * node value somehow, and not just overwrite it. see #sym:selectPathValue .
+ * Look at the snapshot test data at #file:demo-tree.json It has correct
+ * cumulative calcs from #sym:selectPathValue .
  *
  * TODO: should we support edge values like silver decisions?
  *

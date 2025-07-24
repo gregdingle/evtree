@@ -320,8 +320,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         description,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        nodes: initialNodes,
-        edges: initialEdges,
+        nodes: {},
+        edges: {},
       };
       set((state) => {
         state.trees[treeId] = newTree;

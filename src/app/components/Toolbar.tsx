@@ -28,9 +28,9 @@ export default function Toolbar() {
   useHotkeys("ctrl+c", onCopy, { enableOnFormTags: true });
   useHotkeys("ctrl+v", onPaste, { enableOnFormTags: true });
   useHotkeys("ctrl+r", onReset, { enableOnFormTags: true });
-  useHotkeys("ctrl+a", onArrange, { enableOnFormTags: true });
-  useHotkeys("ctrl+e", onExportClick, { enableOnFormTags: true });
-  useHotkeys("ctrl+d", onDownloadClick, { enableOnFormTags: true });
+  useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
+  useHotkeys("ctrl+e", onExportClick, { enableOnFormTags: false });
+  useHotkeys("ctrl+d", onDownloadClick, { enableOnFormTags: false });
 
   return (
     <div className="flex items-center space-x-4 p-4 h-full">

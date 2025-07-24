@@ -112,7 +112,7 @@ export function selectPathProbability(
  * parent. When used with a terminal node, the terminal node's value minus all
  * **costs** along the path to the terminal node.
  *
- * NOTE: For mostly historical reasons, the expected value calculation of
+ * NOTE: For somewhat historical reasons, the expected value calculation of
  * computeNodeValues that sets each node's value does not take into account its
  * own cost or the costs of its ancestors. See note in computeNodeValues. The
  * advantage of the current two-pass approach is that we always preserve the user
