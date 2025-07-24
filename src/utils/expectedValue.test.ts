@@ -1,5 +1,11 @@
-import { keyBy } from "es-toolkit";
-import { ComputeEdge, ComputeNode, computeNodeValues } from "./expectedValue";
+import { keyBy, mapValues, toMerged } from "es-toolkit";
+import {
+  ComputeEdge,
+  ComputeNode,
+  computeNodeValues,
+  toComputeEdge,
+  toComputeNode,
+} from "./expectedValue";
 
 describe("computeNodeValues", () => {
   test("should copy values for a simple sequence of 1.0 probabilities", () => {
@@ -382,5 +388,23 @@ describe("computeNodeValues", () => {
 
     // Decision node should get the value of the only viable child
     expect(nodesByKey["decision"]!.data.value).toEqual(100);
+  });
+});
+
+import { DecisionTree } from "@/hooks/use-store";
+import demoTreeData from "@/utils/demo-tree.json";
+
+/**
+ * Ensures a real, complex decision tree with multiple nodes and edges, values
+ * and cost still works.
+ */
+describe("snapshot test", () => {
+  test("should not change demo tree data", () => {
+    const tree = demoTreeData as unknown as DecisionTree;
+    const computeNodes = mapValues(tree.nodes, (node) => toComputeNode(node));
+    const computeEdges = mapValues(tree.edges, (edge) => toComputeEdge(edge));
+    const { nodes, edges } = computeNodeValues(computeNodes, computeEdges);
+    const updatedTree = toMerged(tree, { nodes, edges });
+    expect(updatedTree).toEqual(tree);
   });
 });
