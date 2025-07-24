@@ -50,12 +50,14 @@ describe("computeNodeValues", () => {
     expect(nodes[2]!.data.value).toEqual(40);
   });
 
-  test("should compute expected value for a simple decision tree", () => {
+  // NOTE: See note in computeNodeValues about a node's OWN cost and
+  // ancestors's costs not being subtracted!!!
+  test("should compute expected value for a simple decision tree with costs", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } }, // Root decision node
+      { id: "1", data: { value: null, cost: 10 } }, // Root decision node
       { id: "2a", data: { value: 100, cost: null } }, // Outcome A
       { id: "2b", data: { value: 50, cost: null } }, // Outcome B
-      { id: "2c", data: { value: 0, cost: null } }, // Outcome C
+      { id: "2c", data: { value: 0, cost: 10 } }, // Outcome C
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.5 } },
@@ -68,10 +70,12 @@ describe("computeNodeValues", () => {
       keyBy(edges, (edge) => edge.id)
     );
 
-    // Expected value = (100 * 0.5) + (50 * 0.3) + (0 * 0.2) = 50 + 15 + 0 = 65
-    expect(nodes[0]!.data.value).toEqual(65);
+    // Expected value = (100 * 0.5) + (50 * 0.3) + ((0 - 10) * 0.2) = 50 + 15 - 2 = 63
+    expect(nodes[0]!.data.value).toEqual(63);
     expect(nodes[1]!.data.value).toEqual(100);
     expect(nodes[2]!.data.value).toEqual(50);
+    // NOTE: See note in computeNodeValues about a node's OWN cost and
+    // ancestors's costs not being subtracted!!!
     expect(nodes[3]!.data.value).toEqual(0);
   });
 
@@ -216,9 +220,9 @@ describe("computeNodeValues", () => {
     consoleSpy.mockRestore();
   });
 
-  test("should update probabilities for decision nodes based on expected value", () => {
+  test("should update probabilities for decision nodes based on expected value and costs", () => {
     const nodes: ComputeNode[] = [
-      { id: "decision", type: "decision", data: { value: null, cost: null } }, // Decision node
+      { id: "decision", type: "decision", data: { value: null, cost: 20 } }, // Decision node
       { id: "outcome1", type: "terminal", data: { value: 100, cost: 20 } }, // Net value: 80
       { id: "outcome2", type: "terminal", data: { value: 60, cost: 10 } }, // Net value: 50
       { id: "outcome3", type: "terminal", data: { value: 120, cost: 40 } }, // Net value: 80
