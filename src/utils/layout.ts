@@ -8,6 +8,7 @@ import { Position } from "@xyflow/react";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
+// TODO: why Constants and are these accurate?
 const nodeWidth = 172;
 const nodeHeight = 36;
 

@@ -10,7 +10,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { ToolbarButton } from "./ToolbarButton";
 
 export default function Toolbar() {
-  // TODO: hook up to keyboard shortcuts
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste, onReset, onArrange, loadTree } = useStore.getState();
   const tree = useStore(selectCurrentTree);

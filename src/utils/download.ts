@@ -1,4 +1,6 @@
 import { AppNode, DecisionTree } from "@/hooks/use-store";
+import { omit } from "es-toolkit";
+import { fromPairs, toPairs } from "es-toolkit/compat";
 import { toPng } from "html-to-image";
 
 // NOTE: see https://reactflow.dev/examples/misc/download-image
@@ -56,7 +58,18 @@ function downloadImage(dataUrl: string, filename: string) {
 }
 
 export const downloadJson = (tree: DecisionTree, filename: string) => {
-  const json = JSON.stringify(tree, null, 2);
+  // Omit selected property from nodes and edges to create cleaner export
+  const cleanTree: DecisionTree = {
+    ...tree,
+    nodes: fromPairs(
+      toPairs(tree.nodes).map(([id, node]) => [id, omit(node, ["selected"])])
+    ),
+    edges: fromPairs(
+      toPairs(tree.edges).map(([id, edge]) => [id, omit(edge, ["selected"])])
+    ),
+  };
+
+  const json = JSON.stringify(cleanTree, null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 

@@ -29,7 +29,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
 import bathtubTreeData from "@/utils/demo-bathtub-tree.json";
-import demoTreeData from "@/utils/demo-tree.json";
+import demoSexualTreeData from "@/utils/demo-sexual-tree.json";
 import { cloneEdge, createEdge } from "@/utils/edge";
 import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
@@ -247,7 +247,7 @@ const initialTrees: Record<string, DecisionTree> = {
     nodes: initialNodes,
     edges: initialEdges,
   },
-  [demoTreeData.id]: demoTreeData as unknown as DecisionTree,
+  [demoSexualTreeData.id]: demoSexualTreeData as unknown as DecisionTree,
   [bathtubTreeData.id]: bathtubTreeData as unknown as DecisionTree,
 };
 
