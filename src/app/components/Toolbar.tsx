@@ -4,7 +4,7 @@ import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/utils/download";
 import { openTreeFile } from "@/utils/load-tree";
 import { selectCurrentTree } from "@/utils/selectors";
-import { useReactFlow } from "@xyflow/react";
+import { values } from "es-toolkit/compat";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ToolbarButton } from "./ToolbarButton";
@@ -14,18 +14,18 @@ export default function Toolbar() {
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste, onReset, onArrange, loadTree } = useStore.getState();
   const tree = useStore(selectCurrentTree);
-  // TODO: why don't our app nodes work with the download?
-  const { getNodes } = useReactFlow();
 
-  const onExportClick = () => downloadPNG(getNodes(), "evtree.png");
-  
+  const onExportClick = () => {
+    downloadPNG(values(tree?.nodes ?? []), "evtree.png");
+  };
+
   const onOpenClick = async () => {
     const treeData = await openTreeFile();
     if (treeData) {
       loadTree(treeData);
     }
   };
-  
+
   const onDownloadClick = () => tree && downloadJson(tree, "evtree.json");
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
