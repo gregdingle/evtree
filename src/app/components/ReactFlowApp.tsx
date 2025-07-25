@@ -45,7 +45,6 @@ export default function ReactFlowApp() {
       });
 
       onDragEndCreateNodeAt(position, connectionState.fromNode.id);
-      console.log("[EVTree] onDragEndCreateNodeAt");
     }
   };
 
