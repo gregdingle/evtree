@@ -18,13 +18,8 @@ import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
 
 export default function ReactFlowApp() {
-  const {
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-    onNodesDelete,
-    onDragEndCreateNodeAt,
-  } = useStore.getState();
+  const { onNodesChange, onEdgesChange, onConnect, onDragEndCreateNodeAt } =
+    useStore.getState();
 
   const nodes = useStore(selectCurrentNodes);
   const edges = useStore(selectCurrentEdges);
@@ -50,6 +45,7 @@ export default function ReactFlowApp() {
       });
 
       onDragEndCreateNodeAt(position, connectionState.fromNode.id);
+      console.log("[EVTree] onDragEndCreateNodeAt");
     }
   };
 
@@ -70,7 +66,6 @@ export default function ReactFlowApp() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
-        onNodesDelete={onNodesDelete}
         onContextMenu={onContextMenu}
         // TODO: is this best way to close context menu?
         onClick={closeMenu}

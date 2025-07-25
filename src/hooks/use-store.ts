@@ -8,7 +8,6 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
-  OnNodesDelete,
   Position,
 } from "@xyflow/react";
 import {
@@ -45,7 +44,6 @@ import { immer } from "zustand/middleware/immer";
 
 export type NodeType = "decision" | "chance" | "terminal";
 
-// TODO: fill in AppNode and AppEdge types with custom data, and tighten up
 export type AppNode = Node<
   {
     label?: string;
@@ -97,7 +95,6 @@ export interface StoreState {
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
   balanceEdgeProbability: (id: string) => void;
-  onNodesDelete: OnNodesDelete<AppNode>;
   onCopy: () => void;
   onPaste: () => void;
   onReset: () => void;
@@ -252,19 +249,20 @@ const initialTrees: Record<string, DecisionTree> = {
   [bathtubTreeData.id]: bathtubTreeData as unknown as DecisionTree,
 };
 
-// TODO: should exclude selection from being persisted?
 const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
     persist(
       temporal(subscribeWithSelector(immer(f)), {
-        // NOTE: throttling is needed for dragging nodes into position
+        // NOTE: throttling is needed for actions like dragging nodes into position
         handleSet: (handleSet) => {
-          // TODO: onDragEndCreateNodeAt sometimes takes 3 clicks to undo
-          return throttle<typeof handleSet>((state) => {
-            handleSet(state);
-          }, 1000);
+          return throttle<typeof handleSet>(
+            (state) => handleSet(state),
+            1000, // ignore handleSet for 1 sec following a prev handleSet
+            // NOTE: important not have both leading and trailing, or else we
+            // get unwanted undo
+            { edges: ["leading"] }
+          );
         },
-        // NOTE: we don't want to track selection in history
         partialize: (state) => {
           // TODO: is going thru all the users trees necessary? why not just the current tree?
           return {
@@ -415,7 +413,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // ReactFlow operations (work on current tree)
     onNodesChange(changes) {
       set((state) =>
         withCurrentTree(state, (tree) => {
@@ -538,19 +535,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onNodesDelete: (deleted) => {
-      set((state) =>
-        withCurrentTree(state, (tree) => {
-          deleted.forEach((node) => {
-            delete tree.nodes[node.id];
-            // NOTE: onEdgesChange will be called by ReactFlow, and it will
-            // remove edges
-          });
-          tree.updatedAt = new Date().toISOString();
-        })
-      );
-    },
-
     onCopy: () => {
       set((state) =>
         withCurrentTree(state, (tree) => {
@@ -632,13 +616,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
+    // TODO: should this be in the store at all or should we just rely on onNodesChange?
+    // And review all other store methods!
+    // TODO: why are newEdge and newNode not selected after create on canvas?
     onDragEndCreateNodeAt: (position, fromNodeId) => {
       set((state) =>
         withCurrentTree(state, (tree) => {
-          // TODO: why are newEdge and newNode not selected after create on canvas?
           const newNode = createNode(position);
           const newEdge = createEdge(fromNodeId, newNode.id);
-          // TODO: why not selected after create on canvas?
           tree.nodes[newNode.id] = newNode;
           tree.edges[newEdge.id] = newEdge;
           // TODO: use dayjs?
