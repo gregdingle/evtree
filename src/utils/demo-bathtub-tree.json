@@ -321,7 +321,7 @@
       "data": {
         "label": "",
         "description": "",
-        "value": null,
+        "value": 0,
         "cost": null
       },
       "origin": [0.5, 0],
