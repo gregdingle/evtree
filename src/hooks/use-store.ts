@@ -256,7 +256,6 @@ const initialTrees: Record<string, DecisionTree> = {
 const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
     persist(
-      // TODO: bug in zundo onNodesDelete... edges do take another undo to come back!
       temporal(subscribeWithSelector(immer(f)), {
         // NOTE: throttling is needed for dragging nodes into position
         handleSet: (handleSet) => {
@@ -275,6 +274,7 @@ const middlewares = (f: StateCreator<StoreState>) =>
                 treeId,
                 {
                   ...tree,
+                  updatedAt: undefined,
                   nodes: fromPairs(
                     toPairs(tree.nodes).map(([id, node]) => [
                       id,
@@ -292,10 +292,11 @@ const middlewares = (f: StateCreator<StoreState>) =>
             ),
           };
         },
-        // HACK: deep isEqual instead of shallow to fix extra pastState with undo after paste
-        // TODO: figure out the extra store updates, then mirror the useStore hook
-        // one-level-deep compare. See createWithEqualityFn.
-        equality: (pastState, currentState) => isEqual(pastState, currentState),
+        // NOTE: deep isEqual instead of shallow. this is needed to prevent
+        // spurious undo states. see createWithEqualityFn in contrast.
+        // TODO: figure out if this is a perf problem, figure out how to
+        // minimize store updates
+        equality: isEqual,
       }),
       {
         // TODO: develop migration and invalidation protocol
@@ -538,27 +539,12 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onNodesDelete: (deleted) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("nodes delete");
-        return;
-      }
-
       set((state) =>
         withCurrentTree(state, (tree) => {
           deleted.forEach((node) => {
             delete tree.nodes[node.id];
-            // Remove edges connected to the deleted node
-            keys(tree.edges).forEach((edgeId) => {
-              const edge = tree.edges[edgeId];
-              if (edge) {
-                if (edge.source === node.id || edge.target === node.id) {
-                  delete tree.edges[edgeId];
-                }
-              } else {
-                warnItemNotFound("Edge", edgeId, "nodes delete");
-              }
-            });
+            // NOTE: onEdgesChange will be called by ReactFlow, and it will
+            // remove edges
           });
           tree.updatedAt = new Date().toISOString();
         })
@@ -566,12 +552,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onCopy: () => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("copy");
-        return;
-      }
-
       set((state) =>
         withCurrentTree(state, (tree) => {
           const nodes = values(tree.nodes);
@@ -587,12 +567,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onPaste: () => {
-      const { currentTreeId, clipboard } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("paste");
-        return;
-      }
-
+      const { clipboard } = get();
       set((state) =>
         withCurrentTree(state, (tree) => {
           const PASTE_OFFSET = 50;
@@ -647,12 +622,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onCreateNodeAt: (position, nodeType) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("create node");
-        return;
-      }
-
       set((state) =>
         withCurrentTree(state, (tree) => {
           const newNode = createNode(position, nodeType);
@@ -664,12 +633,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onDragEndCreateNodeAt: (position, fromNodeId) => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("drag end create node");
-        return;
-      }
-
       set((state) =>
         withCurrentTree(state, (tree) => {
           // TODO: why are newEdge and newNode not selected after create on canvas?
@@ -686,12 +649,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
     // TODO: it would be great if auto arrange somehow preserve the relative order of nodes and edges
     onArrange: () => {
-      const { currentTreeId } = get();
-      if (!currentTreeId) {
-        warnNoCurrentTree("arrange");
-        return;
-      }
-
       set((state) =>
         withCurrentTree(state, (tree) => {
           const { nodes, edges } = getLayoutedElements(
@@ -795,7 +752,13 @@ useStoreBase.subscribe(
       });
     });
   },
-  { equalityFn: isEqual }
+  {
+    // NOTE: deep isEqual instead of shallow. this is needed to prevent
+    // spurious undo states. see createWithEqualityFn in contrast.
+    // TODO: figure out if this is a perf problem, figure out how to
+    // minimize store updates
+    equalityFn: isEqual,
+  }
 );
 
 // TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools
