@@ -1,4 +1,5 @@
 import { ContextMenuProps } from "@/app/components/ContextMenu";
+import { AppNode } from "@/hooks/use-store";
 import { useRef, useState } from "react";
 
 /**
@@ -8,7 +9,11 @@ export function useContextMenu() {
   const [menu, setMenu] = useState<ContextMenuProps | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
-  const onContextMenu = (event: React.MouseEvent) => {
+  const onContextMenu = (
+    event: MouseEvent | React.MouseEvent,
+    isNodeContext: boolean,
+    node?: AppNode
+  ) => {
     // Prevent native context menu from showing
     event.preventDefault();
 
@@ -31,6 +36,8 @@ export function useContextMenu() {
         relativeY >= pane.height - 200 ? pane.height - relativeY : undefined,
       // Store the actual screen coordinates for ReactFlow's screenToFlowPosition
       contextPosition: { x: event.clientX, y: event.clientY },
+      isNodeContext,
+      contextNode: node,
     });
   };
 

@@ -109,6 +109,8 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   );
 };
 
+// TODO: move collapse button to ContextMenu, but leave CSS isCollapsed
+// className logic here
 const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, id)

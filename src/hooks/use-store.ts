@@ -111,6 +111,7 @@ export interface StoreState {
   ) => void;
   onArrange: () => void;
   toggleNodeCollapse: (nodeId: string) => void;
+  onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
 }
 
 const initialNodes = keyBy(
@@ -259,7 +260,6 @@ const middlewares = (f: StateCreator<StoreState>) =>
         // NOTE: throttling is needed for actions like dragging nodes across the canvas
         handleSet: (handleSet) =>
           throttle<typeof handleSet>((state) => {
-            console.trace("EVTree useStore handleSet");
             handleSet(state);
           }, 200),
         partialize: selectUndoableState,
@@ -670,6 +670,27 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           // TODO: implement tree.updatedAt as a store subscription? or put in
           // existing subscribe?
+          tree.updatedAt = new Date().toISOString();
+        })
+      );
+    },
+
+    onConvertNode: (nodeId: string, newNodeType: NodeType) => {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const node = tree.nodes[nodeId];
+          if (!node) {
+            warnItemNotFound("Node", nodeId, "convert node");
+            return;
+          }
+
+          // Update the node type while preserving all other properties
+          const updatedNode: AppNode = {
+            ...node,
+            type: newNodeType,
+          };
+
+          tree.nodes[nodeId] = updatedNode;
           tree.updatedAt = new Date().toISOString();
         })
       );

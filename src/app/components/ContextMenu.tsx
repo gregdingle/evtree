@@ -1,4 +1,4 @@
-import { NodeType, useStore } from "@/hooks/use-store";
+import { AppNode, NodeType, useStore } from "@/hooks/use-store";
 import { useReactFlow } from "@xyflow/react";
 
 export interface ContextMenuProps {
@@ -8,6 +8,8 @@ export interface ContextMenuProps {
   bottom?: number;
   contextPosition?: { x: number; y: number };
   onClose?: () => void;
+  isNodeContext?: boolean;
+  contextNode?: AppNode;
 }
 
 /**
@@ -20,8 +22,10 @@ export default function ContextMenu({
   bottom,
   contextPosition,
   onClose,
+  isNodeContext,
+  contextNode,
 }: ContextMenuProps) {
-  const { onCreateNodeAt } = useStore.getState();
+  const { onCreateNodeAt, onConvertNode } = useStore.getState();
   const { screenToFlowPosition } = useReactFlow();
 
   const handleCreateNode = (nodeType: NodeType) => {
@@ -30,6 +34,13 @@ export default function ContextMenu({
     // Convert the relative position to ReactFlow coordinates
     const flowPosition = screenToFlowPosition(contextPosition);
     onCreateNodeAt(flowPosition, nodeType);
+    onClose?.();
+  };
+
+  const handleConvertNode = (nodeType: NodeType) => {
+    if (!contextNode) return;
+
+    onConvertNode(contextNode.id, nodeType);
     onClose?.();
   };
 
@@ -45,24 +56,51 @@ export default function ContextMenu({
       }}
       className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg py-1"
     >
-      <button
-        onClick={() => handleCreateNode("decision")}
-        className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-      >
-        Create Decision Node
-      </button>
-      <button
-        onClick={() => handleCreateNode("chance")}
-        className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-      >
-        Create Chance Node
-      </button>
-      <button
-        onClick={() => handleCreateNode("terminal")}
-        className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-      >
-        Create Terminal Node
-      </button>
+      {isNodeContext ? (
+        // TODO: hide or disable the current node type from the menu
+        // TODO: put in more actions like delete, copy, paste (replace), select subtree
+        <>
+          <button
+            onClick={() => handleConvertNode("decision")}
+            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          >
+            Convert to Decision Node
+          </button>
+          <button
+            onClick={() => handleConvertNode("chance")}
+            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          >
+            Convert to Chance Node
+          </button>
+          <button
+            onClick={() => handleConvertNode("terminal")}
+            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          >
+            Convert to Terminal Node
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            onClick={() => handleCreateNode("decision")}
+            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          >
+            Create Decision Node
+          </button>
+          <button
+            onClick={() => handleCreateNode("chance")}
+            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          >
+            Create Chance Node
+          </button>
+          <button
+            onClick={() => handleCreateNode("terminal")}
+            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          >
+            Create Terminal Node
+          </button>
+        </>
+      )}
     </div>
   );
 }
