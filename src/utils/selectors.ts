@@ -1,6 +1,6 @@
 import { AppEdge, StoreState } from "@/hooks/use-store";
-import { mapValues, memoize } from "es-toolkit";
-import { values } from "es-toolkit/compat";
+import { mapValues, memoize, omit } from "es-toolkit";
+import { fromPairs, toPairs, values } from "es-toolkit/compat";
 import { toComputeEdge, toComputeNode } from "./expectedValue";
 import { warnItemNotFound, warnNoCurrentTree } from "./warn";
 
@@ -237,4 +237,35 @@ export function selectCollapsible(state: StoreState, nodeId: string) {
     hasChildren && !!children?.some((nodeId) => tree.nodes[nodeId]?.hidden);
 
   return { hasChildren, isCollapsed };
+}
+
+export function selectUndoableState(state: StoreState) {
+  // TODO: is going thru all the users trees necessary? why not just the current tree?
+  return {
+    ...state,
+    clipboard: undefined,
+    trees: fromPairs(
+      toPairs(state.trees).map(([treeId, tree]) => [
+        treeId,
+        {
+          ...tree,
+          updatedAt: undefined,
+          nodes: fromPairs(
+            toPairs(tree.nodes).map(([id, node]) => [
+              id,
+              // NOTE: measured is something that ReactFlow adds
+              // secondarily to nodes onNodesChange
+              omit(node, ["selected", "measured"]),
+            ])
+          ),
+          edges: fromPairs(
+            toPairs(tree.edges).map(([id, edge]) => [
+              id,
+              omit(edge, ["selected"]),
+            ])
+          ),
+        },
+      ])
+    ),
+  };
 }

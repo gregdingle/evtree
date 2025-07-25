@@ -1,4 +1,5 @@
 "use client";
+
 import {
   addEdge,
   applyEdgeChanges,
@@ -14,12 +15,11 @@ import {
   cloneDeep,
   isEqual,
   keyBy,
-  omit,
   round,
   throttle,
   toMerged,
 } from "es-toolkit";
-import { fromPairs, keys, max, toPairs, values } from "es-toolkit/compat";
+import { keys, max, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
@@ -33,7 +33,10 @@ import { cloneEdge, createEdge } from "@/utils/edge";
 import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
 import { cloneNode, createNode } from "@/utils/node";
-import { selectComputedNodesAndEdges } from "@/utils/selectors";
+import {
+  selectComputedNodesAndEdges,
+  selectUndoableState,
+} from "@/utils/selectors";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import {
   createSelectorFunctions,
@@ -253,47 +256,18 @@ const middlewares = (f: StateCreator<StoreState>) =>
   devtools(
     persist(
       temporal(subscribeWithSelector(immer(f)), {
-        // NOTE: throttling is needed for actions like dragging nodes into position
-        handleSet: (handleSet) => {
-          return throttle<typeof handleSet>(
-            (state) => handleSet(state),
-            1000, // ignore handleSet for 1 sec following a prev handleSet
-            // NOTE: important not have both leading and trailing, or else we
-            // get unwanted undo
-            { edges: ["leading"] }
-          );
-        },
-        partialize: (state) => {
-          // TODO: is going thru all the users trees necessary? why not just the current tree?
-          return {
-            ...state,
-            trees: fromPairs(
-              toPairs(state.trees).map(([treeId, tree]) => [
-                treeId,
-                {
-                  ...tree,
-                  updatedAt: undefined,
-                  nodes: fromPairs(
-                    toPairs(tree.nodes).map(([id, node]) => [
-                      id,
-                      omit(node, ["selected"]),
-                    ])
-                  ),
-                  edges: fromPairs(
-                    toPairs(tree.edges).map(([id, edge]) => [
-                      id,
-                      omit(edge, ["selected"]),
-                    ])
-                  ),
-                },
-              ])
-            ),
-          };
-        },
+        // NOTE: throttling is needed for actions like dragging nodes across the canvas
+        handleSet: (handleSet) =>
+          throttle<typeof handleSet>((state) => {
+            console.trace("EVTree useStore handleSet");
+            handleSet(state);
+          }, 200),
+        partialize: selectUndoableState,
         // NOTE: deep isEqual instead of shallow. this is needed to prevent
         // spurious undo states. see createWithEqualityFn in contrast.
         // TODO: figure out if this is a perf problem, figure out how to
-        // minimize store updates
+        // minimize store updates. see partialize already developed to reduce
+        // undo.
         equality: isEqual,
       }),
       {
@@ -713,9 +687,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
  *
  * TODO: check worst-case performance of this subscription... it could be
  * slow... it would be better if we just passed patches back and forth
- *
- * TODO: is this messing up undo history? It seems like it is, because it is
- * adding extra states
  */
 useStoreBase.subscribe(
   selectComputedNodesAndEdges,
@@ -723,6 +694,9 @@ useStoreBase.subscribe(
     const { nodes: updatedComputeNodes, edges: updatedComputeEdges } =
       computeNodeValues(computeNodes, computeEdges);
     const state = useStoreBase.getState();
+
+    // Pause temporal middleware to prevent undo/redo entries for computed value updates
+    useStoreBase.temporal.getState().pause();
     withCurrentTree(state, (tree) => {
       // NOTE: need to maintain immutability here
       useStoreBase.setState({
@@ -736,12 +710,14 @@ useStoreBase.subscribe(
         },
       });
     });
+    useStoreBase.temporal.getState().resume();
   },
   {
     // NOTE: deep isEqual instead of shallow. this is needed to prevent
     // spurious undo states. see createWithEqualityFn in contrast.
     // TODO: figure out if this is a perf problem, figure out how to
-    // minimize store updates
+    // minimize store updates. see partialize already developed to reduce
+    // undo.
     equalityFn: isEqual,
   }
 );

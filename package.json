@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.5",
+    "@types/deep-diff": "^1.0.5",
     "@xyflow/react": "^12.8.2",
     "auto-zustand-selectors-hook": "^3.0.1",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "dayjs": "^1.11.13",
+    "deep-diff": "^1.0.2",
     "es-toolkit": "^1.39.7",
     "html-to-image": "^1.11.11",
     "immer": "^10.1.1",

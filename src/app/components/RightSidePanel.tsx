@@ -194,6 +194,8 @@ export default function RightSidePanel() {
   );
 }
 
+// TODO: should PropertyInputProps inherit from
+// React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
   label: string;
   value?: string;
