@@ -24,21 +24,14 @@ interface BaseNodeProps {
   isCollapsed: boolean;
 }
 
-const BaseNode = ({
-  data,
-  children,
-  id,
-  selected,
-  hasChildren,
-  isCollapsed,
-}: BaseNodeProps) => {
+const BaseNode = ({ data, children, id }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectPathValue(state, id));
 
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap">
+      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap">
         {data.label}
       </div>
       {children}
@@ -62,7 +55,7 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       hasChildren={hasChildren}
       isCollapsed={isCollapsed}
     >
-      <div className={`p-8 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
+      <div className={`p-4 ${selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"}`}>
         <Handle type="target" position={Position.Left} />
         <Handle type="source" position={Position.Right} />
       </div>
@@ -85,10 +78,9 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       isCollapsed={isCollapsed}
     >
       <div
-        className={` p-8 rounded-full ${
+        className={`p-4 rounded-full ${
           selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
-        }
-        `}
+        }`}
       >
         <Handle type="target" position={Position.Left} />
         <Handle
@@ -108,29 +100,35 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-0 left-14 whitespace-nowrap">
-        {data.label}
-      </div>
+      {data.label && (
+        <div className="absolute -top-2 left-8 whitespace-nowrap">
+          {data.label}
+        </div>
+      )}
       <div
         style={{
           // NOTE: this wacky CSS creates the triangle shape
-          borderTop: "30px solid transparent",
-          borderBottom: "30px solid transparent",
-          borderRight: `48px solid ${
+          borderTop: "15px solid transparent",
+          borderBottom: "15px solid transparent",
+          borderRight: `24px solid ${
             // TODO: sync selected color with tree selected color and tailwind color above
             selected ? "rgba(0, 123, 255, 0.5)" : "#9ca8b3"
           }`,
         }}
       />
       <Handle type="target" position={Position.Left} />
-      <div className={`absolute left-14 max-w-32 top-5 whitespace-nowrap`}>
+      <div
+        className={`absolute left-8 max-w-32 ${
+          data.label ? "top-2" : "-top-1"
+        } whitespace-nowrap`}
+      >
         {/* NOTE: we only show the net path value, following silver decisions
         {formatValue(data.value)}
         {formatCost(data.cost)}
         */}
         {formatValue(pathValue)}
       </div>
-      <div className="absolute top-10 left-14">
+      <div className={`absolute ${data.label ? "top-6" : "top-5"} left-8`}>
         {/*
          TODO: always show pathProbability?
          NOTE: don't show the ??? placeholder for null pathProbability
