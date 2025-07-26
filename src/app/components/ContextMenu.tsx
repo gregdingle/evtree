@@ -27,8 +27,13 @@ export default function ContextMenu({
   isNodeContext,
   contextNode,
 }: ContextMenuProps) {
-  const { onCreateNodeAt, onConvertNode, toggleNodeCollapse, selectSubtree } =
-    useStore.getState();
+  const {
+    onCreateNodeAt,
+    onConvertNode,
+    toggleNodeCollapse,
+    selectSubtree,
+    deleteSubTree,
+  } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, contextNode?.id)
@@ -68,6 +73,11 @@ export default function ContextMenu({
         // TODO: hide or disable the current node type from the menu and apply
         // TODO: put in more actions like delete, copy, paste (replace), select subtree
         <>
+          <ContextMenuButton
+            onClick={() => contextNode && deleteSubTree(contextNode.id)}
+          >
+            Delete Subtree
+          </ContextMenuButton>
           <ContextMenuButton
             onClick={() => contextNode && selectSubtree(contextNode.id)}
             disabled={!hasChildren}

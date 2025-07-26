@@ -32,6 +32,10 @@ import demoSexualTreeData from "@/utils/demo-sexual-tree.json";
 import { cloneEdge, createEdge } from "@/utils/edge";
 import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
+import {
+  buildNodeToIncomingEdgeMap,
+  buildParentToChildNodeMap,
+} from "@/utils/maps";
 import { cloneNode, createNode } from "@/utils/node";
 import {
   selectComputedNodesAndEdges,
@@ -113,6 +117,7 @@ export interface StoreState {
   toggleNodeCollapse: (nodeId: string) => void;
   onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
   selectSubtree: (nodeId: string) => void;
+  deleteSubTree: (nodeId: string) => void;
 }
 
 const initialNodes = keyBy(
@@ -708,52 +713,52 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           clearSelections(tree);
 
-          // TODO: should we extract this traversal code or use`
-          // buildAdjacencyList or buildParentToChildNodeMap?
-          // Find all descendant nodes and edges using a stack-based traversal
-          const descendantNodes: string[] = [nodeId]; // Include the root node
-          const connectedEdges: string[] = [];
-          const stack = [nodeId];
-          const seen = new Set<string>();
+          const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+          const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(tree.edges);
 
-          while (stack.length > 0) {
-            const currentNodeId = stack.pop()!;
-            if (seen.has(currentNodeId)) continue;
-            seen.add(currentNodeId);
-
-            // Find all edges that start from this node
-            const childEdges = values(tree.edges).filter(
-              (edge) => edge.source === currentNodeId
-            );
-
-            childEdges.forEach((edge) => {
-              connectedEdges.push(edge.id);
-              const childNodeId = edge.target;
-
-              // Only add if it's not already included and not the original node
-              if (
-                childNodeId !== nodeId &&
-                !descendantNodes.includes(childNodeId)
-              ) {
-                descendantNodes.push(childNodeId);
-                stack.push(childNodeId);
-              }
+          const selectDescendants = (currentNodeId: string) => {
+            const children = parentToChildMap[currentNodeId] ?? [];
+            children.forEach((childNodeId) => {
+              selectDescendants(childNodeId);
             });
+            // NOTE: don't select incoming edge to the root itself
+            // TODO: or should we???
+            if (currentNodeId !== nodeId) {
+              tree.edges[nodeToIncomingEdgeMap[currentNodeId]!]!.selected =
+                true;
+            }
+            tree.nodes[currentNodeId]!.selected = true;
+          };
+
+          selectDescendants(nodeId);
+        })
+      );
+    },
+
+    deleteSubTree: (nodeId: string) => {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const rootNode = tree.nodes[nodeId];
+          if (!rootNode) {
+            warnItemNotFound("Node", nodeId, "delete subtree");
+            return;
           }
 
-          // Select all descendant nodes
-          descendantNodes.forEach((nodeId) => {
-            if (tree.nodes[nodeId]) {
-              tree.nodes[nodeId].selected = true;
-            }
-          });
+          const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+          const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(tree.edges);
 
-          // Select all connected edges
-          connectedEdges.forEach((edgeId) => {
-            if (tree.edges[edgeId]) {
-              tree.edges[edgeId].selected = true;
-            }
-          });
+          const deleteDescendants = (currentNodeId: string) => {
+            const children = parentToChildMap[currentNodeId] ?? [];
+            children.forEach((childNodeId) => {
+              deleteDescendants(childNodeId);
+            });
+            delete tree.nodes[currentNodeId];
+            delete tree.edges[nodeToIncomingEdgeMap[currentNodeId]!];
+          };
+
+          deleteDescendants(nodeId);
+
+          tree.updatedAt = new Date().toISOString();
         })
       );
     },
