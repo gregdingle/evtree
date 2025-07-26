@@ -33,6 +33,7 @@ export default function ContextMenu({
     toggleNodeCollapse,
     selectSubtree,
     deleteSubTree,
+    onCopy,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -74,21 +75,31 @@ export default function ContextMenu({
         // TODO: put in more actions like delete, copy, paste (replace), select subtree
         <>
           <ContextMenuButton
-            onClick={() => contextNode && deleteSubTree(contextNode.id)}
-          >
-            Delete Subtree
-          </ContextMenuButton>
-          <ContextMenuButton
             onClick={() => contextNode && selectSubtree(contextNode.id)}
             disabled={!hasChildren}
           >
             Select Subtree
           </ContextMenuButton>
           <ContextMenuButton
+            onClick={() => {
+              if (contextNode) {
+                selectSubtree(contextNode.id);
+                onCopy();
+              }
+            }}
+          >
+            Copy Subtree
+          </ContextMenuButton>
+          <ContextMenuButton
             onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
             disabled={!hasChildren}
           >
-            {isCollapsed ? "Expand" : "Collapse"}
+            {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
+          </ContextMenuButton>
+          <ContextMenuButton
+            onClick={() => contextNode && deleteSubTree(contextNode.id)}
+          >
+            Delete Subtree
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => handleConvertNode("decision")}
