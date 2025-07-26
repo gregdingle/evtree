@@ -1,5 +1,6 @@
 import { AppEdge, AppNode, NodeType } from "@/hooks/use-store";
 import { max, values } from "es-toolkit/compat";
+import { Parser } from "expr-eval";
 
 type AdjacencyList = Record<
   string,
@@ -191,13 +192,36 @@ function getBestChild(
   return { maxChildValue, bestProbability };
 }
 
-export function toComputeNode(node: AppNode): ComputeNode {
+function safeEvalExpr(
+  expression: string | undefined,
+  variables: Record<string, number>,
+  defaultValue: number | null
+): number | null {
+  if (typeof expression === "undefined" || expression.trim() === "") {
+    return defaultValue;
+  }
+  try {
+    return Parser.evaluate(expression, variables);
+  } catch (error) {
+    console.warn(
+      `[EVTree] Using default value ${defaultValue} because failed expression:`,
+      error
+    );
+    return defaultValue;
+  }
+}
+
+export function toComputeNode(
+  node: AppNode,
+  // TODO: get variables from tree settings
+  variables: Record<string, number> = {}
+): ComputeNode {
   return {
     id: node.id,
     type: node.type,
     data: {
-      value: node.data.value,
-      cost: node.data.cost,
+      value: safeEvalExpr(node.data.valueExpr, variables, node.data.value),
+      cost: safeEvalExpr(node.data.costExpr, variables, node.data.cost),
     },
   };
 }

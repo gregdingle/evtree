@@ -395,8 +395,197 @@ describe("computeNodeValues", () => {
   });
 });
 
-import { DecisionTree } from "@/hooks/use-store";
-import demoTreeData from "@/utils/demo-tree.json";
+describe("toComputeNode expression evaluation", () => {
+  const appNode: AppNode = {
+    id: "test",
+    type: "terminal" as const,
+    data: {
+      value: null,
+      cost: null,
+    },
+    position: { x: 0, y: 0 },
+  };
+
+  test("should use default values when no expressions are provided", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        value: 100,
+        cost: 50,
+        valueExpr: undefined,
+        costExpr: undefined,
+      },
+    };
+
+    const result = toComputeNode(testNode);
+
+    expect(result.data.value).toEqual(100);
+    expect(result.data.cost).toEqual(50);
+  });
+
+  test("should evaluate simple arithmetic expressions", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        value: 0, // fallback value
+        cost: 0, // fallback value
+        valueExpr: "10 + 5 * 2",
+        costExpr: "100 - 30",
+      },
+    };
+
+    const result = toComputeNode(testNode);
+
+    expect(result.data.value).toEqual(20); // 10 + 5 * 2
+    expect(result.data.cost).toEqual(70); // 100 - 30
+  });
+
+  test("should evaluate expressions with variables", () => {
+    const testNode = {
+      ...appNode,
+      type: "decision" as const,
+      data: {
+        ...appNode.data,
+        valueExpr: "baseValue * multiplier + bonus",
+        costExpr: "hourlyRate * hours",
+      },
+    };
+
+    const variables = {
+      baseValue: 1000,
+      multiplier: 1.5,
+      bonus: 200,
+      hourlyRate: 150,
+      hours: 8,
+    };
+
+    const result = toComputeNode(testNode, variables);
+
+    expect(result.data.value).toEqual(1700); // 1000 * 1.5 + 200
+    expect(result.data.cost).toEqual(1200); // 150 * 8
+  });
+
+  test("should handle parentheses and complex expressions", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        value: 0,
+        cost: 0,
+        valueExpr: "(probability * outcome1) + ((1 - probability) * outcome2)",
+        costExpr: "baseCost * (1 + taxRate)",
+      },
+    };
+
+    const variables = {
+      probability: 0.6,
+      outcome1: 1000,
+      outcome2: 500,
+      baseCost: 100,
+      taxRate: 0.08,
+    };
+
+    const result = toComputeNode(testNode, variables);
+
+    expect(result.data.value).toEqual(800); // (0.6 * 1000) + (0.4 * 500)
+    expect(result.data.cost).toEqual(108); // 100 * 1.08
+  });
+
+  test("should handle boolean operations in expressions", () => {
+    const testNode = {
+      ...appNode,
+      type: "decision" as const,
+      data: {
+        value: 0,
+        cost: 0,
+        valueExpr: "condition ? trueValue : falseValue",
+        costExpr: "urgent ? rushCost : normalCost",
+      },
+    };
+
+    const variables = {
+      condition: 1, // truthy
+      trueValue: 500,
+      falseValue: 300,
+      urgent: 0, // falsy
+      rushCost: 200,
+      normalCost: 100,
+    };
+
+    const result = toComputeNode(testNode, variables);
+
+    expect(result.data.value).toEqual(500); // condition is truthy
+    expect(result.data.cost).toEqual(100); // urgent is falsy
+  });
+
+  test("should fallback to default value when expression fails", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        value: 42, // fallback value
+        cost: 25, // fallback value
+        valueExpr: "undefinedVariable * 10", // This will fail
+        costExpr: "10 / 0", // This might fail depending on expr-eval behavior
+      },
+    };
+
+    // Mock console.warn to suppress error output during test
+    const consoleSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    const result = toComputeNode(testNode);
+
+    expect(result.data.value).toEqual(42); // Should fallback to default
+    expect(consoleSpy).toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
+
+  test("should handle null default values", () => {
+    const testNode = {
+      ...appNode,
+      type: "decision" as const,
+      data: {
+        value: null,
+        cost: null,
+        valueExpr: "validVar * 2",
+        costExpr: "invalidVar * 3", // This will fail
+      },
+    };
+
+    const variables = {
+      validVar: 50,
+    };
+
+    // Mock console.warn to suppress error output during test
+    const consoleSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    const result = toComputeNode(testNode, variables);
+
+    expect(result.data.value).toEqual(100); // validVar * 2 = 50 * 2
+    expect(result.data.cost).toBeNull(); // Should fallback to null default
+
+    consoleSpy.mockRestore();
+  });
+
+  test("should handle empty string expressions", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        value: 75,
+        cost: 25,
+        valueExpr: "",
+        costExpr: "",
+      },
+    };
+
+    const result = toComputeNode(testNode);
+
+    expect(result.data.value).toEqual(75); // Should use default values
+    expect(result.data.cost).toEqual(25);
+  });
+});
+
+import { AppNode, DecisionTree } from "@/hooks/use-store";
+import demoTreeData from "@/utils/demo-sexual-tree.json";
 
 /**
  * Ensures a real, complex decision tree with multiple nodes and edges, values

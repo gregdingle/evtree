@@ -60,6 +60,8 @@ export type AppNode = Node<
     // will be merged in. see computeNodeValues
     value: number | null;
     cost: number | null;
+    valueExpr?: string; // Expression for value, if using expr-eval
+    costExpr?: string; // Expression for cost, if using expr-eval
   },
   NodeType
 >;
