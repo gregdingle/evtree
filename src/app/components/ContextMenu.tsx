@@ -27,7 +27,7 @@ export default function ContextMenu({
   isNodeContext,
   contextNode,
 }: ContextMenuProps) {
-  const { onCreateNodeAt, onConvertNode, toggleNodeCollapse } =
+  const { onCreateNodeAt, onConvertNode, toggleNodeCollapse, selectSubtree } =
     useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -69,18 +69,33 @@ export default function ContextMenu({
         // TODO: put in more actions like delete, copy, paste (replace), select subtree
         <>
           <ContextMenuButton
+            onClick={() => contextNode && selectSubtree(contextNode.id)}
+            disabled={!hasChildren}
+          >
+            Select Subtree
+          </ContextMenuButton>
+          <ContextMenuButton
             onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
             disabled={!hasChildren}
           >
             {isCollapsed ? "Expand" : "Collapse"}
           </ContextMenuButton>
-          <ContextMenuButton onClick={() => handleConvertNode("decision")}>
+          <ContextMenuButton
+            onClick={() => handleConvertNode("decision")}
+            disabled={contextNode?.type === "decision"}
+          >
             Convert to Decision Node
           </ContextMenuButton>
-          <ContextMenuButton onClick={() => handleConvertNode("chance")}>
+          <ContextMenuButton
+            onClick={() => handleConvertNode("chance")}
+            disabled={contextNode?.type === "chance"}
+          >
             Convert to Chance Node
           </ContextMenuButton>
-          <ContextMenuButton onClick={() => handleConvertNode("terminal")}>
+          <ContextMenuButton
+            onClick={() => handleConvertNode("terminal")}
+            disabled={hasChildren || contextNode?.type === "terminal"}
+          >
             Convert to Terminal Node
           </ContextMenuButton>
         </>
@@ -116,7 +131,9 @@ function ContextMenuButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+      className={`${
+        disabled ? "opacity-50" : ""
+      } px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2`}
     >
       {children}
     </button>

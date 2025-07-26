@@ -112,6 +112,7 @@ export interface StoreState {
   onArrange: () => void;
   toggleNodeCollapse: (nodeId: string) => void;
   onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
+  selectSubtree: (nodeId: string) => void;
 }
 
 const initialNodes = keyBy(
@@ -692,6 +693,67 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           tree.nodes[nodeId] = updatedNode;
           tree.updatedAt = new Date().toISOString();
+        })
+      );
+    },
+
+    selectSubtree: (nodeId: string) => {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const rootNode = tree.nodes[nodeId];
+          if (!rootNode) {
+            warnItemNotFound("Node", nodeId, "select subtree");
+            return;
+          }
+
+          clearSelections(tree);
+
+          // TODO: should we extract this traversal code or use`
+          // buildAdjacencyList or buildParentToChildNodeMap?
+          // Find all descendant nodes and edges using a stack-based traversal
+          const descendantNodes: string[] = [nodeId]; // Include the root node
+          const connectedEdges: string[] = [];
+          const stack = [nodeId];
+          const seen = new Set<string>();
+
+          while (stack.length > 0) {
+            const currentNodeId = stack.pop()!;
+            if (seen.has(currentNodeId)) continue;
+            seen.add(currentNodeId);
+
+            // Find all edges that start from this node
+            const childEdges = values(tree.edges).filter(
+              (edge) => edge.source === currentNodeId
+            );
+
+            childEdges.forEach((edge) => {
+              connectedEdges.push(edge.id);
+              const childNodeId = edge.target;
+
+              // Only add if it's not already included and not the original node
+              if (
+                childNodeId !== nodeId &&
+                !descendantNodes.includes(childNodeId)
+              ) {
+                descendantNodes.push(childNodeId);
+                stack.push(childNodeId);
+              }
+            });
+          }
+
+          // Select all descendant nodes
+          descendantNodes.forEach((nodeId) => {
+            if (tree.nodes[nodeId]) {
+              tree.nodes[nodeId].selected = true;
+            }
+          });
+
+          // Select all connected edges
+          connectedEdges.forEach((edgeId) => {
+            if (tree.edges[edgeId]) {
+              tree.edges[edgeId].selected = true;
+            }
+          });
         })
       );
     },
