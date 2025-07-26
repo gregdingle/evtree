@@ -60,8 +60,9 @@ export type AppNode = Node<
     // will be merged in. see computeNodeValues
     value: number | null;
     cost: number | null;
-    valueExpr?: string; // Expression for value, if using expr-eval
-    costExpr?: string; // Expression for cost, if using expr-eval
+    // TODO: rename expr to formula?
+    valueExpr?: string;
+    costExpr?: string;
   },
   NodeType
 >;
@@ -81,6 +82,7 @@ export interface DecisionTree {
   updatedAt: string; // ISO date string
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
+  variables?: Record<string, number>;
 }
 
 export interface StoreState {
@@ -95,7 +97,7 @@ export interface StoreState {
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree) => string;
   onTreeDataUpdate: (
-    treeData: Partial<Pick<DecisionTree, "name" | "description">>
+    treeData: Partial<Pick<DecisionTree, "name" | "description" | "variables">>
   ) => void;
 
   // Node/Edge operations (work on current tree)
@@ -391,6 +393,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }
           if (treeData.description !== undefined) {
             tree.description = treeData.description;
+          }
+          if (treeData.variables !== undefined) {
+            tree.variables = treeData.variables;
           }
           tree.updatedAt = new Date().toISOString();
         })

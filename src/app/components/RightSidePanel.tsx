@@ -6,8 +6,9 @@ import {
   selectCurrentNodes,
   selectCurrentTree,
 } from "@/utils/selectors";
+import TOML from "@iarna/toml";
 import { debounce } from "es-toolkit";
-import { max, min, toInteger, toNumber } from "es-toolkit/compat";
+import { max, min, toNumber } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
 import { ToolbarButton } from "./ToolbarButton";
 
@@ -64,6 +65,26 @@ export default function RightSidePanel() {
                 onChange={(value) => onTreeDataUpdate({ description: value })}
                 placeholder="Enter tree description"
               />
+              <PropertyInput
+                label="Variables"
+                textarea
+                value={TOML.stringify(currentTree.variables ?? {})}
+                onChange={(value) => {
+                  try {
+                    // TODO: better input UI
+                    const variables = TOML.parse(value) as Record<
+                      string,
+                      number
+                    >;
+                    onTreeDataUpdate({ variables });
+                  } catch (error) {
+                    // NOTE: too noisy to log every time
+                    // console.warn("[EVTree] Failed to parse TOML:", error);
+                    return;
+                  }
+                }}
+                placeholder={`Enter custom variables line by line \nin the format:\n\n var1 = 123\n var2 = 456\n var3 = 789`}
+              />
             </div>
           ) : (
             <p className="">No tree selected</p>
@@ -77,25 +98,15 @@ export default function RightSidePanel() {
                   <PropertyInput
                     ref={index === 0 ? firstInputRef : undefined}
                     label="Value"
-                    type="number"
-                    value={node.data.value?.toString()}
+                    value={node.data.valueExpr}
                     onChange={(value) => {
-                      if (value == "-") {
-                        // ignore a single negative sign so we don't set value to empty string
-                        // TODO: is this the best way to handle this?
-                        // TODO: the root cause is that invalid values are set to zero... is that good?
-                        return;
+                      if (value === "") {
+                        onNodeDataUpdate(node.id, { valueExpr: undefined });
                       } else {
-                        if (value === "") {
-                          onNodeDataUpdate(node.id, { value: null });
-                        } else {
-                          onNodeDataUpdate(node.id, {
-                            value: toInteger(value),
-                          });
-                        }
+                        onNodeDataUpdate(node.id, { valueExpr: value });
                       }
                     }}
-                    placeholder="Enter node value"
+                    placeholder="Enter node value or formula"
                   />
                 ) : null}
                 <PropertyInput
@@ -114,16 +125,15 @@ export default function RightSidePanel() {
                 />
                 <PropertyInput
                   label="Cost"
-                  type="number"
-                  value={node.data.cost?.toString()}
+                  value={node.data.costExpr}
                   onChange={(value) => {
                     if (value === "") {
-                      onNodeDataUpdate(node.id, { cost: null });
+                      onNodeDataUpdate(node.id, { costExpr: undefined });
                     } else {
-                      onNodeDataUpdate(node.id, { cost: toInteger(value) });
+                      onNodeDataUpdate(node.id, { costExpr: value });
                     }
                   }}
-                  placeholder="Enter node cost"
+                  placeholder="Enter node cost or formula"
                 />
               </div>
             ))}
@@ -245,7 +255,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
             className="w-full border-2 p-1 rounded-md"
-            rows={10}
+            rows={8}
             {...props}
           />
         ) : (

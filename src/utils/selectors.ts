@@ -22,7 +22,9 @@ export function selectComputedNodesAndEdges(state: StoreState) {
     return { computeNodes: {}, computeEdges: {} };
   }
   return {
-    computeNodes: mapValues(tree.nodes, toComputeNode),
+    computeNodes: mapValues(tree.nodes, (node) =>
+      toComputeNode(node, tree.variables)
+    ),
     computeEdges: mapValues(tree.edges, toComputeEdge),
   };
 }

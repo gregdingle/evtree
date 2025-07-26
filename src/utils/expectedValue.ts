@@ -1,5 +1,5 @@
 import { AppEdge, AppNode, NodeType } from "@/hooks/use-store";
-import { max, values } from "es-toolkit/compat";
+import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval";
 
 type AdjacencyList = Record<
@@ -192,25 +192,6 @@ function getBestChild(
   return { maxChildValue, bestProbability };
 }
 
-function safeEvalExpr(
-  expression: string | undefined,
-  variables: Record<string, number>,
-  defaultValue: number | null
-): number | null {
-  if (typeof expression === "undefined" || expression.trim() === "") {
-    return defaultValue;
-  }
-  try {
-    return Parser.evaluate(expression, variables);
-  } catch (error) {
-    console.warn(
-      `[EVTree] Using default value ${defaultValue} because failed expression:`,
-      error
-    );
-    return defaultValue;
-  }
-}
-
 export function toComputeNode(
   node: AppNode,
   // TODO: get variables from tree settings
@@ -220,6 +201,7 @@ export function toComputeNode(
     id: node.id,
     type: node.type,
     data: {
+      // NOTE: the "default" values here should just be the last computed values
       value: safeEvalExpr(node.data.valueExpr, variables, node.data.value),
       cost: safeEvalExpr(node.data.costExpr, variables, node.data.cost),
     },
@@ -235,4 +217,33 @@ export function toComputeEdge(edge: AppEdge): ComputeEdge {
       probability: edge.data?.probability ?? null,
     },
   };
+}
+
+// TODO: remove commas, as in 1,000 to 1000?
+// TODO: dehumanize as in 1.0M to 1000000?
+function safeEvalExpr(
+  expression: string | undefined,
+  variables: Record<string, number>,
+  defaultValue: number | null
+): number | null {
+  if (typeof expression === "undefined" || expression.trim() === "") {
+    return defaultValue;
+  }
+  try {
+    const result = Parser.evaluate(expression, variables);
+    if (isNaN(result)) {
+      console.warn(
+        `[EVTree] Invalid expression "${expression}" evaluated to NaN. Using default value ${defaultValue}.`
+      );
+      return defaultValue;
+    }
+    return result;
+  } catch (error) {
+    // NOTE: too noisy for production, but useful for debugging
+    // console.warn(
+    //   `[EVTree] Using default value ${defaultValue} because failed expression:`,
+    //   error
+    // );
+    return defaultValue;
+  }
 }
