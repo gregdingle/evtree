@@ -224,9 +224,14 @@ const buildParentToChildNodeMap = memoize(function (
   return parentToChildMap;
 });
 
-export function selectCollapsible(state: StoreState, nodeId: string) {
+export function selectCollapsible(
+  state: StoreState,
+  nodeId: string | undefined
+) {
   const tree = state.trees[state.currentTreeId!];
-  if (!tree) return { hasChildren: false, isCollapsed: false };
+  if (!nodeId || !tree) {
+    return { hasChildren: false, isCollapsed: false };
+  }
 
   const parentToChildMap = buildParentToChildNodeMap(tree.edges);
   const children = parentToChildMap[nodeId];

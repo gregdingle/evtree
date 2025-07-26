@@ -24,33 +24,6 @@ interface BaseNodeProps {
   isCollapsed: boolean;
 }
 
-interface CollapseButtonProps {
-  nodeId: string;
-  isCollapsed: boolean;
-  onToggle: (nodeId: string) => void;
-}
-
-const CollapseButton = ({
-  nodeId,
-  isCollapsed,
-  onToggle,
-}: CollapseButtonProps) => {
-  return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onToggle(nodeId);
-      }}
-      // TODO: center arrow better somehow
-      className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100 z-10"
-      style={{ pointerEvents: "all" }}
-    >
-      {/* // TODO: do these icons make sense? */}
-      {isCollapsed ? "◀" : "▶"}
-    </button>
-  );
-};
-
 const BaseNode = ({
   data,
   children,
@@ -62,7 +35,6 @@ const BaseNode = ({
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectPathValue(state, id));
-  const { toggleNodeCollapse } = useStore.getState();
 
   return (
     <div className="relative text-xs">
@@ -70,17 +42,6 @@ const BaseNode = ({
         {data.label}
       </div>
       {children}
-      {
-        // TODO: is there is a risk of losing track of collapsed nodes when the
-        // button only shows when the node is selected?
-        selected && hasChildren && (
-          <CollapseButton
-            nodeId={id}
-            isCollapsed={isCollapsed}
-            onToggle={toggleNodeCollapse}
-          />
-        )
-      }
       <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center whitespace-nowrap">
         {formatValue(pathValue)}
         {/* TODO: show cost separately? {formatCost(data.cost)} */}

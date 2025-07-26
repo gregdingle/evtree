@@ -1,4 +1,5 @@
 import { AppNode, NodeType, useStore } from "@/hooks/use-store";
+import { selectCollapsible } from "@/utils/selectors";
 import { useReactFlow } from "@xyflow/react";
 
 export interface ContextMenuProps {
@@ -8,6 +9,7 @@ export interface ContextMenuProps {
   bottom?: number;
   contextPosition?: { x: number; y: number };
   onClose?: () => void;
+  // TODO: remove isNodeContext not needed , just use contextNode
   isNodeContext?: boolean;
   contextNode?: AppNode;
 }
@@ -25,7 +27,13 @@ export default function ContextMenu({
   isNodeContext,
   contextNode,
 }: ContextMenuProps) {
-  const { onCreateNodeAt, onConvertNode } = useStore.getState();
+  const { onCreateNodeAt, onConvertNode, toggleNodeCollapse } =
+    useStore.getState();
+
+  const { hasChildren, isCollapsed } = useStore((state) =>
+    selectCollapsible(state, contextNode?.id)
+  );
+
   const { screenToFlowPosition } = useReactFlow();
 
   const handleCreateNode = (nodeType: NodeType) => {
@@ -57,50 +65,60 @@ export default function ContextMenu({
       className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg py-1"
     >
       {isNodeContext ? (
-        // TODO: hide or disable the current node type from the menu
+        // TODO: hide or disable the current node type from the menu and apply
         // TODO: put in more actions like delete, copy, paste (replace), select subtree
         <>
-          <button
-            onClick={() => handleConvertNode("decision")}
-            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+          <ContextMenuButton
+            onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
+            disabled={!hasChildren}
           >
+            {isCollapsed ? "Expand" : "Collapse"}
+          </ContextMenuButton>
+          <ContextMenuButton onClick={() => handleConvertNode("decision")}>
             Convert to Decision Node
-          </button>
-          <button
-            onClick={() => handleConvertNode("chance")}
-            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-          >
+          </ContextMenuButton>
+          <ContextMenuButton onClick={() => handleConvertNode("chance")}>
             Convert to Chance Node
-          </button>
-          <button
-            onClick={() => handleConvertNode("terminal")}
-            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-          >
+          </ContextMenuButton>
+          <ContextMenuButton onClick={() => handleConvertNode("terminal")}>
             Convert to Terminal Node
-          </button>
+          </ContextMenuButton>
         </>
       ) : (
         <>
-          <button
-            onClick={() => handleCreateNode("decision")}
-            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-          >
+          <ContextMenuButton onClick={() => handleCreateNode("decision")}>
             Create Decision Node
-          </button>
-          <button
-            onClick={() => handleCreateNode("chance")}
-            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-          >
+          </ContextMenuButton>
+          <ContextMenuButton onClick={() => handleCreateNode("chance")}>
             Create Chance Node
-          </button>
-          <button
-            onClick={() => handleCreateNode("terminal")}
-            className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
-          >
+          </ContextMenuButton>
+          <ContextMenuButton onClick={() => handleCreateNode("terminal")}>
             Create Terminal Node
-          </button>
+          </ContextMenuButton>
         </>
       )}
     </div>
+  );
+}
+
+interface ContextMenuButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}
+
+function ContextMenuButton({
+  onClick,
+  disabled,
+  children,
+}: ContextMenuButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2"
+    >
+      {children}
+    </button>
   );
 }
