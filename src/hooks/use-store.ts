@@ -118,6 +118,7 @@ export interface StoreState {
   onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
   selectSubtree: (nodeId: string) => void;
   deleteSubTree: (nodeId: string) => void;
+  connectToNearestNode: (nodeId: string) => void;
 }
 
 const initialNodes = keyBy(
@@ -754,6 +755,82 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           deleteDescendants(nodeId);
 
+          tree.updatedAt = new Date().toISOString();
+        })
+      );
+    },
+
+    connectToNearestNode: (nodeId: string) => {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const selectedNode = tree.nodes[nodeId];
+          if (!selectedNode) {
+            warnItemNotFound("Node", nodeId, "connect to nearest node");
+            return;
+          }
+
+          const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(tree.edges);
+          // Node already has an incoming edge, cannot connect
+          if (nodeToIncomingEdgeMap[nodeId]) {
+            console.warn("[EVTree] Node already has an incoming connection");
+            return;
+          }
+
+          // Find all potential upstream nodes
+          const potentialUpstreamNodes = values(tree.nodes).filter((node) => {
+            if (node.id === nodeId) return false; // Exclude self
+
+            // Node must be upstream (to the left) of selected node
+            const nodeRightEdge =
+              node.position.x + (node.measured?.width ?? 200);
+            const selectedLeftEdge = selectedNode.position.x;
+
+            return nodeRightEdge <= selectedLeftEdge;
+          });
+
+          if (potentialUpstreamNodes.length === 0) {
+            console.warn("[EVTree] No upstream nodes found to connect to");
+            return;
+          }
+
+          // Find nearest upstream node based on center y position and right edge to left edge distance
+          let nearestNode: AppNode | null = null;
+          let minDistance = Infinity;
+
+          const selectedCenterY =
+            selectedNode.position.y +
+            (selectedNode.measured?.height ?? 100) / 2;
+          const selectedLeftEdge = selectedNode.position.x;
+
+          for (const upstreamNode of potentialUpstreamNodes) {
+            const upstreamCenterY =
+              upstreamNode.position.y +
+              (upstreamNode.measured?.height ?? 100) / 2;
+            const upstreamRightEdge =
+              upstreamNode.position.x + (upstreamNode.measured?.width ?? 200);
+
+            // Calculate distance: y-axis center distance + x-axis edge distance
+            const yCenterDistance = Math.abs(selectedCenterY - upstreamCenterY);
+            const xEdgeDistance = selectedLeftEdge - upstreamRightEdge;
+
+            // Weighted distance calculation (prioritize y-axis alignment)
+            const totalDistance =
+              yCenterDistance * 2 + Math.max(0, xEdgeDistance);
+
+            if (totalDistance < minDistance) {
+              minDistance = totalDistance;
+              nearestNode = upstreamNode;
+            }
+          }
+
+          if (!nearestNode) {
+            console.warn("[EVTree] No suitable upstream node found");
+            return;
+          }
+
+          const newEdge = createEdge(nearestNode.id, nodeId);
+
+          tree.edges[newEdge.id] = newEdge;
           tree.updatedAt = new Date().toISOString();
         })
       );

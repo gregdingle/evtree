@@ -1,5 +1,6 @@
 import { AppNode, NodeType, useStore } from "@/hooks/use-store";
-import { selectCollapsible } from "@/utils/selectors";
+import { buildChildToParentNodeMap } from "@/utils/maps";
+import { selectCollapsible, selectCurrentEdges } from "@/utils/selectors";
 import { useReactFlow } from "@xyflow/react";
 
 export interface ContextMenuProps {
@@ -34,11 +35,14 @@ export default function ContextMenu({
     selectSubtree,
     deleteSubTree,
     onCopy,
+    connectToNearestNode,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, contextNode?.id)
   );
+
+  const edges = useStore(selectCurrentEdges);
 
   const { screenToFlowPosition } = useReactFlow();
 
@@ -57,6 +61,8 @@ export default function ContextMenu({
     onConvertNode(contextNode.id, nodeType);
     onClose?.();
   };
+
+  const childToParentMap = buildChildToParentNodeMap(edges);
 
   return (
     <div
@@ -129,6 +135,12 @@ export default function ContextMenu({
             disabled={hasChildren || contextNode?.type === "terminal"}
           >
             Convert to Terminal Node
+          </ContextMenuButton>
+          <ContextMenuButton
+            onClick={() => contextNode && connectToNearestNode(contextNode.id)}
+            disabled={contextNode && !!childToParentMap[contextNode.id]}
+          >
+            Connect to Nearest Node
           </ContextMenuButton>
         </>
       ) : (
