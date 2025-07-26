@@ -102,7 +102,7 @@ export interface StoreState {
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
   balanceEdgeProbability: (id: string) => void;
-  onCopy: () => void;
+  onCopy: (stripValues?: boolean) => void;
   onPaste: () => void;
   onReset: () => void;
   onCreateNodeAt: (
@@ -515,16 +515,37 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onCopy: () => {
+    onCopy: (stripData = false) => {
       set((state) =>
         withCurrentTree(state, (tree) => {
-          const nodes = values(tree.nodes);
-          const edges = values(tree.edges);
+          // NOTE: important to cloneDeep to avoid reference issues!
+          let copiedNodes = cloneDeep(
+            values(tree.nodes).filter((node) => node.selected)
+          );
+          let copiedEdges = cloneDeep(
+            values(tree.edges).filter((edge) => edge.selected)
+          );
+
+          if (stripData) {
+            copiedNodes = copiedNodes.map((node) => ({
+              ...node,
+              data: {
+                value: null,
+                cost: null,
+              },
+            }));
+
+            copiedEdges = copiedEdges.map((edge) => ({
+              ...edge,
+              data: {
+                probability: null,
+              },
+            }));
+          }
 
           state.clipboard = {
-            // NOTE: important to cloneDeep to avoid reference issues!
-            nodes: cloneDeep(nodes.filter((node) => node.selected)),
-            edges: cloneDeep(edges.filter((edge) => edge.selected)),
+            nodes: copiedNodes,
+            edges: copiedEdges,
           };
         })
       );

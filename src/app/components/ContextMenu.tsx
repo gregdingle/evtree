@@ -91,6 +91,17 @@ export default function ContextMenu({
             Copy Subtree
           </ContextMenuButton>
           <ContextMenuButton
+            onClick={() => {
+              if (contextNode) {
+                selectSubtree(contextNode.id);
+                onCopy(true);
+              }
+            }}
+          >
+            {/* TODO: is this a good name? */}
+            Copy Subtree Structure
+          </ContextMenuButton>
+          <ContextMenuButton
             onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
             disabled={!hasChildren}
           >

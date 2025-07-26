@@ -32,7 +32,7 @@ export default function Toolbar() {
   // TODO: make hotkey usage also flash corresponding button
   useHotkeys("ctrl+z", () => undo(), { enableOnFormTags: true });
   useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
-  useHotkeys("ctrl+c", onCopy, { enableOnFormTags: true });
+  useHotkeys("ctrl+c", () => onCopy(), { enableOnFormTags: true });
   useHotkeys("ctrl+v", onPaste, { enableOnFormTags: true });
   useHotkeys("ctrl+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
