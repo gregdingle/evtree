@@ -64,7 +64,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 
 ## Domain-Specific Context
 
-<!-- TODO: add and refine Domain-specific content -->
+- "Edge" in the code should always be shown as "branch" in the UI to end users
 
 ### Decision Trees
 

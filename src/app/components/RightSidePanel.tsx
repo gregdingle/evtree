@@ -127,7 +127,7 @@ export default function RightSidePanel() {
                 />
               </div>
             ))}
-            {edges.length ? <h3 className="mb-4">Edge Properties</h3> : null}
+            {edges.length ? <h3 className="mb-4">Branch Properties</h3> : null}
             {edges.map((edge, index) => (
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
@@ -149,7 +149,7 @@ export default function RightSidePanel() {
                         : max([min([toNumber(value), 1.0]), 0.0]);
                     onEdgeDataUpdate(edge.id, { probability });
                   }}
-                  placeholder="Enter edge probability"
+                  placeholder="Enter branch probability"
                   max={1.0}
                   min={0.0}
                   step={0.1}
@@ -175,7 +175,7 @@ export default function RightSidePanel() {
                   onChange={(value) =>
                     onEdgeDataUpdate(edge.id, { label: value })
                   }
-                  placeholder="Enter edge label"
+                  placeholder="Enter branch label"
                 />
                 <PropertyInput
                   label="Description"
@@ -183,7 +183,7 @@ export default function RightSidePanel() {
                   onChange={(value) =>
                     onEdgeDataUpdate(edge.id, { description: value })
                   }
-                  placeholder="Enter edge description"
+                  placeholder="Enter branch description"
                 />
               </div>
             ))}
