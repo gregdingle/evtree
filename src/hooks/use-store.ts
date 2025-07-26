@@ -651,52 +651,27 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     toggleNodeCollapse: (nodeId: string) => {
       set((state) =>
         withCurrentTree(state, (tree) => {
-          // Find all descendant nodes and edges using a stack-based traversal
-          const outgoers: string[] = [];
-          const connectedEdges: string[] = [];
-          const stack = [nodeId];
-          const seen = new Set<string>();
+          const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+          const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(tree.edges);
 
-          while (stack.length > 0) {
-            const currentNodeId = stack.pop()!;
-            if (seen.has(currentNodeId)) continue;
-            seen.add(currentNodeId);
+          // Check if any children exist to determine if we should collapse or expand
+          const children = parentToChildMap[nodeId] ?? [];
+          if (children.length === 0) return; // No children to collapse/expand
 
-            // Find all edges that start from this node
-            const childEdges = values(tree.edges).filter(
-              (edge) => edge.source === currentNodeId
-            );
+          // Determine toggle state based on first child's current hidden state
+          const shouldHide = !tree.nodes[children[0]!]?.hidden;
 
-            childEdges.forEach((edge) => {
-              connectedEdges.push(edge.id);
-              const childNodeId = edge.target;
-
-              // Only add if it's not the original node
-              if (childNodeId !== nodeId) {
-                outgoers.push(childNodeId);
-                stack.push(childNodeId);
-              }
+          const toggleDescendants = (currentNodeId: string) => {
+            const nodeChildren = parentToChildMap[currentNodeId] ?? [];
+            nodeChildren.forEach((childNodeId) => {
+              tree.nodes[childNodeId]!.hidden = shouldHide;
+              const incomingEdgeId = nodeToIncomingEdgeMap[childNodeId];
+              tree.edges[incomingEdgeId!]!.hidden = shouldHide;
+              toggleDescendants(childNodeId);
             });
-          }
+          };
 
-          // Toggle hidden state for all descendant nodes and edges
-          const shouldHide =
-            outgoers.length > 0 ? !tree.nodes[outgoers[0]!]?.hidden : true;
-
-          outgoers.forEach((nodeId) => {
-            if (tree.nodes[nodeId]) {
-              tree.nodes[nodeId].hidden = shouldHide;
-            }
-          });
-
-          connectedEdges.forEach((edgeId) => {
-            if (tree.edges[edgeId]) {
-              tree.edges[edgeId].hidden = shouldHide;
-            }
-          });
-
-          // TODO: implement tree.updatedAt as a store subscription? or put in
-          // existing subscribe?
+          toggleDescendants(nodeId);
           tree.updatedAt = new Date().toISOString();
         })
       );
