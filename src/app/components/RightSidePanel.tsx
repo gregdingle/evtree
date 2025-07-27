@@ -11,6 +11,7 @@ import { debounce } from "es-toolkit";
 import { max, min, toNumber } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
 import { ToolbarButton } from "./ToolbarButton";
+import { VariablesList } from "./VariablesList";
 
 export default function RightSidePanel() {
   const {
@@ -107,7 +108,16 @@ export default function RightSidePanel() {
                       }
                     }}
                     placeholder="Enter node value or formula"
-                  />
+                  >
+                    {currentTree?.variables ? (
+                      <VariablesList
+                        variables={currentTree.variables}
+                        node={node}
+                        exprFor="valueExpr"
+                        className="ml-22 my-1"
+                      />
+                    ) : null}
+                  </PropertyInput>
                 ) : null}
                 <PropertyInput
                   ref={
@@ -134,7 +144,16 @@ export default function RightSidePanel() {
                     }
                   }}
                   placeholder="Enter node cost or formula"
-                />
+                >
+                  {currentTree?.variables ? (
+                    <VariablesList
+                      variables={currentTree.variables}
+                      node={node}
+                      className="ml-22 my-1"
+                      exprFor="costExpr"
+                    />
+                  ) : null}
+                </PropertyInput>
               </div>
             ))}
             {edges.length ? <h3 className="mb-4">Branch Properties</h3> : null}
@@ -241,11 +260,11 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     // TODO: how to do consistent global styles? use some tailwind component UI kit?
     return (
       <div
-        className={`mb-2 flex space-x-2 ${
+        className={`mb-2 flex flex-wrap space-x-2 ${
           textarea ? "flex-col" : "items-center"
         }`}
       >
-        <label htmlFor={label} className="w-24">
+        <label htmlFor={label} className="w-20">
           {label}
         </label>
         {textarea ? (
@@ -254,7 +273,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             id={label}
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
-            className="w-full border-2 p-1 rounded-md"
+            className="flex-1 border-2 p-1 rounded-md"
             rows={8}
             {...props}
           />
@@ -265,7 +284,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             type="text"
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
-            className="w-full border-2 p-1 rounded-md"
+            className="flex-1 border-2 p-1 rounded-md"
             {...props}
           />
         )}
