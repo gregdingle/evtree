@@ -3,6 +3,7 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import { useEffect, useState } from "react";
 import CollapsiblePanel from "./components/CollapsiblePanel";
+import { Histogram } from "./components/Histogram";
 import LeftSidePanel from "./components/LeftSidePanel";
 import ReactFlowApp from "./components/ReactFlowApp";
 import RightSidePanel from "./components/RightSidePanel";
@@ -14,6 +15,9 @@ export default function Home() {
   // https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
+
+  const [showHistogram, setShowHistogram] = useState(false);
+
   if (!isClient) {
     // TODO: put some kind of loading spinner here?
     return null;
@@ -34,7 +38,11 @@ export default function Home() {
         <div className="flex flex-col h-screen">
           {/* // TODO: fix min height on resize vertical */}
           <div className="border-b">
-            <Toolbar />
+            <Toolbar
+              onHistogramClick={() =>
+                showHistogram ? setShowHistogram(false) : setShowHistogram(true)
+              }
+            />
           </div>
           <div className="flex flex-1">
             <div className="border-r">
@@ -43,7 +51,11 @@ export default function Home() {
               </CollapsiblePanel>
             </div>
             <div className="flex-1 bg-amber-50">
-              <ReactFlowApp />
+              {showHistogram ? (
+                <Histogram className="px-16 py-4" />
+              ) : (
+                <ReactFlowApp />
+              )}
             </div>
             <div className="border-l">
               <CollapsiblePanel side="right">

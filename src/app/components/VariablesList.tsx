@@ -17,7 +17,7 @@ export function VariablesList({
   const currentExpr = node.data[exprFor] ?? "";
   return (
     <details {...props}>
-      <summary className="cursor-pointer">variables</summary>
+      <summary className="cursor-pointer select-none">variables</summary>
       <ul>
         {toPairs(variables).map(([key, value]) => {
           return (
@@ -46,7 +46,7 @@ export function VariablesList({
               />
               <label
                 htmlFor={`variable-${key}-${node.id}-${exprFor}`}
-                className="text-sm cursor-pointer"
+                className="text-sm cursor-pointer select-none"
               >
                 {key} = {value}
               </label>

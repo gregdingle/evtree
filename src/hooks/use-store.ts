@@ -82,6 +82,8 @@ export interface DecisionTree {
   updatedAt: string; // ISO date string
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
+  // TODO: should we separate vars into value variables and cost variables? it
+  // would help with suggestions in UI
   variables?: Record<string, number>;
 }
 

@@ -9,7 +9,10 @@ import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ToolbarButton } from "./ToolbarButton";
 
-export default function Toolbar() {
+interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
+  onHistogramClick: () => void;
+}
+export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste, onReset, onArrange, loadTree } = useStore.getState();
   const tree = useStore(selectCurrentTree);
@@ -39,6 +42,7 @@ export default function Toolbar() {
   useHotkeys("ctrl+e", onExportClick, { enableOnFormTags: false });
   useHotkeys("ctrl+d", onDownloadClick, { enableOnFormTags: false });
   useHotkeys("ctrl+o", onOpenClick, { enableOnFormTags: false });
+  useHotkeys("ctrl+h", onHistogramClick, { enableOnFormTags: false });
   // TODO: add our own hotkey for delete that works when an input is focused and overrides the built-in react flow hotkeys
 
   return (
@@ -90,6 +94,9 @@ export default function Toolbar() {
         </ToolbarButton>
         <ToolbarButton onClick={onOpenClick} tooltip="Ctrl+O">
           open
+        </ToolbarButton>
+        <ToolbarButton onClick={onHistogramClick} tooltip="Ctrl+H">
+          histogram
         </ToolbarButton>
       </div>
     </div>

@@ -264,7 +264,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           textarea ? "flex-col" : "items-center"
         }`}
       >
-        <label htmlFor={label} className="w-20">
+        <label htmlFor={label} className="w-20 select-none cursor-pointer">
           {label}
         </label>
         {textarea ? (
