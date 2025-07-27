@@ -79,7 +79,7 @@ export function Histogram(props: HistogramProps) {
               <div className="w-32 text-right">{binLabel}</div>
 
               {/* Bar */}
-              <div className="flex-1 flex items-center h-8">
+              <div className="flex-1 flex items-center h-12">
                 <div
                   className="bg-blue-500 hover:bg-blue-600 transition-colors duration-200 h-full min-w-[2px]"
                   style={{
