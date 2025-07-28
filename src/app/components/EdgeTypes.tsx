@@ -77,7 +77,7 @@ export default function CustomEdge({
             }}
             className="absolute top-3"
           >
-            {formatProbability(probability)}
+            {formatProbability(probability, 0, "???", "")}
           </div>
         </div>
       </EdgeLabelRenderer>

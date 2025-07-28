@@ -133,7 +133,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
          TODO: always show pathProbability?
          NOTE: don't show the ??? placeholder for null pathProbability
          */}
-        {formatProbability(pathProbability, 3, "")}
+        {formatProbability(pathProbability, 1, "")}
       </div>
     </div>
   );

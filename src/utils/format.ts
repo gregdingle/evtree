@@ -1,30 +1,28 @@
+import HRNumbers from "human-readable-numbers";
 // TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
 export function formatValue(value: number | null | undefined): string {
   if (value === null || value === undefined) {
     return "";
   }
-  return value.toLocaleString(undefined, {
-    currency: "USD",
-    style: "currency",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
+  return HRNumbers.toHumanString(value);
 }
 
 export function formatProbability(
   probability: number | null | undefined,
-  sigDigits: number = 2,
-  placeholder: string = "???"
+  sigDigits: number = 1,
+  placeholder: string = "???",
+  prefix: string = "P="
 ): string {
   if (probability === null || probability === undefined) {
     return placeholder;
   }
   return (
-    "P=" +
-    probability.toLocaleString(undefined, {
+    prefix +
+    (100 * probability).toLocaleString(undefined, {
       minimumFractionDigits: sigDigits,
       maximumFractionDigits: sigDigits,
-    })
+    }) +
+    "%"
   );
 }
 
