@@ -22,8 +22,7 @@ export default function CustomEdge({
 }: EdgeProps<AppEdge>) {
   const { label, probability } = data ?? {};
   // NOTE: assumes the edge is always left to right
-  // TODO: allow prefix unused vars lint rule
-  const [edgePath, labelX, labelY, _offsetX, offsetY] = getSmoothStepPath({
+  const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition: Position.Right,

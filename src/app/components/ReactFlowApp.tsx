@@ -2,10 +2,12 @@
 
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
-import { useStore } from "@/hooks/use-store";
+import { AppEdge, useStore } from "@/hooks/use-store";
+import { buildChildToParentNodeMap } from "@/utils/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/utils/selectors";
 import {
   Background,
+  Connection,
   Controls,
   OnConnectEnd,
   ReactFlow,
@@ -49,7 +51,7 @@ export default function ReactFlowApp() {
   };
 
   return (
-    <div ref={ref} className="h-full w-full relative">
+    <div ref={ref} className="relative h-full w-full">
       <ReactFlow
         ref={ref}
         nodes={nodes}
@@ -71,7 +73,7 @@ export default function ReactFlowApp() {
         onClick={closeMenu}
         maxZoom={4}
         minZoom={0.1}
-        // TODO: use isValidConnection to check for left-to-right connections only? check for cycles?
+        isValidConnection={(connection) => isValidConnection(edges, connection)}
       >
         <Background />
         <Controls
@@ -83,4 +85,20 @@ export default function ReactFlowApp() {
       </ReactFlow>
     </div>
   );
+}
+
+// TODO: move to some utils file and write unit tests
+function isValidConnection(edges: AppEdge[], connection: AppEdge | Connection) {
+  const childToParentMap = buildChildToParentNodeMap(edges);
+
+  // Check if the target node is an ancestor of the source node
+  let currentNodeId: string | undefined = connection.source;
+  while (currentNodeId) {
+    if (currentNodeId === connection.target) {
+      return false;
+    }
+    currentNodeId = childToParentMap[currentNodeId];
+  }
+
+  return true;
 }

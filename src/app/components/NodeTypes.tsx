@@ -31,11 +31,11 @@ const BaseNode = ({ data, children, id }: BaseNodeProps) => {
 
   return (
     <div className="relative text-xs">
-      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap">
+      <div className="absolute -top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center whitespace-nowrap">
         {data.label}
       </div>
       {children}
-      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center whitespace-nowrap">
+      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
         {formatValue(pathValue)}
         {/* TODO: show cost separately? {formatCost(data.cost)} */}
       </div>
@@ -45,7 +45,7 @@ const BaseNode = ({ data, children, id }: BaseNodeProps) => {
 
 const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
-    selectCollapsible(state, id)
+    selectCollapsible(state, id),
   );
   return (
     <BaseNode
@@ -63,11 +63,9 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   );
 };
 
-// TODO: move collapse button to ContextMenu, but leave CSS isCollapsed
-// className logic here
 const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
-    selectCollapsible(state, id)
+    selectCollapsible(state, id),
   );
   return (
     <BaseNode
@@ -78,7 +76,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       isCollapsed={isCollapsed}
     >
       <div
-        className={`p-4 rounded-full ${
+        className={`rounded-full p-4 ${
           selected ? "bg-blue-500/50" : "bg-[#9ca8b3]"
         }`}
       >
