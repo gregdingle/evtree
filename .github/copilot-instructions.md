@@ -155,6 +155,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
     consider playwright or cypress for e2e testing
  -->
 
+- Assume the app is running locally in development mode at `http://localhost:3000`
 - Write unit tests for utility functions, domain logic, and any pure functions
   <!-- - Test React components with proper user interaction scenarios -->
   <!-- - Consider integration tests for tree manipulation features -->

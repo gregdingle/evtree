@@ -28,7 +28,7 @@ export function Histogram(props: HistogramProps) {
   if (!currentTree) {
     return (
       <div {...props}>
-        <h3 className="text-lg font-semibold mb-4">Histogram</h3>
+        <h3 className="mb-4 text-lg font-semibold">Histogram</h3>
         <p className="text-gray-500">No tree selected</p>
       </div>
     );
@@ -36,7 +36,7 @@ export function Histogram(props: HistogramProps) {
 
   const terminalNodesData: TerminalNodeData[] = getTerminalNodesData(
     currentTree,
-    storeState
+    storeState,
   );
 
   // Calculate histogram bins with even intervals
@@ -45,13 +45,13 @@ export function Histogram(props: HistogramProps) {
   // Find max probability for scaling
   const maxProbability = Math.max(
     ...histogramData.map((d) => d.probability),
-    0
+    0,
   );
 
   if (terminalNodesData.length === 0) {
     return (
       <div {...props}>
-        <h3 className="text-lg font-semibold mb-4">Histogram</h3>
+        <h3 className="mb-4 text-lg font-semibold">Histogram</h3>
         <p className="text-gray-500">
           No terminal nodes with complete probability paths found
         </p>
@@ -61,7 +61,7 @@ export function Histogram(props: HistogramProps) {
 
   return (
     <div {...props}>
-      <h3 className="text-lg font-semibold mb-4">Histogram</h3>
+      <h3 className="mb-4 text-lg font-semibold">Histogram</h3>
       <div className="space-y-px">
         {histogramData.map(({ value, binEnd, probability, binSize }) => {
           const widthPercentage =
@@ -79,9 +79,9 @@ export function Histogram(props: HistogramProps) {
               <div className="w-32 text-right">{binLabel}</div>
 
               {/* Bar */}
-              <div className="flex-1 flex items-center h-12">
+              <div className="flex h-12 flex-1 items-center">
                 <div
-                  className="bg-blue-500 hover:bg-blue-600 transition-colors duration-200 h-full min-w-[2px]"
+                  className="h-full min-w-[2px] bg-blue-500 transition-colors duration-200 hover:bg-blue-600"
                   style={{
                     width: `${widthPercentage}%`,
                   }}
@@ -92,7 +92,7 @@ export function Histogram(props: HistogramProps) {
               </div>
 
               {/* Probability label */}
-              <div className="w-16 text-gray-600 text-right">
+              <div className="w-16 text-right text-gray-600">
                 {(probability * 100).toFixed(1)}%
               </div>
             </div>
@@ -116,13 +116,13 @@ const formatNumber = (num: number): string => {
 
 function getTerminalNodesData(
   currentTree: DecisionTree,
-  storeState: StoreState
+  storeState: StoreState,
 ): TerminalNodeData[] {
   if (!currentTree) return [];
 
   const terminalNodes = values(currentTree.nodes).filter(
     // TODO: should we only get type="terminal" nodes, or any nodes that do not have children?
-    (node) => node.type === "terminal"
+    (node) => node.type === "terminal",
   );
 
   return terminalNodes
