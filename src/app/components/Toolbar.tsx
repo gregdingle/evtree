@@ -4,6 +4,7 @@ import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/utils/download";
 import { openTreeFile } from "@/utils/load-tree";
 import { selectCurrentTree } from "@/utils/selectors";
+import { kebabCase } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -18,7 +19,10 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   const tree = useStore(selectCurrentTree);
 
   const onExportClick = () => {
-    downloadPNG(values(tree?.nodes ?? []), "evtree.png");
+    downloadPNG(
+      values(tree?.nodes ?? []),
+      `evtree-${kebabCase(tree?.name ?? "untitled")}.png`,
+    );
   };
 
   const onOpenClick = async () => {
@@ -28,7 +32,9 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
     }
   };
 
-  const onDownloadClick = () => tree && downloadJson(tree, "evtree.json");
+  const onDownloadClick = () =>
+    tree &&
+    downloadJson(tree, `evtree-${kebabCase(tree.name ?? "untitled")}.json`);
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
   // TODO: consider best hotkeys
@@ -46,7 +52,7 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   // TODO: add our own hotkey for delete that works when an input is focused and overrides the built-in react flow hotkeys
 
   return (
-    <div className="flex items-center space-x-4 p-4 h-full">
+    <div className="flex h-full items-center space-x-4 p-4">
       <div className="flex items-center space-x-1">
         <Image
           src="/favicon.svg"
@@ -77,7 +83,6 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
           arrange
         </ToolbarButton>
         <ToolbarButton
-          // TODO: change filename once we support multiple trees
           // TODO: how to make it work with dark mode?
           onClick={onExportClick}
           tooltip="Ctrl+R"

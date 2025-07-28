@@ -38,7 +38,7 @@ export default function LeftSidePanel() {
   const handleDuplicateTree = (treeId: string, treeName: string) => {
     const newName = window.prompt(
       "Enter name for duplicated tree:",
-      `${treeName} (Copy)`
+      `${treeName} (Copy)`,
     );
     if (newName && newName.trim()) {
       duplicateTree(treeId, newName.trim());
@@ -57,7 +57,7 @@ export default function LeftSidePanel() {
   };
 
   return (
-    <div className="p-4 w-80">
+    <div className="w-80 p-4">
       <div className="mb-4">
         <h2 className="text-lg font-semibold">Trees</h2>
       </div>
@@ -70,7 +70,7 @@ export default function LeftSidePanel() {
             value={newTreeName}
             onChange={(e) => setNewTreeName(e.target.value)}
             placeholder="New tree name"
-            className="flex-1 border-2 p-1 rounded-md text-sm"
+            className="flex-1 rounded-md border-2 p-1 text-sm"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleCreateTree();
@@ -80,7 +80,7 @@ export default function LeftSidePanel() {
           <button
             onClick={handleCreateTree}
             disabled={!newTreeName.trim()}
-            className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white disabled:cursor-not-allowed disabled:bg-gray-300"
           >
             Create
           </button>
@@ -96,18 +96,18 @@ export default function LeftSidePanel() {
             {trees.map((tree) => (
               <div
                 key={tree.id}
-                className={`p-3 border rounded-md cursor-pointer transition-colors ${
+                className={`cursor-pointer rounded-md border p-3 transition-colors ${
                   currentTreeId === tree.id
-                    ? "bg-blue-100 border-blue-300 dark:bg-blue-900 dark:border-blue-600"
-                    : "bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700"
+                    ? "border-blue-300 bg-blue-100 dark:border-blue-600 dark:bg-blue-900"
+                    : "border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
                 }`}
                 onClick={() => handleSetCurrentTree(tree.id)}
               >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1">
                     <h3 className="truncate">{tree.name}</h3>
                     {tree.description && (
-                      <p className=" text-gray-600 dark:text-gray-400 my-1 truncate">
+                      <p className="my-1 truncate text-gray-600 dark:text-gray-400">
                         {tree.description}
                       </p>
                     )}
@@ -115,7 +115,7 @@ export default function LeftSidePanel() {
                       Updated {new Date(tree.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="flex space-x-1 ml-2">
+                  <div className="ml-2 flex space-x-1">
                     <Tooltip text="Duplicate tree">
                       <button
                         onClick={(e) => {
@@ -124,7 +124,7 @@ export default function LeftSidePanel() {
                         }}
                         className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
                       >
-                        <span className="rotate-45 inline-block">╳</span>
+                        <span className="inline-block rotate-45">╳</span>
                       </button>
                     </Tooltip>
                     <Tooltip text="Delete tree">

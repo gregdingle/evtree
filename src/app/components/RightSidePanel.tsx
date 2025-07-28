@@ -46,8 +46,8 @@ export default function RightSidePanel() {
   }, [nodes, edges]);
 
   return (
-    <div className="p-4 w-80">
-      <h2 className="text-lg font-semibold mb-8">Properties</h2>
+    <div className="w-80 p-4">
+      <h2 className="mb-8 text-lg font-semibold">Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
           currentTree ? (
@@ -114,7 +114,7 @@ export default function RightSidePanel() {
                         variables={currentTree.variables}
                         node={node}
                         exprFor="valueExpr"
-                        className="ml-22 my-1"
+                        className="my-1 ml-22"
                       />
                     ) : null}
                   </PropertyInput>
@@ -149,7 +149,7 @@ export default function RightSidePanel() {
                     <VariablesList
                       variables={currentTree.variables}
                       node={node}
-                      className="ml-22 my-1"
+                      className="my-1 ml-22"
                       exprFor="costExpr"
                     />
                   ) : null}
@@ -238,7 +238,6 @@ interface PropertyInputProps {
   children?: React.ReactNode;
 }
 
-// TODO: editing with the de bounce is not working perfectly. Sometimes it has the effect of snapping back. We need to fix this.
 // TODO: we also want to support more kinds of numeric input like 1.0M
 const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
   ({ label, value, onChange, textarea, children, ...props }, ref) => {
@@ -264,7 +263,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           textarea ? "flex-col" : "items-center"
         }`}
       >
-        <label htmlFor={label} className="w-20 select-none cursor-pointer">
+        <label htmlFor={label} className="w-20 cursor-pointer select-none">
           {label}
         </label>
         {textarea ? (
@@ -273,7 +272,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             id={label}
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
-            className="flex-1 border-2 p-1 rounded-md"
+            className="flex-1 rounded-md border-2 p-1"
             rows={8}
             {...props}
           />
@@ -284,14 +283,14 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             type="text"
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
-            className="flex-1 border-2 p-1 rounded-md"
+            className="flex-1 rounded-md border-2 p-1"
             {...props}
           />
         )}
         {children}
       </div>
     );
-  }
+  },
 );
 
 PropertyInput.displayName = "PropertyInput";

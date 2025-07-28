@@ -63,8 +63,15 @@ export default function ReactFlowApp() {
         selectionMode={SelectionMode.Partial}
         colorMode={colorMode}
         fitView
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onNodesChange={(changes) => {
+          onNodesChange(changes);
+          // TODO: is this best way to close context menu?
+          closeMenu();
+        }}
+        onEdgesChange={(changes) => {
+          onEdgesChange(changes);
+          closeMenu();
+        }}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onPaneContextMenu={(event) => onContextMenu(event, false)}
