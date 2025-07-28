@@ -18,6 +18,8 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   const { onCopy, onPaste, onReset, onArrange, loadTree } = useStore.getState();
   const tree = useStore(selectCurrentTree);
 
+  // TODO: dark mode toggle button
+
   const onExportClick = () => {
     downloadPNG(
       values(tree?.nodes ?? []),
@@ -89,12 +91,7 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
         >
           export
         </ToolbarButton>
-        <ToolbarButton
-          // TODO: change filename once we support multiple trees
-          // TODO: how to make it work with dark mode?
-          onClick={onDownloadClick}
-          tooltip="Ctrl+D"
-        >
+        <ToolbarButton onClick={onDownloadClick} tooltip="Ctrl+D">
           download
         </ToolbarButton>
         <ToolbarButton onClick={onOpenClick} tooltip="Ctrl+O">

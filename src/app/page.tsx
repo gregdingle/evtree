@@ -23,19 +23,10 @@ export default function Home() {
     return null;
   }
 
-  // TODO: border styles, backgrounds, dark mode, etc
   return (
     <ReactFlowProvider>
-      <div
-        className="evtree"
-        // NOTE: Zustand will load the state from localStorage client-side,
-        // resulting in a NextJS hydration mismatch warning, but we want the
-        // client-side to be different. See
-        // https://zustand.docs.pmnd.rs/guides/ssr-and-hydration and
-        // https://medium.com/@koalamango/fix-next-js-hydration-error-with-zustand-state-management-0ce51a0176ad.
-        suppressHydrationWarning
-      >
-        <div className="flex flex-col h-screen">
+      <div className="evtree">
+        <div className="flex h-screen flex-col">
           {/* // TODO: fix min height on resize vertical */}
           <div className="border-b">
             <Toolbar
