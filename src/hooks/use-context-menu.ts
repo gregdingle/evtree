@@ -12,7 +12,7 @@ export function useContextMenu() {
   const onContextMenu = (
     event: MouseEvent | React.MouseEvent,
     isNodeContext: boolean,
-    node?: AppNode
+    node?: AppNode,
   ) => {
     // Prevent native context menu from showing
     event.preventDefault();
@@ -36,7 +36,6 @@ export function useContextMenu() {
         relativeY >= pane.height - 200 ? pane.height - relativeY : undefined,
       // Store the actual screen coordinates for ReactFlow's screenToFlowPosition
       contextPosition: { x: event.clientX, y: event.clientY },
-      isNodeContext,
       contextNode: node,
     });
   };

@@ -10,8 +10,6 @@ export interface ContextMenuProps {
   bottom?: number;
   contextPosition?: { x: number; y: number };
   onClose?: () => void;
-  // TODO: remove isNodeContext not needed , just use contextNode
-  isNodeContext?: boolean;
   contextNode?: AppNode;
 }
 
@@ -25,7 +23,6 @@ export default function ContextMenu({
   bottom,
   contextPosition,
   onClose,
-  isNodeContext,
   contextNode,
 }: ContextMenuProps) {
   const {
@@ -39,7 +36,7 @@ export default function ContextMenu({
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
-    selectCollapsible(state, contextNode?.id)
+    selectCollapsible(state, contextNode?.id),
   );
 
   const edges = useStore(selectCurrentEdges);
@@ -74,11 +71,9 @@ export default function ContextMenu({
         bottom,
         zIndex: 1000,
       }}
-      className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg py-1"
+      className="rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
     >
-      {isNodeContext ? (
-        // TODO: hide or disable the current node type from the menu and apply
-        // TODO: put in more actions like delete, copy, paste (replace), select subtree
+      {contextNode ? (
         <>
           <ContextMenuButton
             onClick={() => contextNode && selectSubtree(contextNode.id)}
@@ -177,7 +172,7 @@ function ContextMenuButton({
       disabled={disabled}
       className={`${
         disabled ? "opacity-50" : ""
-      } px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left flex items-center gap-2`}
+      } flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700`}
     >
       {children}
     </button>
