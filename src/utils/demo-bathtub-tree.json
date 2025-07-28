@@ -15,6 +15,7 @@
         "label": "SWL&P vs I-S",
         "description": "",
         "value": 1264773.75,
+        "valueExpr": "1264773.75",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -36,6 +37,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -58,7 +60,9 @@
         "label": "",
         "description": "",
         "value": 1164773.75,
-        "cost": -100000
+        "valueExpr": "1164773.75",
+        "cost": -100000,
+        "costExpr": "-100000"
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -80,6 +84,7 @@
         "label": "",
         "description": "",
         "value": 1663962.5,
+        "valueExpr": "1663962.5",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -102,6 +107,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -124,6 +130,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -146,7 +153,9 @@
         "label": "",
         "description": "",
         "value": 1202250,
-        "cost": -200000
+        "valueExpr": "1202250",
+        "cost": -200000,
+        "costExpr": "-200000"
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -168,7 +177,9 @@
         "label": "",
         "description": "",
         "value": 2286575,
-        "cost": -200000
+        "valueExpr": "2286575",
+        "cost": -200000,
+        "costExpr": "-200000"
       },
       "origin": [0.5, 0],
       "sourcePosition": "right",
@@ -190,6 +201,7 @@
         "label": "",
         "description": "",
         "value": 4573150,
+        "valueExpr": "4573150",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -212,6 +224,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -234,6 +247,7 @@
         "label": "",
         "description": "",
         "value": 2324500,
+        "valueExpr": "2324500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -256,6 +270,7 @@
         "label": "",
         "description": "",
         "value": 9820000,
+        "valueExpr": "9820000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -278,6 +293,7 @@
         "label": "",
         "description": "",
         "value": 4400000,
+        "valueExpr": "4400000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -300,6 +316,7 @@
         "label": "",
         "description": "",
         "value": 2407500,
+        "valueExpr": "2407500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -322,6 +339,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -344,6 +362,7 @@
         "label": "",
         "description": "",
         "value": 1610000,
+        "valueExpr": "1610000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -366,6 +385,7 @@
         "label": "",
         "description": "",
         "value": 2400000,
+        "valueExpr": "2400000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -388,6 +408,7 @@
         "label": "",
         "description": "",
         "value": 3220000,
+        "valueExpr": "3220000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -410,6 +431,7 @@
         "label": "",
         "description": "",
         "value": 2300000,
+        "valueExpr": "2300000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -432,6 +454,7 @@
         "label": "",
         "description": "",
         "value": 1700000,
+        "valueExpr": "1700000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -454,6 +477,7 @@
         "label": "",
         "description": "",
         "value": 1000000,
+        "valueExpr": "1000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -476,6 +500,7 @@
         "label": "",
         "description": "",
         "value": 3500000,
+        "valueExpr": "3500000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -498,6 +523,7 @@
         "label": "",
         "description": "",
         "value": 2500000,
+        "valueExpr": "2500000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -520,6 +546,7 @@
         "label": "",
         "description": "",
         "value": 1500000,
+        "valueExpr": "1500000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -542,6 +569,7 @@
         "label": "",
         "description": "",
         "value": 4600000,
+        "valueExpr": "4600000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -564,6 +592,7 @@
         "label": "",
         "description": "",
         "value": 3400000,
+        "valueExpr": "3400000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -586,6 +615,7 @@
         "label": "",
         "description": "",
         "value": 2000000,
+        "valueExpr": "2000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -608,6 +638,7 @@
         "label": "",
         "description": "",
         "value": 14000000,
+        "valueExpr": "14000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -630,6 +661,7 @@
         "label": "",
         "description": "",
         "value": 9700000,
+        "valueExpr": "9700000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -652,6 +684,7 @@
         "label": "",
         "description": "",
         "value": 6000000,
+        "valueExpr": "6000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -674,6 +707,7 @@
         "label": "",
         "description": "",
         "value": 2404500,
+        "valueExpr": "2404500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -696,6 +730,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -718,6 +753,7 @@
         "label": "",
         "description": "",
         "value": 2404500,
+        "valueExpr": "2404500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -740,6 +776,7 @@
         "label": "",
         "description": "",
         "value": 0,
+        "valueExpr": "0",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -762,6 +799,7 @@
         "label": "",
         "description": "",
         "value": 7000000,
+        "valueExpr": "7000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -784,6 +822,7 @@
         "label": "",
         "description": "",
         "value": 5000000,
+        "valueExpr": "5000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -806,6 +845,7 @@
         "label": "",
         "description": "",
         "value": 3000000,
+        "valueExpr": "3000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -828,6 +868,7 @@
         "label": "",
         "description": "",
         "value": 4800000,
+        "valueExpr": "4800000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -850,6 +891,7 @@
         "label": "",
         "description": "",
         "value": 7000000,
+        "valueExpr": "7000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -872,6 +914,7 @@
         "label": "",
         "description": "",
         "value": 5000000,
+        "valueExpr": "5000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -894,6 +937,7 @@
         "label": "",
         "description": "",
         "value": 3000000,
+        "valueExpr": "3000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -916,6 +960,7 @@
         "label": "",
         "description": "",
         "value": 2407500,
+        "valueExpr": "2407500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -938,6 +983,7 @@
         "label": "",
         "description": "",
         "value": 1610000,
+        "valueExpr": "1610000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -960,6 +1006,7 @@
         "label": "",
         "description": "",
         "value": 2400000,
+        "valueExpr": "2400000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -982,6 +1029,7 @@
         "label": "",
         "description": "",
         "value": 3220000,
+        "valueExpr": "3220000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1004,6 +1052,7 @@
         "label": "",
         "description": "",
         "value": 2300000,
+        "valueExpr": "2300000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1026,6 +1075,7 @@
         "label": "",
         "description": "",
         "value": 1700000,
+        "valueExpr": "1700000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1048,6 +1098,7 @@
         "label": "",
         "description": "",
         "value": 1000000,
+        "valueExpr": "1000000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1070,6 +1121,7 @@
         "label": "",
         "description": "",
         "value": 3500000,
+        "valueExpr": "3500000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1092,6 +1144,7 @@
         "label": "",
         "description": "",
         "value": 2500000,
+        "valueExpr": "2500000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1114,6 +1167,7 @@
         "label": "",
         "description": "",
         "value": 1500000,
+        "valueExpr": "1500000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1136,6 +1190,7 @@
         "label": "",
         "description": "",
         "value": 4600000,
+        "valueExpr": "4600000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1158,6 +1213,7 @@
         "label": "",
         "description": "",
         "value": 3400000,
+        "valueExpr": "3400000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1180,6 +1236,7 @@
         "label": "",
         "description": "",
         "value": 2000000,
+        "valueExpr": "2000000",
         "cost": null
       },
       "origin": [0.5, 0],
