@@ -81,7 +81,7 @@ export default function LeftSidePanel() {
           <button
             onClick={handleCreateTree}
             disabled={!newTreeName.trim()}
-            className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white disabled:cursor-not-allowed disabled:bg-gray-300"
+            className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
           >
             Create
           </button>
