@@ -99,7 +99,7 @@ export default function LeftSidePanel() {
                 key={tree.id}
                 className={`cursor-pointer rounded-md border p-3 transition-colors ${
                   currentTreeId === tree.id
-                    ? "border-blue-300 bg-blue-100 dark:border-blue-600 dark:bg-blue-900"
+                    ? "border-blue-500 bg-blue-500/50"
                     : "border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
                 }`}
                 onClick={() => handleSetCurrentTree(tree.id)}

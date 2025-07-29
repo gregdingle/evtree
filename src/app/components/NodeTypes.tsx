@@ -104,15 +104,10 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         </div>
       )}
       <div
-        style={{
-          // NOTE: this wacky CSS creates the triangle shape
-          borderTop: "15px solid transparent",
-          borderBottom: "15px solid transparent",
-          borderRight: `24px solid ${
-            // TODO: sync selected color with tree selected color and tailwind color above
-            selected ? "rgba(0, 123, 255, 0.5)" : "#9ca8b3"
-          }`,
-        }}
+        // NOTE: this wacky CSS creates the triangle shape
+        className={`h-0 w-0 border-t-[15px] border-r-[24px] border-b-[15px] border-l-0 border-t-transparent border-b-transparent border-l-transparent ${
+          selected ? "border-r-blue-500/50" : "border-r-[#9ca8b3]"
+        }`}
       />
       <Handle type="target" position={Position.Left} />
       <div

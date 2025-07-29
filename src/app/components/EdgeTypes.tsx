@@ -50,12 +50,7 @@ export default function CustomEdge({
       <BaseEdge
         id={id}
         path={edgePath}
-        style={{
-          strokeWidth: 3,
-          // TODO: sync selected color with tree selected color and tailwind color above
-          // TODO: fix bug of stacked color when multiple edges are selected
-          stroke: selected ? "rgba(0, 123, 255, 0.5)" : undefined,
-        }}
+        className={`stroke-[3] ${selected ? "stroke-blue-500/50" : ""}`}
       />
       <EdgeLabelRenderer>
         <div className="nodrag nopa text-xs">
