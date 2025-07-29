@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import { DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
 import { sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
@@ -124,7 +125,7 @@ export default function LeftSidePanel() {
                         }}
                         className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
                       >
-                        <span className="inline-block rotate-45">╳</span>
+                        <DocumentDuplicateIcon className="h-5 w-5" />
                       </button>
                     </Tooltip>
                     <Tooltip text="Delete tree">
@@ -135,10 +136,7 @@ export default function LeftSidePanel() {
                         }}
                         className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                       >
-                        {/* TODO: put commands in a menu?
-                        TODO: proper icons
-                         */}
-                        ╳
+                        <TrashIcon className="h-5 w-5" />
                       </button>
                     </Tooltip>
                   </div>
