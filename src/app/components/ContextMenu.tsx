@@ -113,6 +113,7 @@ export default function ContextMenu({
           >
             Delete Subtree
           </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuButton
             onClick={() => handleConvertNode("decision")}
             disabled={contextNode?.type === "decision"}
@@ -131,6 +132,7 @@ export default function ContextMenu({
           >
             Convert to Terminal Node
           </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuButton
             onClick={() => contextNode && connectToNearestNode(contextNode.id)}
             disabled={contextNode && !!childToParentMap[contextNode.id]}
