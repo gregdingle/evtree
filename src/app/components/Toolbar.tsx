@@ -55,13 +55,13 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
 
   return (
     <div className="flex h-full items-center space-x-4 p-4">
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-2">
         <Image
           src="/favicon.svg"
           alt="EVTree logo"
           width={24}
           height={24}
-          className="dark:invert"
+          className="-rotate-90 dark:invert"
         />
         <h2 className="text-lg font-semibold">EVTree</h2>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
 interface CollapsiblePanelProps {
@@ -22,12 +23,19 @@ export default function CollapsiblePanel({
       : "-left-4 rounded-l-md border-l border-t border-b"
   }`;
 
-  // Chevron direction based on side and collapse state
-  const getChevron = () => {
+  const ChevronIcon = () => {
     if (isLeft) {
-      return isCollapsed ? "»" : "«";
+      return isCollapsed ? (
+        <ChevronRightIcon className="h-4 w-4 cursor-pointer" />
+      ) : (
+        <ChevronLeftIcon className="h-4 w-4 cursor-pointer" />
+      );
     } else {
-      return isCollapsed ? "«" : "»";
+      return isCollapsed ? (
+        <ChevronLeftIcon className="h-4 w-4 cursor-pointer" />
+      ) : (
+        <ChevronRightIcon className="h-4 w-4 cursor-pointer" />
+      );
     }
   };
 
@@ -38,8 +46,7 @@ export default function CollapsiblePanel({
         className={buttonClasses}
         aria-label={isCollapsed ? "Expand panel" : "Collapse panel"}
       >
-        {/* TODO: proper icon for collapse/expand */}
-        {getChevron()}
+        <ChevronIcon />
       </button>
 
       {/* Panel content */}

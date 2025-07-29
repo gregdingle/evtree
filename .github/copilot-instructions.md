@@ -10,6 +10,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - **React**: 19.1.0 (with React Compiler enabled)
 - **TypeScript**: ^5
 - **Styling**: Tailwind CSS v4
+- **Icons**: Heroicons
 - **Build Tool**: Turbopack (for development)
 - **Linting**: ESLint 9 with Next.js configurations
 
@@ -51,6 +52,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 ### Styling
 
 - Use Tailwind CSS classes
+- Use Heroicons for icons
 - Prefer utility-first approach
 - Use semantic class names when needed
 - Implement responsive design patterns
