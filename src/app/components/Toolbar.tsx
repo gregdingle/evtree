@@ -45,7 +45,8 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
   useHotkeys("ctrl+c", () => onCopy(), { enableOnFormTags: true });
   useHotkeys("ctrl+v", onPaste, { enableOnFormTags: true });
-  useHotkeys("ctrl+r", onReset, { enableOnFormTags: true });
+  // TODO: is reset sufficiently hidden from normal users?
+  useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
   useHotkeys("ctrl+e", onExportClick, { enableOnFormTags: false });
   useHotkeys("ctrl+d", onDownloadClick, { enableOnFormTags: false });
@@ -55,7 +56,11 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
 
   return (
     <div className="flex h-full items-center space-x-4 p-4">
-      <div className="flex items-center space-x-2">
+      <div
+        // NOTE: w-80 is the same width as the left side panel, so that the
+        // toolbar actions are aligned
+        className="flex w-80 items-center space-x-2"
+      >
         <Image
           src="/favicon.svg"
           alt="EVTree logo"
@@ -78,9 +83,11 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
         <ToolbarButton onClick={onPaste} tooltip="Ctrl+V">
           paste
         </ToolbarButton>
-        <ToolbarButton onClick={onReset} tooltip="Ctrl+R">
+        {/*
+        TODO: disabled for users, see hotkey
+        <ToolbarButton onClick={onReset} tooltip="Ctrl+Shift+R">
           reset
-        </ToolbarButton>
+        </ToolbarButton> */}
         <ToolbarButton onClick={onArrange} tooltip="Ctrl+R">
           arrange
         </ToolbarButton>
