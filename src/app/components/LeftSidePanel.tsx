@@ -52,6 +52,7 @@ export default function LeftSidePanel() {
       return;
     }
 
+    // TODO: convert to tailwind dialog
     if (window.confirm(`Are you sure you want to delete "${treeName}"?`)) {
       deleteTree(treeId);
     }

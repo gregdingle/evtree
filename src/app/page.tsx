@@ -27,7 +27,6 @@ export default function Home() {
     <ReactFlowProvider>
       <div className="evtree">
         <div className="flex h-screen flex-col">
-          {/* // TODO: fix min height on resize vertical */}
           <div className="border-b">
             <Toolbar
               onHistogramClick={() =>
@@ -41,7 +40,10 @@ export default function Home() {
                 <LeftSidePanel />
               </CollapsiblePanel>
             </div>
-            <div className="flex-1 bg-amber-50">
+            <div
+              // NOTE: #141414 copied from reactflow default dark mode
+              className="flex-1 bg-amber-50 dark:bg-[#141414]"
+            >
               {showHistogram ? (
                 <Histogram className="px-16 py-4" />
               ) : (

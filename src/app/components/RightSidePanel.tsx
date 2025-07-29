@@ -256,7 +256,6 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
       debouncedOnChange(newValue);
     };
 
-    // TODO: how to do consistent global styles? use some tailwind component UI kit?
     return (
       <div
         className={`mb-2 flex flex-wrap space-x-2 ${
