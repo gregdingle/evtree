@@ -99,7 +99,7 @@ export interface StoreState {
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree) => string;
   onTreeDataUpdate: (
-    treeData: Partial<Pick<DecisionTree, "name" | "description" | "variables">>
+    treeData: Partial<Pick<DecisionTree, "name" | "description" | "variables">>,
   ) => void;
 
   // Node/Edge operations (work on current tree)
@@ -114,11 +114,11 @@ export interface StoreState {
   onReset: () => void;
   onCreateNodeAt: (
     position: { x: number; y: number },
-    nodeType: NodeType
+    nodeType: NodeType,
   ) => void;
   onDragEndCreateNodeAt: (
     position: { x: number; y: number },
-    fromNodeId: string
+    fromNodeId: string,
   ) => void;
   onArrange: () => void;
   toggleNodeCollapse: (nodeId: string) => void;
@@ -199,7 +199,7 @@ const initialNodes = keyBy(
       targetPosition: Position.Left,
     },
   ] as AppNode[],
-  (node) => node.id
+  (node) => node.id,
 );
 
 const initialEdges = keyBy(
@@ -249,7 +249,7 @@ const initialEdges = keyBy(
       },
     },
   ] as AppEdge[],
-  (edge) => edge.id
+  (edge) => edge.id,
 );
 
 // Apply initial computations
@@ -292,8 +292,8 @@ const middlewares = (f: StateCreator<StoreState>) =>
         name: "evtree-storage-v1",
         // TODO: localStorage or sessionStorage?
         storage: createJSONStorage(() => window.localStorage),
-      }
-    )
+      },
+    ),
   );
 
 // NOTE: default selector changed to shallow for less re-renders
@@ -354,6 +354,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       return treeId;
     },
 
+    // TODO: how to prevent this from updatedAt being set via onNodesChange or
+    // something like that?
     setCurrentTree: (treeId: string) => {
       set((state) => {
         // Clear selections in current tree before switching
@@ -403,7 +405,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.variables = treeData.variables;
           }
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -412,11 +414,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         withCurrentTree(state, (tree) => {
           const updatedNodesArray = applyNodeChanges(
             changes,
-            values(tree.nodes)
+            values(tree.nodes),
           );
           tree.nodes = keyBy(updatedNodesArray, (node) => node.id);
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -425,11 +427,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         withCurrentTree(state, (tree) => {
           const updatedEdgesArray = applyEdgeChanges(
             changes,
-            values(tree.edges)
+            values(tree.edges),
           );
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -443,7 +445,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           const updatedEdgesArray = addEdge(newEdge, values(tree.edges));
           tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -457,7 +459,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           } else {
             warnItemNotFound("Node", id, "data update");
           }
-        })
+        }),
       );
     },
 
@@ -483,7 +485,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           } else {
             warnItemNotFound("Edge", id, "data update");
           }
-        })
+        }),
       );
     },
 
@@ -498,25 +500,25 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           // Find all sibling edges (edges from the same source node)
           const siblingEdges = values(tree.edges).filter(
-            (edge) => edge.source === targetEdge.source
+            (edge) => edge.source === targetEdge.source,
           );
 
           // Calculate sum of existing probabilities (excluding the target edge)
           const existingProbabilitySum = siblingEdges
             .filter(
-              (edge) => edge.id !== id && edge.data?.probability !== undefined
+              (edge) => edge.id !== id && edge.data?.probability !== undefined,
             )
             .reduce((sum, edge) => sum + (edge.data?.probability ?? 0), 0);
 
           // Count undefined probabilities (including the target edge)
           const undefinedProbabilityCount = siblingEdges.filter(
-            (edge) => edge.data?.probability === undefined || edge.id === id
+            (edge) => edge.data?.probability === undefined || edge.id === id,
           ).length;
 
           // Calculate balanced probability, round to 2 decimals
           const balancedProbability = round(
             max([0, 1.0 - existingProbabilitySum])! / undefinedProbabilityCount,
-            2
+            2,
           );
           const edge = tree.edges[id];
           if (edge && edge.data) {
@@ -525,7 +527,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           } else {
             warnItemNotFound("Edge", id, "data update");
           }
-        })
+        }),
       );
     },
 
@@ -534,10 +536,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         withCurrentTree(state, (tree) => {
           // NOTE: important to cloneDeep to avoid reference issues!
           let copiedNodes = cloneDeep(
-            values(tree.nodes).filter((node) => node.selected)
+            values(tree.nodes).filter((node) => node.selected),
           );
           let copiedEdges = cloneDeep(
-            values(tree.edges).filter((edge) => edge.selected)
+            values(tree.edges).filter((edge) => edge.selected),
           );
 
           if (stripData) {
@@ -561,7 +563,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             nodes: copiedNodes,
             edges: copiedEdges,
           };
-        })
+        }),
       );
     },
 
@@ -595,14 +597,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               const newEdge = cloneEdge(
                 clipboardEdge,
                 newSourceId,
-                newTargetId
+                newTargetId,
               );
               tree.edges[newEdge.id] = newEdge;
             }
           });
 
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -627,7 +629,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           clearSelections(tree);
           tree.nodes[newNode.id] = newNode;
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -643,7 +645,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           tree.edges[newEdge.id] = newEdge;
           // TODO: use dayjs?
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -653,12 +655,12 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         withCurrentTree(state, (tree) => {
           const { nodes, edges } = getLayoutedElements(
             values(tree.nodes),
-            values(tree.edges)
+            values(tree.edges),
           );
           tree.nodes = keyBy(nodes, (node) => node.id);
           tree.edges = keyBy(edges, (edge) => edge.id);
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -687,7 +689,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           toggleDescendants(nodeId);
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -708,7 +710,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           tree.nodes[nodeId] = updatedNode;
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -741,7 +743,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           };
 
           selectDescendants(nodeId);
-        })
+        }),
       );
     },
 
@@ -769,7 +771,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           deleteDescendants(nodeId);
 
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
 
@@ -800,13 +802,13 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
           tree.edges[newEdge.id] = newEdge;
           tree.updatedAt = new Date().toISOString();
-        })
+        }),
       );
     },
   })),
   // TODO: is this best as shallow or deep isEqual? any mutation to a node
   // results in a call back to onNodesChange with updated `measured`
-  shallow
+  shallow,
 );
 
 /**
@@ -850,7 +852,7 @@ useStoreBase.subscribe(
     // minimize store updates. see partialize already developed to reduce
     // undo.
     equalityFn: isEqual,
-  }
+  },
 );
 
 // TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools
@@ -858,7 +860,7 @@ useStoreBase.subscribe(
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
 export const useStore = createSelectorFunctions(
-  useStoreBase
+  useStoreBase,
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
 
 function clearSelections(currentTree: DecisionTree) {
@@ -871,7 +873,7 @@ function clearSelections(currentTree: DecisionTree) {
 
 function withCurrentTree(
   state: StoreState,
-  callback: (tree: DecisionTree) => void
+  callback: (tree: DecisionTree) => void,
 ): StoreState {
   const { currentTreeId } = state;
   if (!currentTreeId) {

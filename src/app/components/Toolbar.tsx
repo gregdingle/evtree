@@ -44,10 +44,10 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
         <h2 className="text-lg font-semibold">EVTree</h2>
       </div>
       <div className="flex justify-start space-x-2">
-        <ToolbarButton onClick={undo} tooltip="Ctrl+Z">
+        <ToolbarButton onClick={() => undo()} tooltip="Ctrl+Z">
           undo
         </ToolbarButton>
-        <ToolbarButton onClick={redo} tooltip="Ctrl+Y">
+        <ToolbarButton onClick={() => redo()} tooltip="Ctrl+Y">
           redo
         </ToolbarButton>
         <ToolbarButton onClick={onCopy} tooltip="Ctrl+C">
