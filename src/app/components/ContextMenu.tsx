@@ -138,14 +138,14 @@ export default function ContextMenu({
             onClick={() => handleConvertNode("decision")}
             disabled={contextNode?.type === "decision"}
           >
-            <div className="mr-0.25 h-3.5 w-3.5 border-2 border-current"></div>
+            <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
             Convert to Decision Node
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => handleConvertNode("chance")}
             disabled={contextNode?.type === "chance"}
           >
-            <div className="h-4 w-4 rounded-full border-2 border-current"></div>
+            <div className="h-4 w-4 rounded-full border-1 border-current"></div>
             Convert to Chance Node
           </ContextMenuButton>
           <ContextMenuButton
@@ -167,11 +167,11 @@ export default function ContextMenu({
       ) : (
         <>
           <ContextMenuButton onClick={() => handleCreateNode("decision")}>
-            <div className="mr-0.25 h-3.5 w-3.5 border-2 border-current"></div>
+            <div className="h-4 w-4 border-1 border-current"></div>
             Create Decision Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("chance")}>
-            <div className="h-4 w-4 rounded-full border-2 border-current"></div>
+            <div className="h-4 w-4 rounded-full border-1 border-current"></div>
             Create Chance Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("terminal")}>
