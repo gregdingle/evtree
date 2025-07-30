@@ -4,8 +4,10 @@ import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/utils/download";
 import { openTreeFile } from "@/utils/load-tree";
 import {
+  ChevronDownIcon,
+  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
-  EllipsisHorizontalIcon,
+  PhotoIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
@@ -159,30 +161,8 @@ export default function LeftSidePanel() {
                     </p>
                   </div>
                   <div className="ml-2 flex space-x-1">
-                    <Tooltip text="Duplicate tree">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDuplicateTree(tree.id, tree.name);
-                        }}
-                        className="p-1 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-                      >
-                        <DocumentDuplicateIcon className="h-5 w-5" />
-                      </button>
-                    </Tooltip>
-                    <Tooltip text="Delete tree">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteTree(tree.id, tree.name);
-                        }}
-                        className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
-                      >
-                        <TrashIcon className="h-5 w-5" />
-                      </button>
-                    </Tooltip>
                     <div className="relative">
-                      <Tooltip text="More actions">
+                      <Tooltip text="Tree actions">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -192,7 +172,7 @@ export default function LeftSidePanel() {
                           }}
                           className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
-                          <EllipsisHorizontalIcon className="h-5 w-5" />
+                          <ChevronDownIcon className="h-5 w-5" />
                         </button>
                       </Tooltip>
                       {showMoreMenu === tree.id && (
@@ -211,13 +191,33 @@ export default function LeftSidePanel() {
                             }`}
                           >
                             <ContextMenuButton
+                              onClick={() => {
+                                handleDuplicateTree(tree.id, tree.name);
+                                setShowMoreMenu(null);
+                              }}
+                            >
+                              <DocumentDuplicateIcon className="h-4 w-4" />
+                              Duplicate Tree
+                            </ContextMenuButton>
+                            <ContextMenuButton
+                              onClick={() => {
+                                handleDeleteTree(tree.id, tree.name);
+                                setShowMoreMenu(null);
+                              }}
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                              Delete Tree
+                            </ContextMenuButton>
+                            <ContextMenuButton
                               onClick={() => handleExportTree(tree)}
                             >
+                              <PhotoIcon className="h-4 w-4" />
                               Export as PNG
                             </ContextMenuButton>
                             <ContextMenuButton
                               onClick={() => handleDownloadTree(tree)}
                             >
+                              <DocumentArrowDownIcon className="h-4 w-4" />
                               Download as JSON
                             </ContextMenuButton>
                           </div>
