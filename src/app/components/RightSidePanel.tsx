@@ -29,6 +29,7 @@ export default function RightSidePanel() {
     };
   });
 
+  // TODO: make ESC unfocus the input, then maybe unselect current selection
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   // Focus first input when selection changes
