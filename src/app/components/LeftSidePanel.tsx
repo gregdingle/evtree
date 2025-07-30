@@ -1,16 +1,23 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
-import { DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { downloadJson, downloadPNG } from "@/utils/download";
+import {
+  DocumentDuplicateIcon,
+  EllipsisHorizontalIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
-import { sortBy } from "es-toolkit";
+import { kebabCase, sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import { useState } from "react";
+import { ContextMenuButton } from "./ContextMenuButton";
 import Tooltip from "./Tooltip";
 
 // TODO: allow delete last tree? or support zero trees? revert to initial tree or what?
 export default function LeftSidePanel() {
   const [newTreeName, setNewTreeName] = useState("");
+  const [showMoreMenu, setShowMoreMenu] = useState<string | null>(null);
   const { fitView } = useReactFlow();
 
   const { trees, currentTreeId } = useStore((state) => ({
@@ -58,6 +65,26 @@ export default function LeftSidePanel() {
     }
   };
 
+  const handleExportTree = (treeToExport: NonNullable<(typeof trees)[0]>) => {
+    if (!treeToExport) return;
+    downloadPNG(
+      values(treeToExport.nodes ?? []),
+      `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
+    );
+    setShowMoreMenu(null);
+  };
+
+  const handleDownloadTree = (
+    treeToDownload: NonNullable<(typeof trees)[0]>,
+  ) => {
+    if (!treeToDownload) return;
+    downloadJson(
+      treeToDownload,
+      `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
+    );
+    setShowMoreMenu(null);
+  };
+
   return (
     <div className="w-80 p-4">
       <div className="mb-4">
@@ -95,7 +122,7 @@ export default function LeftSidePanel() {
           <p className="text-gray-500">No trees available</p>
         ) : (
           <div className="space-y-2">
-            {trees.map((tree) => (
+            {trees.map((tree, index) => (
               <div
                 key={tree.id}
                 className={`cursor-pointer rounded-md border p-3 transition-colors ${
@@ -140,6 +167,49 @@ export default function LeftSidePanel() {
                         <TrashIcon className="h-5 w-5" />
                       </button>
                     </Tooltip>
+                    <div className="relative">
+                      <Tooltip text="More actions">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowMoreMenu(
+                              showMoreMenu === tree.id ? null : tree.id,
+                            );
+                          }}
+                          className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        >
+                          <EllipsisHorizontalIcon className="h-5 w-5" />
+                        </button>
+                      </Tooltip>
+                      {showMoreMenu === tree.id && (
+                        <>
+                          {/* Backdrop to close menu when clicking outside */}
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setShowMoreMenu(null)}
+                          />
+                          {/* More menu */}
+                          <div
+                            className={`absolute z-20 w-48 rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800 ${
+                              index >= trees.length - 1
+                                ? "right-0 bottom-8"
+                                : "top-8 right-0"
+                            }`}
+                          >
+                            <ContextMenuButton
+                              onClick={() => handleExportTree(tree)}
+                            >
+                              Export as PNG
+                            </ContextMenuButton>
+                            <ContextMenuButton
+                              onClick={() => handleDownloadTree(tree)}
+                            >
+                              Download as JSON
+                            </ContextMenuButton>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

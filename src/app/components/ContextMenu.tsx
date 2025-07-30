@@ -2,6 +2,7 @@ import { AppNode, NodeType, useStore } from "@/hooks/use-store";
 import { buildChildToParentNodeMap } from "@/utils/maps";
 import { selectCollapsible, selectCurrentEdges } from "@/utils/selectors";
 import { useReactFlow } from "@xyflow/react";
+import { ContextMenuButton } from "./ContextMenuButton";
 
 export interface ContextMenuProps {
   top?: number;
@@ -154,29 +155,5 @@ export default function ContextMenu({
         </>
       )}
     </div>
-  );
-}
-
-interface ContextMenuButtonProps {
-  onClick: () => void;
-  disabled?: boolean;
-  children: React.ReactNode;
-}
-
-function ContextMenuButton({
-  onClick,
-  disabled,
-  children,
-}: ContextMenuButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`${
-        disabled ? "opacity-50" : ""
-      } flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700`}
-    >
-      {children}
-    </button>
   );
 }
