@@ -1,7 +1,6 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
-import { openTreeFile } from "@/utils/load-tree";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ToolbarButton } from "./ToolbarButton";
@@ -11,16 +10,9 @@ interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   const { undo, redo } = useStore.temporal.getState();
-  const { onCopy, onPaste, onReset, onArrange, loadTree } = useStore.getState();
+  const { onCopy, onPaste, onReset, onArrange } = useStore.getState();
 
   // TODO: dark mode toggle button
-
-  const onOpenClick = async () => {
-    const treeData = await openTreeFile();
-    if (treeData) {
-      loadTree(treeData);
-    }
-  };
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
   // TODO: consider best hotkeys
@@ -32,7 +24,6 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
   // TODO: is reset sufficiently hidden from normal users?
   useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
-  useHotkeys("ctrl+o", onOpenClick, { enableOnFormTags: false });
   useHotkeys("ctrl+h", onHistogramClick, { enableOnFormTags: false });
   // TODO: add our own hotkey for delete that works when an input is focused and overrides the built-in react flow hotkeys
 
@@ -72,9 +63,6 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
         </ToolbarButton> */}
         <ToolbarButton onClick={onArrange} tooltip="Ctrl+R">
           arrange
-        </ToolbarButton>
-        <ToolbarButton onClick={onOpenClick} tooltip="Ctrl+O">
-          open
         </ToolbarButton>
         <ToolbarButton onClick={onHistogramClick} tooltip="Ctrl+H">
           histogram

@@ -2,6 +2,7 @@
 
 import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/utils/download";
+import { openTreeFile } from "@/utils/load-tree";
 import {
   DocumentDuplicateIcon,
   EllipsisHorizontalIcon,
@@ -25,7 +26,7 @@ export default function LeftSidePanel() {
     currentTreeId: state.currentTreeId,
   }));
 
-  const { createTree, deleteTree, setCurrentTree, duplicateTree } =
+  const { createTree, deleteTree, setCurrentTree, duplicateTree, loadTree } =
     useStore.getState();
 
   const handleSetCurrentTree = (treeId: string) => {
@@ -40,6 +41,13 @@ export default function LeftSidePanel() {
     if (newTreeName.trim()) {
       createTree(newTreeName.trim());
       setNewTreeName("");
+    }
+  };
+
+  const handleOpenTree = async () => {
+    const treeData = await openTreeFile();
+    if (treeData) {
+      loadTree(treeData);
     }
   };
 
@@ -99,7 +107,7 @@ export default function LeftSidePanel() {
             value={newTreeName}
             onChange={(e) => setNewTreeName(e.target.value)}
             placeholder="New tree name"
-            className="flex-1 rounded-md border-2 p-1 text-sm"
+            className="min-w-0 flex-1 rounded-md border-2 p-1 text-sm"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleCreateTree();
@@ -109,9 +117,15 @@ export default function LeftSidePanel() {
           <button
             onClick={handleCreateTree}
             disabled={!newTreeName.trim()}
-            className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+            className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
           >
             Create
+          </button>
+          <button
+            onClick={handleOpenTree}
+            className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
+          >
+            Open
           </button>
         </div>
       </div>
