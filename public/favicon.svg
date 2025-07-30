@@ -4,6 +4,7 @@
   width="48"
   height="48"
   viewBox="0 0 1500 2300"
+  transform="rotate(-90)"
 >
   <path
     fill-rule="nonzero"
