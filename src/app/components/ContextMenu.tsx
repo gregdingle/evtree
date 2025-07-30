@@ -4,7 +4,6 @@ import { selectCollapsible, selectCurrentEdges } from "@/utils/selectors";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
-  ClipboardDocumentIcon,
   DocumentDuplicateIcon,
   LinkIcon,
   PlayIcon,
@@ -101,7 +100,7 @@ export default function ContextMenu({
               }
             }}
           >
-            <ClipboardDocumentIcon className="h-4 w-4" />
+            <DocumentDuplicateIcon className="h-4 w-4" />
             Copy Subtree
           </ContextMenuButton>
           <ContextMenuButton
