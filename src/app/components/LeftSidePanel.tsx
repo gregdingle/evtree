@@ -123,18 +123,12 @@ export default function LeftSidePanel() {
           >
             Create
           </button>
-          <Tooltip
-            // TODO: fix tooltip overflow hidden
-            // TODO: add back hotkey Ctrl+O ?
-            text="Open tree from JSON file (Ctrl+O)"
+          <button
+            onClick={handleOpenTree}
+            className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
           >
-            <button
-              onClick={handleOpenTree}
-              className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
-            >
-              Open
-            </button>
-          </Tooltip>
+            Open
+          </button>
         </div>
       </div>
 
