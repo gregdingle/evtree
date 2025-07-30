@@ -1,6 +1,14 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import {
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  DocumentDuplicateIcon,
+  ClipboardDocumentIcon,
+  ArrowsPointingOutIcon,
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ToolbarButton } from "./ToolbarButton";
@@ -45,15 +53,19 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
       </div>
       <div className="flex justify-start space-x-2">
         <ToolbarButton onClick={() => undo()} tooltip="Ctrl+Z">
+          <ArrowUturnLeftIcon className="h-4 w-4" />
           undo
         </ToolbarButton>
         <ToolbarButton onClick={() => redo()} tooltip="Ctrl+Y">
+          <ArrowUturnRightIcon className="h-4 w-4" />
           redo
         </ToolbarButton>
         <ToolbarButton onClick={onCopy} tooltip="Ctrl+C">
+          <DocumentDuplicateIcon className="h-4 w-4" />
           copy
         </ToolbarButton>
         <ToolbarButton onClick={onPaste} tooltip="Ctrl+V">
+          <ClipboardDocumentIcon className="h-4 w-4" />
           paste
         </ToolbarButton>
         {/*
@@ -62,9 +74,11 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
           reset
         </ToolbarButton> */}
         <ToolbarButton onClick={onArrange} tooltip="Ctrl+R">
+          <ArrowsPointingOutIcon className="h-4 w-4" />
           arrange
         </ToolbarButton>
         <ToolbarButton onClick={onHistogramClick} tooltip="Ctrl+H">
+          <ChartBarIcon className="h-4 w-4" />
           histogram
         </ToolbarButton>
       </div>

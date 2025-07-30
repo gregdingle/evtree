@@ -20,7 +20,7 @@ export function ToolbarButton({
       <Tooltip text={tooltip}>
         <button
           onClick={onClick}
-          className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
+          className="flex items-center gap-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
         >
           {children}
         </button>
@@ -31,7 +31,7 @@ export function ToolbarButton({
   return (
     <button
       onClick={onClick}
-      className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
+      className="flex items-center gap-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded"
     >
       {children}
     </button>
