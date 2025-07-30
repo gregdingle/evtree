@@ -39,6 +39,7 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
           alt="EVTree logo"
           width={24}
           height={24}
+          // TODO: rotate this in the file so it can be used in tab favicon
           className="-rotate-90 dark:invert"
         />
         <h2 className="text-lg font-semibold">EVTree</h2>
