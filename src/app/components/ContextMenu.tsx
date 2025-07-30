@@ -1,6 +1,16 @@
 import { AppNode, NodeType, useStore } from "@/hooks/use-store";
 import { buildChildToParentNodeMap } from "@/utils/maps";
 import { selectCollapsible, selectCurrentEdges } from "@/utils/selectors";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ClipboardDocumentIcon,
+  DocumentDuplicateIcon,
+  LinkIcon,
+  PlayIcon,
+  RectangleGroupIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
 import { ContextMenuButton } from "./ContextMenuButton";
 
@@ -80,6 +90,7 @@ export default function ContextMenu({
             onClick={() => contextNode && selectSubtree(contextNode.id)}
             disabled={!hasChildren}
           >
+            <RectangleGroupIcon className="h-4 w-4" />
             Select Subtree
           </ContextMenuButton>
           <ContextMenuButton
@@ -90,6 +101,7 @@ export default function ContextMenu({
               }
             }}
           >
+            <ClipboardDocumentIcon className="h-4 w-4" />
             Copy Subtree
           </ContextMenuButton>
           <ContextMenuButton
@@ -100,6 +112,7 @@ export default function ContextMenu({
               }
             }}
           >
+            <DocumentDuplicateIcon className="h-4 w-4" />
             {/* TODO: is this a good name? */}
             Copy Subtree Structure
           </ContextMenuButton>
@@ -107,11 +120,17 @@ export default function ContextMenu({
             onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
             disabled={!hasChildren}
           >
+            {isCollapsed ? (
+              <ChevronRightIcon className="h-4 w-4" />
+            ) : (
+              <ChevronDownIcon className="h-4 w-4" />
+            )}
             {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => contextNode && deleteSubTree(contextNode.id)}
           >
+            <TrashIcon className="h-4 w-4" />
             Delete Subtree
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
@@ -119,18 +138,21 @@ export default function ContextMenu({
             onClick={() => handleConvertNode("decision")}
             disabled={contextNode?.type === "decision"}
           >
+            <div className="mr-0.25 h-3.5 w-3.5 border-2 border-current"></div>
             Convert to Decision Node
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => handleConvertNode("chance")}
             disabled={contextNode?.type === "chance"}
           >
+            <div className="h-4 w-4 rounded-full border-2 border-current"></div>
             Convert to Chance Node
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => handleConvertNode("terminal")}
             disabled={hasChildren || contextNode?.type === "terminal"}
           >
+            <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
             Convert to Terminal Node
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
@@ -138,18 +160,22 @@ export default function ContextMenu({
             onClick={() => contextNode && connectToNearestNode(contextNode.id)}
             disabled={contextNode && !!childToParentMap[contextNode.id]}
           >
+            <LinkIcon className="h-4 w-4" />
             Connect to Nearest Node
           </ContextMenuButton>
         </>
       ) : (
         <>
           <ContextMenuButton onClick={() => handleCreateNode("decision")}>
+            <div className="mr-0.25 h-3.5 w-3.5 border-2 border-current"></div>
             Create Decision Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("chance")}>
+            <div className="h-4 w-4 rounded-full border-2 border-current"></div>
             Create Chance Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("terminal")}>
+            <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
             Create Terminal Node
           </ContextMenuButton>
         </>
