@@ -51,9 +51,11 @@ export function Histogram(props: HistogramProps) {
   if (terminalNodesData.length === 0) {
     return (
       <div {...props}>
-        <h3 className="mb-4 text-lg font-semibold">Histogram</h3>
+        <h3 className="mb-4 text-lg font-semibold">
+          Probability distribution of terminal values
+        </h3>
         <p className="text-gray-500">
-          No terminal nodes with complete probability paths found
+          No terminal nodes with probability found
         </p>
       </div>
     );
@@ -61,7 +63,9 @@ export function Histogram(props: HistogramProps) {
 
   return (
     <div {...props}>
-      <h3 className="mb-4 text-lg font-semibold">Histogram</h3>
+      <h3 className="mb-4 text-lg font-semibold">
+        Probability distribution of terminal values
+      </h3>
       <div className="space-y-px">
         {histogramData.map(({ value, binEnd, probability, binSize }) => {
           const widthPercentage =

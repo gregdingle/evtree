@@ -32,6 +32,7 @@ export default function Home() {
               onHistogramClick={() =>
                 showHistogram ? setShowHistogram(false) : setShowHistogram(true)
               }
+              isHistogramOpen={showHistogram}
             />
           </div>
           <div className="flex flex-1">

@@ -2,12 +2,12 @@
 
 import { useStore } from "@/hooks/use-store";
 import {
+  ArrowsPointingOutIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
-  DocumentDuplicateIcon,
-  ClipboardDocumentIcon,
-  ArrowsPointingOutIcon,
   ChartBarIcon,
+  ClipboardDocumentIcon,
+  DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -15,8 +15,12 @@ import { ToolbarButton } from "./ToolbarButton";
 
 interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   onHistogramClick: () => void;
+  isHistogramOpen: boolean;
 }
-export default function Toolbar({ onHistogramClick }: ToolbarProps) {
+export default function Toolbar({
+  onHistogramClick,
+  isHistogramOpen,
+}: ToolbarProps) {
   const { undo, redo } = useStore.temporal.getState();
   const { onCopy, onPaste, onReset, onArrange } = useStore.getState();
 
@@ -77,7 +81,15 @@ export default function Toolbar({ onHistogramClick }: ToolbarProps) {
           <ArrowsPointingOutIcon className="h-4 w-4" />
           arrange
         </ToolbarButton>
-        <ToolbarButton onClick={onHistogramClick} tooltip="Ctrl+H">
+        <ToolbarButton
+          onClick={onHistogramClick}
+          tooltip={
+            isHistogramOpen
+              ? "Hide Histogram (Ctrl+H)"
+              : "Show Histogram (Ctrl+H)"
+          }
+          active={isHistogramOpen}
+        >
           <ChartBarIcon className="h-4 w-4" />
           histogram
         </ToolbarButton>

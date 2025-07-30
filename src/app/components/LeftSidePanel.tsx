@@ -98,7 +98,7 @@ export default function LeftSidePanel() {
   return (
     <div className="w-80 p-4">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold">Trees</h2>
+        <h2 className="text-lg font-semibold">Decision Trees</h2>
       </div>
 
       {/* Create new tree */}
@@ -123,12 +123,18 @@ export default function LeftSidePanel() {
           >
             Create
           </button>
-          <button
-            onClick={handleOpenTree}
-            className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
+          <Tooltip
+            // TODO: fix tooltip overflow hidden
+            // TODO: add back hotkey Ctrl+O ?
+            text="Open tree from JSON file (Ctrl+O)"
           >
-            Open
-          </button>
+            <button
+              onClick={handleOpenTree}
+              className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
+            >
+              Open
+            </button>
+          </Tooltip>
         </div>
       </div>
 
