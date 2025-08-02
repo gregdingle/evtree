@@ -53,7 +53,7 @@ export default function CustomEdge({
         className={`stroke-[3] ${selected ? "stroke-blue-500/50" : ""}`}
       />
       <EdgeLabelRenderer>
-        <div className="nodrag nopa text-xs">
+        <div className="nodrag nopan cursor-pointer text-xs">
           <div
             style={{
               transform,

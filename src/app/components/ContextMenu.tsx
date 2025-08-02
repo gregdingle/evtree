@@ -87,10 +87,22 @@ export default function ContextMenu({
         <>
           <ContextMenuButton
             onClick={() => contextNode && selectSubtree(contextNode.id)}
-            disabled={!hasChildren}
+            // TODO: should only allow a multi node selection?
+            // disabled={!hasChildren}
           >
             <RectangleGroupIcon className="h-4 w-4" />
             Select Subtree
+          </ContextMenuButton>
+          <ContextMenuButton
+            onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
+            disabled={!hasChildren}
+          >
+            {isCollapsed ? (
+              <ChevronRightIcon className="h-4 w-4" />
+            ) : (
+              <ChevronDownIcon className="h-4 w-4" />
+            )}
+            {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => {
@@ -111,20 +123,9 @@ export default function ContextMenu({
               }
             }}
           >
-            <DocumentDuplicateIcon className="h-4 w-4" />
+            <span className="rotate-90 text-2xl">⑂</span>
             {/* TODO: is this a good name? */}
-            Copy Subtree Structure
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
-            disabled={!hasChildren}
-          >
-            {isCollapsed ? (
-              <ChevronRightIcon className="h-4 w-4" />
-            ) : (
-              <ChevronDownIcon className="h-4 w-4" />
-            )}
-            {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
+            Copy Structure Only
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => contextNode && deleteSubTree(contextNode.id)}
