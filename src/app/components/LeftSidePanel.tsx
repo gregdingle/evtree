@@ -15,12 +15,14 @@ import { kebabCase, sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import { useState } from "react";
 import { ContextMenuButton } from "./ContextMenuButton";
+import CreateDialog from "./CreateDialog";
 import Tooltip from "./Tooltip";
 
 // TODO: allow delete last tree? or support zero trees? revert to initial tree or what?
 export default function LeftSidePanel() {
-  const [newTreeName, setNewTreeName] = useState("");
   const [showMoreMenu, setShowMoreMenu] = useState<string | null>(null);
+  const [isDialogOpen, setOpenDialog] = useState(false);
+
   const { fitView } = useReactFlow();
 
   const { trees, currentTreeId } = useStore((state) => ({
@@ -28,7 +30,7 @@ export default function LeftSidePanel() {
     currentTreeId: state.currentTreeId,
   }));
 
-  const { createTree, deleteTree, setCurrentTree, duplicateTree, loadTree } =
+  const { deleteTree, setCurrentTree, duplicateTree, loadTree } =
     useStore.getState();
 
   const handleSetCurrentTree = (treeId: string) => {
@@ -37,13 +39,6 @@ export default function LeftSidePanel() {
     setTimeout(() => {
       fitView();
     }, 100);
-  };
-
-  const handleCreateTree = () => {
-    if (newTreeName.trim()) {
-      createTree(newTreeName.trim());
-      setNewTreeName("");
-    }
   };
 
   const handleOpenTree = async () => {
@@ -104,25 +99,16 @@ export default function LeftSidePanel() {
       {/* Create new tree */}
       <div className="mb-6">
         <div className="flex space-x-2">
-          <input
-            type="text"
-            value={newTreeName}
-            onChange={(e) => setNewTreeName(e.target.value)}
-            placeholder="New tree name"
-            className="min-w-0 flex-1 rounded-md border-2 p-1 text-sm"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleCreateTree();
-              }
-            }}
-          />
           <button
-            onClick={handleCreateTree}
-            disabled={!newTreeName.trim()}
+            onClick={() => setOpenDialog(true)}
             className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
           >
-            Create
+            Create...
           </button>
+          <CreateDialog
+            open={isDialogOpen}
+            onClose={() => setOpenDialog(false)}
+          />
           <button
             onClick={handleOpenTree}
             className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
