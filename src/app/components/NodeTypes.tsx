@@ -30,7 +30,7 @@ const BaseNode = ({ data, children, id }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectPathValue(state, id));
 
   return (
-    <div className="nodrag nopan relative cursor-pointer text-xs">
+    <div className="nopan relative cursor-pointer text-xs">
       <div className="absolute -top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center whitespace-nowrap">
         {data.label}
       </div>
@@ -97,7 +97,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathValue = useStore((state) => selectPathValue(state, id));
 
   return (
-    <div className="nodrag nopan relative cursor-pointer text-xs">
+    <div className="nopan relative cursor-pointer text-xs">
       {data.label && (
         <div className="absolute -top-2 left-8 whitespace-nowrap">
           {data.label}
