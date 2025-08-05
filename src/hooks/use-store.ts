@@ -5,7 +5,9 @@ import {
   applyEdgeChanges,
   applyNodeChanges,
   Edge,
+  EdgeChange,
   Node,
+  NodeChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -125,6 +127,7 @@ export interface StoreState {
   onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
   selectSubtree: (nodeId: string) => void;
   deleteSubTree: (nodeId: string) => void;
+  deleteSelected: () => void;
   connectToNearestNode: (nodeId: string) => void;
 }
 
@@ -769,6 +772,48 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           };
 
           deleteDescendants(nodeId);
+
+          tree.updatedAt = new Date().toISOString();
+        }),
+      );
+    },
+
+    deleteSelected: () => {
+      set((state) =>
+        withCurrentTree(state, (tree) => {
+          const selectedNodes = values(tree.nodes).filter(
+            (node) => node.selected,
+          );
+          const selectedEdges = values(tree.edges).filter(
+            (edge) => edge.selected,
+          );
+
+          if (selectedNodes.length === 0 && selectedEdges.length === 0) return;
+
+          // TODO: is it needed to do this in terms of NodeChange and EdgeChange?
+          const nodeChanges: NodeChange<AppNode>[] = selectedNodes.map(
+            (node) => ({
+              type: "remove",
+              id: node.id,
+            }),
+          );
+
+          const edgeChanges: EdgeChange<AppEdge>[] = selectedEdges.map(
+            (edge) => ({
+              type: "remove",
+              id: edge.id,
+            }),
+          );
+
+          // Apply the changes directly to the tree
+          tree.nodes = keyBy(
+            applyNodeChanges(nodeChanges, values(tree.nodes)),
+            (node) => node.id,
+          );
+          tree.edges = keyBy(
+            applyEdgeChanges(edgeChanges, values(tree.edges)),
+            (edge) => edge.id,
+          );
 
           tree.updatedAt = new Date().toISOString();
         }),

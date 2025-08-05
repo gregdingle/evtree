@@ -8,6 +8,7 @@ import {
   ChartBarIcon,
   ClipboardDocumentIcon,
   DocumentDuplicateIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -22,7 +23,7 @@ export default function Toolbar({
   isHistogramOpen,
 }: ToolbarProps) {
   const { undo, redo } = useStore.temporal.getState();
-  const { onCopy, onPaste, onReset, onArrange } = useStore.getState();
+  const { onCopy, onPaste, onReset, onArrange, deleteSelected } = useStore.getState();
 
   // TODO: dark mode toggle button
 
@@ -37,7 +38,7 @@ export default function Toolbar({
   useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
   useHotkeys("ctrl+h", onHistogramClick, { enableOnFormTags: false });
-  // TODO: add our own hotkey for delete that works when an input is focused and overrides the built-in react flow hotkeys
+  useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
 
   return (
     <div className="flex h-full items-center space-x-4 p-4">
@@ -71,6 +72,10 @@ export default function Toolbar({
         <ToolbarButton onClick={onPaste} tooltip="Ctrl+V">
           <ClipboardDocumentIcon className="h-4 w-4" />
           paste
+        </ToolbarButton>
+        <ToolbarButton onClick={deleteSelected} tooltip="Ctrl+Delete">
+          <TrashIcon className="h-4 w-4" />
+          delete
         </ToolbarButton>
         {/*
         TODO: disabled for users, see hotkey
