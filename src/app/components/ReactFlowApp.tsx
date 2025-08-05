@@ -96,7 +96,7 @@ export default function ReactFlowApp() {
       {nodes.length === 0 && !menu && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="text-4xl text-gray-400 dark:text-gray-500">
-            Right-click to start
+            Ctrl+click to start
           </div>
         </div>
       )}
