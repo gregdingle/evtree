@@ -46,6 +46,7 @@ export default function ReactFlowApp() {
         y: clientY,
       });
 
+      // TODO: make this work for connection to upstream nodes also
       onDragEndCreateNodeAt(position, connectionState.fromNode.id);
     }
   };

@@ -23,7 +23,7 @@ export function selectComputedNodesAndEdges(state: StoreState) {
   }
   return {
     computeNodes: mapValues(tree.nodes, (node) =>
-      toComputeNode(node, tree.variables)
+      toComputeNode(node, tree.variables),
     ),
     computeEdges: mapValues(tree.edges, toComputeEdge),
   };
@@ -64,7 +64,7 @@ export function selectCurrentEdges(state: StoreState) {
  */
 export function selectPathProbability(
   state: StoreState,
-  nodeId: string
+  nodeId: string,
 ): number | null {
   const currentTree = selectCurrentTree(state);
   if (!currentTree) {
@@ -128,7 +128,7 @@ export function selectPathProbability(
  */
 export function selectPathValue(
   state: StoreState,
-  nodeId: string
+  nodeId: string,
 ): number | null {
   const currentTree = selectCurrentTree(state);
   if (!currentTree) {
@@ -171,7 +171,7 @@ export function selectPathValue(
 
 export function selectCollapsible(
   state: StoreState,
-  nodeId: string | undefined
+  nodeId: string | undefined,
 ) {
   const tree = state.trees[state.currentTreeId!];
   if (!nodeId || !tree) {
@@ -187,6 +187,16 @@ export function selectCollapsible(
     hasChildren && !!children?.some((nodeId) => tree.nodes[nodeId]?.hidden);
 
   return { hasChildren, isCollapsed };
+}
+
+export function selectHasParent(state: StoreState, nodeId: string | undefined) {
+  const tree = state.trees[state.currentTreeId!];
+  if (!nodeId || !tree) {
+    return false;
+  }
+
+  const childToParentMap = buildChildToParentNodeMap(tree.edges);
+  return !!childToParentMap[nodeId];
 }
 
 export function selectUndoableState(state: StoreState) {
@@ -206,16 +216,16 @@ export function selectUndoableState(state: StoreState) {
               // NOTE: measured is something that ReactFlow adds
               // secondarily to nodes onNodesChange
               omit(node, ["selected", "measured"]),
-            ])
+            ]),
           ),
           edges: fromPairs(
             toPairs(tree.edges).map(([id, edge]) => [
               id,
               omit(edge, ["selected"]),
-            ])
+            ]),
           ),
         },
-      ])
+      ]),
     ),
   };
 }

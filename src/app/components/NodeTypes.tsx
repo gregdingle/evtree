@@ -2,6 +2,7 @@ import { AppNode, useStore } from "@/hooks/use-store";
 import { formatProbability, formatValue } from "@/utils/format";
 import {
   selectCollapsible,
+  selectHasParent,
   selectPathProbability,
   selectPathValue,
 } from "@/utils/selectors";
@@ -47,6 +48,7 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, id),
   );
+  const hasParent = useStore((state) => selectHasParent(state, id));
   return (
     <BaseNode
       data={data}
@@ -56,8 +58,17 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       isCollapsed={isCollapsed}
     >
       <div className={`p-4 ${selected ? "bg-blue-500/50" : "bg-slate-400"}`}>
-        <Handle type="target" position={Position.Left} />
-        <Handle type="source" position={Position.Right} />
+        <Handle
+          type="target"
+          position={Position.Left}
+          isConnectable={!hasParent}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          className={isCollapsed ? "collapsed" : ""}
+          isConnectable={isCollapsed ? false : true}
+        />
       </div>
     </BaseNode>
   );
@@ -67,6 +78,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, id),
   );
+  const hasParent = useStore((state) => selectHasParent(state, id));
   return (
     <BaseNode
       data={data}
@@ -80,7 +92,11 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           selected ? "bg-blue-500/50" : "bg-slate-400"
         }`}
       >
-        <Handle type="target" position={Position.Left} />
+        <Handle
+          type="target"
+          position={Position.Left}
+          isConnectable={!hasParent}
+        />
         <Handle
           type="source"
           position={Position.Right}
@@ -95,6 +111,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const pathValue = useStore((state) => selectPathValue(state, id));
+  const hasParent = useStore((state) => selectHasParent(state, id));
 
   return (
     <div className="nopan relative cursor-pointer text-xs">
@@ -109,7 +126,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           selected ? "border-r-blue-500/50" : "border-r-slate-400"
         }`}
       />
-      <Handle type="target" position={Position.Left} />
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={!hasParent}
+      />
       <div
         className={`absolute left-8 max-w-32 ${
           data.label ? "top-2" : "-top-1"
