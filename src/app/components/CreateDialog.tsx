@@ -8,7 +8,11 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { FolderOpenIcon, PlusIcon } from "@heroicons/react/24/outline";
+import {
+  FolderOpenIcon,
+  PlusIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 interface CreateDialogProps {
@@ -22,14 +26,17 @@ interface CreateDialogProps {
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const { createTree, loadTree } = useStore.getState();
 
+  // TODO: replace all this form state with a local reducer?
   const [newTreeName, setNewTreeName] = useState("");
   const [newTreeDescription, setNewTreeDescription] = useState("");
   const [currentTab, setCurrentTab] = useState("create");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [aiInputText, setAiInputText] = useState("");
 
   const tabs = [
     { name: "Create New", id: "create", icon: PlusIcon },
-    { name: "Import Existing", id: "open", icon: FolderOpenIcon },
+    { name: "Generate with AI", id: "ai", icon: SparklesIcon },
+    { name: "Import File", id: "open", icon: FolderOpenIcon },
   ];
 
   // TODO: replace with cx function?
@@ -43,6 +50,30 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       setNewTreeName("");
       setNewTreeDescription("");
       onClose();
+    }
+  };
+
+  const handleCreateWithAI = async () => {
+    if (!aiInputText.trim() || !newTreeName.trim()) {
+      console.error(
+        "[EVTree] Name and description text required for AI generation",
+      );
+      return;
+    }
+
+    try {
+      // TODO: Implement AI tree generation
+      // This would typically call an AI service to convert text to decision tree
+      console.warn("[EVTree] AI tree generation not yet implemented");
+
+      // For now, just create a basic tree with the provided name and auto-generated description
+      createTree(newTreeName.trim(), `Generated from: "${aiInputText}"`);
+
+      setAiInputText("");
+      setNewTreeName("");
+      onClose();
+    } catch (error) {
+      console.error("[EVTree] Failed to generate tree with AI:", error);
     }
   };
 
@@ -199,10 +230,82 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                       </div>
                     )}
 
+                    {currentTab === "ai" && (
+                      <div>
+                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                          Enter a name for your AI-generated decision tree
+                        </p>
+                        <input
+                          type="text"
+                          value={newTreeName}
+                          onChange={(e) => setNewTreeName(e.target.value)}
+                          placeholder="Enter tree name..."
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          required
+                        />
+                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                          Describe your situation, or paste in the text of an
+                          existing document
+                        </p>
+                        <textarea
+                          rows={6}
+                          value={aiInputText}
+                          onChange={(e) => setAiInputText(e.target.value)}
+                          placeholder={`Example: I'm representing a party in a legal dispute that has
+generated years of expensive and acrimonious litigation over
+alleged defects in railroad cars designed to carry larger
+quantities of coal than a conventional railroad car. It is
+undisputed that the cars were designed by Iron- Steel Products,
+Inc.(Iron-Steel), manufactured by Bromfield Works (Bromfield),
+and sold to the utility company South Western Lighting and Power
+(SWL&P) to haul coal over tracks in the western United States.
+Extensive cracking developed in these cars and will require
+extensive repair. SWL&P filed suit against Iron-Steel for
+defective design, alleging negligence, breach of contract, and
+breach of a deceptive trade practices statute (the latter
+allowing recovery of reasonable attorneys' fees and treble
+damages). Iron-Steel denied the defective design claim and sued
+Bromfield alleging negligent manufacturing. Iron-Steel has also
+brought a motion to dismiss all claims by SWL&P against it under
+two theories. First, Iron-Steel argues that SWL&P's claims are
+barred by a settlement between them in related litigation in
+another state, citing a recent decision in New Mexico. Second,
+Iron-Steel argues that these claims are barred by the statute of
+limitation, because SWL&P knew or could have known of the
+cracking problem long before the suit was filed. Of course,
+SWL&P opposes the motion to dismiss, arguing that the New Mexico
+decision does not apply to bar the claim under these
+circumstances, and that the statute of limitations began to run
+at a later date, and thus had not expired by the date of filing.
+SWL&P also argued that even if the statute of limitations would
+bar the statutory claim for deceptive trade practices, the
+common law claims would not be barred. Of course, once rulings
+are obtained on these issues, there will remain the question of
+whether any liability is found and if so, against whom --
+Iron-Steel only, Bromfield only, or both Iron-Steel and
+Bromfield with joint and several liability. It is reasonable to
+assume that, if joint and several liability is found, the
+allocations might be 50%/50% each, or Iron-Steel-66%/Bromfield-
+33%, or the opposite.
+
+For simplicity's sake, assume that high, mid-range and low jury
+awards have been estimated at $7 million, $5 million, and $3
+million respectively, depending upon how much of the damages
+proof is accepted by the jury. Also assume that legal fees for
+each side from now through full briefings and arguments on the
+motion to dismiss will be $100,000. Assume that legal fees
+thereafter, through trial and post-trial motions for each side
+will be an additional $200,000.
+                            `}
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                        />
+                      </div>
+                    )}
+
                     {currentTab === "open" && (
                       <div>
                         <p className="my-1.5 text-sm text-gray-500 dark:text-gray-400">
-                          Import an existing decision tree file
+                          Create a new decision tree from an existing file
                         </p>
                         <input
                           type="file"
@@ -229,7 +332,16 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                   disabled={!newTreeName.trim()}
                   className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
-                  Create Tree
+                  Create
+                </button>
+              )}
+              {currentTab === "ai" && (
+                <button
+                  onClick={handleCreateWithAI}
+                  disabled={!aiInputText.trim() || !newTreeName.trim()}
+                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
+                >
+                  Generate
                 </button>
               )}
               {currentTab === "open" && (
@@ -238,7 +350,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                   disabled={!selectedFile}
                   className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
-                  Import Tree
+                  Import
                 </button>
               )}
               <button
