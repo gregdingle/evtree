@@ -6,8 +6,8 @@ import {
   selectCurrentNodes,
   selectCurrentTree,
 } from "@/utils/selectors";
-import { debounce } from "es-toolkit";
-import { keys, max, min, toNumber, toPairs } from "es-toolkit/compat";
+import { debounce, range } from "es-toolkit";
+import { max, min, toNumber, toPairs } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
 import { ToolbarButton } from "./ToolbarButton";
 import { VariablesList } from "./VariablesList";
@@ -66,10 +66,7 @@ export default function RightSidePanel() {
                 onChange={(value) => onTreeDataUpdate({ description: value })}
                 placeholder="Enter tree description"
               />
-              <VariablesInput
-                variables={currentTree.variables ?? {}}
-                onChange={(variables) => onTreeDataUpdate({ variables })}
-              />
+              <VariablesInput />
             </div>
           ) : (
             <p className="">No tree selected</p>
@@ -278,47 +275,73 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
 
 PropertyInput.displayName = "PropertyInput";
 
-interface VariablesInputProps {
-  variables: Record<string, number>;
-  onChange: (variables: Record<string, number>) => void;
-}
-
-function VariablesInput({ variables, onChange }: VariablesInputProps) {
-  const [rows, setRows] = useState(() => {
-    // Start with at least 3 rows, or existing variables + 1 empty row
-    return Math.max(3, keys(variables).length + 1);
+function VariablesInput() {
+  // Subscribe to store directly
+  const { variables, onTreeDataUpdate } = useStore((state) => {
+    const currentTree = selectCurrentTree(state);
+    return {
+      variables: currentTree?.variables ?? {},
+      onTreeDataUpdate: state.onTreeDataUpdate,
+    };
   });
 
-  const [localVariables, setLocalVariables] = useState(() => {
-    // Convert variables to array format with empty slots
+  // Derive initial UI state from store variables
+  const initialVariablesArray = React.useMemo(() => {
     const entries = toPairs(variables);
-    const initialRows = Math.max(3, entries.length + 1);
-    const result: Array<{ name: string; value: string }> = [];
-    for (let i = 0; i < initialRows; i++) {
+    const minRows = Math.max(3, entries.length + 1);
+    return range(0, minRows).map((i) => {
       if (i < entries.length) {
         const entry = entries[i];
         if (entry) {
-          result.push({ name: entry[0], value: entry[1].toString() });
+          return { name: entry[0], value: entry[1].toString() };
         }
-      } else {
-        result.push({ name: "", value: "" });
       }
-    }
-    return result;
-  });
+      return { name: "", value: "" };
+    });
+  }, [variables]);
+
+  // Local state for immediate UI updates
+  const [localVariables, setLocalVariables] = useState(initialVariablesArray);
+
+  // TODO: make deleting the name or value remove the variable from the UI, as
+  // it does on reload
+
+  // TODO: make this work in a simple way
+  // Sync local state when store changes (for undo/redo)
+  // useEffect(() => {
+  //   setLocalVariables(initialVariablesArray);
+  // }, [initialVariablesArray]);
 
   const debouncedOnChange = debounce((vars: Record<string, number>) => {
-    onChange(vars);
+    onTreeDataUpdate({ variables: vars });
   }, 200);
 
-  const updateVariables = (
-    newLocalVariables: Array<{ name: string; value: string }>,
-  ) => {
-    setLocalVariables(newLocalVariables);
+  const handleNameChange = (index: number, name: string) => {
+    const newVariables = [...localVariables];
+    const current = newVariables[index];
+    if (current) {
+      newVariables[index] = { ...current, name };
+      setLocalVariables(newVariables);
+      updateVariables(newVariables);
+    }
+  };
 
+  const handleValueChange = (index: number, value: string) => {
+    const newVariables = [...localVariables];
+    const current = newVariables[index];
+    if (current) {
+      newVariables[index] = { ...current, value };
+      setLocalVariables(newVariables);
+      updateVariables(newVariables);
+    }
+  };
+
+  const updateVariables = (
+    newVariables: Array<{ name: string; value: string }>,
+  ) => {
     // Convert back to Record<string, number>, filtering out empty entries
     const filteredVariables: Record<string, number> = {};
-    newLocalVariables.forEach(({ name, value }) => {
+    newVariables.forEach(({ name, value }) => {
       if (name.trim() && value.trim()) {
         const numValue = parseFloat(value);
         if (!isNaN(numValue)) {
@@ -330,31 +353,11 @@ function VariablesInput({ variables, onChange }: VariablesInputProps) {
     debouncedOnChange(filteredVariables);
   };
 
-  const handleNameChange = (index: number, name: string) => {
-    const newVariables = [...localVariables];
-    const current = newVariables[index];
-    if (current) {
-      newVariables[index] = { ...current, name };
-      updateVariables(newVariables);
-    }
-  };
-
-  const handleValueChange = (index: number, value: string) => {
-    const newVariables = [...localVariables];
-    const current = newVariables[index];
-    if (current) {
-      newVariables[index] = { ...current, value };
-      updateVariables(newVariables);
-    }
-  };
-
   const addMoreRows = () => {
-    const newRowCount = rows + 3;
-    setRows(newRowCount);
-    const newVariables = [...localVariables];
-    for (let i = localVariables.length; i < newRowCount; i++) {
-      newVariables.push({ name: "", value: "" });
-    }
+    const newVariables = [
+      ...localVariables,
+      ...range(0, 3).map(() => ({ name: "", value: "" })),
+    ];
     setLocalVariables(newVariables);
   };
 
@@ -373,6 +376,7 @@ function VariablesInput({ variables, onChange }: VariablesInputProps) {
               onChange={(e) => handleNameChange(index, e.target.value)}
               placeholder={`var${index + 1}`}
               className="min-w-0 rounded-md border-2 p-1 text-sm"
+              // TODO: add validation for variable names
             />
             <span className="text-gray-500 dark:text-gray-400">=</span>
             <input
@@ -389,7 +393,7 @@ function VariablesInput({ variables, onChange }: VariablesInputProps) {
           onClick={addMoreRows}
           className="mt-2 rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
         >
-          + More rows
+          + more rows
         </button>
       </div>
     </div>
