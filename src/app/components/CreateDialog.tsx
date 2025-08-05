@@ -1,7 +1,6 @@
 "use client";
 
-import { useStore } from "@/hooks/use-store";
-import { openTreeFile } from "@/utils/load-tree";
+import { useStore, type DecisionTree } from "@/hooks/use-store";
 import {
   Dialog,
   DialogBackdrop,
@@ -26,10 +25,11 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const [newTreeName, setNewTreeName] = useState("");
   const [newTreeDescription, setNewTreeDescription] = useState("");
   const [currentTab, setCurrentTab] = useState("create");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const tabs = [
     { name: "Create New", id: "create", icon: PlusIcon },
-    { name: "Open Existing", id: "open", icon: FolderOpenIcon },
+    { name: "Import Existing", id: "open", icon: FolderOpenIcon },
   ];
 
   // TODO: replace with cx function?
@@ -47,9 +47,42 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   };
 
   const handleOpenTree = async () => {
-    const treeData = await openTreeFile();
-    if (treeData) {
+    if (!selectedFile) {
+      console.error("[EVTree] No file selected");
+      return;
+    }
+
+    try {
+      const text = await selectedFile.text();
+      const data = JSON.parse(text);
+
+      // Validate tree data
+      if (!data || typeof data !== "object") {
+        console.error("[EVTree] Invalid file format");
+        return;
+      }
+
+      const treeData = data as unknown as DecisionTree;
+
+      // Sanity check required fields
+      if (
+        typeof treeData.name !== "string" ||
+        !treeData.name ||
+        typeof treeData.nodes !== "object" ||
+        !treeData.nodes ||
+        typeof treeData.edges !== "object" ||
+        !treeData.edges
+      ) {
+        console.error(
+          "[EVTree] Invalid tree file format - missing required fields",
+        );
+        return;
+      }
+
       loadTree(treeData);
+      onClose();
+    } catch (error) {
+      console.error("[EVTree] Failed to parse tree file:", error);
     }
   };
 
@@ -68,19 +101,6 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
           >
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:size-10 dark:bg-green-900">
-                  {currentTab === "create" ? (
-                    <PlusIcon
-                      aria-hidden="true"
-                      className="size-6 text-green-600 dark:text-green-400"
-                    />
-                  ) : (
-                    <FolderOpenIcon
-                      aria-hidden="true"
-                      className="size-6 text-green-600 dark:text-green-400"
-                    />
-                  )}
-                </div>
                 <div className="mt-3 flex-1 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <DialogTitle
                     as="h3"
@@ -180,17 +200,20 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
 
                     {currentTab === "open" && (
                       <div>
-                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-                          Open an existing decision tree file
+                        <p className="my-1.5 text-sm text-gray-500 dark:text-gray-400">
+                          Import an existing decision tree file
                         </p>
                         <input
                           type="file"
                           accept=".json"
-                          className="mb-3 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
+                          onChange={(e) =>
+                            setSelectedFile(e.target.files?.[0] || null)
+                          }
+                          className="block cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Select a JSON file containing a previously saved
-                          decision tree.
+                        <p className="my-1.5 text-xs text-gray-500 dark:text-gray-400">
+                          Select a JSON file containing a previously downloaded
+                          decision tree
                         </p>
                       </div>
                     )}
@@ -210,14 +233,11 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
               )}
               {currentTab === "open" && (
                 <button
-                  onClick={() => {
-                    // TODO: fix me by adapt to dialog
-                    handleOpenTree();
-                    onClose();
-                  }}
-                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600"
+                  onClick={handleOpenTree}
+                  disabled={!selectedFile}
+                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
-                  Open Tree
+                  Import Tree
                 </button>
               )}
               <button

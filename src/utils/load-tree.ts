@@ -1,5 +1,9 @@
 import type { DecisionTree } from "@/hooks/use-store";
 
+//
+// TODO: this file not used anymore because logic in CreateDialog
+//
+
 /**
  * Validates and loads tree data from a JSON object
  */
