@@ -281,7 +281,8 @@ const middlewares = (f: StateCreator<StoreState>) =>
         handleSet: (handleSet) =>
           throttle<typeof handleSet>((state) => {
             handleSet(state);
-          }, 200),
+            // TODO: how to optimize timeout?
+          }, 400),
         partialize: selectUndoableState,
         // NOTE: deep isEqual instead of shallow. this is needed to prevent
         // spurious undo states. see createWithEqualityFn in contrast.
@@ -579,34 +580,123 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           const PASTE_OFFSET = 50;
           const nodeIdMap = new Map<string, string>();
 
-          // Clear current selections
+          // Check if exactly one node is selected for replacement
+          const selectedNodes = values(tree.nodes).filter(
+            (node) => node.selected,
+          );
+          const isReplacingNode = selectedNodes.length === 1;
+
+          // Clear selections
           clearSelections(tree);
 
-          // First pass: create nodes with offset positions and build ID mapping
-          clipboard.nodes.forEach((clipboardNode) => {
-            const position = {
-              x: clipboardNode.position.x + PASTE_OFFSET,
-              y: clipboardNode.position.y + PASTE_OFFSET,
+          if (isReplacingNode) {
+            const nodeToReplace = selectedNodes[0]!;
+
+            // Get the position and incoming edge info BEFORE deletion
+            const replacementPosition = nodeToReplace.position;
+            const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+            const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(
+              tree.edges,
+            );
+            const incomingEdgeId = nodeToIncomingEdgeMap[nodeToReplace.id];
+            const incomingEdge = incomingEdgeId
+              ? tree.edges[incomingEdgeId]
+              : null;
+
+            // Delete the selected node's subtree (but preserve incoming edge info)
+            const deleteDescendants = (currentNodeId: string) => {
+              const children = parentToChildMap[currentNodeId] ?? [];
+              children.forEach((childNodeId) => {
+                deleteDescendants(childNodeId);
+              });
+              delete tree.nodes[currentNodeId];
+              delete tree.edges[nodeToIncomingEdgeMap[currentNodeId]!];
             };
-            const newNode = cloneNode(clipboardNode, position);
-            tree.nodes[newNode.id] = newNode;
-            nodeIdMap.set(clipboardNode.id, newNode.id);
-          });
 
-          // Second pass: create edges with updated source/target IDs
-          clipboard.edges.forEach((clipboardEdge) => {
-            const newSourceId = nodeIdMap.get(clipboardEdge.source);
-            const newTargetId = nodeIdMap.get(clipboardEdge.target);
+            deleteDescendants(nodeToReplace.id);
 
-            if (newSourceId && newTargetId) {
-              const newEdge = cloneEdge(
-                clipboardEdge,
-                newSourceId,
-                newTargetId,
-              );
-              tree.edges[newEdge.id] = newEdge;
+            // Paste nodes at the replacement position
+            clipboard.nodes.forEach((clipboardNode, index) => {
+              const position =
+                index === 0
+                  ? replacementPosition // First node goes to the exact replacement position
+                  : {
+                      // Maintain relative position to the first node
+                      x:
+                        replacementPosition.x +
+                        (clipboardNode.position.x -
+                          clipboard.nodes[0]!.position.x),
+                      y:
+                        replacementPosition.y +
+                        (clipboardNode.position.y -
+                          clipboard.nodes[0]!.position.y),
+                    };
+              const newNode = cloneNode(clipboardNode, position);
+              tree.nodes[newNode.id] = newNode;
+              nodeIdMap.set(clipboardNode.id, newNode.id);
+            });
+
+            // Paste edges
+            clipboard.edges.forEach((clipboardEdge) => {
+              const newSourceId = nodeIdMap.get(clipboardEdge.source);
+              const newTargetId = nodeIdMap.get(clipboardEdge.target);
+
+              if (newSourceId && newTargetId) {
+                const newEdge = cloneEdge(
+                  clipboardEdge,
+                  newSourceId,
+                  newTargetId,
+                );
+                tree.edges[newEdge.id] = newEdge;
+              }
+            });
+
+            // Connect the first pasted node to the incoming edge if it existed
+            if (incomingEdge && clipboard.nodes.length > 0) {
+              const firstPastedNodeId = nodeIdMap.get(clipboard.nodes[0]!.id);
+              if (firstPastedNodeId) {
+                const reconnectionEdge = createEdge(
+                  incomingEdge.source,
+                  firstPastedNodeId,
+                );
+                // Preserve the original edge data
+                reconnectionEdge.data = {
+                  label: incomingEdge.data?.label,
+                  description: incomingEdge.data?.description,
+                  probability: incomingEdge.data?.probability ?? null,
+                };
+                tree.edges[reconnectionEdge.id] = reconnectionEdge;
+              }
             }
-          });
+          } else {
+            // Normal paste behavior - clear selections and paste with offse
+
+            // First pass: create nodes with offset positions and build ID mapping
+            clipboard.nodes.forEach((clipboardNode) => {
+              const position = {
+                x: clipboardNode.position.x + PASTE_OFFSET,
+                y: clipboardNode.position.y + PASTE_OFFSET,
+              };
+              const newNode = cloneNode(clipboardNode, position);
+              tree.nodes[newNode.id] = newNode;
+              nodeIdMap.set(clipboardNode.id, newNode.id);
+            });
+
+            // Second pass: create edges with updated source/target IDs
+            clipboard.edges.forEach((clipboardEdge) => {
+              const newSourceId = nodeIdMap.get(clipboardEdge.source);
+              const newTargetId = nodeIdMap.get(clipboardEdge.target);
+
+              if (newSourceId && newTargetId) {
+                const newEdge = cloneEdge(
+                  clipboardEdge,
+                  newSourceId,
+                  newTargetId,
+                );
+                tree.edges[newEdge.id] = newEdge;
+              }
+            });
+          }
 
           tree.updatedAt = new Date().toISOString();
         }),
