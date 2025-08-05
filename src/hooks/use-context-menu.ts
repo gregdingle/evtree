@@ -11,7 +11,6 @@ export function useContextMenu() {
 
   const onContextMenu = (
     event: MouseEvent | React.MouseEvent,
-    isNodeContext: boolean,
     node?: AppNode,
   ) => {
     // Prevent native context menu from showing
@@ -28,12 +27,21 @@ export function useContextMenu() {
     const relativeX = event.clientX - pane.left;
     const relativeY = event.clientY - pane.top;
 
+    // Approximate height of the context menu
+    // TODO: make this dynamic based on the number of items in the menu
+    const menuHeight = 420;
+
     setMenu({
-      top: relativeY < pane.height - 200 ? relativeY : undefined,
-      left: relativeX < pane.width - 200 ? relativeX : undefined,
-      right: relativeX >= pane.width - 200 ? pane.width - relativeX : undefined,
+      top: relativeY < pane.height - menuHeight ? relativeY : undefined,
+      left: relativeX < pane.width - menuHeight ? relativeX : undefined,
+      right:
+        relativeX >= pane.width - menuHeight
+          ? pane.width - relativeX
+          : undefined,
       bottom:
-        relativeY >= pane.height - 200 ? pane.height - relativeY : undefined,
+        relativeY >= pane.height - menuHeight
+          ? pane.height - relativeY
+          : undefined,
       // Store the actual screen coordinates for ReactFlow's screenToFlowPosition
       contextPosition: { x: event.clientX, y: event.clientY },
       contextNode: node,

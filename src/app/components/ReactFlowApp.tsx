@@ -75,8 +75,8 @@ export default function ReactFlowApp() {
         }}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
-        onPaneContextMenu={(event) => onContextMenu(event, false)}
-        onNodeContextMenu={(event, node) => onContextMenu(event, true, node)}
+        onPaneContextMenu={(event) => onContextMenu(event)}
+        onNodeContextMenu={(event, node) => onContextMenu(event, node)}
         // TODO: is this best way to close context menu?
         onClick={closeMenu}
         maxZoom={4}

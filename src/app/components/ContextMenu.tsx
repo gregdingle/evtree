@@ -25,6 +25,9 @@ export interface ContextMenuProps {
 
 /**
  * @see https://reactflow.dev/examples/interaction/context-menu
+ *
+ * NOTE: need to adjust the height in useContextMenu to match the height of this
+ * component! Currently set to 420px in useContextMenu.
  */
 export default function ContextMenu({
   top,
@@ -87,11 +90,9 @@ export default function ContextMenu({
         <>
           <ContextMenuButton
             onClick={() => contextNode && selectSubtree(contextNode.id)}
-            // TODO: should only allow a multi node selection?
-            // disabled={!hasChildren}
           >
             <RectangleGroupIcon className="h-4 w-4" />
-            Select Subtree
+            Select {hasChildren ? "Subtree" : "Node"}
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
@@ -113,7 +114,7 @@ export default function ContextMenu({
             }}
           >
             <DocumentDuplicateIcon className="h-4 w-4" />
-            Copy Subtree
+            Copy {hasChildren ? "Subtree" : "Node"}
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => {
@@ -131,7 +132,7 @@ export default function ContextMenu({
             onClick={() => contextNode && deleteSubTree(contextNode.id)}
           >
             <TrashIcon className="h-4 w-4" />
-            Delete Subtree
+            Delete {hasChildren ? "Subtree" : "Node"}
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuButton
