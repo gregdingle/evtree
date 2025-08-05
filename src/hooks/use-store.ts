@@ -81,7 +81,7 @@ export interface DecisionTree {
   name: string;
   description?: string;
   createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  updatedAt?: string; // ISO date string
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
   // TODO: should we separate vars into value variables and cost variables? it
@@ -92,7 +92,7 @@ export interface DecisionTree {
 export interface StoreState {
   trees: Record<string, DecisionTree>;
   currentTreeId: string | null;
-  clipboard: { nodes: AppNode[]; edges: AppEdge[] };
+  clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
 
   // Tree management
   createTree: (name: string, description?: string) => string;
@@ -572,6 +572,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
     onPaste: () => {
       const { clipboard } = get();
+      if (!clipboard) return;
+
       set((state) =>
         withCurrentTree(state, (tree) => {
           const PASTE_OFFSET = 50;

@@ -8,6 +8,7 @@ export interface ToolbarButtonProps {
   children: React.ReactNode;
   tooltip?: string | React.ReactNode;
   active?: boolean;
+  disabled?: boolean;
 }
 
 // TODO: do disabled state, like no paste without copy
@@ -16,17 +17,32 @@ export function ToolbarButton({
   children,
   tooltip,
   active = false,
+  disabled = false,
 }: ToolbarButtonProps) {
+  const handleClick = () => {
+    if (!disabled) {
+      onClick();
+    }
+  };
+
+  const getButtonClasses = () => {
+    if (disabled) {
+      return "flex items-center gap-1 rounded px-2 py-1 opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600";
+    }
+    return `flex items-center gap-1 rounded px-2 py-1 ${
+      active
+        ? "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+        : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
+    }`;
+  };
+
   if (tooltip) {
     return (
       <Tooltip text={tooltip}>
         <button
-          onClick={onClick}
-          className={`flex items-center gap-1 rounded px-2 py-1 ${
-            active
-              ? "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-              : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
-          }`}
+          onClick={handleClick}
+          disabled={disabled}
+          className={getButtonClasses()}
         >
           {children}
         </button>
@@ -36,12 +52,9 @@ export function ToolbarButton({
 
   return (
     <button
-      onClick={onClick}
-      className={`flex items-center gap-1 rounded px-2 py-1 ${
-        active
-          ? "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-          : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
-      }`}
+      onClick={handleClick}
+      disabled={disabled}
+      className={getButtonClasses()}
     >
       {children}
     </button>

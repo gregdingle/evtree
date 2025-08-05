@@ -199,16 +199,48 @@ export function selectHasParent(state: StoreState, nodeId: string | undefined) {
   return !!childToParentMap[nodeId];
 }
 
+export function selectHasSelectedItems(state: StoreState) {
+  const tree = selectCurrentTree(state);
+  if (!tree) return false;
+
+  const hasSelectedNodes = values(tree.nodes).some((node) => node.selected);
+  const hasSelectedEdges = values(tree.edges).some((edge) => edge.selected);
+
+  return hasSelectedNodes || hasSelectedEdges;
+}
+
+export function selectHasClipboardContent(state: StoreState) {
+  const { clipboard } = state;
+  if (!clipboard) return false;
+  return clipboard.nodes.length > 0 || clipboard.edges.length > 0;
+}
+
+export function selectHasNodes(state: StoreState) {
+  const tree = selectCurrentTree(state);
+  if (!tree) return false;
+
+  return values(tree.nodes).length > 0;
+}
+
+export function selectHasTerminalNodes(state: StoreState) {
+  const tree = selectCurrentTree(state);
+  if (!tree) return false;
+
+  return values(tree.nodes).some((node) => node.type === "terminal");
+}
+
 export function selectUndoableState(state: StoreState) {
   // TODO: is going thru all the users trees necessary? why not just the current tree?
   return {
     ...state,
+    // TODO: do we really want this to be undefined?
     clipboard: undefined,
     trees: fromPairs(
       toPairs(state.trees).map(([treeId, tree]) => [
         treeId,
         {
           ...tree,
+          // TODO: do we really want this to be undefined?
           updatedAt: undefined,
           nodes: fromPairs(
             toPairs(tree.nodes).map(([id, node]) => [

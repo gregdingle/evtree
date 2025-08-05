@@ -122,7 +122,8 @@ export default function LeftSidePanel() {
                       </p>
                     )}
                     <p className="text-xs text-gray-500 dark:text-gray-500">
-                      Updated {new Date(tree.updatedAt).toLocaleDateString()}
+                      {tree.updatedAt ??
+                        `Updated ${new Date(tree.updatedAt!).toLocaleDateString()}`}
                     </p>
                   </div>
                   <div className="ml-2 flex space-x-1">

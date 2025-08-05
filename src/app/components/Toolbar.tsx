@@ -1,6 +1,13 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import { useTemporalStore } from "@/hooks/use-temporal-store";
+import {
+  selectHasClipboardContent,
+  selectHasNodes,
+  selectHasSelectedItems,
+  selectHasTerminalNodes,
+} from "@/utils/selectors";
 import {
   ArrowsPointingOutIcon,
   ArrowUturnLeftIcon,
@@ -23,7 +30,16 @@ export default function Toolbar({
   isHistogramOpen,
 }: ToolbarProps) {
   const { undo, redo } = useStore.temporal.getState();
-  const { onCopy, onPaste, onReset, onArrange, deleteSelected } = useStore.getState();
+  const { canUndo, canRedo } = useTemporalStore((state) => ({
+    canUndo: state.pastStates.length > 0,
+    canRedo: state.futureStates.length > 0,
+  }));
+  const { onCopy, onPaste, onReset, onArrange, deleteSelected } =
+    useStore.getState();
+  const hasSelectedItems = useStore(selectHasSelectedItems);
+  const hasClipboardContent = useStore(selectHasClipboardContent);
+  const hasNodes = useStore(selectHasNodes);
+  const hasTerminalNodes = useStore(selectHasTerminalNodes);
 
   // TODO: dark mode toggle button
 
@@ -57,23 +73,43 @@ export default function Toolbar({
         <h2 className="text-lg font-semibold">EVTree</h2>
       </div>
       <div className="flex justify-start space-x-2">
-        <ToolbarButton onClick={() => undo()} tooltip="Ctrl+Z">
+        <ToolbarButton
+          onClick={() => undo()}
+          tooltip="Ctrl+Z"
+          disabled={!canUndo}
+        >
           <ArrowUturnLeftIcon className="h-4 w-4" />
           undo
         </ToolbarButton>
-        <ToolbarButton onClick={() => redo()} tooltip="Ctrl+Y">
+        <ToolbarButton
+          onClick={() => redo()}
+          tooltip="Ctrl+Y"
+          disabled={!canRedo}
+        >
           <ArrowUturnRightIcon className="h-4 w-4" />
           redo
         </ToolbarButton>
-        <ToolbarButton onClick={onCopy} tooltip="Ctrl+C">
+        <ToolbarButton
+          onClick={onCopy}
+          tooltip="Ctrl+C"
+          disabled={!hasSelectedItems}
+        >
           <DocumentDuplicateIcon className="h-4 w-4" />
           copy
         </ToolbarButton>
-        <ToolbarButton onClick={onPaste} tooltip="Ctrl+V">
+        <ToolbarButton
+          onClick={onPaste}
+          tooltip="Ctrl+V"
+          disabled={!hasClipboardContent}
+        >
           <ClipboardDocumentIcon className="h-4 w-4" />
           paste
         </ToolbarButton>
-        <ToolbarButton onClick={deleteSelected} tooltip="Ctrl+Delete">
+        <ToolbarButton
+          onClick={deleteSelected}
+          tooltip="Ctrl+Delete"
+          disabled={!hasSelectedItems}
+        >
           <TrashIcon className="h-4 w-4" />
           delete
         </ToolbarButton>
@@ -82,7 +118,11 @@ export default function Toolbar({
         <ToolbarButton onClick={onReset} tooltip="Ctrl+Shift+R">
           reset
         </ToolbarButton> */}
-        <ToolbarButton onClick={onArrange} tooltip="Ctrl+R">
+        <ToolbarButton
+          onClick={onArrange}
+          tooltip="Ctrl+R"
+          disabled={!hasNodes}
+        >
           <ArrowsPointingOutIcon className="h-4 w-4" />
           arrange
         </ToolbarButton>
@@ -94,6 +134,7 @@ export default function Toolbar({
               : "Show Histogram (Ctrl+H)"
           }
           active={isHistogramOpen}
+          disabled={!hasTerminalNodes}
         >
           <ChartBarIcon className="h-4 w-4" />
           histogram
