@@ -1,13 +1,15 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
+import { openTreeFile } from "@/utils/load-tree";
 import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { FolderOpenIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 interface CreateDialogProps {
@@ -19,10 +21,21 @@ interface CreateDialogProps {
  * @see https://tailwindcss.com/plus/ui-blocks/application-ui/overlays/modal-dialogs
  */
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
-  const { createTree } = useStore.getState();
+  const { createTree, loadTree } = useStore.getState();
 
   const [newTreeName, setNewTreeName] = useState("");
   const [newTreeDescription, setNewTreeDescription] = useState("");
+  const [currentTab, setCurrentTab] = useState("create");
+
+  const tabs = [
+    { name: "Create New", id: "create", icon: PlusIcon },
+    { name: "Open Existing", id: "open", icon: FolderOpenIcon },
+  ];
+
+  // TODO: replace with cx function?
+  function classNames(...classes: (string | boolean | undefined)[]): string {
+    return classes.filter(Boolean).join(" ");
+  }
 
   const handleCreateTree = () => {
     if (newTreeName.trim()) {
@@ -30,6 +43,13 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       setNewTreeName("");
       setNewTreeDescription("");
       onClose();
+    }
+  };
+
+  const handleOpenTree = async () => {
+    const treeData = await openTreeFile();
+    if (treeData) {
+      loadTree(treeData);
     }
   };
 
@@ -49,53 +69,157 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
               <div className="sm:flex sm:items-start">
                 <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:size-10 dark:bg-green-900">
-                  <PlusIcon
-                    aria-hidden="true"
-                    className="size-6 text-green-600 dark:text-green-400"
-                  />
+                  {currentTab === "create" ? (
+                    <PlusIcon
+                      aria-hidden="true"
+                      className="size-6 text-green-600 dark:text-green-400"
+                    />
+                  ) : (
+                    <FolderOpenIcon
+                      aria-hidden="true"
+                      className="size-6 text-green-600 dark:text-green-400"
+                    />
+                  )}
                 </div>
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <div className="mt-3 flex-1 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <DialogTitle
                     as="h3"
                     className="text-base font-semibold text-gray-900 dark:text-white"
                   >
                     Create New Decision Tree
                   </DialogTitle>
-                  <div className="mt-2">
-                    <p className="text-sm">
-                      Enter a name for your new decision tree
-                    </p>
-                    <input
-                      type="text"
-                      value={newTreeName}
-                      onChange={(e) => setNewTreeName(e.target.value)}
-                      placeholder="Enter tree name..."
-                      className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
-                      autoFocus
-                      required
-                    />
-                    <p className="text-sm">
-                      Enter an optional description for your new decision tree
-                    </p>
-                    <textarea
-                      rows={3}
-                      value={newTreeDescription}
-                      onChange={(e) => setNewTreeDescription(e.target.value)}
-                      placeholder="Enter tree description..."
-                      className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
-                    />
+
+                  {/* Tab Navigation */}
+                  <div className="mt-4">
+                    <div className="grid grid-cols-1 sm:hidden">
+                      <select
+                        value={currentTab}
+                        onChange={(e) => setCurrentTab(e.target.value)}
+                        aria-label="Select a tab"
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 dark:bg-gray-700 dark:text-white dark:outline-gray-600"
+                      >
+                        {tabs.map((tab) => (
+                          <option key={tab.id} value={tab.id}>
+                            {tab.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDownIcon
+                        aria-hidden="true"
+                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500 dark:fill-gray-400"
+                      />
+                    </div>
+                    <div className="hidden sm:block">
+                      <div className="border-b border-gray-200 dark:border-gray-600">
+                        <nav
+                          aria-label="Tabs"
+                          className="-mb-px flex space-x-8"
+                        >
+                          {tabs.map((tab) => (
+                            <button
+                              key={tab.id}
+                              onClick={() => setCurrentTab(tab.id)}
+                              aria-current={
+                                currentTab === tab.id ? "page" : undefined
+                              }
+                              className={classNames(
+                                currentTab === tab.id
+                                  ? "border-green-500 text-green-600 dark:border-green-400 dark:text-green-400"
+                                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300",
+                                "group inline-flex items-center border-b-2 px-1 py-4 text-sm font-medium",
+                              )}
+                            >
+                              <tab.icon
+                                aria-hidden="true"
+                                className={classNames(
+                                  currentTab === tab.id
+                                    ? "text-green-500 dark:text-green-400"
+                                    : "text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300",
+                                  "mr-2 -ml-0.5 size-5",
+                                )}
+                              />
+                              <span>{tab.name}</span>
+                            </button>
+                          ))}
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tab Content */}
+                  <div className="mt-4">
+                    {currentTab === "create" && (
+                      <div>
+                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                          Enter a name for your new decision tree
+                        </p>
+                        <input
+                          type="text"
+                          value={newTreeName}
+                          onChange={(e) => setNewTreeName(e.target.value)}
+                          placeholder="Enter tree name..."
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          autoFocus
+                          required
+                        />
+                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                          Enter an optional description for your new decision
+                          tree
+                        </p>
+                        <textarea
+                          rows={3}
+                          value={newTreeDescription}
+                          onChange={(e) =>
+                            setNewTreeDescription(e.target.value)
+                          }
+                          placeholder="Enter tree description..."
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                        />
+                      </div>
+                    )}
+
+                    {currentTab === "open" && (
+                      <div>
+                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                          Open an existing decision tree file
+                        </p>
+                        <input
+                          type="file"
+                          accept=".json"
+                          className="mb-3 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Select a JSON file containing a previously saved
+                          decision tree.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-gray-700">
-              <button
-                onClick={handleCreateTree}
-                disabled={!newTreeName.trim()}
-                className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
-              >
-                Create Tree
-              </button>
+              {currentTab === "create" && (
+                <button
+                  onClick={handleCreateTree}
+                  disabled={!newTreeName.trim()}
+                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
+                >
+                  Create Tree
+                </button>
+              )}
+              {currentTab === "open" && (
+                <button
+                  onClick={() => {
+                    // TODO: fix me by adapt to dialog
+                    handleOpenTree();
+                    onClose();
+                  }}
+                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600"
+                >
+                  Open Tree
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => onClose()}

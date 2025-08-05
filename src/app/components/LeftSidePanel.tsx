@@ -2,7 +2,6 @@
 
 import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/utils/download";
-import { openTreeFile } from "@/utils/load-tree";
 import {
   ChevronDownIcon,
   DocumentArrowDownIcon,
@@ -30,8 +29,7 @@ export default function LeftSidePanel() {
     currentTreeId: state.currentTreeId,
   }));
 
-  const { deleteTree, setCurrentTree, duplicateTree, loadTree } =
-    useStore.getState();
+  const { deleteTree, setCurrentTree, duplicateTree } = useStore.getState();
 
   const handleSetCurrentTree = (treeId: string) => {
     setCurrentTree(treeId);
@@ -39,13 +37,6 @@ export default function LeftSidePanel() {
     setTimeout(() => {
       fitView();
     }, 100);
-  };
-
-  const handleOpenTree = async () => {
-    const treeData = await openTreeFile();
-    if (treeData) {
-      loadTree(treeData);
-    }
   };
 
   const handleDuplicateTree = (treeId: string, treeName: string) => {
@@ -109,12 +100,6 @@ export default function LeftSidePanel() {
             open={isDialogOpen}
             onClose={() => setOpenDialog(false)}
           />
-          <button
-            onClick={handleOpenTree}
-            className="flex-shrink-0 rounded-md bg-gray-500 px-3 py-1 text-sm text-white hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
-          >
-            Open
-          </button>
         </div>
       </div>
 
