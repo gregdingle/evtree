@@ -83,24 +83,18 @@ export default function LeftSidePanel() {
 
   return (
     <div className="w-80 p-4">
-      <div className="mb-4">
+      <div className="mb-4 flex justify-between space-x-2">
         <h2 className="text-lg font-semibold">Decision Trees</h2>
-      </div>
-
-      {/* Create new tree */}
-      <div className="mb-6">
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setOpenDialog(true)}
-            className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
-          >
-            Create...
-          </button>
-          <CreateDialog
-            open={isDialogOpen}
-            onClose={() => setOpenDialog(false)}
-          />
-        </div>
+        <button
+          onClick={() => setOpenDialog(true)}
+          className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+        >
+          Create
+        </button>
+        <CreateDialog
+          open={isDialogOpen}
+          onClose={() => setOpenDialog(false)}
+        />
       </div>
 
       {/* Tree list */}

@@ -116,7 +116,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                         value={currentTab}
                         onChange={(e) => setCurrentTab(e.target.value)}
                         aria-label="Select a tab"
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 dark:bg-gray-700 dark:text-white dark:outline-gray-600"
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 dark:bg-gray-700 dark:text-white dark:outline-gray-600"
                       >
                         {tabs.map((tab) => (
                           <option key={tab.id} value={tab.id}>
@@ -144,7 +144,8 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                               }
                               className={classNames(
                                 currentTab === tab.id
-                                  ? "border-green-500 text-green-600 dark:border-green-400 dark:text-green-400"
+                                  ? // TODO: use green highlight here or standard blue?
+                                    "border-green-500 text-green-600 dark:border-green-400 dark:text-green-400"
                                   : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300",
                                 "group inline-flex items-center border-b-2 px-1 py-4 text-sm font-medium",
                               )}
@@ -178,7 +179,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                           value={newTreeName}
                           onChange={(e) => setNewTreeName(e.target.value)}
                           placeholder="Enter tree name..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
                           autoFocus
                           required
                         />
@@ -193,7 +194,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                             setNewTreeDescription(e.target.value)
                           }
                           placeholder="Enter tree description..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
                         />
                       </div>
                     )}

@@ -1,6 +1,9 @@
 "use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+} from "@heroicons/react/24/solid";
 import { useState } from "react";
 
 interface CollapsiblePanelProps {
@@ -26,15 +29,15 @@ export default function CollapsiblePanel({
   const ChevronIcon = () => {
     if (isLeft) {
       return isCollapsed ? (
-        <ChevronRightIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleRightIcon className="h-4 w-4 cursor-pointer" />
       ) : (
-        <ChevronLeftIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleLeftIcon className="h-4 w-4 cursor-pointer" />
       );
     } else {
       return isCollapsed ? (
-        <ChevronLeftIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleLeftIcon className="h-4 w-4 cursor-pointer" />
       ) : (
-        <ChevronRightIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleRightIcon className="h-4 w-4 cursor-pointer" />
       );
     }
   };
