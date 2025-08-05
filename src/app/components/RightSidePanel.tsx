@@ -6,9 +6,8 @@ import {
   selectCurrentNodes,
   selectCurrentTree,
 } from "@/utils/selectors";
-import TOML from "@iarna/toml";
 import { debounce } from "es-toolkit";
-import { max, min, toNumber } from "es-toolkit/compat";
+import { keys, max, min, toNumber, toPairs } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
 import { ToolbarButton } from "./ToolbarButton";
 import { VariablesList } from "./VariablesList";
@@ -67,25 +66,9 @@ export default function RightSidePanel() {
                 onChange={(value) => onTreeDataUpdate({ description: value })}
                 placeholder="Enter tree description"
               />
-              <PropertyInput
-                label="Variables"
-                textarea
-                value={TOML.stringify(currentTree.variables ?? {})}
-                onChange={(value) => {
-                  try {
-                    // TODO: better input UI
-                    const variables = TOML.parse(value) as Record<
-                      string,
-                      number
-                    >;
-                    onTreeDataUpdate({ variables });
-                  } catch (error) {
-                    // NOTE: too noisy to log every time
-                    // console.warn("[EVTree] Failed to parse TOML:", error);
-                    return;
-                  }
-                }}
-                placeholder={`Enter custom variables line by line \nin the format:\n\n var1 = 123\n var2 = 456\n var3 = 789`}
+              <VariablesInput
+                variables={currentTree.variables ?? {}}
+                onChange={(variables) => onTreeDataUpdate({ variables })}
               />
             </div>
           ) : (
@@ -294,3 +277,121 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
 );
 
 PropertyInput.displayName = "PropertyInput";
+
+interface VariablesInputProps {
+  variables: Record<string, number>;
+  onChange: (variables: Record<string, number>) => void;
+}
+
+function VariablesInput({ variables, onChange }: VariablesInputProps) {
+  const [rows, setRows] = useState(() => {
+    // Start with at least 3 rows, or existing variables + 1 empty row
+    return Math.max(3, keys(variables).length + 1);
+  });
+
+  const [localVariables, setLocalVariables] = useState(() => {
+    // Convert variables to array format with empty slots
+    const entries = toPairs(variables);
+    const initialRows = Math.max(3, entries.length + 1);
+    const result: Array<{ name: string; value: string }> = [];
+    for (let i = 0; i < initialRows; i++) {
+      if (i < entries.length) {
+        const entry = entries[i];
+        if (entry) {
+          result.push({ name: entry[0], value: entry[1].toString() });
+        }
+      } else {
+        result.push({ name: "", value: "" });
+      }
+    }
+    return result;
+  });
+
+  const debouncedOnChange = debounce((vars: Record<string, number>) => {
+    onChange(vars);
+  }, 200);
+
+  const updateVariables = (
+    newLocalVariables: Array<{ name: string; value: string }>,
+  ) => {
+    setLocalVariables(newLocalVariables);
+
+    // Convert back to Record<string, number>, filtering out empty entries
+    const filteredVariables: Record<string, number> = {};
+    newLocalVariables.forEach(({ name, value }) => {
+      if (name.trim() && value.trim()) {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+          filteredVariables[name.trim()] = numValue;
+        }
+      }
+    });
+
+    debouncedOnChange(filteredVariables);
+  };
+
+  const handleNameChange = (index: number, name: string) => {
+    const newVariables = [...localVariables];
+    const current = newVariables[index];
+    if (current) {
+      newVariables[index] = { ...current, name };
+      updateVariables(newVariables);
+    }
+  };
+
+  const handleValueChange = (index: number, value: string) => {
+    const newVariables = [...localVariables];
+    const current = newVariables[index];
+    if (current) {
+      newVariables[index] = { ...current, value };
+      updateVariables(newVariables);
+    }
+  };
+
+  const addMoreRows = () => {
+    const newRowCount = rows + 3;
+    setRows(newRowCount);
+    const newVariables = [...localVariables];
+    for (let i = localVariables.length; i < newRowCount; i++) {
+      newVariables.push({ name: "", value: "" });
+    }
+    setLocalVariables(newVariables);
+  };
+
+  return (
+    <div className="mb-2">
+      <label className="mb-2 block cursor-pointer select-none">Variables</label>
+      <div className="space-y-1">
+        {localVariables.map((variable, index) => (
+          <div
+            key={index}
+            className="grid w-full max-w-full grid-cols-[1fr_auto_1fr] items-center gap-2"
+          >
+            <input
+              type="text"
+              value={variable.name}
+              onChange={(e) => handleNameChange(index, e.target.value)}
+              placeholder={`var${index + 1}`}
+              className="min-w-0 rounded-md border-2 p-1 text-sm"
+            />
+            <span className="text-gray-500 dark:text-gray-400">=</span>
+            <input
+              type="number"
+              value={variable.value}
+              onChange={(e) => handleValueChange(index, e.target.value)}
+              placeholder={`${index + 1}000`}
+              className="min-w-0 rounded-md border-2 p-1 text-sm"
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addMoreRows}
+          className="mt-2 rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+        >
+          + More rows
+        </button>
+      </div>
+    </div>
+  );
+}

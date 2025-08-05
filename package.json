@@ -13,7 +13,6 @@
     "@dagrejs/dagre": "^1.1.5",
     "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
-    "@iarna/toml": "^2.2.5",
     "@types/deep-diff": "^1.0.5",
     "@types/expr-eval": "^1.0.2",
     "@xyflow/react": "^12.8.2",
