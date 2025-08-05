@@ -7,7 +7,7 @@ import {
   selectCurrentTree,
 } from "@/utils/selectors";
 import { debounce, range } from "es-toolkit";
-import { max, min, toNumber, toPairs } from "es-toolkit/compat";
+import { keys, max, min, toNumber, toPairs } from "es-toolkit/compat";
 import React, { useEffect, useRef, useState } from "react";
 import { ToolbarButton } from "./ToolbarButton";
 import { VariablesList } from "./VariablesList";
@@ -44,6 +44,9 @@ export default function RightSidePanel() {
       }
     }
   }, [nodes, edges]);
+
+  const variables = currentTree?.variables || {};
+  const hasVariables = keys(variables).length > 0;
 
   return (
     <div className="w-80 p-4">
@@ -88,11 +91,15 @@ export default function RightSidePanel() {
                         onNodeDataUpdate(node.id, { valueExpr: value });
                       }
                     }}
-                    placeholder="Enter node value or formula"
+                    placeholder={
+                      hasVariables
+                        ? "Enter node value or formula"
+                        : "Enter node value"
+                    }
                   >
-                    {currentTree?.variables ? (
+                    {hasVariables ? (
                       <VariablesList
-                        variables={currentTree.variables}
+                        variables={variables}
                         node={node}
                         exprFor="valueExpr"
                         className="my-1 ml-22"
@@ -124,11 +131,15 @@ export default function RightSidePanel() {
                       onNodeDataUpdate(node.id, { costExpr: value });
                     }
                   }}
-                  placeholder="Enter node cost or formula"
+                  placeholder={
+                    hasVariables
+                      ? "Enter node cost or formula"
+                      : "Enter node cost"
+                  }
                 >
-                  {currentTree?.variables ? (
+                  {hasVariables ? (
                     <VariablesList
-                      variables={currentTree.variables}
+                      variables={variables}
                       node={node}
                       className="my-1 ml-22"
                       exprFor="costExpr"
