@@ -2,16 +2,19 @@ import { AppNode, NodeType, useStore } from "@/hooks/use-store";
 import { buildChildToParentNodeMap } from "@/utils/maps";
 import { selectCollapsible, selectCurrentEdges } from "@/utils/selectors";
 import {
+  ArrowPathIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   DocumentDuplicateIcon,
   LinkIcon,
   PlayIcon,
+  PlusIcon,
   RectangleGroupIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
 import { ContextMenuButton } from "./ContextMenuButton";
+import { ContextMenuSubmenu } from "./ContextMenuSubmenu";
 
 export interface ContextMenuProps {
   top?: number;
@@ -27,7 +30,7 @@ export interface ContextMenuProps {
  * @see https://reactflow.dev/examples/interaction/context-menu
  *
  * NOTE: need to adjust the height in useContextMenu to match the height of this
- * component! Currently set to 500px in useContextMenu.
+ * component! Currently set to 340px in useContextMenu.
  */
 export default function ContextMenu({
   top,
@@ -150,49 +153,52 @@ export default function ContextMenu({
             Delete {hasChildren ? "Subtree" : "Node"}
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
-          <ContextMenuButton
-            onClick={() => handleConvertNode("decision")}
-            disabled={contextNode?.type === "decision"}
+          <ContextMenuSubmenu
+            title="Convert to..."
+            icon={<ArrowPathIcon className="h-4 w-4" />}
+            disabled={false}
           >
-            <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
-            Convert to Decision Node
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => handleConvertNode("chance")}
-            disabled={contextNode?.type === "chance"}
-          >
-            <div className="h-4 w-4 rounded-full border-1 border-current"></div>
-            Convert to Chance Node
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => handleConvertNode("terminal")}
-            disabled={hasChildren || contextNode?.type === "terminal"}
-          >
-            <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
-            Convert to Terminal Node
-          </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => handleConvertNode("decision")}
+              disabled={contextNode?.type === "decision"}
+            >
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
+            </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => handleConvertNode("chance")}
+              disabled={contextNode?.type === "chance"}
+            >
+              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
+              Chance Node
+            </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => handleConvertNode("terminal")}
+              disabled={hasChildren || contextNode?.type === "terminal"}
+            >
+              <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+              Terminal Node
+            </ContextMenuButton>
+          </ContextMenuSubmenu>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
-          <ContextMenuButton
-            onClick={() => handleAddBranch("decision")}
+          <ContextMenuSubmenu
+            title="Add Branch to..."
+            icon={<PlusIcon className="h-4 w-4" />}
             disabled={contextNode?.type === "terminal"}
           >
-            <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
-            Add Decision Branch
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => handleAddBranch("chance")}
-            disabled={contextNode?.type === "terminal"}
-          >
-            <div className="h-4 w-4 rounded-full border-1 border-current"></div>
-            Add Chance Branch
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => handleAddBranch("terminal")}
-            disabled={contextNode?.type === "terminal"}
-          >
-            <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
-            Add Terminal Branch
-          </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleAddBranch("decision")}>
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
+            </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleAddBranch("chance")}>
+              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
+              Chance Node
+            </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleAddBranch("terminal")}>
+              <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+              Terminal Node
+            </ContextMenuButton>
+          </ContextMenuSubmenu>
           <ContextMenuButton
             onClick={() => contextNode && connectToNearestNode(contextNode.id)}
             disabled={contextNode && !!childToParentMap[contextNode.id]}
