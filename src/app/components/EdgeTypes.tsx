@@ -21,6 +21,7 @@ export default function CustomEdge({
   selected,
 }: EdgeProps<AppEdge>) {
   const { label, probability } = data ?? {};
+
   // NOTE: assumes the edge is always left to right
   const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({
     sourceX,
@@ -29,9 +30,11 @@ export default function CustomEdge({
     targetX,
     targetY,
     targetPosition: Position.Left,
-    stepPosition: 0, // bend at source
+    // NOTE: need to make space for potential terminal node label of previous
+    // level in tree
+    stepPosition: 0.25,
   });
-  // HACK: Adjust the default label position when at stepPosition=0 from the
+  // HACK: Adjust the default label position when at stepPosition > 0 from the
   // vertical segment to the horizontal. When the edge is not left-to-right,
   // which should never happen, simply revert. Special-case when there is no
   // bend, only a single horizontal segment.
@@ -39,7 +42,8 @@ export default function CustomEdge({
   const isLeftToRight = sourceX < targetX;
   const midPointX = (targetX - sourceX) / 2;
   const adjY = isLeftToRight ? (labelY > sourceY ? offsetY : -offsetY) : 0;
-  const adjX = isLeftToRight ? midPointX : 0;
+  // Adjust X position based on step position to keep labels on horizontal segment
+  const adjX = isLeftToRight ? Math.min(midPointX, 40) : 0;
   const translateX = sourceY == targetY ? sourceX + midPointX : labelX + adjX;
   const transform = `translate(-50%, -50%) translate(${translateX}px, ${
     labelY + adjY

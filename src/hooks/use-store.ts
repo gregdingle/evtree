@@ -745,13 +745,17 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // TODO: it would be great if auto arrange somehow preserve the relative order of nodes and edges
+    // Preserve relative vertical order during auto arrange
     onArrange: () => {
       set((state) =>
         withCurrentTree(state, (tree) => {
           const { nodes, edges } = getLayoutedElements(
             values(tree.nodes),
             values(tree.edges),
+            "LR", // direction
+            1.5, // verticalScale
+            3, // horizontalScale
+            true, // preserveVerticalOrder
           );
           tree.nodes = keyBy(nodes, (node) => node.id);
           tree.edges = keyBy(edges, (edge) => edge.id);
