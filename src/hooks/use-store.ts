@@ -118,9 +118,10 @@ export interface StoreState {
     position: { x: number; y: number },
     nodeType: NodeType,
   ) => void;
-  onDragEndCreateNodeAt: (
+  createNodeAt: (
     position: { x: number; y: number },
     fromNodeId: string,
+    nodeType?: NodeType,
   ) => void;
   onArrange: () => void;
   toggleNodeCollapse: (nodeId: string) => void;
@@ -731,10 +732,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     // TODO: should this be in the store at all or should we just rely on onNodesChange?
     // And review all other store methods!
     // TODO: why are newEdge and newNode not selected after create on canvas?
-    onDragEndCreateNodeAt: (position, fromNodeId) => {
+    createNodeAt: (position, fromNodeId, nodeType = "chance") => {
       set((state) =>
         withCurrentTree(state, (tree) => {
-          const newNode = createNode(position);
+          const newNode = createNode(position, nodeType);
           const newEdge = createEdge(fromNodeId, newNode.id);
           tree.nodes[newNode.id] = newNode;
           tree.edges[newEdge.id] = newEdge;

@@ -27,7 +27,7 @@ export interface ContextMenuProps {
  * @see https://reactflow.dev/examples/interaction/context-menu
  *
  * NOTE: need to adjust the height in useContextMenu to match the height of this
- * component! Currently set to 420px in useContextMenu.
+ * component! Currently set to 500px in useContextMenu.
  */
 export default function ContextMenu({
   top,
@@ -46,6 +46,7 @@ export default function ContextMenu({
     deleteSubTree,
     onCopy,
     connectToNearestNode,
+    createNodeAt,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -69,6 +70,20 @@ export default function ContextMenu({
     if (!contextNode) return;
 
     onConvertNode(contextNode.id, nodeType);
+    onClose?.();
+  };
+
+  const handleAddBranch = (nodeType: NodeType) => {
+    if (!contextNode) return;
+
+    // Create new node to the right
+    // NOTE: 220px set to match "arrange" functionality
+    const newPosition = {
+      x: contextNode.position.x + 216,
+      y: contextNode.position.y,
+    };
+
+    createNodeAt(newPosition, contextNode.id, nodeType);
     onClose?.();
   };
 
@@ -157,6 +172,27 @@ export default function ContextMenu({
             Convert to Terminal Node
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
+          <ContextMenuButton
+            onClick={() => handleAddBranch("decision")}
+            disabled={contextNode?.type === "terminal"}
+          >
+            <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+            Add Decision Branch
+          </ContextMenuButton>
+          <ContextMenuButton
+            onClick={() => handleAddBranch("chance")}
+            disabled={contextNode?.type === "terminal"}
+          >
+            <div className="h-4 w-4 rounded-full border-1 border-current"></div>
+            Add Chance Branch
+          </ContextMenuButton>
+          <ContextMenuButton
+            onClick={() => handleAddBranch("terminal")}
+            disabled={contextNode?.type === "terminal"}
+          >
+            <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+            Add Terminal Branch
+          </ContextMenuButton>
           <ContextMenuButton
             onClick={() => contextNode && connectToNearestNode(contextNode.id)}
             disabled={contextNode && !!childToParentMap[contextNode.id]}

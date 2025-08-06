@@ -20,7 +20,7 @@ import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
 
 export default function ReactFlowApp() {
-  const { onNodesChange, onEdgesChange, onConnect, onDragEndCreateNodeAt } =
+  const { onNodesChange, onEdgesChange, onConnect, createNodeAt } =
     useStore.getState();
 
   const nodes = useStore(selectCurrentNodes);
@@ -47,7 +47,7 @@ export default function ReactFlowApp() {
       });
 
       // TODO: make this work for connection to upstream nodes also
-      onDragEndCreateNodeAt(position, connectionState.fromNode.id);
+      createNodeAt(position, connectionState.fromNode.id);
     }
   };
 
