@@ -13,14 +13,7 @@ import {
   OnNodesChange,
   Position,
 } from "@xyflow/react";
-import {
-  cloneDeep,
-  isEqual,
-  keyBy,
-  round,
-  throttle,
-  toMerged,
-} from "es-toolkit";
+import { cloneDeep, isEqual, keyBy, round, throttle } from "es-toolkit";
 import { keys, max, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
@@ -32,7 +25,6 @@ import { shallow } from "zustand/vanilla/shallow";
 import bathtubTreeData from "@/utils/demo-bathtub-tree.json";
 import demoSexualTreeData from "@/utils/demo-sexual-tree.json";
 import { cloneEdge, createEdge } from "@/utils/edge";
-import { computeNodeValues } from "@/utils/expectedValue";
 import { getLayoutedElements } from "@/utils/layout";
 import {
   buildNodeToIncomingEdgeMap,
@@ -40,10 +32,7 @@ import {
 } from "@/utils/maps";
 import { getNearestUpstreamNode } from "@/utils/nearest";
 import { cloneNode, createNode } from "@/utils/node";
-import {
-  selectComputedNodesAndEdges,
-  selectUndoableState,
-} from "@/utils/selectors";
+import { selectUndoableState } from "@/utils/selectors";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import {
   createSelectorFunctions,
@@ -58,10 +47,6 @@ export type AppNode = Node<
   {
     label?: string;
     description?: string;
-    // NOTE: it's important for value to have a null value so computed nulls
-    // will be merged in. see computeNodeValues
-    value: number | null;
-    cost: number | null;
     // TODO: rename expr to formula?
     valueExpr?: string;
     costExpr?: string;
@@ -140,8 +125,6 @@ const initialNodes = keyBy(
       data: {
         label: "decision",
         description: "decision description",
-        value: null,
-        cost: null,
       },
       position: { x: 100, y: 0 },
       sourcePosition: Position.Right,
@@ -153,8 +136,6 @@ const initialNodes = keyBy(
       data: {
         label: "chance",
         description: "chance description",
-        value: null,
-        cost: null,
       },
       position: { x: 300, y: 0 },
       sourcePosition: Position.Right,
@@ -166,9 +147,7 @@ const initialNodes = keyBy(
       data: {
         label: "terminal1",
         description: "terminal1 description",
-        value: 500,
         valueExpr: "500",
-        cost: null,
       },
       position: { x: 500, y: -75 },
       sourcePosition: Position.Right,
@@ -180,9 +159,7 @@ const initialNodes = keyBy(
       data: {
         label: "terminal2",
         description: "terminal2 description",
-        value: 1000,
         valueExpr: "1000",
-        cost: null,
       },
       position: { x: 500, y: 75 },
       sourcePosition: Position.Right,
@@ -194,9 +171,7 @@ const initialNodes = keyBy(
       data: {
         label: "terminal3",
         description: "terminal3 description",
-        value: 250,
         valueExpr: "250",
-        cost: null,
       },
       position: { x: 300, y: 150 },
       sourcePosition: Position.Right,
@@ -255,9 +230,6 @@ const initialEdges = keyBy(
   ] as AppEdge[],
   (edge) => edge.id,
 );
-
-// Apply initial computations
-computeNodeValues(initialNodes, initialEdges);
 
 const initialTrees: Record<string, DecisionTree> = {
   "tree-1": {
@@ -551,8 +523,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             copiedNodes = copiedNodes.map((node) => ({
               ...node,
               data: {
-                value: null,
-                cost: null,
+                label: node.data.label,
+                description: node.data.description,
               },
             }));
 
@@ -951,50 +923,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
   // TODO: is this best as shallow or deep isEqual? any mutation to a node
   // results in a call back to onNodesChange with updated `measured`
   shallow,
-);
-
-/**
- * This is a store subscription that re-computes node values. It selects only the subset of node and edge data needed to
- * trigger re-computation only when needed.
- * @see https://zustand.docs.pmnd.rs/middlewares/subscribe-with-selector
- *
- * NOTE: needs to be idempotent to prevent infinite loops
- *
- * TODO: check worst-case performance of this subscription... it could be
- * slow... it would be better if we just passed patches back and forth
- */
-useStoreBase.subscribe(
-  selectComputedNodesAndEdges,
-  ({ computeNodes, computeEdges }) => {
-    const { nodes: updatedComputeNodes, edges: updatedComputeEdges } =
-      computeNodeValues(computeNodes, computeEdges);
-    const state = useStoreBase.getState();
-
-    // Pause temporal middleware to prevent undo/redo entries for computed value updates
-    useStoreBase.temporal.getState().pause();
-    withCurrentTree(state, (tree) => {
-      // NOTE: need to maintain immutability here
-      useStoreBase.setState({
-        trees: {
-          ...state.trees,
-          [tree.id]: {
-            ...tree,
-            nodes: toMerged(tree.nodes, updatedComputeNodes),
-            edges: toMerged(tree.edges, updatedComputeEdges),
-          },
-        },
-      });
-    });
-    useStoreBase.temporal.getState().resume();
-  },
-  {
-    // NOTE: deep isEqual instead of shallow. this is needed to prevent
-    // spurious undo states. see createWithEqualityFn in contrast.
-    // TODO: figure out if this is a perf problem, figure out how to
-    // minimize store updates. see partialize already developed to reduce
-    // undo.
-    equalityFn: isEqual,
-  },
 );
 
 // TODO: consider more 3rd party libs like shared-zustand or simple-zustand-devtools

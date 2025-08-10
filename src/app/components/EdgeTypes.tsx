@@ -1,5 +1,6 @@
-import { AppEdge } from "@/hooks/use-store";
+import { AppEdge, useStore } from "@/hooks/use-store";
 import { formatProbability } from "@/utils/format";
+import { selectEdgeComputedProbability } from "@/utils/selectors";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -20,7 +21,15 @@ export default function CustomEdge({
   data,
   selected,
 }: EdgeProps<AppEdge>) {
-  const { label, probability } = data ?? {};
+  const { label } = data ?? {};
+
+  // Use computed probability instead of stored probability
+  const computedProbability = useStore((state) =>
+    selectEdgeComputedProbability(state, id),
+  );
+
+  // Fall back to stored probability if computed is not available
+  const probability = computedProbability ?? data?.probability;
 
   // NOTE: assumes the edge is always left to right
   const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({

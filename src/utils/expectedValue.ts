@@ -30,15 +30,15 @@ export interface ComputeEdge {
 }
 
 /**
- * Computes and assigns values recursively for input `nodes`. The value of a
+ * Computes values recursively for input `nodes`. The value of a
  * node is defined as the average of its children's values weighted by the
- * probabilities of the associated edges.
+ * probabilities of the associated edges. Updates values in-place.
  *
- * The probabilities following a decision node will also be updated according to
- * expected value. The probability of the edge that has the highest expected
- * value out of a decision node will be set to 1.0, while the others will be set
- * to 0.0. When there is a tie, the probabilities will be set to 1 / n, where n
- * is the number of edges with the highest expected value.
+ * The probabilities following a decision node will also be updated in-place
+ * according to expected value. The probability of the edge that has the highest
+ * expected value out of a decision node will be set to 1.0, while the others
+ * will be set to 0.0. When there is a tie, the probabilities will be set to 1 /
+ * n, where n is the number of edges with the highest expected value.
  *
  * NOTE: Any cost associated with a node is subtracted from its value before being
  * added to the expected value of the parent. However, the parent's OWN COST and
@@ -49,10 +49,7 @@ export interface ComputeEdge {
  * costs here for gain in code simplicity and performance. We will also probably
  * want to do this to support feeShiftingRate or other features. For each node,
  * the cost from parents should be added to the expected net value from children
- * to get the final node value. BUT we need to keep the user inputted terminal
- * node value somehow, and not just overwrite it. see #sym:selectPathValue .
- * Look at the snapshot test data at #file:demo-tree.json It has correct
- * cumulative calcs from #sym:selectPathValue .
+ * to get the final node value.
  *
  * TODO: should we support edge values like silver decisions?
  *
@@ -66,7 +63,7 @@ export interface ComputeEdge {
  */
 export function computeNodeValues(
   nodes: Record<string, ComputeNode>,
-  edges: Record<string, ComputeEdge>
+  edges: Record<string, ComputeEdge>,
 ): { nodes: Record<string, ComputeNode>; edges: Record<string, ComputeEdge> } {
   const rootNodes = values(nodes).filter((node) => {
     // A root node has no incoming edges
@@ -101,7 +98,7 @@ function computeNodeValuesRecursive(
   nodes: Record<string, ComputeNode>,
   edges: Record<string, ComputeEdge>,
   parentNode: ComputeNode,
-  adjList: AdjacencyList
+  adjList: AdjacencyList,
 ) {
   const children = adjList[parentNode.id] || [];
 
@@ -160,7 +157,7 @@ function computeNodeValuesRecursive(
   if (totalProbability < 1) {
     // eslint-disable-next-line no-console
     console.debug(
-      `[EVTree] Node ${parentNode.id} has children with less than 1.0 total probability.`
+      `[EVTree] Node ${parentNode.id} has children with less than 1.0 total probability.`,
     );
     // TODO: what to do about missing probability? highlight in UI somehow?
   }
@@ -171,7 +168,7 @@ function computeNodeValuesRecursive(
 
 function getBestChild(
   children: { edgeId: string; nodeId: string }[],
-  nodes: Record<string, ComputeNode>
+  nodes: Record<string, ComputeNode>,
 ) {
   const childNetValues = children
     .map(({ nodeId }) => nodes[nodeId]!.data)
@@ -186,7 +183,7 @@ function getBestChild(
 
   // Find all edges with the maximum net value (to handle ties)
   const bestCount = childNetValues.filter(
-    (netValue) => netValue === maxChildValue
+    (netValue) => netValue === maxChildValue,
   ).length;
   const bestProbability = 1.0 / bestCount;
   return { maxChildValue, bestProbability };
@@ -195,15 +192,16 @@ function getBestChild(
 export function toComputeNode(
   node: AppNode,
   // TODO: get variables from tree settings
-  variables: Record<string, number> = {}
+  variables: Record<string, number> = {},
 ): ComputeNode {
   return {
     id: node.id,
     type: node.type,
     data: {
-      // NOTE: the "default" values here should just be the last computed values
-      value: safeEvalExpr(node.data.valueExpr, variables, node.data.value),
-      cost: safeEvalExpr(node.data.costExpr, variables, node.data.cost),
+      // NOTE: expressions evaluate to null if no expression is provided
+      // TODO: can we do better than null?
+      value: safeEvalExpr(node.data.valueExpr, variables, null),
+      cost: safeEvalExpr(node.data.costExpr, variables, null),
     },
   };
 }
@@ -224,7 +222,7 @@ export function toComputeEdge(edge: AppEdge): ComputeEdge {
 function safeEvalExpr(
   expression: string | undefined,
   variables: Record<string, number>,
-  defaultValue: number | null
+  defaultValue: number | null,
 ): number | null {
   if (typeof expression === "undefined" || expression.trim() === "") {
     return defaultValue;
@@ -233,17 +231,17 @@ function safeEvalExpr(
     const result = Parser.evaluate(expression, variables);
     if (isNaN(result)) {
       console.warn(
-        `[EVTree] Invalid expression "${expression}" evaluated to NaN. Using default value ${defaultValue}.`
+        `[EVTree] Invalid expression "${expression}" evaluated to NaN. Using default value ${defaultValue}.`,
       );
       return defaultValue;
     }
     return result;
   } catch (error) {
-    // NOTE: too noisy for production, but useful for debugging
-    // console.warn(
-    //   `[EVTree] Using default value ${defaultValue} because failed expression:`,
-    //   error
-    // );
+    // TODO: too noisy for production, but useful for debugging
+    console.warn(
+      `[EVTree] Using default value ${defaultValue} because failed expression:`,
+      error,
+    );
     return defaultValue;
   }
 }

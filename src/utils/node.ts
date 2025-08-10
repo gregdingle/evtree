@@ -11,7 +11,7 @@ export function createNode(
     id: nodeId,
     type,
     position,
-    data: { label: "", description: "", value: null, cost: null },
+    data: { label: "", description: "" },
     origin: [0.5, 0.0] as [number, number],
     sourcePosition: Position.Right,
     targetPosition: Position.Left,

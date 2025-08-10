@@ -1,7 +1,11 @@
 import { StoreState } from "@/hooks/use-store";
-import { mapValues, omit } from "es-toolkit";
+import { mapValues, memoize, omit } from "es-toolkit";
 import { fromPairs, toPairs, values } from "es-toolkit/compat";
-import { toComputeEdge, toComputeNode } from "./expectedValue";
+import {
+  computeNodeValues,
+  toComputeEdge,
+  toComputeNode,
+} from "./expectedValue";
 import {
   buildChildToParentEdgeMap,
   buildChildToParentNodeMap,
@@ -10,23 +14,91 @@ import {
 } from "./maps";
 import { warnItemNotFound, warnNoCurrentTree } from "./warn";
 
-export function selectComputedNodesAndEdges(state: StoreState) {
+/**
+ * Returns computed values for all nodes in the current tree, performing
+ * the expected value calculation on-demand during React component rendering.
+ *
+ * TODO: better to use createCachedSelector from reselect package?
+ * TODO: DRY between selectComputedNodeValues and selectComputedEdgeValues and computeNodeValues
+ */
+const selectComputedNodeValues = memoize((state: StoreState) => {
   const { currentTreeId } = state;
   if (!currentTreeId) {
-    warnNoCurrentTree("computeNodeValues");
-    return { computeNodes: {}, computeEdges: {} };
+    return {};
   }
-  const tree = state.trees[currentTreeId!];
+  const tree = state.trees[currentTreeId];
   if (!tree) {
-    warnItemNotFound("Tree", currentTreeId, "computeNodeValues");
-    return { computeNodes: {}, computeEdges: {} };
+    return {};
   }
-  return {
-    computeNodes: mapValues(tree.nodes, (node) =>
-      toComputeNode(node, tree.variables),
-    ),
-    computeEdges: mapValues(tree.edges, toComputeEdge),
-  };
+
+  const computeNodes = mapValues(tree.nodes, (node) =>
+    toComputeNode(node, tree.variables),
+  );
+  const computeEdges = mapValues(tree.edges, toComputeEdge);
+
+  const { nodes: computedNodes } = computeNodeValues(
+    computeNodes,
+    computeEdges,
+  );
+
+  // TODO: is best return structure?
+  return mapValues(computedNodes, (node) => ({
+    value: node.data.value,
+    cost: node.data.cost,
+  }));
+});
+
+/**
+ * Returns computed edge probabilities for all edges in the current tree.
+ * This includes updated probabilities for decision nodes based on expected value.
+ *
+ * TODO: better to use createCachedSelector from reselect package?
+ */
+const selectComputedEdgeValues = memoize((state: StoreState) => {
+  const { currentTreeId } = state;
+  if (!currentTreeId) {
+    return {};
+  }
+  const tree = state.trees[currentTreeId];
+  if (!tree) {
+    return {};
+  }
+
+  const computeNodes = mapValues(tree.nodes, (node) =>
+    toComputeNode(node, tree.variables),
+  );
+  const computeEdges = mapValues(tree.edges, toComputeEdge);
+
+  const { edges: computedEdges } = computeNodeValues(
+    computeNodes,
+    computeEdges,
+  );
+
+  return mapValues(computedEdges, (edge) => ({
+    probability: edge.data?.probability ?? null,
+  }));
+});
+
+/**
+ * Returns the computed probability for a specific edge.
+ */
+export function selectEdgeComputedProbability(
+  state: StoreState,
+  edgeId: string,
+): number | null {
+  const computedEdgeValues = selectComputedEdgeValues(state);
+  return computedEdgeValues[edgeId]?.probability ?? null;
+}
+
+/**
+ * Returns the computed value and cost for a specific node.
+ */
+export function selectNodeComputedValue(
+  state: StoreState,
+  nodeId: string,
+): { value: number | null; cost: number | null } | null {
+  const computedValues = selectComputedNodeValues(state);
+  return computedValues[nodeId] ?? null;
 }
 
 export function selectCurrentTree(state: StoreState) {
@@ -59,8 +131,6 @@ export function selectCurrentEdges(state: StoreState) {
 
 /**
  * Returns the probability of a node being reached from it's root parent.
- * TODO: for reducing UI noise, make #selectPathProbability return null when
- * path length is 1 edge
  */
 export function selectPathProbability(
   state: StoreState,
@@ -121,10 +191,8 @@ export function selectPathProbability(
  * **costs** along the path to the terminal node.
  *
  * NOTE: For somewhat historical reasons, the expected value calculation of
- * computeNodeValues that sets each node's value does not take into account its
- * own cost or the costs of its ancestors. See note in computeNodeValues. The
- * advantage of the current two-pass approach is that we always preserve the user
- * inputted terminal node values.
+ * computeNodeValues does not take into account its own cost or the costs of its
+ * ancestors. See note in computeNodeValues.
  */
 export function selectPathValue(
   state: StoreState,
@@ -141,25 +209,33 @@ export function selectPathValue(
     return null;
   }
 
-  if (node.data.value === null) {
+  // Get computed values for all nodes
+  const computedValues = selectComputedNodeValues(state);
+  const nodeValue = computedValues[nodeId];
+
+  if (!nodeValue || nodeValue.value === null) {
     // NOTE: don't compute path value until the node has a value
     // TODO: is this the best way to handle this?
     return null;
   }
 
-  let pathValue = node.data.value;
+  let pathValue = nodeValue.value;
   let currentNodeId: string | undefined = nodeId;
   const childToParentMap = buildChildToParentNodeMap(currentTree.edges);
   while (currentNodeId) {
-    const currentNode = currentTree.nodes[currentNodeId];
-    if (!currentNode) {
-      warnItemNotFound("Node", currentNodeId, "path value calculation");
+    const currentComputedValue = computedValues[currentNodeId];
+    if (!currentComputedValue) {
+      warnItemNotFound(
+        "Node",
+        currentNodeId,
+        "path value calculation (computed value)",
+      );
       return null;
     }
 
     // Add the node's cost to the path value
-    if (currentNode.data.cost !== null) {
-      pathValue -= currentNode.data.cost;
+    if (currentComputedValue.cost !== null) {
+      pathValue -= currentComputedValue.cost;
     }
 
     // Move to the parent node
