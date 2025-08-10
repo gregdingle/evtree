@@ -236,12 +236,12 @@ function safeEvalExpr(
       return defaultValue;
     }
     return result;
-  } catch (error) {
+  } catch {
     // TODO: too noisy for production, but useful for debugging
-    console.warn(
-      `[EVTree] Using default value ${defaultValue} because failed expression:`,
-      error,
-    );
+    // console.warn(
+    //   `[EVTree] Using default value ${defaultValue} because failed expression:`,
+    //   error,
+    // );
     return defaultValue;
   }
 }
