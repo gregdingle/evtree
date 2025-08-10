@@ -46,8 +46,9 @@ export default function RightSidePanel() {
     }
   }, [nodes, edges]);
 
-  const variables = currentTree?.variables || {};
+  const variables = currentTree?.variables ?? {};
   const hasVariables = keys(variables).length > 0;
+  const allNodes = currentTree?.nodes ?? {};
 
   return (
     <div className="w-80 p-4">
@@ -93,9 +94,7 @@ export default function RightSidePanel() {
                       }
                     }}
                     placeholder={
-                      hasVariables
-                        ? "Enter node value or formula"
-                        : "Enter node value"
+                      hasVariables ? "Enter value or formula" : "Enter value"
                     }
                   >
                     {hasVariables ? (
@@ -133,9 +132,7 @@ export default function RightSidePanel() {
                     }
                   }}
                   placeholder={
-                    hasVariables
-                      ? "Enter node cost or formula"
-                      : "Enter node cost"
+                    hasVariables ? "Enter cost or formula" : "Enter cost"
                   }
                 >
                   {hasVariables ? (
@@ -175,21 +172,23 @@ export default function RightSidePanel() {
                   max={1.0}
                   min={0.0}
                   step={0.1}
+                  disabled={allNodes[edge.source]?.type === "decision"}
                 >
-                  {" "}
-                  <ToolbarButton
-                    tooltip={
-                      // TODO: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
-                      <span>
-                        Set the probability
-                        <br /> based on other
-                        <br /> branches
-                      </span>
-                    }
-                    onClick={() => balanceEdgeProbability(edge.id)}
-                  >
-                    balance
-                  </ToolbarButton>
+                  {allNodes[edge.source]?.type === "decision" ? null : (
+                    <ToolbarButton
+                      tooltip={
+                        // TODO: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
+                        <span>
+                          Set the probability
+                          <br /> based on other
+                          <br /> branches
+                        </span>
+                      }
+                      onClick={() => balanceEdgeProbability(edge.id)}
+                    >
+                      balance
+                    </ToolbarButton>
+                  )}
                 </PropertyInput>
                 <PropertyInput
                   label="Label"

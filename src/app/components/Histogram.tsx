@@ -52,7 +52,7 @@ export function Histogram(props: HistogramProps) {
     return (
       <div {...props}>
         <h3 className="mb-4 text-lg font-semibold">
-          Probability distribution of terminal values
+          Probability Distribution Of Terminal Values
         </h3>
         <p className="text-gray-500">
           No terminal nodes with probability found
@@ -64,7 +64,7 @@ export function Histogram(props: HistogramProps) {
   return (
     <div {...props}>
       <h3 className="mb-4 text-lg font-semibold">
-        Probability distribution of terminal values
+        Probability Distribution Of Terminal Values
       </h3>
       <div className="space-y-px">
         {histogramData.map(({ value, binEnd, probability, binSize }) => {

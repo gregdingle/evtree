@@ -189,14 +189,21 @@ export function selectCollapsible(
   return { hasChildren, isCollapsed };
 }
 
-export function selectHasParent(state: StoreState, nodeId: string | undefined) {
+function selectParentNode(state: StoreState, nodeId: string | undefined) {
   const tree = state.trees[state.currentTreeId!];
   if (!nodeId || !tree) {
     return false;
   }
 
   const childToParentMap = buildChildToParentNodeMap(tree.edges);
-  return !!childToParentMap[nodeId];
+  return childToParentMap[nodeId];
+}
+
+export function selectHasParentNode(
+  state: StoreState,
+  nodeId: string | undefined,
+) {
+  return Boolean(selectParentNode(state, nodeId));
 }
 
 export function selectHasSelectedItems(state: StoreState) {

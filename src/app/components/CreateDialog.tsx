@@ -22,6 +22,9 @@ interface CreateDialogProps {
 
 /**
  * @see https://tailwindcss.com/plus/ui-blocks/application-ui/overlays/modal-dialogs
+ *
+ * TODO: make styles more consistent with rest of app, like text size and inputs
+ * TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
  */
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const { createTree, loadTree } = useStore.getState();

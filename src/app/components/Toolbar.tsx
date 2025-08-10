@@ -79,7 +79,7 @@ export default function Toolbar({
           disabled={!canUndo}
         >
           <ArrowUturnLeftIcon className="h-4 w-4" />
-          undo
+          Undo
         </ToolbarButton>
         <ToolbarButton
           onClick={() => redo()}
@@ -87,7 +87,7 @@ export default function Toolbar({
           disabled={!canRedo}
         >
           <ArrowUturnRightIcon className="h-4 w-4" />
-          redo
+          Redo
         </ToolbarButton>
         <ToolbarButton
           onClick={onCopy}
@@ -95,7 +95,7 @@ export default function Toolbar({
           disabled={!hasSelectedItems}
         >
           <DocumentDuplicateIcon className="h-4 w-4" />
-          copy
+          Copy
         </ToolbarButton>
         <ToolbarButton
           onClick={onPaste}
@@ -103,7 +103,7 @@ export default function Toolbar({
           disabled={!hasClipboardContent}
         >
           <ClipboardDocumentIcon className="h-4 w-4" />
-          paste
+          Paste
         </ToolbarButton>
         <ToolbarButton
           onClick={deleteSelected}
@@ -111,20 +111,20 @@ export default function Toolbar({
           disabled={!hasSelectedItems}
         >
           <TrashIcon className="h-4 w-4" />
-          delete
+          Delete
         </ToolbarButton>
         {/*
         TODO: disabled for users, see hotkey
         <ToolbarButton onClick={onReset} tooltip="Ctrl+Shift+R">
-          reset
+          Reset
         </ToolbarButton> */}
         <ToolbarButton
           onClick={onArrange}
-          tooltip="Ctrl+R"
+          tooltip="Ctrl+A"
           disabled={!hasNodes}
         >
           <ArrowsPointingOutIcon className="h-4 w-4" />
-          arrange
+          Arrange
         </ToolbarButton>
         <ToolbarButton
           onClick={onHistogramClick}
@@ -137,7 +137,7 @@ export default function Toolbar({
           disabled={!hasTerminalNodes}
         >
           <ChartBarIcon className="h-4 w-4" />
-          histogram
+          Histogram
         </ToolbarButton>
       </div>
     </div>

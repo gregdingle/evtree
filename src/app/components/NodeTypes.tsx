@@ -2,7 +2,7 @@ import { AppNode, useStore } from "@/hooks/use-store";
 import { formatProbability, formatValue } from "@/utils/format";
 import {
   selectCollapsible,
-  selectHasParent,
+  selectHasParentNode,
   selectPathProbability,
   selectPathValue,
 } from "@/utils/selectors";
@@ -48,7 +48,7 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, id),
   );
-  const hasParent = useStore((state) => selectHasParent(state, id));
+  const hasParent = useStore((state) => selectHasParentNode(state, id));
   return (
     <BaseNode
       data={data}
@@ -78,7 +78,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { hasChildren, isCollapsed } = useStore((state) =>
     selectCollapsible(state, id),
   );
-  const hasParent = useStore((state) => selectHasParent(state, id));
+  const hasParent = useStore((state) => selectHasParentNode(state, id));
   return (
     <BaseNode
       data={data}
@@ -111,7 +111,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const pathValue = useStore((state) => selectPathValue(state, id));
-  const hasParent = useStore((state) => selectHasParent(state, id));
+  const hasParent = useStore((state) => selectHasParentNode(state, id));
 
   return (
     <div className="nopan relative cursor-pointer text-xs">
