@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore, type DecisionTree } from "@/hooks/use-store";
+import { extractTextFromFile } from "@/lib/ai";
 import {
   Dialog,
   DialogBackdrop,
@@ -34,12 +35,13 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const [newTreeDescription, setNewTreeDescription] = useState("");
   const [currentTab, setCurrentTab] = useState("create");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isExtractingText, setIsExtractingText] = useState<boolean>(false);
   const [aiInputText, setAiInputText] = useState("");
 
   const tabs = [
     { name: "Create New", id: "create", icon: PlusIcon },
     { name: "Generate with AI", id: "ai", icon: SparklesIcon },
-    { name: "Import File", id: "open", icon: FolderOpenIcon },
+    { name: "Import from File", id: "open", icon: FolderOpenIcon },
   ];
 
   // TODO: replace with cx function?
@@ -77,6 +79,34 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       onClose();
     } catch (error) {
       console.error("[EVTree] Failed to generate tree with AI:", error);
+    }
+  };
+
+  const handleFileUploadForAI = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setSelectedFile(file);
+    setIsExtractingText(true);
+
+    try {
+      // QUESTION: better to do two-step process as here or one-step by calling
+      // createDecisionTreeFromText with the document?
+      const extractedText = await extractTextFromFile(file);
+      setAiInputText(extractedText);
+    } catch (error) {
+      console.error("[EVTree] Failed to extract text from file:", error);
+      // TODO: better than alert
+      window.alert(
+        "Failed to extract text from file. Please check the console for details or try entering text manually.",
+      );
+      setSelectedFile(null);
+    } finally {
+      setIsExtractingText(false);
     }
   };
 
@@ -178,8 +208,8 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                               }
                               className={classNames(
                                 currentTab === tab.id
-                                  ? // TODO: use green highlight here or standard blue?
-                                    "border-green-500 text-green-600 dark:border-green-400 dark:text-green-400"
+                                  ? // TODO: use blue highlight here or standard blue?
+                                    "border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400"
                                   : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300",
                                 "group inline-flex items-center border-b-2 px-1 py-4 text-sm font-medium",
                               )}
@@ -188,7 +218,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                                 aria-hidden="true"
                                 className={classNames(
                                   currentTab === tab.id
-                                    ? "text-green-500 dark:text-green-400"
+                                    ? "text-blue-500 dark:text-blue-400"
                                     : "text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300",
                                   "mr-2 -ml-0.5 size-5",
                                 )}
@@ -213,7 +243,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                           value={newTreeName}
                           onChange={(e) => setNewTreeName(e.target.value)}
                           placeholder="Enter tree name..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           autoFocus
                           required
                         />
@@ -228,7 +258,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                             setNewTreeDescription(e.target.value)
                           }
                           placeholder="Enter tree description..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                         />
                       </div>
                     )}
@@ -243,65 +273,41 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                           value={newTreeName}
                           onChange={(e) => setNewTreeName(e.target.value)}
                           placeholder="Enter tree name..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           required
                         />
-                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-                          Describe your situation, or paste in the text of an
-                          existing document
-                        </p>
-                        <textarea
-                          rows={6}
-                          value={aiInputText}
-                          onChange={(e) => setAiInputText(e.target.value)}
-                          placeholder={`Example: I'm representing a party in a legal dispute that has
-generated years of expensive and acrimonious litigation over
-alleged defects in railroad cars designed to carry larger
-quantities of coal than a conventional railroad car. It is
-undisputed that the cars were designed by Iron- Steel Products,
-Inc.(Iron-Steel), manufactured by Bromfield Works (Bromfield),
-and sold to the utility company South Western Lighting and Power
-(SWL&P) to haul coal over tracks in the western United States.
-Extensive cracking developed in these cars and will require
-extensive repair. SWL&P filed suit against Iron-Steel for
-defective design, alleging negligence, breach of contract, and
-breach of a deceptive trade practices statute (the latter
-allowing recovery of reasonable attorneys' fees and treble
-damages). Iron-Steel denied the defective design claim and sued
-Bromfield alleging negligent manufacturing. Iron-Steel has also
-brought a motion to dismiss all claims by SWL&P against it under
-two theories. First, Iron-Steel argues that SWL&P's claims are
-barred by a settlement between them in related litigation in
-another state, citing a recent decision in New Mexico. Second,
-Iron-Steel argues that these claims are barred by the statute of
-limitation, because SWL&P knew or could have known of the
-cracking problem long before the suit was filed. Of course,
-SWL&P opposes the motion to dismiss, arguing that the New Mexico
-decision does not apply to bar the claim under these
-circumstances, and that the statute of limitations began to run
-at a later date, and thus had not expired by the date of filing.
-SWL&P also argued that even if the statute of limitations would
-bar the statutory claim for deceptive trade practices, the
-common law claims would not be barred. Of course, once rulings
-are obtained on these issues, there will remain the question of
-whether any liability is found and if so, against whom --
-Iron-Steel only, Bromfield only, or both Iron-Steel and
-Bromfield with joint and several liability. It is reasonable to
-assume that, if joint and several liability is found, the
-allocations might be 50%/50% each, or Iron-Steel-66%/Bromfield-
-33%, or the opposite.
 
-For simplicity's sake, assume that high, mid-range and low jury
-awards have been estimated at $7 million, $5 million, and $3
-million respectively, depending upon how much of the damages
-proof is accepted by the jury. Also assume that legal fees for
-each side from now through full briefings and arguments on the
-motion to dismiss will be $100,000. Assume that legal fees
-thereafter, through trial and post-trial motions for each side
-will be an additional $200,000.
-                            `}
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-green-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-green-500"
-                        />
+                        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+                          Describe your situation, paste in some text, or upload
+                          a document
+                        </p>
+                        <div className="mb-3 flex items-center">
+                          <textarea
+                            rows={7}
+                            value={aiInputText}
+                            onChange={(e) => setAiInputText(e.target.value)}
+                            placeholder={`Example: I'm representing a party in a legal dispute that has generated years of expensive and acrimonious litigation over alleged defects in railroad cars designed to carry larger quantities of coal than a conventional railroad car. It isundisputed that...`}
+                            className="flex-2/3 rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset sm:text-sm dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
+                          />
+                          <div className="mt-2 mb-4 flex-1/3 rounded-md border-0 px-3 py-1.5 text-sm text-blue-600">
+                            {!isExtractingText ? (
+                              <input
+                                type="file"
+                                onChange={handleFileUploadForAI}
+                                accept=".pdf,.doc,.docx,.txt,.rtf"
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                                disabled={isExtractingText}
+                              />
+                            ) : (
+                              <div
+                                className="animate-pulse"
+                                // TODO: better to use a spinner?
+                              >
+                                ✨ Extracting text
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
 
@@ -316,11 +322,13 @@ will be an additional $200,000.
                           onChange={(e) =>
                             setSelectedFile(e.target.files?.[0] || null)
                           }
-                          className="block cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
+                          className="my-1.5 text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
                         />
-                        <p className="my-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          Select a JSON file containing a previously downloaded
-                          decision tree
+                        <p
+                          className="my-1.5 text-xs text-gray-500 dark:text-gray-400"
+                          // TODO: sync terminology with download button
+                        >
+                          Select a previously downloaded JSON file
                         </p>
                       </div>
                     )}
@@ -333,7 +341,7 @@ will be an additional $200,000.
                 <button
                   onClick={handleCreateTree}
                   disabled={!newTreeName.trim()}
-                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
+                  className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
                   Create
                 </button>
@@ -342,7 +350,7 @@ will be an additional $200,000.
                 <button
                   onClick={handleCreateWithAI}
                   disabled={!aiInputText.trim() || !newTreeName.trim()}
-                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
+                  className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
                   Generate
                 </button>
@@ -351,7 +359,7 @@ will be an additional $200,000.
                 <button
                   onClick={handleOpenTree}
                   disabled={!selectedFile}
-                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-green-700 dark:hover:bg-green-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
+                  className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
                   Import
                 </button>

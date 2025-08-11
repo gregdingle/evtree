@@ -1,4 +1,4 @@
-import { getAI, getGenerativeModel } from "firebase/ai";
+import { getAI, getGenerativeModel, VertexAIBackend } from "firebase/ai";
 import { initializeApp } from "firebase/app";
 
 import { DecisionTree } from "@/hooks/use-store";
@@ -23,13 +23,17 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 
-const AIModel = getGenerativeModel(getAI(firebaseApp), {
-  // QUESTION: is this the right model?
-  // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
-  // model: "gemini-2.5-pro-preview-06-05", // way too slow, but good looking results, maybe too big
-  // model: "gemini-2.5-flash-preview-05-20", // slower than gemini-2.0, some useless results
-  model: "gemini-2.0-flash", // follows example much better than gemini-2.5
-});
+const AIModel = getGenerativeModel(
+  getAI(firebaseApp, { backend: new VertexAIBackend() }),
+  {
+    // QUESTION: is this the right model?
+    // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
+    // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
+    // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
+    model: "gemini-2.0-flash", // follows example much better than gemini-2.5
+    // model: "gemini-2.5-flash-lite", // untested
+  },
+);
 
 /**
  * Extracts plain text from a file using AI

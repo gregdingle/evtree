@@ -87,7 +87,7 @@ export default function LeftSidePanel() {
         <h2 className="text-lg font-semibold">Decision Trees</h2>
         <button
           onClick={() => setOpenDialog(true)}
-          className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+          className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
         >
           Create
         </button>
