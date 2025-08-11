@@ -3,7 +3,7 @@
   "name": "Sexual H Demo Tree",
   "description": "Defense Perspective:\n\nCost and Fees Assumptions\n$30,000 atty's fees through\n\nSummary Judgment\n$100,000 in attorneys fees\nland costs through trial\n\n$100,000 - $300,0000 plaintif!\nIs statutory attorneys fee\nlaward, depending upon\ndamages level. \n",
   "createdAt": "2025-07-23T07:28:13.573Z",
-  "updatedAt": "2025-07-23T20:02:45.635Z",
+  "updatedAt": "2025-08-11T02:22:34.437Z",
   "nodes": {
     "decision": {
       "id": "decision",
@@ -22,8 +22,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       }
     },
     "KgnMCdBQM_PW": {
@@ -44,8 +44,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       }
     },
     "bKOhJDHYplnI": {
@@ -67,10 +67,9 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
-      },
-      "selected": false
+        "width": 32,
+        "height": 32
+      }
     },
     "4s1dOkFhDz1P": {
       "id": "4s1dOkFhDz1P",
@@ -90,10 +89,9 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "selected": false,
       "dragging": false
     },
     "j9ZYCT78n0Hg": {
@@ -115,10 +113,9 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
-      },
-      "selected": false
+        "width": 32,
+        "height": 32
+      }
     },
     "-OtK3EoHaQLQ": {
       "id": "-OtK3EoHaQLQ",
@@ -138,8 +135,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -161,10 +158,9 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "selected": false,
       "dragging": false
     },
     "oIGw-I1ZGspg": {
@@ -186,11 +182,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "f4UvjS8okevK": {
       "id": "f4UvjS8okevK",
@@ -211,11 +206,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "8LzWw8vWytu2": {
       "id": "8LzWw8vWytu2",
@@ -236,11 +230,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "ojy-9iVmHVGb": {
       "id": "ojy-9iVmHVGb",
@@ -260,18 +253,17 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "EGdAkaMQvGBc": {
       "id": "EGdAkaMQvGBc",
       "type": "terminal",
       "position": {
         "x": 1113.7270638914583,
-        "y": 436.81880832562524
+        "y": 436.8188083256253
       },
       "data": {
         "label": "",
@@ -285,11 +277,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "9tWlIrjE7rbZ": {
       "id": "9tWlIrjE7rbZ",
@@ -310,11 +301,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "qTcoh2NXhx46": {
       "id": "qTcoh2NXhx46",
@@ -335,11 +325,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "tnLpC1Z_k30a": {
       "id": "tnLpC1Z_k30a",
@@ -360,11 +349,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "t_EuoCI7H4Hr": {
       "id": "t_EuoCI7H4Hr",
@@ -384,11 +372,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "mSLuYP3YfQpi": {
       "id": "mSLuYP3YfQpi",
@@ -409,11 +396,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "1JzA4Spf_dXx": {
       "id": "1JzA4Spf_dXx",
@@ -434,11 +420,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "BcJWodUDf8XB": {
       "id": "BcJWodUDf8XB",
@@ -459,11 +444,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "e2ID4ujt3dNx": {
       "id": "e2ID4ujt3dNx",
@@ -484,11 +468,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "rrVX3mZ1mPqe": {
       "id": "rrVX3mZ1mPqe",
@@ -508,11 +491,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "ZeeqiwFdWfDw": {
       "id": "ZeeqiwFdWfDw",
@@ -533,11 +515,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "l9dtFsFPHYsI": {
       "id": "l9dtFsFPHYsI",
@@ -558,11 +539,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "NJB0EUzSVK9y": {
       "id": "NJB0EUzSVK9y",
@@ -583,11 +563,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     },
     "VLtk5D1LzPMy": {
       "id": "VLtk5D1LzPMy",
@@ -608,11 +587,10 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
-      "dragging": false,
-      "selected": false
+      "dragging": false
     }
   },
   "edges": {
@@ -669,8 +647,7 @@
         "label": "Liability",
         "description": "",
         "probability": 0.2
-      },
-      "selected": false
+      }
     },
     "ej9ZYCT78n0Hg-AvazVf7EPf0a": {
       "id": "ej9ZYCT78n0Hg-AvazVf7EPf0a",
@@ -681,8 +658,7 @@
         "label": "No liability",
         "description": "",
         "probability": 0.8
-      },
-      "selected": false
+      }
     },
     "e-OtK3EoHaQLQ-oIGw-I1ZGspg": {
       "id": "e-OtK3EoHaQLQ-oIGw-I1ZGspg",
@@ -803,8 +779,7 @@
         "label": "$250k",
         "description": "",
         "probability": 0.3
-      },
-      "selected": false
+      }
     },
     "ef4UvjS8okevK-t_EuoCI7H4Hr": {
       "id": "ef4UvjS8okevK-t_EuoCI7H4Hr",
@@ -815,8 +790,7 @@
         "label": "Puni",
         "description": "",
         "probability": 0.6
-      },
-      "selected": false
+      }
     },
     "ef4UvjS8okevK-mSLuYP3YfQpi": {
       "id": "ef4UvjS8okevK-mSLuYP3YfQpi",
@@ -838,8 +812,7 @@
         "label": "$1.0m",
         "description": "",
         "probability": 0.1
-      },
-      "selected": false
+      }
     },
     "errVX3mZ1mPqe-NJB0EUzSVK9y": {
       "id": "errVX3mZ1mPqe-NJB0EUzSVK9y",
@@ -850,8 +823,7 @@
         "label": "$500k",
         "description": "",
         "probability": 0.5
-      },
-      "selected": false
+      }
     },
     "errVX3mZ1mPqe-VLtk5D1LzPMy": {
       "id": "errVX3mZ1mPqe-VLtk5D1LzPMy",
@@ -862,8 +834,7 @@
         "label": "$250k",
         "description": "",
         "probability": 0.4
-      },
-      "selected": false
+      }
     },
     "e8LzWw8vWytu2-rrVX3mZ1mPqe": {
       "id": "e8LzWw8vWytu2-rrVX3mZ1mPqe",
@@ -874,8 +845,7 @@
         "label": "Puni",
         "description": "",
         "probability": 0.5
-      },
-      "selected": false
+      }
     },
     "e8LzWw8vWytu2-ZeeqiwFdWfDw": {
       "id": "e8LzWw8vWytu2-ZeeqiwFdWfDw",
@@ -886,8 +856,7 @@
         "label": "No Puni",
         "description": "",
         "probability": 0.5
-      },
-      "selected": false
+      }
     }
   }
 }

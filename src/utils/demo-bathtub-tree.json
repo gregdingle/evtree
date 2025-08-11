@@ -2,7 +2,7 @@
   "id": "hE124YFaob13",
   "name": "Bathtub Blues Demo Tree",
   "createdAt": "2025-07-24T13:30:41.891Z",
-  "updatedAt": "2025-07-24T20:30:09.309Z",
+  "updatedAt": "2025-08-11T02:20:57.775Z",
   "nodes": {
     "EPr-9-hGhZ-Z": {
       "id": "EPr-9-hGhZ-Z",
@@ -22,8 +22,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       }
     },
     "GkVdBQghMqKa": {
@@ -44,8 +44,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -68,8 +68,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -91,8 +91,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -100,7 +100,7 @@
       "id": "uoH0-3DQQCI3",
       "type": "terminal",
       "position": {
-        "x": 440.42583273383275,
+        "x": 440.4258327338327,
         "y": 1910
       },
       "data": {
@@ -114,8 +114,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -137,8 +137,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -161,8 +161,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -185,8 +185,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -208,8 +208,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -231,8 +231,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -254,8 +254,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -277,8 +277,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -287,7 +287,7 @@
       "type": "chance",
       "position": {
         "x": 1596.7463830038914,
-        "y": 1590.1951872155503
+        "y": 1590.1951872155505
       },
       "data": {
         "label": "",
@@ -300,8 +300,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": true
     },
@@ -323,8 +323,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -346,8 +346,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -369,8 +369,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -392,8 +392,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -415,8 +415,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -438,8 +438,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -461,8 +461,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -470,8 +470,8 @@
       "id": "x0TryoNsoKZL",
       "type": "terminal",
       "position": {
-        "x": 2094.2676004403334,
-        "y": 2033.7699753974134
+        "x": 2094.267600440334,
+        "y": 2033.7699753974136
       },
       "data": {
         "label": "",
@@ -484,8 +484,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -507,8 +507,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -530,8 +530,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -553,8 +553,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -576,8 +576,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -599,8 +599,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -622,8 +622,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -645,8 +645,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -668,8 +668,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -691,8 +691,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -714,8 +714,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -737,8 +737,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -760,8 +760,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -783,8 +783,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -792,7 +792,7 @@
       "id": "P_Tkh2Uu214h",
       "type": "terminal",
       "position": {
-        "x": 1795.9463805558057,
+        "x": 1795.9463805558055,
         "y": 1445.3380472727952
       },
       "data": {
@@ -806,8 +806,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": true
     },
@@ -829,8 +829,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": true
     },
@@ -852,8 +852,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": true
     },
@@ -861,7 +861,7 @@
       "id": "7AX1joeHFCA9",
       "type": "chance",
       "position": {
-        "x": 979.6357661848409,
+        "x": 979.6357661848408,
         "y": 1085.0736174608264
       },
       "data": {
@@ -875,8 +875,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -885,7 +885,7 @@
       "type": "terminal",
       "position": {
         "x": 1201.635766184841,
-        "y": 913.0736174608263
+        "y": 913.0736174608264
       },
       "data": {
         "label": "",
@@ -898,8 +898,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -921,8 +921,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -944,8 +944,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -967,8 +967,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -990,8 +990,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -1013,8 +1013,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -1036,8 +1036,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 64,
-        "height": 64
+        "width": 32,
+        "height": 32
       },
       "dragging": false
     },
@@ -1059,8 +1059,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1082,8 +1082,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1092,7 +1092,7 @@
       "type": "terminal",
       "position": {
         "x": 1813.8854755051357,
-        "y": 186.34519565912106
+        "y": 186.34519565912103
       },
       "data": {
         "label": "",
@@ -1105,8 +1105,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1128,8 +1128,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1151,8 +1151,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1174,8 +1174,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1183,7 +1183,7 @@
       "id": "X2kE-lM-ScSF",
       "type": "terminal",
       "position": {
-        "x": 1844.0414820132482,
+        "x": 1844.041482013248,
         "y": 829.2331842749536
       },
       "data": {
@@ -1197,8 +1197,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1206,7 +1206,7 @@
       "id": "xjmiSl2KflCM",
       "type": "terminal",
       "position": {
-        "x": 1844.0414820132482,
+        "x": 1844.041482013248,
         "y": 1001.2331842749536
       },
       "data": {
@@ -1220,8 +1220,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     },
@@ -1229,7 +1229,7 @@
       "id": "FLASWILaAjVP",
       "type": "terminal",
       "position": {
-        "x": 1844.4487936563419,
+        "x": 1844.448793656342,
         "y": 1153.4414098734337
       },
       "data": {
@@ -1243,8 +1243,8 @@
       "sourcePosition": "right",
       "targetPosition": "left",
       "measured": {
-        "width": 48,
-        "height": 60
+        "width": 24,
+        "height": 30
       },
       "dragging": false
     }
