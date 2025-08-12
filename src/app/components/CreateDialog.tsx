@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore, type DecisionTree } from "@/hooks/use-store";
-import { extractTextFromFile } from "@/lib/ai";
+import { extractTextFromFile, generateDecisionTree } from "@/lib/ai";
 import {
   Dialog,
   DialogBackdrop,
@@ -63,22 +63,21 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       console.error(
         "[EVTree] Name and description text required for AI generation",
       );
+      // TODO: form validation... use homeform, zod and tailwind pro inputs
       return;
     }
 
     try {
-      // TODO: Implement AI tree generation
-      // This would typically call an AI service to convert text to decision tree
-      console.warn("[EVTree] AI tree generation not yet implemented");
-
-      // For now, just create a basic tree with the provided name and auto-generated description
-      createTree(newTreeName.trim(), `Generated from: "${aiInputText}"`);
+      const tree = await generateDecisionTree(aiInputText.trim());
+      loadTree(tree);
 
       setAiInputText("");
       setNewTreeName("");
       onClose();
     } catch (error) {
       console.error("[EVTree] Failed to generate tree with AI:", error);
+      // TODO: better than alert
+      window.alert("Failed to generate tree with AI. Please try again.");
     }
   };
 

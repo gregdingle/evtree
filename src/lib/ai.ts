@@ -92,17 +92,21 @@ Ignore footnotes.
 }
 
 /**
- * Creates a decision tree from a text description using AI
- * @param text - The lawsuit description text to convert into a decision tree
+ * Creates a decision tree from a text description using AI.
+ *
+ * NOTE: memoize to avoid spamming service
+ * TODO: maybe throttle would be better?
+ *
+ * @param text - The case description to convert into a decision tree
  * @returns Promise<Decision> - The generated decision tree structure
  */
-export const createDecisionTreeFromText = memoize(async function (
+export const generateDecisionTree = memoize(async function (
   text: string,
 ): Promise<DecisionTree> {
   try {
     // Get the prompt template from markdown file and replace the placeholder
     const prompt = (promptTemplate as string).replace(
-      "{{LAWSUIT_DESCRIPTION}}",
+      "{{CASE_DESCRIPTION}}",
       text,
     );
 
@@ -116,7 +120,7 @@ export const createDecisionTreeFromText = memoize(async function (
       generatedText.match(/```\s*([\s\S]*?)\s*```/) || [null, generatedText];
 
     if (!jsonMatch[1]) {
-      throw new Error("No JSON found in AI response");
+      throw new Error("[EVTree] No JSON found in AI response");
     }
 
     const jsonText = jsonMatch[1].trim();
@@ -126,11 +130,13 @@ export const createDecisionTreeFromText = memoize(async function (
     try {
       decisionTree = JSON.parse(jsonText);
       console.debug(
-        "[evtree] Generated decision tree:",
+        "[EVTree] Generated decision tree:",
         JSON.stringify(decisionTree, null, 2),
       );
     } catch (parseError) {
-      throw new Error(`Failed to parse AI response as JSON: ${parseError}`);
+      throw new Error(
+        `[EVTree] Failed to parse AI response as JSON: ${parseError}`,
+      );
     }
 
     // Sanity check that we have a proper decision tree structure
@@ -139,12 +145,14 @@ export const createDecisionTreeFromText = memoize(async function (
       !Array.isArray(decisionTree.nodes) ||
       !Array.isArray(decisionTree.edges)
     ) {
-      throw new Error("Invalid decision tree structure returned by AI");
+      throw new Error(
+        "[EVTree] Invalid decision tree structure returned by AI",
+      );
     }
 
     return decisionTree;
   } catch (error) {
-    console.error("Error creating decision tree from text:", error);
+    console.error("[EVTree] Error creating decision tree from text:", error);
     throw error;
   }
 });

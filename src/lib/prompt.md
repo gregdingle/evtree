@@ -2,60 +2,43 @@
 
 Given the Zod schemas below, construct a decision tree in JSON from the following text description of a lawsuit. Use the example JSON output for inspiration. Use the article at https://www.litigationrisk.com/GSU%20Law%20Review%20article.pdf for guidance on how to construct a decision tree.
 
-For past decisions in the tree, include counter-factual outcomes and subsequent decisions based on events that could have been. For example, any motion that is affirmed could also have been denied.
+For nodes in the tree that refer to past events, include counter-factual branches and subsequent nodes based on events that could have been. For example, any motion that is affirmed could also have been denied.
 
-Do NOT include mediation or settlement as possible outcomes or decisions. The point of a decision tree is to estimate the value of a case in the absence of a negotiated settlement. When the possibility of a mediation is mentioned in the text description of a lawsuit, just skip over it as if it happened but failed.
+<!-- TODO: review this "no decision node" rule given we now have Decision node? -->
 
-Avoid including outcomes that have less than a 10% chance of happening by your estimation.
+Do NOT include mediation or settlement as possible branches or nodes. The point of a decision tree is to estimate the value of a case in the absence of a negotiated settlement. When the possibility of a mediation is mentioned, just skip over it as if it happened but failed.
 
-Avoid including outcomes that have a 100% chance of happening by your estimation, unless they occur more than 6 months from the preceding decision.
+Avoid including branches that have less than a 5% chance of happening by your estimation.
 
-<!-- QUESTION: , or they have `estimatedHours` of more than 20. -->
+Avoid including branches that have a 100% chance of happening by your estimation. Just skip over them.
+
+If a dollar value of a claim is not provided, use a value of $1.
 
 <!-- TODO: better solution to unknown value problem... prompt the user? -->
-
-If a dollar value for a claim is not provided in the text description, use a value of $1.
 
 Some guidelines:
 
 - The `reason` SHOULD explain why the associated probability estimate is justified. For example: "Federal court statistics show 62% of summary judgment motions fail".
-- The first decision in the tree MUST have the earliest date
-- All dates MUST be in ascending order from left to right in the tree along a single path
-- Try to make the decision labels 24 characters long or less
-- Try to make the outcome labels 16 characters long or less
-- Only include an outcome label if the relationship between the previous decision and the next decision is not obvious
-- When an outcome is terminal, it MUST have a value
-- The probabilities in a group of outcomes MUST sum to 1
-- Path IDs MUST contain only consecutive integers. For example: "1/a/2/a/3".
-
-<!-- TODO: try adding to zod scheam and validate with zod? -->
+- Try to make labels 24 characters long or less
+- When a node is a leaf node in the tree, it is considered a terminal node, and it MUST have a value
+- The probabilities in a group of branches MUST sum to 1
+- The tree always starts with a single root node
 
 ## Lawsuit description
 
-{{LAWSUIT_DESCRIPTION}}
+{{CASE_DESCRIPTION}}
 
 ## Zod schemas
 
-<!-- TODO: keep this in sync with decisionTreeTypes.ts somehow -->
-
 ```ts
-// Create forward references for our schemas
-// This approach avoids using 'any' type while handling circular references
-// NOTE: need to keep Shape and Schema definitions in sync
-interface OutcomeShape {
+interface BranchShape {
   /**
-   * Unique identifier for the outcome, following a specific path format.
-   * QUESTION: rename to `path`?
+   * User-facing label for the branch.
    */
-  id: string;
+  label: string;
 
   /**
-   * User-facing label for the outcome.
-   */
-  label?: string;
-
-  /**
-   * Probability estimate of this outcome occurring, between 0 and 1.
+   * Probability estimate of this branch occurring, between 0 and 1.
    */
   probability: number;
 
@@ -65,126 +48,75 @@ interface OutcomeShape {
   reason: string;
 
   /**
-   * Terminal value of the outcome. If this is defined, it indicates that this
-   * outcome does not lead to another decision.
-   * QUESTION: should a terminal decision be required instead?
+   * The next node following this branch in the tree.
    */
-  value?: number;
-
-  /**
-   * The next decision following this outcome.
-   */
-  nextDecision?: DecisionShape;
+  nextNode: NodeShape;
 }
 
-interface DecisionShape {
+interface NodeShape {
   /**
-   * Unique identifier for the outcome, following a specific path format.
-   * QUESTION: rename to `path`?
+   * The terminal value of a node in dollars. Only a terminal node that has no branches should have a value. This represents the reward or loss at the conclusion of a case.
    */
-  id: string;
+  value: number | null;
 
   /**
-   * User-facing label for the decision.
+   * The expected cost in dollars of progressing to a node from the incoming branch. For example: lawyer's fees or court fees. Leave as null if unknown or negligible. This represents a sunk cost of a case.
    */
-  label: string;
+  cost: number | null;
 
   /**
-   * Optional user-facing description of the decision.
+   * Possible outcomes stemming from the node. A terminal node should have zero branches. All other nodes should have at least one branch.
    */
-  description?: string;
-
-  /**
-   * Possible outcomes of the decision.
-   */
-  outcomes: OutcomeShape[];
-
-  /**
-   * Computed from `outcomes`. When no outcomes are present, this is the
-   * expected value of the decision.
-   */
-  expectedValue?: number;
-
-  /**
-   * Estimated date for the decision, can be a Date object or an ISO string.
-   */
-  estimatedDate: Date | string;
-
-  /**
-   * Estimated costs in hours to achieve the decision.
-   */
-  estimatedHours: number;
-
-  /**
-   * Indicates if this decision is a final judgment entered by the court. Used
-   * for interest calculations.
-   */
-  isFinalJudgment?: boolean;
+  branches: BranchShape[];
 }
 
-// NOTE: Define schemas lazily for circular references
-export const OutcomeSchema: z.ZodType<OutcomeShape> = z.lazy(() =>
-  z
-    .object({
-      id: z
-        .string()
-        .regex(
-          /^\d\/[a-z]+(?:\/\d\/[a-z])*$/,
-          "Outcome ID must follow path format like '1/a' or '1/a/2/b'",
-        ),
-      label: z
-        .string()
-        .max(100, "Label must be 100 characters or less")
-        .optional(),
-      probability: z
-        .number()
-        .min(0, "Probability must be between 0 and 1")
-        .max(1, "Probability must be between 0 and 1"),
-      reason: z.string().min(1, "Reason is required"),
-      nextDecision: DecisionSchema.optional(),
-      value: z.number().nonnegative().optional(),
-    })
-    .refine(
-      (data) => data.nextDecision !== undefined || data.value !== undefined,
-      {
-        message:
-          "An outcome must either lead to another decision or have a terminal value",
-        path: ["outcome"],
-      },
-    ),
+// NOTE: Define schemas lazily because circular references
+export const BranchSchema: z.ZodType<BranchShape> = z.lazy(() =>
+  z.object({
+    label: z.string().max(100, "Label must be 100 characters or less"),
+    probability: z
+      .number()
+      .min(0, "Probability must be between 0 and 1")
+      .max(1, "Probability must be between 0 and 1"),
+    reason: z.string().min(1, "Reason is required"),
+    nextNode: NodeSchema,
+  }),
 );
 
-export const DecisionSchema: z.ZodType<DecisionShape> = z.lazy(() =>
+export const NodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
   z
     .object({
-      id: z
-        .string()
-        .regex(
-          /^\d+(?:\/[a-z]\/\d+)*$/,
-          "Decision ID must follow path format like '1' or '1/a/2'",
-        ),
-      label: z
-        .string()
-        .min(1, "Label is required")
-        .max(100, "Label must be 100 characters or less"),
-      description: z.string().optional(),
-      outcomes: z.array(OutcomeSchema),
-      expectedValue: z.number().optional(),
-      estimatedDate: z.union([z.date(), z.string()]),
-      estimatedHours: z.number(),
-      isFinalJudgment: z.boolean().optional(),
+      value: z.number().min(0, "must be positive").nullable(),
+      cost: z.number().min(0, "must be positive").nullable(),
+      branches: z.array(BranchSchema),
     })
     .refine(
-      (decision: Decision): boolean => {
-        const sum = decision.outcomes.reduce(
+      (node: NodeShape): boolean => {
+        return (
+          (node.value !== null && node.branches.length == 0) ||
+          node.branches.length > 0
+        );
+      },
+      {
+        message:
+          "Terminal nodes must have a value, all other nodes must have branches",
+        path: ["branches"],
+      },
+    )
+    .refine(
+      (node: NodeShape): boolean => {
+        if (node.branches.length === 0) {
+          return true;
+        }
+        const sum = node.branches.reduce(
           (acc, outcome) => acc + outcome.probability,
           0,
         );
         return Math.abs(sum - 1) < 0.000001; // Allow for floating point imprecision
       },
       {
-        message: "Probabilities of outcomes must sum to 1",
-        path: ["outcomes"],
+        message: "Probabilities of non-empty branches must sum to 1",
+        path: ["branches"],
       },
     ),
 );
@@ -192,178 +124,158 @@ export const DecisionSchema: z.ZodType<DecisionShape> = z.lazy(() =>
 
 <!-- TODO: optimize example -->
 
-## Example JSON output##
+## Example JSON output
 
 ```json
 {
-  "id": "1",
-  "label": "Contract Dispute Filed",
-  "description": "Contract dispute case has been filed - next steps in litigation",
-  "estimatedDate": "2025-06-03T22:34:03.804Z",
-  "estimatedHours": 10,
-  "outcomes": [
+  "value": null,
+  "cost": null,
+  "branches": [
     {
-      "id": "1/a",
-      "label": "Proceed to Discovery",
-      "probability": 1,
-      "reason": "Federal Rules of Civil Procedure require discovery phase in 100% of civil cases to enable parties to obtain information and documents necessary for trial preparation",
-      "nextDecision": {
-        "id": "1/a/2",
-        "label": "Trial Decision",
-        "description": "Whether to go to trial or dispositive motion",
-        "estimatedDate": "2025-12-03T23:34:03.804Z",
-        "estimatedHours": 25,
-        "outcomes": [
+      "label": "File Summary Judgment Motion",
+      "probability": 0.35,
+      "reason": "Federal Judicial Center studies show 35% of contract disputes involve summary judgment motions, as parties seek early resolution when material facts are undisputed and legal standards are clear",
+      "nextNode": {
+        "value": null,
+        "cost": null,
+        "branches": [
           {
-            "id": "1/a/2/a",
-            "label": "File Summary Judgment Motion",
-            "probability": 0.35,
-            "reason": "Federal Judicial Center studies show 35% of contract disputes involve summary judgment motions, as parties seek early resolution when material facts are undisputed and legal standards are clear",
-            "nextDecision": {
-              "id": "1/a/2/a/3",
-              "label": "Summary Judgment Outcome",
-              "description": "Result of summary judgment motion",
-              "estimatedDate": "2026-02-03T23:34:03.804Z",
-              "estimatedHours": 50,
-              "outcomes": [
-                {
-                  "id": "1/a/2/a/3/a",
-                  "label": "Win Summary Judgment",
-                  "probability": 0.38,
-                  "reason": "Administrative Office of US Courts data shows 38% success rate for summary judgment motions in contract disputes when moving party demonstrates absence of genuine material fact disputes",
-                  "value": 1000000
-                },
-                {
-                  "id": "1/a/2/a/3/b",
-                  "label": "Lose Summary Judgment",
-                  "probability": 0.62,
-                  "reason": "Federal court statistics show 62% of summary judgment motions fail when genuine issues of material fact exist or when contract interpretation requires jury determination",
-                  "nextDecision": {
-                    "id": "1/a/2/a/3/b/4",
-                    "label": "Go to Trial",
-                    "description": "Trial after losing summary judgment",
-                    "estimatedDate": "2026-06-03T22:34:03.804Z",
-                    "estimatedHours": 80,
-                    "outcomes": [
-                      {
-                        "id": "1/a/2/a/3/b/4/a",
-                        "label": "Win at Trial",
-                        "probability": 0.52,
-                        "reason": "Bureau of Justice Statistics shows 52% plaintiff win rate at trial following denied summary judgment motions, reflecting complex factual disputes and higher defense preparedness",
-                        "nextDecision": {
-                          "id": "1/a/2/a/3/b/4/a/5",
-                          "label": "Damages Award",
-                          "description": "Level of damages awarded at trial",
-                          "estimatedDate": "2026-09-03T22:34:03.804Z",
-                          "estimatedHours": 100,
-                          "isFinalJudgment": true,
-                          "outcomes": [
-                            {
-                              "id": "1/a/2/a/3/b/4/a/5/a",
-                              "label": "High Damages",
-                              "probability": 0.25,
-                              "reason": "American Bar Association litigation outcomes study shows 25% of contract cases result in full damage awards when plaintiff provides comprehensive documentation and credible expert witness testimony",
-                              "value": 1000000
-                            },
-                            {
-                              "id": "1/a/2/a/3/b/4/a/5/b",
-                              "label": "Medium Damages",
-                              "probability": 0.5,
-                              "reason": "National Center for State Courts data indicates 50% of successful contract plaintiffs receive partial damages when some losses are proven but consequential damages lack sufficient certainty or foreseeability",
-                              "value": 500000
-                            },
-                            {
-                              "id": "1/a/2/a/3/b/4/a/5/c",
-                              "label": "Low Damages",
-                              "probability": 0.25,
-                              "reason": "Federal Judicial Center studies show 25% of winning contract plaintiffs receive minimal damages when liability is clear but economic losses are difficult to quantify or plaintiff failed to mitigate damages",
-                              "value": 250000
-                            }
-                          ],
-                          "expectedValue": null
-                        }
-                      },
-                      {
-                        "id": "1/a/2/a/3/b/4/b",
-                        "label": "Lose at Trial",
-                        "probability": 0.48,
-                        "reason": "Bureau of Justice Statistics indicates 48% of contract plaintiffs lose at trial when they cannot meet burden of proof on disputed facts or defendants successfully establish valid contractual defenses",
-                        "value": 0
-                      }
-                    ],
-                    "expectedValue": null
-                  }
-                }
-              ],
-              "expectedValue": null
+            "label": "Win Summary Judgment",
+            "probability": 0.38,
+            "reason": "Administrative Office of US Courts data shows 38% success rate for summary judgment motions in contract disputes when moving party demonstrates absence of genuine material fact disputes",
+            "nextNode": {
+              "value": 1000000,
+              "cost": null,
+              "branches": []
             }
           },
           {
-            "id": "1/a/2/b",
-            "label": "Go Directly to Trial",
-            "probability": 0.65,
-            "reason": "Federal Judicial Center data shows 65% of contract disputes proceed directly to trial when factual disputes preclude summary adjudication or when legal issues require jury determination",
-            "nextDecision": {
-              "id": "1/a/2/b/3",
-              "label": "Trial Outcome",
-              "description": "Result of the trial",
-              "estimatedDate": "2026-04-03T22:34:03.804Z",
-              "estimatedHours": 75,
-              "outcomes": [
+            "label": "Lose Summary Judgment",
+            "probability": 0.62,
+            "reason": "Federal court statistics show 62% of summary judgment motions fail when genuine issues of material fact exist or when contract interpretation requires jury determination",
+            "nextNode": {
+              "value": null,
+              "cost": null,
+              "branches": [
                 {
-                  "id": "1/a/2/b/3/a",
                   "label": "Win at Trial",
-                  "probability": 0.638,
-                  "reason": "Direct trial win rates based on historical contract dispute outcomes, accounting for strength of legal claims and evidence quality",
-                  "nextDecision": {
-                    "id": "1/a/2/b/3/a/4",
-                    "label": "Damages Award",
-                    "description": "Level of damages awarded at trial",
-                    "estimatedDate": "2026-06-03T22:34:03.804Z",
-                    "estimatedHours": 90,
-                    "isFinalJudgment": true,
-                    "outcomes": [
+                  "probability": 0.52,
+                  "reason": "Bureau of Justice Statistics shows 52% plaintiff win rate at trial following denied summary judgment motions, reflecting complex factual disputes and higher defense preparedness",
+                  "nextNode": {
+                    "value": null,
+                    "cost": null,
+                    "branches": [
                       {
-                        "id": "1/a/2/b/3/a/4/a",
                         "label": "High Damages",
                         "probability": 0.25,
-                        "reason": "Full damage awards granted when plaintiff provides comprehensive documentation of losses and strong expert testimony validates all claimed damages",
-                        "value": 1000000
+                        "reason": "American Bar Association litigation outcomes study shows 25% of contract cases result in full damage awards when plaintiff provides comprehensive documentation and credible expert witness testimony",
+                        "nextNode": {
+                          "value": 1000000,
+                          "cost": null,
+                          "branches": []
+                        }
                       },
                       {
-                        "id": "1/a/2/b/3/a/4/b",
                         "label": "Medium Damages",
                         "probability": 0.5,
-                        "reason": "Moderate damages awarded when core losses are proven but some claimed damages lack sufficient documentation or involve disputed valuations",
-                        "value": 500000
+                        "reason": "National Center for State Courts data indicates 50% of successful contract plaintiffs receive partial damages when some losses are proven but consequential damages lack sufficient certainty or foreseeability",
+                        "nextNode": {
+                          "value": 500000,
+                          "cost": null,
+                          "branches": []
+                        }
                       },
                       {
-                        "id": "1/a/2/b/3/a/4/c",
                         "label": "Low Damages",
                         "probability": 0.25,
-                        "reason": "Limited damages awarded when liability is established but economic losses are minimal, speculative, or plaintiff failed to mitigate damages",
-                        "value": 250000
+                        "reason": "Federal Judicial Center studies show 25% of winning contract plaintiffs receive minimal damages when liability is clear but economic losses are difficult to quantify or plaintiff failed to mitigate damages",
+                        "nextNode": {
+                          "value": 250000,
+                          "cost": null,
+                          "branches": []
+                        }
                       }
-                    ],
-                    "expectedValue": null
+                    ]
                   }
                 },
                 {
-                  "id": "1/a/2/b/3/b",
                   "label": "Lose at Trial",
-                  "probability": 0.362,
-                  "reason": "Trial loss results when plaintiff fails to prove essential elements of the contract claim or defendant successfully demonstrates non-breach or valid defenses",
-                  "value": 0
+                  "probability": 0.48,
+                  "reason": "Bureau of Justice Statistics indicates 48% of contract plaintiffs lose at trial when they cannot meet burden of proof on disputed facts or defendants successfully establish valid contractual defenses",
+                  "nextNode": {
+                    "value": 0,
+                    "cost": null,
+                    "branches": []
+                  }
                 }
-              ],
-              "expectedValue": null
+              ]
             }
           }
-        ],
-        "expectedValue": null
+        ]
+      }
+    },
+    {
+      "label": "Go Directly to Trial",
+      "probability": 0.65,
+      "reason": "Federal Judicial Center data shows 65% of contract disputes proceed directly to trial when factual disputes preclude summary adjudication or when legal issues require jury determination",
+      "nextNode": {
+        "value": null,
+        "cost": null,
+        "branches": [
+          {
+            "label": "Win at Trial",
+            "probability": 0.638,
+            "reason": "Direct trial win rates based on historical contract dispute outcomes, accounting for strength of legal claims and evidence quality",
+            "nextNode": {
+              "value": null,
+              "cost": null,
+              "branches": [
+                {
+                  "label": "High Damages",
+                  "probability": 0.25,
+                  "reason": "Full damage awards granted when plaintiff provides comprehensive documentation of losses and strong expert testimony validates all claimed damages",
+                  "nextNode": {
+                    "value": 1000000,
+                    "cost": null,
+                    "branches": []
+                  }
+                },
+                {
+                  "label": "Medium Damages",
+                  "probability": 0.5,
+                  "reason": "Moderate damages awarded when core losses are proven but some claimed damages lack sufficient documentation or involve disputed valuations",
+                  "nextNode": {
+                    "value": 500000,
+                    "cost": null,
+                    "branches": []
+                  }
+                },
+                {
+                  "label": "Low Damages",
+                  "probability": 0.25,
+                  "reason": "Limited damages awarded when liability is established but economic losses are minimal, speculative, or plaintiff failed to mitigate damages",
+                  "nextNode": {
+                    "value": 250000,
+                    "cost": null,
+                    "branches": []
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "Lose at Trial",
+            "probability": 0.362,
+            "reason": "Trial loss results when plaintiff fails to prove essential elements of the contract claim or defendant successfully demonstrates non-breach or valid defenses",
+            "nextNode": {
+              "value": 0,
+              "cost": null,
+              "branches": []
+            }
+          }
+        ]
       }
     }
-  ],
-  "expectedValue": null
+  ]
 }
 ```
