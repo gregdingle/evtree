@@ -20,7 +20,7 @@ export default function CollapsiblePanel({
   const isLeft = side === "left";
 
   // Button positioning and styling based on side
-  const buttonClasses = `z-50 absolute top-6 w-4 h-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-900 flex items-center justify-center ${
+  const buttonClasses = `z-10 absolute top-6 w-4 h-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-900 flex items-center justify-center ${
     isLeft
       ? "-right-4 rounded-r-md border-r border-t border-b"
       : "-left-4 rounded-l-md border-l border-t border-b"
