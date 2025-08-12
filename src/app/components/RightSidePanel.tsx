@@ -5,7 +5,7 @@ import {
   selectCurrentEdges,
   selectCurrentNodes,
   selectCurrentTree,
-} from "@/utils/selectors";
+} from "@/lib/selectors";
 import { keys, max, min, toNumber } from "es-toolkit/compat";
 import { useEffect, useRef } from "react";
 import PropertyInput from "./PropertyInput";

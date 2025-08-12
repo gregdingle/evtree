@@ -5,7 +5,7 @@ import {
   selectCurrentTree,
   selectPathProbability,
   selectPathValue,
-} from "@/utils/selectors";
+} from "@/lib/selectors";
 import { values } from "es-toolkit/compat";
 import HRNumbers from "human-readable-numbers";
 

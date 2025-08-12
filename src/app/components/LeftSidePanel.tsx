@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@/hooks/use-store";
-import { downloadJson, downloadPNG } from "@/utils/download";
+import { downloadJson, downloadPNG } from "@/lib/download";
 import {
   ChevronDownIcon,
   DocumentArrowDownIcon,

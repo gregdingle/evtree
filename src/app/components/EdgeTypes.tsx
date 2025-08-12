@@ -1,6 +1,6 @@
 import { AppEdge, useStore } from "@/hooks/use-store";
+import { selectEdgeComputedProbability } from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
-import { selectEdgeComputedProbability } from "@/utils/selectors";
 import {
   BaseEdge,
   EdgeLabelRenderer,

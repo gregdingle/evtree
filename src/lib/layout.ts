@@ -16,6 +16,7 @@ const DEFAULT_NODE_HEIGHT = 72;
 
 // TODO: somehow, the branches are not splitting now at exactly the same
 // horizontal position so now there are weird tiny gaps between branches
+// TODO: should this be made more generic and moved to utils?
 export const getLayoutedElements = (
   nodes: AppNode[],
   edges: AppEdge[],

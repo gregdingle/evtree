@@ -1,5 +1,5 @@
 import { useStore } from "@/hooks/use-store";
-import { selectCurrentTree } from "@/utils/selectors";
+import { selectCurrentTree } from "@/lib/selectors";
 import { debounce, range } from "es-toolkit";
 import { toPairs } from "es-toolkit/compat";
 import React, { useState } from "react";

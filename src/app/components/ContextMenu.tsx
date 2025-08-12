@@ -1,6 +1,6 @@
 import { AppNode, NodeType, useStore } from "@/hooks/use-store";
-import { buildChildToParentNodeMap } from "@/utils/maps";
-import { selectCollapsible, selectCurrentEdges } from "@/utils/selectors";
+import { buildChildToParentNodeMap } from "@/lib/maps";
+import { selectCollapsible, selectCurrentEdges } from "@/lib/selectors";
 import {
   ArrowPathIcon,
   ChevronDownIcon,

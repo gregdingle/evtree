@@ -21,18 +21,18 @@ import { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
-import bathtubTreeData from "@/utils/demo-bathtub-tree.json";
-import demoSexualTreeData from "@/utils/demo-sexual-tree.json";
-import { cloneEdge, createEdge } from "@/utils/edge";
-import { getLayoutedElements } from "@/utils/layout";
+import bathtubTreeData from "@/data/demo-bathtub-tree.json";
+import demoSexualTreeData from "@/data/demo-sexual-tree.json";
+import { cloneEdge, createEdge } from "@/lib/edge";
+import { getLayoutedElements } from "@/lib/layout";
 import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
-} from "@/utils/maps";
-import { getNearestUpstreamNode } from "@/utils/nearest";
-import { cloneNode, createNode } from "@/utils/node";
-import { selectUndoableState } from "@/utils/selectors";
-import { createTree } from "@/utils/tree";
+} from "@/lib/maps";
+import { getNearestUpstreamNode } from "@/lib/nearest";
+import { cloneNode, createNode } from "@/lib/node";
+import { selectUndoableState } from "@/lib/selectors";
+import { createTree } from "@/lib/tree";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import {
   createSelectorFunctions,

@@ -1,11 +1,11 @@
 import { AppNode, useStore } from "@/hooks/use-store";
-import { formatProbability, formatValue } from "@/utils/format";
 import {
   selectCollapsible,
   selectHasParentNode,
   selectPathProbability,
   selectPathValue,
-} from "@/utils/selectors";
+} from "@/lib/selectors";
+import { formatProbability, formatValue } from "@/utils/format";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import { ReactNode } from "react";
 

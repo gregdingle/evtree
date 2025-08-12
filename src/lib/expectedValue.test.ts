@@ -5,7 +5,7 @@ import {
   computeNodeValues,
   toComputeEdge,
   toComputeNode,
-} from "./expectedValue";
+} from "../lib/expectedValue";
 
 describe("computeNodeValues", () => {
   test("should copy values for a simple sequence of 1.0 probabilities", () => {
@@ -545,8 +545,8 @@ describe("toComputeNode expression evaluation", () => {
   });
 });
 
+import demoTreeData from "@/data/demo-sexual-tree.json";
 import { AppNode, DecisionTree } from "@/hooks/use-store";
-import demoTreeData from "@/utils/demo-sexual-tree.json";
 
 /**
  * Ensures a real, complex decision tree with multiple nodes and edges, values

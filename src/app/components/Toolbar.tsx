@@ -7,7 +7,7 @@ import {
   selectHasNodes,
   selectHasSelectedItems,
   selectHasTerminalNodes,
-} from "@/utils/selectors";
+} from "@/lib/selectors";
 import {
   ArrowsPointingOutIcon,
   ArrowUturnLeftIcon,

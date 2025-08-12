@@ -2,9 +2,9 @@ import { getAI, getGenerativeModel, VertexAIBackend } from "firebase/ai";
 import { initializeApp } from "firebase/app";
 
 import { AppEdge, AppNode, DecisionTree } from "@/hooks/use-store";
-import { createEdge } from "@/utils/edge";
-import { createNode } from "@/utils/node";
-import { createTree } from "@/utils/tree";
+import { createEdge } from "@/lib/edge";
+import { createNode } from "@/lib/node";
+import { createTree } from "@/lib/tree";
 import { isPlainObject, memoize } from "es-toolkit";
 import { isEmpty } from "es-toolkit/compat";
 import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
