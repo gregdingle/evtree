@@ -3,10 +3,11 @@ import { initializeApp } from "firebase/app";
 import { nanoid } from "nanoid";
 
 import { AppEdge, AppNode, DecisionTree } from "@/hooks/use-store";
-import { memoize } from "es-toolkit";
+import { isPlainObject, memoize } from "es-toolkit";
 import { NodeSchema, NodeShape } from "./ai-schemas";
 // TODO: proper typing of raw import
 import { Position } from "@xyflow/react";
+import { isEmpty } from "es-toolkit/compat";
 // @ts-expect-error: see next-config.ts for raw-loader setup
 import promptTemplate from "./prompt.md";
 // @ts-expect-error: for inserting into template
@@ -35,8 +36,8 @@ const AIModel = getGenerativeModel(
     // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
     // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
     // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
-    model: "gemini-2.0-flash", // follows example much better than gemini-2.5
-    // model: "gemini-2.5-flash-lite", // untested
+    // model: "gemini-2.0-flash", // follows example much better than gemini-2.5
+    model: "gemini-2.5-flash-lite", // untested
   },
 );
 
@@ -140,7 +141,7 @@ export const generateDecisionTree = memoize(async function (
     }
 
     // Sanity check that we have a structure
-    if (typeof decisionTree !== "object") {
+    if (!isPlainObject(decisionTree) || isEmpty(decisionTree)) {
       throw new Error(
         "[EVTree] Invalid decision tree structure returned by AI",
       );

@@ -42,7 +42,10 @@ export interface NodeShape {
 // NOTE: Define schemas lazily because circular references
 const BranchSchema: z.ZodType<BranchShape> = z.lazy(() =>
   z.object({
-    label: z.string().max(100, "Label must be 100 characters or less"),
+    label: z
+      .string()
+      .min(1, "Label must be at least 1 character long")
+      .max(100, "Label must be 100 characters or less"),
     probability: z
       .number()
       .min(0, "Probability must be between 0 and 1")
@@ -55,7 +58,7 @@ const BranchSchema: z.ZodType<BranchShape> = z.lazy(() =>
 export const NodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
   z
     .object({
-      value: z.number().min(0, "must be positive").nullable(),
+      value: z.number().nullable(),
       cost: z.number().min(0, "must be positive").nullable(),
       branches: z.array(BranchSchema),
     })

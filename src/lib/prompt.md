@@ -23,6 +23,8 @@ Some guidelines:
 - When a node is a leaf node in the tree, it is considered a terminal node, and it MUST have a value
 - The probabilities in a group of branches MUST sum to 1
 - The tree always starts with a single root node
+- Values should be negative if they represent a loss
+- Costs must be positive because they are subtracted from values
 
 ## Lawsuit description
 
