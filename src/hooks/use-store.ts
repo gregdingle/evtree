@@ -1,24 +1,30 @@
 "use client";
 
-import initialTrees from "@/data/initialTrees";
 import {
-  addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
   EdgeChange,
   NodeChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
 } from "@xyflow/react";
+import {
+  ZustandFuncSelectors,
+  createSelectorFunctions,
+} from "auto-zustand-selectors-hook";
 import { cloneDeep, isEqual, keyBy, round, throttle } from "es-toolkit";
 import { keys, max, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
+import initialTrees from "@/data/initialTrees";
 import { AppEdge, cloneEdge, createEdge } from "@/lib/edge";
 import { getLayoutedElements } from "@/lib/layout";
 import {
@@ -26,16 +32,10 @@ import {
   buildParentToChildNodeMap,
 } from "@/lib/maps";
 import { getNearestUpstreamNode } from "@/lib/nearest";
-import { AppNode, cloneNode, createNode, NodeType } from "@/lib/node";
+import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
-import { createTree, DecisionTree } from "@/lib/tree";
+import { DecisionTree, createTree } from "@/lib/tree";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
-import {
-  createSelectorFunctions,
-  ZustandFuncSelectors,
-} from "auto-zustand-selectors-hook";
-import { createJSONStorage, devtools, persist } from "zustand/middleware";
-import { immer } from "zustand/middleware/immer";
 
 export interface StoreState {
   trees: Record<string, DecisionTree>;
