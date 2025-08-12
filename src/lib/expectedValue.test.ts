@@ -1,4 +1,7 @@
 import { keyBy, mapValues } from "es-toolkit";
+
+import demoTreeData from "@/data/demo-sexual-tree.json";
+
 import {
   ComputeEdge,
   ComputeNode,
@@ -6,6 +9,8 @@ import {
   toComputeEdge,
   toComputeNode,
 } from "../lib/expectedValue";
+import { AppNode } from "./node";
+import { DecisionTree } from "./tree";
 
 describe("computeNodeValues", () => {
   test("should copy values for a simple sequence of 1.0 probabilities", () => {
@@ -70,13 +75,11 @@ describe("computeNodeValues", () => {
       keyBy(edges, (edge) => edge.id),
     );
 
-    // Expected value = (100 * 0.5) + (50 * 0.3) + ((0 - 10) * 0.2) = 50 + 15 - 2 = 63
-    expect(nodes[0]!.data.value).toEqual(63);
-    expect(nodes[1]!.data.value).toEqual(100);
-    expect(nodes[2]!.data.value).toEqual(50);
-    // NOTE: See note in computeNodeValues about a node's OWN cost and
-    // ancestors's costs not being subtracted!!!
-    expect(nodes[3]!.data.value).toEqual(0);
+    // Expected value = (-10 * 1.0) + (100 * 0.5) + (50 * 0.3) + ((0 - 10) * 0.2) = 50 + 15 - 2 = 53
+    expect(nodes[0]!.data.value).toEqual(53);
+    expect(nodes[1]!.data.value).toEqual(90);
+    expect(nodes[2]!.data.value).toEqual(40);
+    expect(nodes[3]!.data.value).toEqual(-20);
   });
 
   test("should handle all null values gracefully", () => {
@@ -261,8 +264,8 @@ describe("computeNodeValues", () => {
     expect(edgesByKey["e2"]!.data?.probability).toEqual(0.0); // to outcome2 (value: 50)
     expect(edgesByKey["e3"]!.data?.probability).toEqual(0.5); // to outcome3 (value: 80)
 
-    // Decision node should have expected value of best outcomes: 80
-    expect(nodes[0]!.data.value).toEqual(80);
+    // Decision node should have expected value of best outcome minus costs: 120 - 40 - 20
+    expect(nodes[0]!.data.value).toEqual(60);
   });
 
   test("should update probabilities for decision nodes with single best outcome", () => {
@@ -546,10 +549,6 @@ describe("toComputeNode expression evaluation", () => {
     expect(result.data.cost).toEqual(null);
   });
 });
-
-import demoTreeData from "@/data/demo-sexual-tree.json";
-import { AppNode } from "./node";
-import { DecisionTree } from "./tree";
 
 /**
  * Ensures a real, complex decision tree with multiple nodes and edges, values

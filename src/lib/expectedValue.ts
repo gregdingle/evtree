@@ -1,5 +1,6 @@
 import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval";
+
 import { AppEdge } from "./edge";
 import { AppNode, NodeType } from "./node";
 
@@ -35,22 +36,15 @@ export interface ComputeEdge {
  * node is defined as the average of its children's values weighted by the
  * probabilities of the associated edges. Updates values in-place.
  *
- * The probabilities following a decision node will also be updated in-place
- * according to expected value. The probability of the edge that has the highest
- * expected value out of a decision node will be set to 1.0, while the others
- * will be set to 0.0. When there is a tie, the probabilities will be set to 1 /
- * n, where n is the number of edges with the highest expected value.
+ * The probabilities of edges following a decision node will also be updated
+ * in-place according to expected value. The probability of the edge that has
+ * the highest expected value out of a decision node will be set to 1.0, while
+ * the others will be set to 0.0. When there is a tie, the probabilities will be
+ * set to 1 / n, where n is the number of edges with the highest expected value.
  *
- * NOTE: Any cost associated with a node is subtracted from its value before being
- * added to the expected value of the parent. However, the parent's OWN COST and
- * it's ANCESTORS's costs are NOT added in. You can think of the expected value
- * at a node as the FORWARD-LOOKING VALUE only.
- *
- * TODO: Figure out how and whether to replace selectPathValue with cumulative
- * costs here for gain in code simplicity and performance. We will also probably
- * want to do this to support feeShiftingRate or other features. For each node,
- * the cost from parents should be added to the expected net value from children
- * to get the final node value.
+ * NOTE: Node costs along a path are accumulated and assigned to the terminal
+ * node. In this way, the costs are "bubbled back up" in the expected value of
+ * each node.
  *
  * TODO: should we support edge values like silver decisions?
  *
@@ -78,7 +72,13 @@ export function computeNodeValues(
   const adjList = buildAdjacencyList(values(edges));
 
   rootNodes.forEach((rootNode) => {
-    computeNodeValuesRecursive(nodes, edges, rootNode, adjList);
+    computeNodeValuesRecursive(
+      nodes,
+      edges,
+      rootNode,
+      adjList,
+      rootNode.data.cost ?? 0,
+    );
   });
 
   return { nodes, edges };
@@ -98,73 +98,93 @@ function buildAdjacencyList(edges: ComputeEdge[]): AdjacencyList {
 function computeNodeValuesRecursive(
   nodes: Record<string, ComputeNode>,
   edges: Record<string, ComputeEdge>,
-  parentNode: ComputeNode,
+  currentNode: ComputeNode,
   adjList: AdjacencyList,
+  cumulativeCost: number,
 ) {
-  const children = adjList[parentNode.id] || [];
+  const children = adjList[currentNode.id] || [];
 
-  // Base case: if no children, use node's value directly
+  // Base case: if no children, use node's value directly minus the cost of all ancestors
   if (children.length === 0) {
-    if (parentNode.data.value === null) {
+    if (currentNode.data.value === null) {
       // eslint-disable-next-line no-console
-      console.debug(`[EVTree] Terminal node ${parentNode.id} has null value.`);
+      console.debug(`[EVTree] Terminal node ${currentNode.id} has null value.`);
+    } else {
+      currentNode.data.value -= cumulativeCost;
     }
     return;
   }
 
   children.forEach(({ nodeId }) => {
-    computeNodeValuesRecursive(nodes, edges, nodes[nodeId]!, adjList);
+    const childNode = nodes[nodeId]!;
+    computeNodeValuesRecursive(
+      nodes,
+      edges,
+      childNode,
+      adjList,
+      cumulativeCost + (childNode.data.cost ?? 0),
+    );
   });
 
   // If this is a decision node, we need to update the edge probability
   const { maxChildValue, bestProbability } =
-    parentNode.type === "decision"
+    currentNode.type === "decision"
       ? getBestChild(children, nodes)
       : { maxChildValue: null, bestProbability: null };
 
-  let totalValue: number | null = null;
+  let expectedValue: number | null = null;
   let totalProbability = 0;
 
   children.forEach(({ edgeId, nodeId }) => {
     const childNode = nodes[nodeId]!;
     const childEdge = edges[edgeId]!;
     const childValue = childNode.data.value;
-    const childCost = childNode.data.cost;
 
     // For decision nodes, update edge probabilities based on expected value
-    if (parentNode.type === "decision") {
-      if (maxChildValue !== null && bestProbability !== null) {
-        if (
-          childValue !== null &&
-          childValue - (childCost ?? 0) === maxChildValue
-        ) {
-          childEdge.data!.probability = bestProbability;
-        } else {
-          childEdge.data!.probability = 0;
-        }
-      }
+    if (currentNode.type === "decision") {
+      updateChildEdgeProbability(
+        maxChildValue,
+        bestProbability,
+        childValue,
+        childEdge,
+      );
     }
 
     const childProbability = childEdge.data?.probability ?? null;
     if (childValue !== null && childProbability !== null) {
-      if (totalValue === null) {
-        totalValue = 0;
+      if (expectedValue === null) {
+        expectedValue = 0;
       }
-      totalValue += (childValue - (childCost ?? 0)) * childProbability;
+      expectedValue += childValue * childProbability;
       totalProbability += childProbability;
     }
   });
 
+  // Assign the computed value (or leave as null if no non-null children)
+  currentNode.data.value = expectedValue;
+
   if (totalProbability < 1) {
     // eslint-disable-next-line no-console
     console.debug(
-      `[EVTree] Node ${parentNode.id} has children with less than 1.0 total probability.`,
+      `[EVTree] Node ${currentNode.id} has children with less than 1.0 total probability.`,
     );
     // TODO: what to do about missing probability? highlight in UI somehow?
   }
+}
 
-  // Assign the computed value (or leave as undefined if no defined children)
-  parentNode.data.value = totalValue;
+function updateChildEdgeProbability(
+  maxChildValue: number | null,
+  bestProbability: number | null,
+  childValue: number | null,
+  childEdge: ComputeEdge,
+) {
+  if (maxChildValue !== null && bestProbability !== null) {
+    if (childValue !== null && childValue === maxChildValue) {
+      childEdge.data!.probability = bestProbability;
+    } else {
+      childEdge.data!.probability = 0;
+    }
+  }
 }
 
 function getBestChild(
@@ -174,13 +194,13 @@ function getBestChild(
   const childNetValues = children
     .map(({ nodeId }) => nodes[nodeId]!.data)
     .filter((data) => data.value !== null)
-    .map((data) => data.value! - (data.cost ?? 0));
+    .map((data) => data.value!);
   if (childNetValues.length === 0) {
     return { maxChildValue: null, bestProbability: null };
   }
 
   // Find the maximum net value of children for decision node
-  const maxChildValue = max(childNetValues);
+  const maxChildValue = max(childNetValues)!;
 
   // Find all edges with the maximum net value (to handle ties)
   const bestCount = childNetValues.filter(

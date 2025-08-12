@@ -1,7 +1,9 @@
-import { StoreState } from "@/hooks/use-store";
-import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import { mapValues, memoize, omit } from "es-toolkit";
 import { fromPairs, toPairs, values } from "es-toolkit/compat";
+
+import { StoreState } from "@/hooks/use-store";
+import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
+
 import {
   computeNodeValues,
   toComputeEdge,
@@ -189,10 +191,6 @@ export function selectPathProbability(
  * Returns the real cumulative value of a path to a node from the node's root
  * parent. When used with a terminal node, the terminal node's value minus all
  * **costs** along the path to the terminal node.
- *
- * NOTE: For somewhat historical reasons, the expected value calculation of
- * computeNodeValues does not take into account its own cost or the costs of its
- * ancestors. See note in computeNodeValues.
  */
 export function selectPathValue(
   state: StoreState,
@@ -212,37 +210,11 @@ export function selectPathValue(
   // Get computed values for all nodes
   const computedValues = selectComputedNodeValues(state);
   const nodeValue = computedValues[nodeId];
-
-  if (!nodeValue || nodeValue.value === null) {
-    // NOTE: don't compute path value until the node has a value
-    // TODO: is this the best way to handle this?
-    return null;
+  if (!nodeValue) {
+    console.warn("No computed value found for node:", nodeId);
   }
 
-  let pathValue = nodeValue.value;
-  let currentNodeId: string | undefined = nodeId;
-  const childToParentMap = buildChildToParentNodeMap(currentTree.edges);
-  while (currentNodeId) {
-    const currentComputedValue = computedValues[currentNodeId];
-    if (!currentComputedValue) {
-      warnItemNotFound(
-        "Node",
-        currentNodeId,
-        "path value calculation (computed value)",
-      );
-      return null;
-    }
-
-    // Add the node's cost to the path value
-    if (currentComputedValue.cost !== null) {
-      pathValue -= currentComputedValue.cost;
-    }
-
-    // Move to the parent node
-    currentNodeId = childToParentMap[currentNodeId];
-  }
-
-  return pathValue;
+  return nodeValue ? nodeValue.value : null;
 }
 
 export function selectCollapsible(
