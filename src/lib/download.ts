@@ -1,7 +1,8 @@
-import { AppNode, DecisionTree } from "@/hooks/use-store";
 import { omit } from "es-toolkit";
 import { fromPairs, toPairs } from "es-toolkit/compat";
 import { toPng } from "html-to-image";
+import { AppNode } from "./node";
+import { DecisionTree } from "./tree";
 
 // NOTE: see https://reactflow.dev/examples/misc/download-image
 export const downloadPNG = (nodes: AppNode[], filename: string) => {
@@ -29,7 +30,7 @@ export const downloadPNG = (nodes: AppNode[], filename: string) => {
   const imageWidth = Math.min(Math.max(baseWidth, minImageSize), maxImageSize);
   const imageHeight = Math.min(
     Math.max(baseHeight, minImageSize),
-    maxImageSize
+    maxImageSize,
   );
 
   // Calculate viewport transform
@@ -64,10 +65,10 @@ export const downloadJson = (tree: DecisionTree, filename: string) => {
   const cleanTree: DecisionTree = {
     ...tree,
     nodes: fromPairs(
-      toPairs(tree.nodes).map(([id, node]) => [id, omit(node, ["selected"])])
+      toPairs(tree.nodes).map(([id, node]) => [id, omit(node, ["selected"])]),
     ),
     edges: fromPairs(
-      toPairs(tree.edges).map(([id, edge]) => [id, omit(edge, ["selected"])])
+      toPairs(tree.edges).map(([id, edge]) => [id, omit(edge, ["selected"])]),
     ),
   };
 
@@ -132,7 +133,7 @@ function calculateNodesBounds(nodes: AppNode[]): Bounds {
 function calculateViewport(
   bounds: Bounds,
   imageWidth: number,
-  imageHeight: number
+  imageHeight: number,
 ): { x: number; y: number; zoom: number } {
   // Add padding around the content
   const padding = 50;

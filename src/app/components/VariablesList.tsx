@@ -1,4 +1,5 @@
-import { AppNode, useStore } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
+import { AppNode } from "@/lib/node";
 import { toPairs } from "es-toolkit/compat";
 
 interface VariablesListProps extends React.HTMLAttributes<HTMLDetailsElement> {
@@ -31,7 +32,7 @@ export function VariablesList({
                   const newExpr = getNewExpr(
                     e.target.checked,
                     currentExpr,
-                    key
+                    key,
                   );
                   if (newExpr === "") {
                     onNodeDataUpdate(node.id, {
@@ -46,7 +47,7 @@ export function VariablesList({
               />
               <label
                 htmlFor={`variable-${key}-${node.id}-${exprFor}`}
-                className="text-sm cursor-pointer select-none"
+                className="cursor-pointer text-sm select-none"
               >
                 {key} = {value}
               </label>

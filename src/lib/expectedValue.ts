@@ -1,6 +1,7 @@
-import { AppEdge, AppNode, NodeType } from "@/hooks/use-store";
 import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval";
+import { AppEdge } from "./edge";
+import { AppNode, NodeType } from "./node";
 
 type AdjacencyList = Record<
   string,

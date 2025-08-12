@@ -1,4 +1,5 @@
-import { AppEdge, useStore } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
+import { AppEdge } from "@/lib/edge";
 import { selectEdgeComputedProbability } from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
 import {

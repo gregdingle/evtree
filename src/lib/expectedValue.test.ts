@@ -546,7 +546,8 @@ describe("toComputeNode expression evaluation", () => {
 });
 
 import demoTreeData from "@/data/demo-sexual-tree.json";
-import { AppNode, DecisionTree } from "@/hooks/use-store";
+import { AppNode } from "./node";
+import { DecisionTree } from "./tree";
 
 /**
  * Ensures a real, complex decision tree with multiple nodes and edges, values

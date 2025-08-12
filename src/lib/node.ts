@@ -1,5 +1,4 @@
-import { AppNode, NodeType } from "@/hooks/use-store";
-import { Position, XYPosition } from "@xyflow/react";
+import { Node, Position, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
 export function createNode(
@@ -31,4 +30,17 @@ export function cloneNode(node: AppNode, position: XYPosition): AppNode {
     selected: true,
   };
   return newNode;
-}
+} // TODO: move types into a lib file
+
+export type NodeType = "decision" | "chance" | "terminal";
+
+export type AppNode = Node<
+  {
+    label?: string;
+    description?: string;
+    // TODO: rename expr to formula?
+    valueExpr?: string;
+    costExpr?: string;
+  },
+  NodeType
+>;

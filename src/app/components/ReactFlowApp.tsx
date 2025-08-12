@@ -2,7 +2,8 @@
 
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
-import { AppEdge, useStore } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
+import { AppEdge } from "@/lib/edge";
 import { buildChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 import {

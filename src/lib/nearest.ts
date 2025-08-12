@@ -1,9 +1,9 @@
-import { AppNode } from "@/hooks/use-store";
 import { values } from "es-toolkit/compat";
+import { AppNode } from "./node";
 
 export function getNearestUpstreamNode(
   nodes: Record<string, AppNode>,
-  selectedNode: AppNode
+  selectedNode: AppNode,
 ): AppNode | null {
   // Find all potential upstream nodes
   const potentialUpstreamNodes = values(nodes).filter((node) => {

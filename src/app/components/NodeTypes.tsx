@@ -1,4 +1,5 @@
-import { AppNode, useStore } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
+import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
   selectHasParentNode,

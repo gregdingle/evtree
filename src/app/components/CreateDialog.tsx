@@ -1,11 +1,12 @@
 "use client";
 
-import { useStore, type DecisionTree } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
 import {
   convertAIStructureToDecisionTree,
   extractTextFromFile,
   generateDecisionTree,
 } from "@/lib/ai";
+import { type DecisionTree } from "@/lib/tree";
 import {
   Dialog,
   DialogBackdrop,

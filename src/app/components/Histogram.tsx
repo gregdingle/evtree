@@ -1,11 +1,12 @@
 "use client";
 
-import { DecisionTree, StoreState, useStore } from "@/hooks/use-store";
+import { StoreState, useStore } from "@/hooks/use-store";
 import {
   selectCurrentTree,
   selectPathProbability,
   selectPathValue,
 } from "@/lib/selectors";
+import { DecisionTree } from "@/lib/tree";
 import { values } from "es-toolkit/compat";
 import HRNumbers from "human-readable-numbers";
 

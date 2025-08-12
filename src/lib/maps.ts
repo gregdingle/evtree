@@ -1,6 +1,6 @@
-import { AppEdge } from "@/hooks/use-store";
 import { memoize } from "es-toolkit";
 import { values } from "es-toolkit/compat";
+import { AppEdge } from "./edge";
 
 /**
  * NOTE: assumes a single incoming edge per node
@@ -10,7 +10,7 @@ import { values } from "es-toolkit/compat";
  * TODO: extract to new utils file along with buildAdjacencyList?
  */
 export const buildChildToParentNodeMap = memoize(function (
-  edges: Record<string, AppEdge> | AppEdge[]
+  edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
   values(edges).forEach((edge) => {
@@ -20,7 +20,7 @@ export const buildChildToParentNodeMap = memoize(function (
 });
 
 export const buildNodeToIncomingEdgeMap = memoize(function (
-  edges: Record<string, AppEdge> | AppEdge[]
+  edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const nodeToIncomingEdge: Record<string, string> = {};
   values(edges).forEach((edge) => {
@@ -30,7 +30,7 @@ export const buildNodeToIncomingEdgeMap = memoize(function (
 });
 
 export const buildChildToParentEdgeMap = memoize(function (
-  edges: Record<string, AppEdge> | AppEdge[]
+  edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
 
@@ -53,7 +53,7 @@ export const buildChildToParentEdgeMap = memoize(function (
 });
 
 export const buildParentToChildNodeMap = memoize(function (
-  edges: Record<string, AppEdge> | AppEdge[]
+  edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string[]> {
   const parentToChildMap: Record<string, string[]> = {};
   values(edges).forEach((edge) => {
