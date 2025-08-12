@@ -1,17 +1,18 @@
 import { getAI, getGenerativeModel, VertexAIBackend } from "firebase/ai";
 import { initializeApp } from "firebase/app";
-import { nanoid } from "nanoid";
 
 import { AppEdge, AppNode, DecisionTree } from "@/hooks/use-store";
+import { createEdge } from "@/utils/edge";
+import { createNode } from "@/utils/node";
+import { createTree } from "@/utils/tree";
 import { isPlainObject, memoize } from "es-toolkit";
-import { NodeSchema, NodeShape } from "./ai-schemas";
-// TODO: proper typing of raw import
-import { Position } from "@xyflow/react";
 import { isEmpty } from "es-toolkit/compat";
-// @ts-expect-error: see next-config.ts for raw-loader setup
+import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
+import aiSchemasText from "./ai-schemas.md";
 import promptTemplate from "./prompt.md";
-// @ts-expect-error: for inserting into template
-import aiSchemaTemplate from "./ai-schemas.md";
+
+// HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
+// file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
 
 // TODO: Add SDKs for Firebase products that you want to use
 // TODO: appCheck?
@@ -32,19 +33,17 @@ const firebaseApp = initializeApp(firebaseConfig);
 const AIModel = getGenerativeModel(
   getAI(firebaseApp, { backend: new VertexAIBackend() }),
   {
-    // QUESTION: is this the right model?
+    // QUESTION: is this the best model?
     // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
     // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
     // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
     // model: "gemini-2.0-flash", // follows example much better than gemini-2.5
-    model: "gemini-2.5-flash-lite", // untested
+    model: "gemini-2.5-flash-lite", // newest model, seems ok
   },
 );
 
 /**
  * Extracts plain text from a file using AI
- * @param file - The file to extract text from
- * @returns Promise<string> - The extracted plain text
  */
 export async function extractTextFromFile(file: File): Promise<string> {
   try {
@@ -73,8 +72,7 @@ Ignore footnotes.
       },
     ]);
 
-    const response = await result.response;
-    const extractedText = response
+    const extractedText = result.response
       .text()
       .trim()
       // Clean up paragraphs
@@ -88,12 +86,7 @@ Ignore footnotes.
 
     return extractedText;
   } catch (error) {
-    console.error("Error extracting text from file:", error);
-    throw new Error(
-      `Failed to extract text from file: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
-    );
+    throw new Error(`Failed to extract text from file: ${error}`);
   }
 }
 
@@ -111,9 +104,9 @@ export const generateDecisionTree = memoize(async function (
 ): Promise<NodeShape> {
   try {
     // Get the prompt template from markdown file and replace the placeholder
-    const prompt = (promptTemplate as string)
+    const prompt = promptTemplate
       .replace("{{CASE_DESCRIPTION}}", text)
-      .replace("{{ZOD_SCHEMAS}}", aiSchemaTemplate);
+      .replace("{{ZOD_SCHEMAS}}", aiSchemasText);
 
     // Generate the decision tree using AI
     const result = await AIModel.generateContent(prompt);
@@ -149,8 +142,7 @@ export const generateDecisionTree = memoize(async function (
 
     return NodeSchema.parse(decisionTree);
   } catch (error) {
-    // TODO: error cause?
-    console.error(error);
+    // TODO: should we retry schema parse failures? maybe with a different model or settings?
     throw error;
   }
 });
@@ -163,23 +155,20 @@ export function convertAIStructureToDecisionTree(
   name: string,
   description: string,
 ): DecisionTree {
-  const nodes: Record<string, AppNode> = {};
-  const edges: Record<string, AppEdge> = {};
-
   // NOTE: ignore positions because auto-arrange after
   const dummyPosition = { x: 0, y: 0 };
 
-  function processNode(
+  const nodes: Record<string, AppNode> = {};
+  const edges: Record<string, AppEdge> = {};
+  function processNodeAndBranch(
     node: NodeShape,
+    branch?: BranchShape,
     parentId?: string,
-    branchLabel?: string,
-    probability?: number,
-    reason?: string,
-  ): string {
-    // TODO: use createNode function instead
-    const nodeId = nanoid(12);
-
+  ): void {
     // Determine node type based on whether it has branches
+    // TODO: we shouldn't really define decision nodes this way... either
+    // exclude decision node, or else modify the prompt and AI schemas to return
+    // decision nodes
     let nodeType: "decision" | "chance" | "terminal";
     if (node.branches.length === 0) {
       nodeType = "terminal";
@@ -190,63 +179,33 @@ export function convertAIStructureToDecisionTree(
     }
 
     // Create the node
-    const appNode: AppNode = {
-      id: nodeId,
-      type: nodeType,
-      data: {
-        label: "",
-        description: "",
-        valueExpr: node.value?.toString() || undefined,
-        costExpr: node.cost?.toString() || undefined,
-      },
-      position: dummyPosition,
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
-    };
+    const appNode = createNode(dummyPosition, nodeType, false, {
+      label: "",
+      description: "",
+      valueExpr: node.value?.toString() || undefined,
+      costExpr: node.cost?.toString() || undefined,
+    });
 
-    nodes[nodeId] = appNode;
+    nodes[appNode.id] = appNode;
 
     // Create edge from parent if there is one
     if (parentId) {
-      const edgeId = `${parentId}-${nodeId}`;
-      const edge: AppEdge = {
-        id: edgeId,
-        source: parentId,
-        target: nodeId,
-        type: "custom",
-        data: {
-          label: branchLabel || "",
-          probability: probability || null,
-          description: reason || "",
-        },
-      };
-      edges[edgeId] = edge;
+      const edge = createEdge(parentId, appNode.id, {
+        label: branch?.label || "",
+        probability: branch?.probability || null,
+        description: branch?.reason || "",
+      });
+      edges[edge.id] = edge;
     }
 
     // Process child branches
     node.branches.forEach((branch) => {
-      processNode(
-        branch.nextNode,
-        nodeId,
-        branch.label,
-        branch.probability,
-        branch.reason,
-      );
+      processNodeAndBranch(branch.nextNode, branch, appNode.id);
     });
-
-    return nodeId;
   }
 
-  // Process the root node
-  processNode(rootNode);
+  // Process all nodes
+  processNodeAndBranch(rootNode);
 
-  return {
-    id: nanoid(12),
-    name,
-    description,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    nodes,
-    edges,
-  };
+  return createTree(name, description, nodes, edges);
 }

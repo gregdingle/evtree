@@ -1,13 +1,17 @@
 import { AppEdge } from "@/hooks/use-store";
 
-export function createEdge(fromNodeId: string, toNodeId: string): AppEdge {
+export function createEdge(
+  fromNodeId: string,
+  toNodeId: string,
+  data?: Partial<AppEdge["data"]>,
+): AppEdge {
   const edgeId = `e${fromNodeId}-${toNodeId}`;
   const newEdge: AppEdge = {
     id: edgeId,
     source: fromNodeId,
     target: toNodeId,
     type: "custom",
-    data: { label: "", description: "", probability: null },
+    data: { label: "", description: "", probability: null, ...data },
     selected: true, // Mark as selected by default
   };
   return newEdge;
@@ -16,7 +20,7 @@ export function createEdge(fromNodeId: string, toNodeId: string): AppEdge {
 export function cloneEdge(
   edge: AppEdge,
   newSourceId: string,
-  newTargetId: string
+  newTargetId: string,
 ): AppEdge {
   // TODO: change separator to something that is not in nano ID like ::
   const edgeId = `e${newSourceId}-${newTargetId}`;

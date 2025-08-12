@@ -32,6 +32,7 @@ import {
 import { getNearestUpstreamNode } from "@/utils/nearest";
 import { cloneNode, createNode } from "@/utils/node";
 import { selectUndoableState } from "@/utils/selectors";
+import { createTree } from "@/utils/tree";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 import {
   createSelectorFunctions,
@@ -40,6 +41,7 @@ import {
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
+// TODO: move types into a lib file
 export type NodeType = "decision" | "chance" | "terminal";
 
 export type AppNode = Node<
@@ -282,27 +284,17 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     // Tree management functions
     createTree: (name: string, description?: string) => {
       // TODO: extract nanoid12 to a utility function
-      // TODO: extract to createTree
-      const treeId = nanoid(12);
-      const newTree: DecisionTree = {
-        id: treeId,
-        name,
-        description,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nodes: {},
-        edges: {},
-      };
+      const newTree = createTree(name, description);
       set(
         (state) => {
-          state.trees[treeId] = newTree;
-          state.currentTreeId = treeId;
+          state.trees[newTree.id] = newTree;
+          state.currentTreeId = newTree.id;
           return state;
         },
         undefined,
         { type: "createTree", name, description },
       );
-      return treeId;
+      return newTree.id;
     },
 
     deleteTree: (treeId: string) => {

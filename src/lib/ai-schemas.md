@@ -1,6 +1,6 @@
 import z from "zod";
 
-interface BranchShape {
+export interface BranchShape {
   /**
    * User-facing label for the branch.
    */
