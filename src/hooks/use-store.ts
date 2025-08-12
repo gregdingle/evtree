@@ -85,7 +85,7 @@ export interface StoreState {
   deleteTree: (treeId: string) => void;
   setCurrentTree: (treeId: string) => void;
   duplicateTree: (treeId: string, newName: string) => string;
-  loadTree: (treeData: DecisionTree) => string;
+  loadTree: (treeData: DecisionTree, replace: boolean) => string;
   onTreeDataUpdate: (
     treeData: Partial<Pick<DecisionTree, "name" | "description" | "variables">>,
   ) => void;
@@ -314,13 +314,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    loadTree: (treeData: DecisionTree) => {
-      const treeId = nanoid(12);
+    loadTree: (treeData: DecisionTree, replace: boolean) => {
+      // NOTE: Always assign a new ID to avoid accidental overwrite old versions
+      const treeId = replace ? treeData.id : nanoid(12);
       set(
         (state) => {
           const loadedTree: DecisionTree = {
             ...treeData,
-            id: treeId, // Always assign a new ID to avoid conflicts
+            id: treeId,
             // TODO: should do something about duplicate names?
             updatedAt: new Date().toISOString(),
           };
@@ -329,7 +330,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           return state;
         },
         undefined,
-        { type: "loadTree", treeName: treeData.name },
+        { type: "loadTree", treeName: treeData.name, replace },
       );
       return treeId;
     },

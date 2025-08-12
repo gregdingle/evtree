@@ -3,6 +3,7 @@ import { AppEdge } from "@/hooks/use-store";
 export function createEdge(
   fromNodeId: string,
   toNodeId: string,
+  selected: boolean = true,
   data?: Partial<AppEdge["data"]>,
 ): AppEdge {
   const edgeId = `e${fromNodeId}-${toNodeId}`;
@@ -12,7 +13,7 @@ export function createEdge(
     target: toNodeId,
     type: "custom",
     data: { label: "", description: "", probability: null, ...data },
-    selected: true, // Mark as selected by default
+    selected, // Mark as selected by default
   };
   return newEdge;
 }

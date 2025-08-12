@@ -84,13 +84,16 @@ export default function ReactFlowApp() {
         isValidConnection={(connection) => isValidConnection(edges, connection)}
       >
         <Background />
-        <Controls
-          position="bottom-right"
-          orientation="horizontal"
-          showInteractive={false}
-        />
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
       </ReactFlow>
+
+      {/* // TODO:  Controls positioned relative to viewport
+      // TODO: what happened to the background color? */}
+      <Controls
+        position="bottom-right"
+        orientation="horizontal"
+        showInteractive={false}
+      />
 
       {/* Empty canvas help text */}
       {nodes.length === 0 && !menu && (

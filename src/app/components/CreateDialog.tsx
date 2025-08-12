@@ -19,7 +19,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
-import { truncate } from "es-toolkit/compat";
+import { isEmpty, truncate } from "es-toolkit/compat";
 import { useState } from "react";
 
 interface CreateDialogProps {
@@ -36,7 +36,8 @@ interface CreateDialogProps {
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const { fitView } = useReactFlow();
 
-  const { createTree, loadTree, onArrange } = useStore.getState();
+  const { createTree, loadTree, onArrange, setCurrentTree } =
+    useStore.getState();
 
   // TODO: replace all this form state with a local reducer?
   const [newTreeName, setNewTreeName] = useState("");
@@ -89,8 +90,15 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
         `Generated from AI based on text: \n\n"${truncate(aiInputText.trim(), { length: 1000 })}"`,
       );
 
-      loadTree(decisionTree);
-      // TODO: optimize auto arrange
+      // Sanity check
+      if (isEmpty(decisionTree.nodes) || isEmpty(decisionTree.edges)) {
+        console.error("[EVTree] Generated tree is empty");
+        window.alert("Generated tree is empty. Please check input.");
+        return;
+      }
+
+      loadTree(decisionTree, true);
+      // TODO: optimize auto arrange, figure out what's going on
       setTimeout(() => {
         onArrange();
         fitView();
@@ -170,7 +178,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
         return;
       }
 
-      loadTree(treeData);
+      loadTree(treeData, false);
       onClose();
     } catch (error) {
       // TODO: error cause here?

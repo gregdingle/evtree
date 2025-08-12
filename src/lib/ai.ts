@@ -37,8 +37,8 @@ const AIModel = getGenerativeModel(
     // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
     // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
     // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
-    // model: "gemini-2.0-flash", // follows example much better than gemini-2.5
-    model: "gemini-2.5-flash-lite", // newest model, seems ok
+    model: "gemini-2.0-flash", // follows example much better than gemini-2.5
+    // model: "gemini-2.5-flash-lite", // newest model, seems ok, but not as good as 2.0
   },
 );
 
@@ -190,7 +190,7 @@ export function convertAIStructureToDecisionTree(
 
     // Create edge from parent if there is one
     if (parentId) {
-      const edge = createEdge(parentId, appNode.id, {
+      const edge = createEdge(parentId, appNode.id, false, {
         label: branch?.label || "",
         probability: branch?.probability || null,
         description: branch?.reason || "",
