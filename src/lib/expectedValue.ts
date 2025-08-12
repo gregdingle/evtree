@@ -192,7 +192,6 @@ function getBestChild(
 
 export function toComputeNode(
   node: AppNode,
-  // TODO: get variables from tree settings
   variables: Record<string, number> = {},
 ): ComputeNode {
   return {
@@ -237,12 +236,12 @@ function safeEvalExpr(
       return defaultValue;
     }
     return result;
-  } catch {
-    // TODO: too noisy for production, but useful for debugging
-    // console.warn(
-    //   `[EVTree] Using default value ${defaultValue} because failed expression:`,
-    //   error,
-    // );
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.debug(
+      `[EVTree] Using default value ${defaultValue} because failed expression:`,
+      error,
+    );
     return defaultValue;
   }
 }

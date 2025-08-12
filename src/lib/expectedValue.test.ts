@@ -518,12 +518,14 @@ describe("toComputeNode expression evaluation", () => {
       },
     };
 
-    // Mock console.warn to suppress error output during test
-    const consoleSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const consoleSpy = jest
+      .spyOn(console, "debug")
+      .mockImplementation(() => {});
 
     const result = toComputeNode(testNode);
 
     expect(result.data.value).toEqual(null); // Should fallback to null
+
     expect(consoleSpy).toHaveBeenCalled();
 
     consoleSpy.mockRestore();
