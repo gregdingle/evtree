@@ -82,8 +82,8 @@ export default function LeftSidePanel() {
   };
 
   return (
-    <div className="flex h-full w-80 flex-col p-4">
-      <div className="mb-4 flex flex-shrink-0 justify-between space-x-2">
+    <div className="w-80 p-4">
+      <div className="mb-4 flex justify-between space-x-2">
         <h2 className="text-lg font-semibold">Decision Trees</h2>
         <button
           onClick={() => setOpenDialog(true)}
@@ -98,7 +98,7 @@ export default function LeftSidePanel() {
       </div>
 
       {/* Tree list */}
-      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+      <div className="">
         {trees.length === 0 ? (
           <p className="text-gray-500">No trees available</p>
         ) : (
