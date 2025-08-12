@@ -1,7 +1,11 @@
 "use client";
 
 import { useStore, type DecisionTree } from "@/hooks/use-store";
-import { extractTextFromFile, generateDecisionTree } from "@/lib/ai";
+import {
+  convertAIStructureToDecisionTree,
+  extractTextFromFile,
+  generateDecisionTree,
+} from "@/lib/ai";
 import {
   Dialog,
   DialogBackdrop,
@@ -14,6 +18,8 @@ import {
   PlusIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { useReactFlow } from "@xyflow/react";
+import { truncate } from "es-toolkit/compat";
 import { useState } from "react";
 
 interface CreateDialogProps {
@@ -28,7 +34,9 @@ interface CreateDialogProps {
  * TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
  */
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
-  const { createTree, loadTree } = useStore.getState();
+  const { fitView } = useReactFlow();
+
+  const { createTree, loadTree, onArrange } = useStore.getState();
 
   // TODO: replace all this form state with a local reducer?
   const [newTreeName, setNewTreeName] = useState("");
@@ -36,6 +44,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const [currentTab, setCurrentTab] = useState("create");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isExtractingText, setIsExtractingText] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [aiInputText, setAiInputText] = useState("");
 
   const tabs = [
@@ -67,20 +76,36 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       return;
     }
 
-    try {
-      const tree = await generateDecisionTree(aiInputText.trim());
+    setIsGenerating(true);
 
-      // TODO: temp
-      console.log("[EVTree] Generated tree:", tree);
-      // loadTree(tree);
+    try {
+      const aiTreeStructure = await generateDecisionTree(aiInputText.trim());
+
+      // Convert the hierarchical AI structure to flat DecisionTree format
+      const decisionTree = convertAIStructureToDecisionTree(
+        aiTreeStructure,
+        newTreeName.trim(),
+        // TODO: optimize description?
+        `Generated from AI based on text: \n\n"${truncate(aiInputText.trim(), { length: 1000 })}"`,
+      );
+
+      loadTree(decisionTree);
+      // TODO: optimize auto arrange
+      setTimeout(() => {
+        onArrange();
+        fitView();
+      }, 100);
 
       setAiInputText("");
       setNewTreeName("");
+      setNewTreeDescription("");
       onClose();
     } catch (error) {
       console.error(error);
       // TODO: better than alert
       window.alert("Failed to generate tree with AI. Please try again.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -299,7 +324,6 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                                 onChange={handleFileUploadForAI}
                                 accept=".pdf,.doc,.docx,.txt,.rtf"
                                 className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
-                                disabled={isExtractingText}
                               />
                             ) : (
                               <div
@@ -352,10 +376,17 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
               {currentTab === "ai" && (
                 <button
                   onClick={handleCreateWithAI}
-                  disabled={!aiInputText.trim() || !newTreeName.trim()}
+                  disabled={
+                    !aiInputText.trim() || !newTreeName.trim() || isGenerating
+                  }
                   className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
-                  Generate
+                  {isGenerating ? (
+                    // TODO: spinner
+                    <>Generating...</>
+                  ) : (
+                    "Generate"
+                  )}
                 </button>
               )}
               {currentTab === "open" && (

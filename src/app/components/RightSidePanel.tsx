@@ -200,6 +200,7 @@ export default function RightSidePanel() {
                 />
                 <PropertyInput
                   label="Description"
+                  textarea
                   value={edge.data?.description}
                   onChange={(value) =>
                     onEdgeDataUpdate(edge.id, { description: value })

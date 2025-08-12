@@ -1,10 +1,12 @@
 import { getAI, getGenerativeModel, VertexAIBackend } from "firebase/ai";
 import { initializeApp } from "firebase/app";
+import { nanoid } from "nanoid";
 
-import { DecisionTree } from "@/hooks/use-store";
+import { AppEdge, AppNode, DecisionTree } from "@/hooks/use-store";
 import { memoize } from "es-toolkit";
 import { NodeSchema, NodeShape } from "./ai-schemas";
 // TODO: proper typing of raw import
+import { Position } from "@xyflow/react";
 // @ts-expect-error: see next-config.ts for raw-loader setup
 import promptTemplate from "./prompt.md";
 // @ts-expect-error: for inserting into template
@@ -151,3 +153,99 @@ export const generateDecisionTree = memoize(async function (
     throw error;
   }
 });
+
+/**
+ * Converts AI-generated hierarchical NodeShape structure to flat DecisionTree format
+ */
+export function convertAIStructureToDecisionTree(
+  rootNode: NodeShape,
+  name: string,
+  description: string,
+): DecisionTree {
+  const nodes: Record<string, AppNode> = {};
+  const edges: Record<string, AppEdge> = {};
+
+  // NOTE: ignore positions because auto-arrange after
+  const dummyPosition = { x: 0, y: 0 };
+
+  function processNode(
+    node: NodeShape,
+    parentId?: string,
+    branchLabel?: string,
+    probability?: number,
+    reason?: string,
+  ): string {
+    // TODO: use createNode function instead
+    const nodeId = nanoid(12);
+
+    // Determine node type based on whether it has branches
+    let nodeType: "decision" | "chance" | "terminal";
+    if (node.branches.length === 0) {
+      nodeType = "terminal";
+    } else if (node.branches.length === 1) {
+      nodeType = "decision";
+    } else {
+      nodeType = "chance";
+    }
+
+    // Create the node
+    const appNode: AppNode = {
+      id: nodeId,
+      type: nodeType,
+      data: {
+        label: "",
+        description: "",
+        valueExpr: node.value?.toString() || undefined,
+        costExpr: node.cost?.toString() || undefined,
+      },
+      position: dummyPosition,
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    };
+
+    nodes[nodeId] = appNode;
+
+    // Create edge from parent if there is one
+    if (parentId) {
+      const edgeId = `${parentId}-${nodeId}`;
+      const edge: AppEdge = {
+        id: edgeId,
+        source: parentId,
+        target: nodeId,
+        type: "custom",
+        data: {
+          label: branchLabel || "",
+          probability: probability || null,
+          description: reason || "",
+        },
+      };
+      edges[edgeId] = edge;
+    }
+
+    // Process child branches
+    node.branches.forEach((branch) => {
+      processNode(
+        branch.nextNode,
+        nodeId,
+        branch.label,
+        branch.probability,
+        branch.reason,
+      );
+    });
+
+    return nodeId;
+  }
+
+  // Process the root node
+  processNode(rootNode);
+
+  return {
+    id: nanoid(12),
+    name,
+    description,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    nodes,
+    edges,
+  };
+}
