@@ -53,7 +53,10 @@ export default function ReactFlowApp() {
   };
 
   return (
-    <div ref={ref} className="relative h-dvh w-full">
+    // TODO: how to fix height to fill to bottom of viewport only so that if
+    // left or right panel overflows, the canvas doesn't also overflow. you can
+    // produce this effect by adding more and more variables to a tree.
+    <div ref={ref} className="relative h-full w-full">
       <ReactFlow
         ref={ref}
         nodes={nodes}

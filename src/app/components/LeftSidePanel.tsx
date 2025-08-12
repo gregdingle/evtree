@@ -33,10 +33,8 @@ export default function LeftSidePanel() {
 
   const handleSetCurrentTree = (treeId: string) => {
     setCurrentTree(treeId);
-    // Fit view after a brief delay to allow the tree to render
-    setTimeout(() => {
-      fitView();
-    }, 100);
+    // HACK: optimized for fitting in the terminal labels of Hello World Tree
+    fitView({ padding: 0.3 });
   };
 
   const handleDuplicateTree = (treeId: string, treeName: string) => {

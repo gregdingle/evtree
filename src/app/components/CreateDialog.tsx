@@ -37,8 +37,7 @@ interface CreateDialogProps {
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const { fitView } = useReactFlow();
 
-  const { createTree, loadTree, onArrange, setCurrentTree } =
-    useStore.getState();
+  const { createTree, loadTree, onArrange } = useStore.getState();
 
   // TODO: replace all this form state with a local reducer?
   const [newTreeName, setNewTreeName] = useState("");
@@ -99,7 +98,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       }
 
       loadTree(decisionTree, true);
-      // TODO: optimize auto arrange, figure out what's going on
+      // TODO: optimize auto arrange, figure out what's going on with timing
       setTimeout(() => {
         onArrange();
         fitView();
