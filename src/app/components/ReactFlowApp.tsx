@@ -52,7 +52,7 @@ export default function ReactFlowApp() {
   };
 
   return (
-    <div ref={ref} className="relative h-full w-full">
+    <div ref={ref} className="relative h-dvh w-full">
       <ReactFlow
         ref={ref}
         nodes={nodes}

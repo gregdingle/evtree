@@ -49,4 +49,8 @@ body {
 .evtree .react-flow__controls-button {
   min-width: 40px !important;
   min-height: 40px !important;
+  /* HACK: somehow, the default colors and border from reactflow disappeared!
+  TODO: what about dark mode? */
+  background-color: #fefefe !important;
+  border: 1px solid #eee !important;
 }
