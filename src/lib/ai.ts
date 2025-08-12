@@ -3,9 +3,12 @@ import { initializeApp } from "firebase/app";
 
 import { DecisionTree } from "@/hooks/use-store";
 import { memoize } from "es-toolkit";
+import { NodeSchema, NodeShape } from "./ai-schemas";
 // TODO: proper typing of raw import
 // @ts-expect-error: see next-config.ts for raw-loader setup
 import promptTemplate from "./prompt.md";
+// @ts-expect-error: for inserting into template
+import aiSchemaTemplate from "./ai-schemas.md";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // TODO: appCheck?
@@ -102,13 +105,12 @@ Ignore footnotes.
  */
 export const generateDecisionTree = memoize(async function (
   text: string,
-): Promise<DecisionTree> {
+): Promise<NodeShape> {
   try {
     // Get the prompt template from markdown file and replace the placeholder
-    const prompt = (promptTemplate as string).replace(
-      "{{CASE_DESCRIPTION}}",
-      text,
-    );
+    const prompt = (promptTemplate as string)
+      .replace("{{CASE_DESCRIPTION}}", text)
+      .replace("{{ZOD_SCHEMAS}}", aiSchemaTemplate);
 
     // Generate the decision tree using AI
     const result = await AIModel.generateContent(prompt);
@@ -129,30 +131,23 @@ export const generateDecisionTree = memoize(async function (
     let decisionTree: DecisionTree;
     try {
       decisionTree = JSON.parse(jsonText);
-      console.debug(
-        "[EVTree] Generated decision tree:",
-        JSON.stringify(decisionTree, null, 2),
-      );
     } catch (parseError) {
       throw new Error(
         `[EVTree] Failed to parse AI response as JSON: ${parseError}`,
       );
     }
 
-    // Sanity check that we have a proper decision tree structure
-    if (
-      !decisionTree.name ||
-      !Array.isArray(decisionTree.nodes) ||
-      !Array.isArray(decisionTree.edges)
-    ) {
+    // Sanity check that we have a structure
+    if (typeof decisionTree !== "object") {
       throw new Error(
         "[EVTree] Invalid decision tree structure returned by AI",
       );
     }
 
-    return decisionTree;
+    return NodeSchema.parse(decisionTree);
   } catch (error) {
-    console.error("[EVTree] Error creating decision tree from text:", error);
+    // TODO: error cause?
+    console.error(error);
     throw error;
   }
 });

@@ -69,13 +69,16 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
 
     try {
       const tree = await generateDecisionTree(aiInputText.trim());
-      loadTree(tree);
+
+      // TODO: temp
+      console.log("[EVTree] Generated tree:", tree);
+      // loadTree(tree);
 
       setAiInputText("");
       setNewTreeName("");
       onClose();
     } catch (error) {
-      console.error("[EVTree] Failed to generate tree with AI:", error);
+      console.error(error);
       // TODO: better than alert
       window.alert("Failed to generate tree with AI. Please try again.");
     }
@@ -98,7 +101,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       const extractedText = await extractTextFromFile(file);
       setAiInputText(extractedText);
     } catch (error) {
-      console.error("[EVTree] Failed to extract text from file:", error);
+      console.error(error);
       // TODO: better than alert
       window.alert(
         "Failed to extract text from file. Please check the console for details or try entering text manually.",
@@ -145,7 +148,8 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       loadTree(treeData);
       onClose();
     } catch (error) {
-      console.error("[EVTree] Failed to parse tree file:", error);
+      // TODO: error cause here?
+      console.error(error);
     }
   };
 
