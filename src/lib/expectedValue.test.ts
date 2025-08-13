@@ -548,6 +548,36 @@ describe("toComputeNode expression evaluation", () => {
     expect(result.data.value).toEqual(null); // Empty expressions should return null
     expect(result.data.cost).toEqual(null);
   });
+
+  test("should trim leading whitespace and currency symbol", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        valueExpr: "   $ 1,000", // leading spaces and $ symbol
+        costExpr: "\t$2,500", // tab + $
+      },
+    };
+
+    const result = toComputeNode(testNode);
+
+    expect(result.data.value).toEqual(1000);
+    expect(result.data.cost).toEqual(2500);
+  });
+
+  test("should strip commas in numeric expressions", () => {
+    const testNode = {
+      ...appNode,
+      data: {
+        valueExpr: "1,234,567 + 3,000", // expect 1,237,567
+        costExpr: "$10,000 - 1,000", // currency + commas => 9000
+      },
+    };
+
+    const result = toComputeNode(testNode);
+
+    expect(result.data.value).toEqual(1237567);
+    expect(result.data.cost).toEqual(9000);
+  });
 });
 
 /**

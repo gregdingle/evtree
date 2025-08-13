@@ -1,3 +1,4 @@
+import { trimStart } from "es-toolkit";
 import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval";
 
@@ -243,16 +244,21 @@ export function toComputeEdge(edge: AppEdge): ComputeEdge {
   };
 }
 
-// TODO: remove commas, as in 1,000 to 1000?
 // TODO: dehumanize as in 1.0M to 1000000?
+// TODO: handle currencies globally... it should probably be a tree-level setting
 function safeEvalExpr(
   expression: string | undefined,
   variables: Record<string, number>,
   defaultValue: number | null,
 ): number | null {
-  if (typeof expression === "undefined" || expression.trim() === "") {
+  // Trim leading whitespace and any currency symbol
+  expression = trimStart(expression?.trim() ?? "", "$");
+  // Strip commas
+  expression = expression?.replace(/,/g, "") ?? "";
+  if (!expression) {
     return defaultValue;
   }
+
   try {
     const result = Parser.evaluate(expression, variables);
     if (isNaN(result)) {
