@@ -1,14 +1,16 @@
+import { ReactNode } from "react";
+
+import { Handle, NodeProps, Position } from "@xyflow/react";
+
 import { useStore } from "@/hooks/use-store";
 import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
   selectHasParentNode,
+  selectNetExpectedValue,
   selectPathProbability,
-  selectPathValue,
 } from "@/lib/selectors";
 import { formatProbability, formatValue } from "@/utils/format";
-import { Handle, NodeProps, Position } from "@xyflow/react";
-import { ReactNode } from "react";
 
 //
 // NOTE: adapted from example at
@@ -29,7 +31,7 @@ interface BaseNodeProps {
 const BaseNode = ({ data, children, id }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
-  const pathValue = useStore((state) => selectPathValue(state, id));
+  const pathValue = useStore((state) => selectNetExpectedValue(state, id));
 
   return (
     <div className="nopan relative cursor-pointer text-xs">
@@ -111,7 +113,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const pathProbability = useStore((state) => selectPathProbability(state, id));
-  const pathValue = useStore((state) => selectPathValue(state, id));
+  const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
 
   return (

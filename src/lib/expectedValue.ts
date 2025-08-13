@@ -170,6 +170,12 @@ function computeNodeValuesRecursive(
     );
     // TODO: what to do about missing probability? highlight in UI somehow?
   }
+  if (totalProbability > 1) {
+    console.warn(
+      `[EVTree] Node ${currentNode.id} has children with greater than 1.0 total probability.`,
+    );
+    // TODO: what to do about excess probability? set to null? currently still multiplied
+  }
 }
 
 function updateChildEdgeProbability(

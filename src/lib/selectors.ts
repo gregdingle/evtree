@@ -16,93 +16,6 @@ import {
   buildParentToChildNodeMap,
 } from "../lib/maps";
 
-/**
- * Returns computed values for all nodes in the current tree, performing
- * the expected value calculation on-demand during React component rendering.
- *
- * TODO: better to use createCachedSelector from reselect package?
- * TODO: DRY between selectComputedNodeValues and selectComputedEdgeValues and computeNodeValues
- */
-const selectComputedNodeValues = memoize((state: StoreState) => {
-  const { currentTreeId } = state;
-  if (!currentTreeId) {
-    return {};
-  }
-  const tree = state.trees[currentTreeId];
-  if (!tree) {
-    return {};
-  }
-
-  const computeNodes = mapValues(tree.nodes, (node) =>
-    toComputeNode(node, tree.variables),
-  );
-  const computeEdges = mapValues(tree.edges, toComputeEdge);
-
-  const { nodes: computedNodes } = computeNodeValues(
-    computeNodes,
-    computeEdges,
-  );
-
-  // TODO: is best return structure?
-  return mapValues(computedNodes, (node) => ({
-    value: node.data.value,
-    cost: node.data.cost,
-  }));
-});
-
-/**
- * Returns computed edge probabilities for all edges in the current tree.
- * This includes updated probabilities for decision nodes based on expected value.
- *
- * TODO: better to use createCachedSelector from reselect package?
- */
-const selectComputedEdgeValues = memoize((state: StoreState) => {
-  const { currentTreeId } = state;
-  if (!currentTreeId) {
-    return {};
-  }
-  const tree = state.trees[currentTreeId];
-  if (!tree) {
-    return {};
-  }
-
-  const computeNodes = mapValues(tree.nodes, (node) =>
-    toComputeNode(node, tree.variables),
-  );
-  const computeEdges = mapValues(tree.edges, toComputeEdge);
-
-  const { edges: computedEdges } = computeNodeValues(
-    computeNodes,
-    computeEdges,
-  );
-
-  return mapValues(computedEdges, (edge) => ({
-    probability: edge.data?.probability ?? null,
-  }));
-});
-
-/**
- * Returns the computed probability for a specific edge.
- */
-export function selectEdgeComputedProbability(
-  state: StoreState,
-  edgeId: string,
-): number | null {
-  const computedEdgeValues = selectComputedEdgeValues(state);
-  return computedEdgeValues[edgeId]?.probability ?? null;
-}
-
-/**
- * Returns the computed value and cost for a specific node.
- */
-export function selectNodeComputedValue(
-  state: StoreState,
-  nodeId: string,
-): { value: number | null; cost: number | null } | null {
-  const computedValues = selectComputedNodeValues(state);
-  return computedValues[nodeId] ?? null;
-}
-
 export function selectCurrentTree(state: StoreState) {
   const { trees, currentTreeId } = state;
   if (!currentTreeId) {
@@ -132,7 +45,55 @@ export function selectCurrentEdges(state: StoreState) {
 }
 
 /**
+ * Returns computed values for all nodes in the current tree, performing
+ * the expected value calculation on-demand during React component rendering.
+ *
+ * TODO: better to use createCachedSelector from reselect package?
+ * TODO: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
+ */
+const selectNetExpectedValues = memoize((state: StoreState) => {
+  const { currentTreeId } = state;
+  if (!currentTreeId) {
+    return {};
+  }
+  const tree = state.trees[currentTreeId];
+  if (!tree) {
+    return {};
+  }
+
+  const { nodes, edges } = computeNodeValues(
+    mapValues(tree.nodes, (node) => toComputeNode(node, tree.variables)),
+    mapValues(tree.edges, toComputeEdge),
+  );
+
+  return {
+    nodeValues: mapValues(nodes, (node) => node.data.value),
+    edgeProbabilities: mapValues(
+      edges,
+      (edge) => edge.data?.probability ?? null,
+    ),
+  };
+});
+
+/**
+ * Returns the computed probability for a specific edge.
+ */
+export function selectComputedProbability(
+  state: StoreState,
+  edgeId: string,
+): number | null {
+  const { edgeProbabilities } = selectNetExpectedValues(state);
+  return (edgeProbabilities && edgeProbabilities[edgeId]) ?? null;
+}
+
+/**
  * Returns the probability of a node being reached from it's root parent.
+ *
+ * NOTE: this could be computed in computeNodeValues for all edges in one pass,
+ * except that decision nodes can modify edge probabilities based on expected
+ * value!
+ *
+ * TODO: unit tests
  */
 export function selectPathProbability(
   state: StoreState,
@@ -143,9 +104,8 @@ export function selectPathProbability(
     return null;
   }
 
-  const node = currentTree.nodes[nodeId];
-  if (!node) {
-    // NOTE: this happens when switching current tree because of stale react components
+  const { edgeProbabilities } = selectNetExpectedValues(state);
+  if (!edgeProbabilities) {
     return null;
   }
 
@@ -166,13 +126,7 @@ export function selectPathProbability(
   let currentEdgeId: string | undefined = incomingEdgeId;
 
   while (currentEdgeId) {
-    const edge = currentTree.edges[currentEdgeId];
-    if (!edge) {
-      warnItemNotFound("Edge", currentEdgeId, "path probability calculation");
-      return null;
-    }
-
-    const edgeProbability = edge.data?.probability ?? null;
+    const edgeProbability = edgeProbabilities[currentEdgeId] ?? null;
     if (edgeProbability === null) {
       // If any edge in the path has no probability, the total is null
       return null;
@@ -188,11 +142,10 @@ export function selectPathProbability(
 }
 
 /**
- * Returns the real cumulative value of a path to a node from the node's root
- * parent. When used with a terminal node, the terminal node's value minus all
- * **costs** along the path to the terminal node.
+ * Returns the expected value of a node in the tree considering costs along the
+ * path to the node.
  */
-export function selectPathValue(
+export function selectNetExpectedValue(
   state: StoreState,
   nodeId: string,
 ): number | null {
@@ -208,13 +161,10 @@ export function selectPathValue(
   }
 
   // Get computed values for all nodes
-  const computedValues = selectComputedNodeValues(state);
-  const nodeValue = computedValues[nodeId];
-  if (!nodeValue) {
-    console.warn("No computed value found for node:", nodeId);
-  }
+  const { nodeValues } = selectNetExpectedValues(state);
+  const nodeValue = nodeValues && nodeValues[nodeId];
 
-  return nodeValue ? nodeValue.value : null;
+  return nodeValue ? nodeValue : null;
 }
 
 export function selectCollapsible(

@@ -1,14 +1,15 @@
-import { useStore } from "@/hooks/use-store";
-import { AppEdge } from "@/lib/edge";
-import { selectEdgeComputedProbability } from "@/lib/selectors";
-import { formatProbability } from "@/utils/format";
 import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  getSmoothStepPath,
   Position,
+  getSmoothStepPath,
 } from "@xyflow/react";
+
+import { useStore } from "@/hooks/use-store";
+import { AppEdge } from "@/lib/edge";
+import { selectComputedProbability } from "@/lib/selectors";
+import { formatProbability } from "@/utils/format";
 
 /**
  * @see https://reactflow.dev/learn/customization/edge-labels
@@ -26,7 +27,7 @@ export default function CustomEdge({
 
   // Use computed probability instead of stored probability
   const computedProbability = useStore((state) =>
-    selectEdgeComputedProbability(state, id),
+    selectComputedProbability(state, id),
   );
 
   // Fall back to stored probability if computed is not available

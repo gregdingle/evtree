@@ -1,14 +1,15 @@
 "use client";
 
+import { values } from "es-toolkit/compat";
+import HRNumbers from "human-readable-numbers";
+
 import { StoreState, useStore } from "@/hooks/use-store";
 import {
   selectCurrentTree,
+  selectNetExpectedValue,
   selectPathProbability,
-  selectPathValue,
 } from "@/lib/selectors";
 import { DecisionTree } from "@/lib/tree";
-import { values } from "es-toolkit/compat";
-import HRNumbers from "human-readable-numbers";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface HistogramProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -134,7 +135,7 @@ function getTerminalNodesData(
     .map((node) => ({
       nodeId: node.id,
       probability: selectPathProbability(storeState, node.id),
-      value: selectPathValue(storeState, node.id),
+      value: selectNetExpectedValue(storeState, node.id),
     }))
     .filter((data) => data.probability !== null && data.value !== null);
 }
