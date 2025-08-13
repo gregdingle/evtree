@@ -65,7 +65,9 @@ export default function CustomEdge({
       <BaseEdge
         id={id}
         path={edgePath}
-        className={`stroke-[3] ${selected ? "stroke-blue-500/50" : ""}`}
+        // NOTE Tailwind: use ! to override inline/preceding stroke
+        className={`${selected ? "!stroke-blue-500/50" : "!stroke-slate-400"}`}
+        style={{ strokeLinecap: "round", strokeWidth: 3 }}
       />
       <EdgeLabelRenderer>
         <div className="nopan cursor-pointer text-xs">

@@ -99,6 +99,8 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           type="target"
           position={Position.Left}
           isConnectable={!hasParent}
+          // See https://reactflow.dev/learn/customization/handles#hiding-handles
+          className={!hasParent ? "" : "invisible"}
         />
         <Handle
           type="source"
@@ -133,6 +135,8 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         type="target"
         position={Position.Left}
         isConnectable={!hasParent}
+        // See https://reactflow.dev/learn/customization/handles#hiding-handles
+        className={!hasParent ? "" : "invisible"}
       />
       <div
         className={`absolute left-8 max-w-32 ${
