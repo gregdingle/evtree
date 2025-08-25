@@ -86,6 +86,51 @@ export function selectComputedProbability(
   return (edgeProbabilities && edgeProbabilities[edgeId]) ?? null;
 }
 
+export function selectShouldShowProbabilityWarning(
+  state: StoreState,
+  edgeId: string,
+): boolean {
+  const { currentTreeId } = state;
+  if (!currentTreeId) {
+    return false;
+  }
+  const tree = state.trees[currentTreeId];
+  if (!tree) {
+    return false;
+  }
+
+  const targetEdge = tree.edges[edgeId];
+  if (!targetEdge) {
+    return false;
+  }
+
+  const { edgeProbabilities } = selectNetExpectedValues(state);
+  if (!edgeProbabilities) {
+    return false;
+  }
+
+  const targetEdgeProbability = edgeProbabilities[edgeId];
+  if (targetEdgeProbability === undefined || targetEdgeProbability === null) {
+    return false;
+  }
+
+  // Find all sibling edges (edges from the same source node)
+  // TODO: should this be optimized with a map?
+  const probabilitySum = values(tree.edges)
+    .filter((edge) => edge.source === targetEdge.source)
+    .reduce((sum, edge) => {
+      const probability = edgeProbabilities[edge.id];
+      return sum + (probability ?? 0);
+    }, 0);
+
+  return (
+    targetEdgeProbability < 0 ||
+    targetEdgeProbability > 1 ||
+    probabilitySum < 0 ||
+    probabilitySum > 1
+  );
+}
+
 /**
  * Returns the probability of a node being reached from it's root parent.
  *

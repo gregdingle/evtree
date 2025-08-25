@@ -1,3 +1,4 @@
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -8,7 +9,10 @@ import {
 
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
-import { selectComputedProbability } from "@/lib/selectors";
+import {
+  selectComputedProbability,
+  selectShouldShowProbabilityWarning,
+} from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
 
 /**
@@ -28,6 +32,10 @@ export default function CustomEdge({
   // Use computed probability instead of stored probability
   const computedProbability = useStore((state) =>
     selectComputedProbability(state, id),
+  );
+
+  const shouldWarn = useStore((state) =>
+    selectShouldShowProbabilityWarning(state, id),
   );
 
   // NOTE: assumes the edge is always left to right
@@ -86,6 +94,12 @@ export default function CustomEdge({
             className="absolute top-3"
           >
             {formatProbability(computedProbability, 0, "???", "")}
+            {shouldWarn ? (
+              <ExclamationCircleIcon
+                // TODO: adjust size pos and color
+                className="ml-0.5 -mt-0.5 inline-block h-3 w-3 fill-red-600"
+              />
+            ) : null}
           </div>
         </div>
       </EdgeLabelRenderer>
