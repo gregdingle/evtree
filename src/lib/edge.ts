@@ -1,5 +1,11 @@
 import { Edge } from "@xyflow/react";
 
+export type AppEdge = Edge<{
+  label?: string;
+  description?: string;
+  probability: number | null;
+}>;
+
 export function createEdge(
   fromNodeId: string,
   toNodeId: string,
@@ -34,9 +40,3 @@ export function cloneEdge(
   };
   return newEdge;
 } // TODO: rename to branch be consistent with decision tree terminology?
-
-export type AppEdge = Edge<{
-  label?: string;
-  description?: string;
-  probability: number | null;
-}>;

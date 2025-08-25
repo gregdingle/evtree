@@ -1,6 +1,19 @@
 import { Node, Position, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
+export type NodeType = "decision" | "chance" | "terminal";
+
+export type AppNode = Node<
+  {
+    label?: string;
+    description?: string;
+    // TODO: rename expr to formula?
+    valueExpr?: string;
+    costExpr?: string;
+  },
+  NodeType
+>;
+
 export function createNode(
   position: XYPosition,
   type: NodeType = "chance",
@@ -31,16 +44,3 @@ export function cloneNode(node: AppNode, position: XYPosition): AppNode {
   };
   return newNode;
 } // TODO: move types into a lib file
-
-export type NodeType = "decision" | "chance" | "terminal";
-
-export type AppNode = Node<
-  {
-    label?: string;
-    description?: string;
-    // TODO: rename expr to formula?
-    valueExpr?: string;
-    costExpr?: string;
-  },
-  NodeType
->;
