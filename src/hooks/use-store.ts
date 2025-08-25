@@ -715,20 +715,29 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
 
             const parentToChildMap = buildParentToChildNodeMap(tree.edges);
-            const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(
-              tree.edges,
-            );
 
-            const deleteDescendants = (currentNodeId: string) => {
+            // Collect all nodes in the subtree first
+            const nodesToDelete = new Set<string>();
+            const collectDescendants = (currentNodeId: string) => {
+              nodesToDelete.add(currentNodeId);
               const children = parentToChildMap[currentNodeId] ?? [];
               children.forEach((childNodeId) => {
-                deleteDescendants(childNodeId);
+                collectDescendants(childNodeId);
               });
-              delete tree.nodes[currentNodeId];
-              delete tree.edges[nodeToIncomingEdgeMap[currentNodeId]!];
             };
+            collectDescendants(nodeId);
 
-            deleteDescendants(nodeId);
+            // Delete all edges that have source or target in the subtree
+            values(tree.edges).forEach((edge) => {
+              if (nodesToDelete.has(edge.source) || nodesToDelete.has(edge.target)) {
+                delete tree.edges[edge.id];
+              }
+            });
+
+            // Delete all nodes in the subtree
+            nodesToDelete.forEach((nodeId) => {
+              delete tree.nodes[nodeId];
+            });
 
             tree.updatedAt = new Date().toISOString();
           }),

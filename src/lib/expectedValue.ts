@@ -117,14 +117,19 @@ function computeNodeValuesRecursive(
   }
 
   children.forEach(({ nodeId }) => {
-    const childNode = nodes[nodeId]!;
-    computeNodeValuesRecursive(
-      nodes,
-      edges,
-      childNode,
-      adjList,
-      cumulativeCost + (childNode.data.cost ?? 0),
-    );
+    const childNode = nodes[nodeId];
+    if (childNode) {
+      computeNodeValuesRecursive(
+        nodes,
+        edges,
+        childNode,
+        adjList,
+        cumulativeCost + (childNode.data.cost ?? 0),
+      );
+    } else {
+      // NOTE: childNode may not exist if the tree is malformed
+      console.warn(`[EVTree] Node ${currentNode.id} has missing node or edge`);
+    }
   });
 
   // If this is a decision node, we need to update the edge probability
@@ -137,8 +142,13 @@ function computeNodeValuesRecursive(
   let totalProbability = 0;
 
   children.forEach(({ edgeId, nodeId }) => {
-    const childNode = nodes[nodeId]!;
-    const childEdge = edges[edgeId]!;
+    const childNode = nodes[nodeId];
+    const childEdge = edges[edgeId];
+    if (!childNode || !childEdge) {
+      // NOTE: childNode may not exist if the tree is malformed
+      console.warn(`[EVTree] Node ${currentNode.id} has missing node or edge`);
+      return;
+    }
     const childValue = childNode.data.value;
 
     // For decision nodes, update edge probabilities based on expected value
