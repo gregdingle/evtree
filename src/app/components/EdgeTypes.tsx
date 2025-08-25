@@ -187,6 +187,7 @@ export default function CustomEdge({
               >
                 {formatProbability(computedProbability, 0, "???", "")}
                 {shouldWarn ? (
+                  // TODO: should we show this somehow in inline edit mode?
                   <ExclamationCircleIcon className="ml-0.5 -mt-0.5 inline-block h-3 w-3 fill-red-600" />
                 ) : null}
               </span>

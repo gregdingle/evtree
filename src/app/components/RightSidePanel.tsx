@@ -34,14 +34,22 @@ export default function RightSidePanel() {
   const hasVariables = keys(variables).length > 0;
   const allNodes = currentTree?.nodes ?? {};
 
+  const titlePrefix =
+    nodes.length + edges.length === 0
+      ? "Tree"
+      : nodes.length === 1
+        ? "Node"
+        : edges.length === 1
+          ? "Edge"
+          : ""; // multi
+
   return (
     <div className="w-80 p-4">
-      <h2 className="mb-8 text-lg font-semibold">Properties</h2>
+      <h2 className="mb-8 text-lg font-semibold">{titlePrefix} Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
           currentTree ? (
             <div className="mb-8">
-              <h3 className="mb-4">Tree Properties</h3>
               <PropertyInput
                 label="Name"
                 value={currentTree.name}
@@ -62,7 +70,9 @@ export default function RightSidePanel() {
           )
         ) : (
           <div className="">
-            {nodes.length ? <h3 className="mb-4">Node Properties</h3> : null}
+            {nodes.length > 1 ? (
+              <h3 className="mb-4 font-semibold">Node Properties</h3>
+            ) : null}
             {nodes.map((node) => (
               <div key={node.id} className="mb-8">
                 {node.type === "terminal" ? (
@@ -124,7 +134,9 @@ export default function RightSidePanel() {
                 </PropertyInput>
               </div>
             ))}
-            {edges.length ? <h3 className="mb-4">Branch Properties</h3> : null}
+            {edges.length > 1 ? (
+              <h3 className="mb-4 font-semibold">Branch Properties</h3>
+            ) : null}
             {edges.map((edge) => (
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
