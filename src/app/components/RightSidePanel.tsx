@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 import { keys } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
@@ -31,23 +29,6 @@ export default function RightSidePanel() {
       currentTree: selectCurrentTree(state),
     };
   });
-
-  // TODO: make ESC unfocus the input, then maybe unselect current selection
-  const firstInputRef = useRef<HTMLInputElement>(null);
-
-  // Focus first input when selection changes
-  useEffect(() => {
-    if ((nodes.length > 0 || edges.length > 0) && firstInputRef.current) {
-      // Only focus if no input is currently focused
-      // TODO: is this good logic? what could go wrong?
-      const activeElement = window.document.activeElement;
-      const isInputFocused = activeElement && activeElement.tagName === "INPUT";
-
-      if (!isInputFocused) {
-        firstInputRef.current.focus();
-      }
-    }
-  }, [nodes, edges]);
 
   const variables = currentTree?.variables ?? {};
   const hasVariables = keys(variables).length > 0;
@@ -82,11 +63,10 @@ export default function RightSidePanel() {
         ) : (
           <div className="">
             {nodes.length ? <h3 className="mb-4">Node Properties</h3> : null}
-            {nodes.map((node, index) => (
+            {nodes.map((node) => (
               <div key={node.id} className="mb-8">
                 {node.type === "terminal" ? (
                   <PropertyInput
-                    ref={index === 0 ? firstInputRef : undefined}
                     label="Value"
                     value={node.data.valueExpr}
                     onChange={(value) => {
@@ -112,12 +92,6 @@ export default function RightSidePanel() {
                 ) : null}
                 {/* TODO: deprecated... remove if not needed
                 <PropertyInput
-                  ref={
-                    // NOTE: see above for special case for terminal nodes
-                    node.type !== "terminal" && index === 0
-                      ? firstInputRef
-                      : undefined
-                  }
                   label="Label"
                   value={node.data.label}
                   onChange={(value) =>
@@ -151,17 +125,19 @@ export default function RightSidePanel() {
               </div>
             ))}
             {edges.length ? <h3 className="mb-4">Branch Properties</h3> : null}
-            {edges.map((edge, index) => (
+            {edges.map((edge) => (
               // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
                 <PropertyInput
-                  ref={
-                    nodes.length === 0 && index === 0
-                      ? firstInputRef
-                      : undefined
+                  label="Label"
+                  value={edge.data?.label}
+                  onChange={(value) =>
+                    onEdgeDataUpdate(edge.id, { label: value })
                   }
+                  placeholder="Enter branch label"
+                />
+                <PropertyInput
                   type="text"
-                  // TODO: should probability really go first? why not label like nodes?
                   label="Probability"
                   value={edge.data?.probabilityExpr ?? ""}
                   onChange={(value) => {
@@ -191,14 +167,6 @@ export default function RightSidePanel() {
                     </ToolbarButton>
                   )}
                 </PropertyInput>
-                <PropertyInput
-                  label="Label"
-                  value={edge.data?.label}
-                  onChange={(value) =>
-                    onEdgeDataUpdate(edge.id, { label: value })
-                  }
-                  placeholder="Enter branch label"
-                />
                 <PropertyInput
                   label="Description"
                   textarea

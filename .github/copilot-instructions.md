@@ -117,7 +117,7 @@ EVTree is a decision tree creation application built with Next.js 15, React 19, 
 - Implement proper state management patterns
 - Follow React best practices and hooks patterns
 - Write self-documenting code when possible
-- When using the web browser API, always prefix `window.` for clarity
+- When using a web browser DOM API, always prefix `window.` for clarity. For example, `window.document.addEventListener` or `window.alert`.
 - Prefer `??` over `||` for default values to avoid falsy value issues
 - Prefer using `===` for strict equality checks over `==`
 

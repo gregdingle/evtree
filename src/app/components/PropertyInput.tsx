@@ -68,6 +68,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
                 ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 : ""
             }`}
+            spellCheck={false}
             {...props}
           />
         )}
