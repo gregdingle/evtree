@@ -1,8 +1,6 @@
 // TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
 // TODO: should PropertyInputProps inherit from
-import React, { useEffect, useState } from "react";
-
-import { debounce } from "es-toolkit";
+import React from "react";
 
 // React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
@@ -20,22 +18,6 @@ interface PropertyInputProps {
 // TODO: we also want to support more kinds of numeric input like 1.0M
 const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
   ({ label, value, onChange, textarea, disabled, children, ...props }, ref) => {
-    const debouncedOnChange = debounce(onChange ?? (() => {}), 200);
-
-    // Use a local state for immediate UI updates
-    const [localValue, setLocalValue] = useState(value || "");
-
-    // Update local value when prop value changes
-    useEffect(() => {
-      setLocalValue(value || "");
-    }, [value]);
-
-    const handleChange = (newValue: string) => {
-      if (disabled) return;
-      setLocalValue(newValue);
-      debouncedOnChange(newValue);
-    };
-
     return (
       <div
         className={`mb-2 flex space-x-2 ${
@@ -49,8 +31,8 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           <textarea
             ref={ref as React.Ref<HTMLTextAreaElement>}
             id={label}
-            value={localValue}
-            onChange={(e) => handleChange(e.target.value)}
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
             className={`min-w-0 flex-grow rounded-md border-2 p-1 ${
               disabled
@@ -65,8 +47,8 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             ref={ref}
             id={label}
             type="text"
-            value={localValue}
-            onChange={(e) => handleChange(e.target.value)}
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
             className={`min-w-0 flex-grow rounded-md border-2 p-1 ${
               disabled

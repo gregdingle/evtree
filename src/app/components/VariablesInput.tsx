@@ -1,8 +1,10 @@
+import React, { useState } from "react";
+
+import { range } from "es-toolkit";
+import { toPairs } from "es-toolkit/compat";
+
 import { useStore } from "@/hooks/use-store";
 import { selectCurrentTree } from "@/lib/selectors";
-import { debounce, range } from "es-toolkit";
-import { toPairs } from "es-toolkit/compat";
-import React, { useState } from "react";
 
 export default function VariablesInput() {
   // Subscribe to store directly
@@ -34,16 +36,6 @@ export default function VariablesInput() {
 
   // TODO: make deleting the name or value remove the variable from the UI, as
   // it does on reload
-
-  // TODO: make this work in a simple way
-  // Sync local state when store changes (for undo/redo)
-  // useEffect(() => {
-  //   setLocalVariables(initialVariablesArray);
-  // }, [initialVariablesArray]);
-
-  const debouncedOnChange = debounce((vars: Record<string, number>) => {
-    onTreeDataUpdate({ variables: vars });
-  }, 200);
 
   const handleNameChange = (index: number, name: string) => {
     const newVariables = [...localVariables];
@@ -79,7 +71,7 @@ export default function VariablesInput() {
       }
     });
 
-    debouncedOnChange(filteredVariables);
+    onTreeDataUpdate({ variables: filteredVariables });
   };
 
   const addMoreRows = () => {
