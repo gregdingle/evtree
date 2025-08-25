@@ -1,13 +1,16 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
+import { keys } from "es-toolkit/compat";
+
 import { useStore } from "@/hooks/use-store";
 import {
   selectCurrentEdges,
   selectCurrentNodes,
   selectCurrentTree,
 } from "@/lib/selectors";
-import { keys, max, min, toNumber } from "es-toolkit/compat";
-import { useEffect, useRef } from "react";
+
 import PropertyInput from "./PropertyInput";
 import { ToolbarButton } from "./ToolbarButton";
 import VariablesInput from "./VariablesInput";
@@ -156,23 +159,19 @@ export default function RightSidePanel() {
                       ? firstInputRef
                       : undefined
                   }
-                  type="number"
+                  type="text"
                   // TODO: should probability really go first? why not label like nodes?
                   label="Probability"
-                  value={edge.data?.probability?.toString()}
+                  value={edge.data?.probabilityExpr ?? ""}
                   onChange={(value) => {
-                    // TODO: should this min-max clamping be moved into domain logic somehow?
-                    const probability =
-                      value === undefined
-                        ? undefined
-                        : max([min([toNumber(value), 1.0]), 0.0]);
-                    onEdgeDataUpdate(edge.id, { probability });
+                    const probabilityExpr = value === "" ? undefined : value;
+                    onEdgeDataUpdate(edge.id, { probabilityExpr });
                   }}
-                  placeholder="Enter branch probability"
-                  max={1.0}
-                  min={0.0}
-                  step={0.1}
+                  placeholder={
+                    hasVariables ? "Enter value or formula" : "Enter value"
+                  }
                   disabled={allNodes[edge.source]?.type === "decision"}
+                  // NOTE: leave room for balance button
                 >
                   {allNodes[edge.source]?.type === "decision" ? null : (
                     <ToolbarButton

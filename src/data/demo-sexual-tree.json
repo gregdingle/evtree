@@ -602,7 +602,7 @@
       "data": {
         "label": "",
         "description": "",
-        "probability": 0
+        "probabilityExpr": "0"
       }
     },
     "edecision-bKOhJDHYplnI": {
@@ -613,7 +613,7 @@
       "data": {
         "label": "Litigate",
         "description": "",
-        "probability": 1
+        "probabilityExpr": "1"
       }
     },
     "ebKOhJDHYplnI-4s1dOkFhDz1P": {
@@ -624,7 +624,7 @@
       "data": {
         "label": "Summary J",
         "description": "",
-        "probability": 0.05
+        "probabilityExpr": "0.05"
       }
     },
     "ebKOhJDHYplnI-j9ZYCT78n0Hg": {
@@ -635,7 +635,7 @@
       "data": {
         "label": "No SJ",
         "description": "",
-        "probability": 0.95
+        "probabilityExpr": "0.95"
       }
     },
     "ej9ZYCT78n0Hg--OtK3EoHaQLQ": {
@@ -646,7 +646,7 @@
       "data": {
         "label": "Liability",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "ej9ZYCT78n0Hg-AvazVf7EPf0a": {
@@ -657,7 +657,7 @@
       "data": {
         "label": "No liability",
         "description": "",
-        "probability": 0.8
+        "probabilityExpr": "0.8"
       }
     },
     "e-OtK3EoHaQLQ-oIGw-I1ZGspg": {
@@ -668,7 +668,7 @@
       "data": {
         "label": "High",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "e-OtK3EoHaQLQ-f4UvjS8okevK": {
@@ -679,7 +679,7 @@
       "data": {
         "label": "Med",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e-OtK3EoHaQLQ-8LzWw8vWytu2": {
@@ -690,7 +690,7 @@
       "data": {
         "label": "Low",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "eoIGw-I1ZGspg-ojy-9iVmHVGb": {
@@ -701,7 +701,7 @@
       "data": {
         "label": "Puni",
         "description": "",
-        "probability": 0.7
+        "probabilityExpr": "0.7"
       }
     },
     "eoIGw-I1ZGspg-EGdAkaMQvGBc": {
@@ -712,7 +712,7 @@
       "data": {
         "label": "No Puni",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "eojy-9iVmHVGb-9tWlIrjE7rbZ": {
@@ -723,7 +723,7 @@
       "data": {
         "label": "$1.5m",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "eojy-9iVmHVGb-qTcoh2NXhx46": {
@@ -734,7 +734,7 @@
       "data": {
         "label": "$1.0m",
         "description": "",
-        "probability": 0.4
+        "probabilityExpr": "0.4"
       }
     },
     "eojy-9iVmHVGb-tnLpC1Z_k30a": {
@@ -745,7 +745,7 @@
       "data": {
         "label": "$500k",
         "description": "",
-        "probability": 0.4
+        "probabilityExpr": "0.4"
       }
     },
     "et_EuoCI7H4Hr-1JzA4Spf_dXx": {
@@ -756,7 +756,7 @@
       "data": {
         "label": "$1.0m",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "et_EuoCI7H4Hr-BcJWodUDf8XB": {
@@ -767,7 +767,7 @@
       "data": {
         "label": "$500k",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "et_EuoCI7H4Hr-e2ID4ujt3dNx": {
@@ -778,7 +778,7 @@
       "data": {
         "label": "$250k",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "ef4UvjS8okevK-t_EuoCI7H4Hr": {
@@ -789,7 +789,7 @@
       "data": {
         "label": "Puni",
         "description": "",
-        "probability": 0.6
+        "probabilityExpr": "0.6"
       }
     },
     "ef4UvjS8okevK-mSLuYP3YfQpi": {
@@ -800,7 +800,7 @@
       "data": {
         "label": "No Puni",
         "description": "",
-        "probability": 0.4
+        "probabilityExpr": "0.4"
       }
     },
     "errVX3mZ1mPqe-l9dtFsFPHYsI": {
@@ -811,7 +811,7 @@
       "data": {
         "label": "$1.0m",
         "description": "",
-        "probability": 0.1
+        "probabilityExpr": "0.1"
       }
     },
     "errVX3mZ1mPqe-NJB0EUzSVK9y": {
@@ -822,7 +822,7 @@
       "data": {
         "label": "$500k",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "errVX3mZ1mPqe-VLtk5D1LzPMy": {
@@ -833,7 +833,7 @@
       "data": {
         "label": "$250k",
         "description": "",
-        "probability": 0.4
+        "probabilityExpr": "0.4"
       }
     },
     "e8LzWw8vWytu2-rrVX3mZ1mPqe": {
@@ -844,7 +844,7 @@
       "data": {
         "label": "Puni",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e8LzWw8vWytu2-ZeeqiwFdWfDw": {
@@ -855,7 +855,7 @@
       "data": {
         "label": "No Puni",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     }
   }

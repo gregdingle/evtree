@@ -233,13 +233,16 @@ export function toComputeNode(
   };
 }
 
-export function toComputeEdge(edge: AppEdge): ComputeEdge {
+export function toComputeEdge(
+  edge: AppEdge,
+  variables: Record<string, number> = {},
+): ComputeEdge {
   return {
     id: edge.id,
     source: edge.source,
     target: edge.target,
     data: {
-      probability: edge.data?.probability ?? null,
+      probability: safeEvalExpr(edge.data?.probabilityExpr, variables, null),
     },
   };
 }

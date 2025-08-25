@@ -80,7 +80,6 @@ const initialEdges = keyBy(
       data: {
         label: "d to c",
         description: "Connection from decision to chance",
-        probability: null,
       },
     },
     {
@@ -91,7 +90,7 @@ const initialEdges = keyBy(
       data: {
         label: "c to t1",
         description: "Path from chance to terminal1",
-        probability: 0.5,
+        probabilityExpr: "0.5",
       },
     },
     {
@@ -102,7 +101,7 @@ const initialEdges = keyBy(
       data: {
         label: "c to t2",
         description: "Path from chance to terminal2",
-        probability: 0.5,
+        probabilityExpr: "0.5",
       },
     },
     {
@@ -113,7 +112,6 @@ const initialEdges = keyBy(
       data: {
         label: "d to t3",
         description: "Path from decision to terminal3",
-        probability: null,
       },
     },
   ] as AppEdge[],

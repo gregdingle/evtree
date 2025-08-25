@@ -1258,7 +1258,7 @@
       "data": {
         "label": "Litigate",
         "description": "",
-        "probability": 1
+        "probabilityExpr": "1"
       }
     },
     "egegk3HDwFXkN-rqUGsUDqijbf": {
@@ -1269,7 +1269,7 @@
       "data": {
         "label": "New Mex case no bar",
         "description": "",
-        "probability": 0.7
+        "probabilityExpr": "0.7"
       }
     },
     "egegk3HDwFXkN-uoH0-3DQQCI3": {
@@ -1280,7 +1280,7 @@
       "data": {
         "label": "New Mex case bars",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "eEPr-9-hGhZ-Z-GkVdBQghMqKa": {
@@ -1291,7 +1291,7 @@
       "data": {
         "label": "Settle for X",
         "description": "",
-        "probability": 0
+        "probabilityExpr": "0"
       }
     },
     "erqUGsUDqijbf-jfJq9sudaZy8": {
@@ -1302,7 +1302,7 @@
       "data": {
         "label": "Stat Lim bars",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "erqUGsUDqijbf-wdXTRv0ZN7hY": {
@@ -1313,7 +1313,7 @@
       "data": {
         "label": "Stat Lim bars fraud only",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "erqUGsUDqijbf-4TjmBmS3t4V1": {
@@ -1324,7 +1324,7 @@
       "data": {
         "label": "Stat lim no bar",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e4TjmBmS3t4V1-rwfKy39f7VeN": {
@@ -1335,7 +1335,7 @@
       "data": {
         "label": "Liability",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e4TjmBmS3t4V1-N2aXLWPqL4pn": {
@@ -1346,7 +1346,7 @@
       "data": {
         "label": "No Liability",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "erwfKy39f7VeN-lmxtNbm4NGz_": {
@@ -1357,7 +1357,7 @@
       "data": {
         "label": "No fraud",
         "description": "",
-        "probability": 0.7
+        "probabilityExpr": "0.7"
       }
     },
     "erwfKy39f7VeN-mB1g4w7PAI-E": {
@@ -1368,7 +1368,7 @@
       "data": {
         "label": "Fraud found I-S only",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "elmxtNbm4NGz_-9JWTBOX7F00j": {
@@ -1379,7 +1379,7 @@
       "data": {
         "label": "I-S only",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "elmxtNbm4NGz_-Zhi46E8Xu6lH": {
@@ -1390,7 +1390,7 @@
       "data": {
         "label": "Shared liability",
         "description": "",
-        "probability": 0.6
+        "probabilityExpr": "0.6"
       }
     },
     "elmxtNbm4NGz_-Uxs0srfL5jff": {
@@ -1401,7 +1401,7 @@
       "data": {
         "label": "Bromfield only",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "eZhi46E8Xu6lH-YBPMzjArpQE8": {
@@ -1412,7 +1412,7 @@
       "data": {
         "label": "33%",
         "description": "",
-        "probability": 0.25
+        "probabilityExpr": "0.25"
       }
     },
     "eZhi46E8Xu6lH-6DvqGabVOYXx": {
@@ -1423,7 +1423,7 @@
       "data": {
         "label": "50%",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "eZhi46E8Xu6lH-Bp60tJ0OXlRC": {
@@ -1434,7 +1434,7 @@
       "data": {
         "label": "66%",
         "description": "",
-        "probability": 0.25
+        "probabilityExpr": "0.25"
       }
     },
     "eYBPMzjArpQE8-LHiYytSemHJ0": {
@@ -1445,7 +1445,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "eYBPMzjArpQE8-ah2Hb2_pUgAu": {
@@ -1456,7 +1456,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "eYBPMzjArpQE8-x0TryoNsoKZL": {
@@ -1467,7 +1467,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "e6DvqGabVOYXx-RgcPbyS6h3x8": {
@@ -1478,7 +1478,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "e6DvqGabVOYXx-5ym08O825lcP": {
@@ -1489,7 +1489,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e6DvqGabVOYXx-mkyPDNV3Xmcy": {
@@ -1500,7 +1500,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "eBp60tJ0OXlRC-iRsrZcTN4Tqx": {
@@ -1511,7 +1511,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "eBp60tJ0OXlRC-n6ZRq_adkiAd": {
@@ -1522,7 +1522,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "eBp60tJ0OXlRC-WKRh7m6s1kOQ": {
@@ -1533,7 +1533,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "emB1g4w7PAI-E-Ry3TEmNn-wbP": {
@@ -1544,7 +1544,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "emB1g4w7PAI-E-nIQhwlBTNHx0": {
@@ -1555,7 +1555,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.6
+        "probabilityExpr": "0.6"
       }
     },
     "emB1g4w7PAI-E-H3aYmvFwF2eX": {
@@ -1566,7 +1566,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "eAfbNuvAx53qG-yDjyuXS6Vs8x": {
@@ -1577,7 +1577,7 @@
       "data": {
         "label": "No fraud",
         "description": "",
-        "probability": 1
+        "probabilityExpr": "1"
       }
     },
     "eyDjyuXS6Vs8x-nrRKdy_1wslq": {
@@ -1588,7 +1588,7 @@
       "data": {
         "label": "Bromfield only",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "ewdXTRv0ZN7hY-AfbNuvAx53qG": {
@@ -1599,7 +1599,7 @@
       "data": {
         "label": "Liability",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "ewdXTRv0ZN7hY-4aiLV16f17x9": {
@@ -1610,7 +1610,7 @@
       "data": {
         "label": "No liability",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e9JWTBOX7F00j-P_Tkh2Uu214h": {
@@ -1621,7 +1621,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.1
+        "probabilityExpr": "0.1"
       }
     },
     "e9JWTBOX7F00j-MDHjkQrRb6vG": {
@@ -1632,7 +1632,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e9JWTBOX7F00j-I3Tya1jxWAdf": {
@@ -1643,7 +1643,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.4
+        "probabilityExpr": "0.4"
       }
     },
     "e7AX1joeHFCA9-RPVanigp08Fs": {
@@ -1654,7 +1654,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "e7AX1joeHFCA9-XaMmRmBdvmJo": {
@@ -1665,7 +1665,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e7AX1joeHFCA9-9xiHDEFGMd5-": {
@@ -1676,7 +1676,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "eyDjyuXS6Vs8x-7AX1joeHFCA9": {
@@ -1687,7 +1687,7 @@
       "data": {
         "label": "I-S only",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "enLHlc_RhT5kT-r91vdMlCIEXw": {
@@ -1698,7 +1698,7 @@
       "data": {
         "label": "33%",
         "description": "",
-        "probability": 0.25
+        "probabilityExpr": "0.25"
       }
     },
     "enLHlc_RhT5kT-54zOdGYgsKik": {
@@ -1709,7 +1709,7 @@
       "data": {
         "label": "50%",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "enLHlc_RhT5kT-d13doGvkL48P": {
@@ -1720,7 +1720,7 @@
       "data": {
         "label": "66%",
         "description": "",
-        "probability": 0.25
+        "probabilityExpr": "0.25"
       }
     },
     "er91vdMlCIEXw-MLKuJZUlgd-0": {
@@ -1731,7 +1731,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "er91vdMlCIEXw-t61_qAQsT7Dq": {
@@ -1742,7 +1742,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "er91vdMlCIEXw-ipMVIiLrdgQL": {
@@ -1753,7 +1753,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "e54zOdGYgsKik-cW2K1dbOuu1i": {
@@ -1764,7 +1764,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "e54zOdGYgsKik-7Qnb_AsE8ATg": {
@@ -1775,7 +1775,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "e54zOdGYgsKik-OTROWq0zaqtq": {
@@ -1786,7 +1786,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "ed13doGvkL48P-X2kE-lM-ScSF": {
@@ -1797,7 +1797,7 @@
       "data": {
         "label": "High Damages",
         "description": "",
-        "probability": 0.2
+        "probabilityExpr": "0.2"
       }
     },
     "ed13doGvkL48P-xjmiSl2KflCM": {
@@ -1808,7 +1808,7 @@
       "data": {
         "label": "Mid Damages",
         "description": "",
-        "probability": 0.5
+        "probabilityExpr": "0.5"
       }
     },
     "ed13doGvkL48P-FLASWILaAjVP": {
@@ -1819,7 +1819,7 @@
       "data": {
         "label": "Low Damages",
         "description": "",
-        "probability": 0.3
+        "probabilityExpr": "0.3"
       }
     },
     "eyDjyuXS6Vs8x-nLHlc_RhT5kT": {
@@ -1830,7 +1830,7 @@
       "data": {
         "label": "Shared Liability",
         "description": "",
-        "probability": 0.6
+        "probabilityExpr": "0.6"
       }
     }
   },

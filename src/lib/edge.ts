@@ -3,7 +3,8 @@ import { Edge } from "@xyflow/react";
 export type AppEdge = Edge<{
   label?: string;
   description?: string;
-  probability: number | null;
+  // NOTE: transformed into probability by safeEvalExpr in toComputeEdge
+  probabilityExpr?: string;
 }>;
 
 export function createEdge(
@@ -18,7 +19,7 @@ export function createEdge(
     source: fromNodeId,
     target: toNodeId,
     type: "custom",
-    data: { label: "", description: "", probability: null, ...data },
+    data: { label: "", description: "", ...data },
     selected, // Mark as selected by default
   };
   return newEdge;

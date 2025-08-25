@@ -30,9 +30,6 @@ export default function CustomEdge({
     selectComputedProbability(state, id),
   );
 
-  // Fall back to stored probability if computed is not available
-  const probability = computedProbability ?? data?.probability;
-
   // NOTE: assumes the edge is always left to right
   const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({
     sourceX,
@@ -88,7 +85,7 @@ export default function CustomEdge({
             }}
             className="absolute top-3"
           >
-            {formatProbability(probability, 0, "???", "")}
+            {formatProbability(computedProbability, 0, "???", "")}
           </div>
         </div>
       </EdgeLabelRenderer>

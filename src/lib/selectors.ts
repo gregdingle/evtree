@@ -63,7 +63,7 @@ const selectNetExpectedValues = memoize((state: StoreState) => {
 
   const { nodes, edges } = computeNodeValues(
     mapValues(tree.nodes, (node) => toComputeNode(node, tree.variables)),
-    mapValues(tree.edges, toComputeEdge),
+    mapValues(tree.edges, (edge) => toComputeEdge(edge, tree.variables)),
   );
 
   return {

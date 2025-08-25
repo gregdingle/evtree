@@ -15,7 +15,7 @@ import {
   createSelectorFunctions,
 } from "auto-zustand-selectors-hook";
 import { cloneDeep, isEqual, keyBy, round, throttle } from "es-toolkit";
-import { keys, max, values } from "es-toolkit/compat";
+import { keys, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { temporal } from "zundo";
 import { StateCreator } from "zustand";
@@ -26,6 +26,7 @@ import { shallow } from "zustand/vanilla/shallow";
 
 import initialTrees from "@/data/initialTrees";
 import { AppEdge, cloneEdge, createEdge } from "@/lib/edge";
+import { toComputeEdge } from "@/lib/expectedValue";
 import { getLayoutedElements } from "@/lib/layout";
 import {
   buildNodeToIncomingEdgeMap,
@@ -311,18 +312,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           withCurrentTree(state, (tree) => {
             const edge = tree.edges[id];
             if (edge) {
-              const currentData = edge.data ?? {
-                label: undefined,
-                description: undefined,
-                probability: null,
-              };
               edge.data = {
-                ...currentData,
+                ...edge.data,
                 ...edgeData,
-                probability:
-                  edgeData?.probability !== undefined
-                    ? edgeData.probability
-                    : currentData.probability,
               };
               tree.updatedAt = new Date().toISOString();
             } else {
@@ -349,28 +341,25 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               (edge) => edge.source === targetEdge.source,
             );
 
-            // Calculate sum of existing probabilities (excluding the target edge)
+            // Calculate sum of existing probabilities excluding the current edge
             const existingProbabilitySum = siblingEdges
-              .filter(
-                (edge) =>
-                  edge.id !== id && edge.data?.probability !== undefined,
-              )
-              .reduce((sum, edge) => sum + (edge.data?.probability ?? 0), 0);
+              .filter((edge) => edge.id !== id)
+              .reduce((sum, edge) => {
+                const computeEdge = toComputeEdge(edge, tree.variables);
+                const probability = computeEdge.data?.probability;
+                return sum + (probability ?? 0);
+              }, 0);
 
-            // Count undefined probabilities (including the target edge)
-            const undefinedProbabilityCount = siblingEdges.filter(
-              (edge) => edge.data?.probability === undefined || edge.id === id,
-            ).length;
-
-            // Calculate balanced probability, round to 2 decimals
-            const balancedProbability = round(
-              max([0, 1.0 - existingProbabilitySum])! /
-                undefinedProbabilityCount,
-              2,
+            // Set the remaining probability for the target edge
+            const balancedProbability = Math.max(
+              0,
+              // TODO: could this lead to total prob less than 1?
+              round(1.0 - existingProbabilitySum, 2),
             );
+
             const edge = tree.edges[id];
             if (edge && edge.data) {
-              edge.data.probability = balancedProbability;
+              edge.data.probabilityExpr = balancedProbability.toString();
               tree.updatedAt = new Date().toISOString();
             } else {
               warnItemNotFound("Edge", id, "data update");
@@ -396,17 +385,12 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (stripData) {
               copiedNodes = copiedNodes.map((node) => ({
                 ...node,
-                data: {
-                  label: node.data.label,
-                  description: node.data.description,
-                },
+                data: {},
               }));
 
               copiedEdges = copiedEdges.map((edge) => ({
                 ...edge,
-                data: {
-                  probability: null,
-                },
+                data: {},
               }));
             }
 
@@ -508,18 +492,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                   const reconnectionEdge = createEdge(
                     incomingEdge.source,
                     firstPastedNodeId,
+                    true,
+                    incomingEdge.data,
                   );
-                  // Preserve the original edge data
-                  reconnectionEdge.data = {
-                    label: incomingEdge.data?.label,
-                    description: incomingEdge.data?.description,
-                    probability: incomingEdge.data?.probability ?? null,
-                  };
                   tree.edges[reconnectionEdge.id] = reconnectionEdge;
                 }
               }
             } else {
-              // Normal paste behavior - clear selections and paste with offse
+              // Normal paste behavior - clear selections and paste with offset
 
               // First pass: create nodes with offset positions and build ID mapping
               clipboard.nodes.forEach((clipboardNode) => {

@@ -1,11 +1,12 @@
-import { getAI, getGenerativeModel, VertexAIBackend } from "firebase/ai";
+import { isPlainObject, memoize } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
+import { VertexAIBackend, getAI, getGenerativeModel } from "firebase/ai";
 import { initializeApp } from "firebase/app";
 
 import { createEdge } from "@/lib/edge";
 import { createNode } from "@/lib/node";
 import { createTree } from "@/lib/tree";
-import { isPlainObject, memoize } from "es-toolkit";
-import { isEmpty } from "es-toolkit/compat";
+
 import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
 import aiSchemasText from "./ai-schemas.md";
 import { AppEdge } from "./edge";
@@ -184,6 +185,7 @@ export function convertAIStructureToDecisionTree(
     const appNode = createNode(dummyPosition, nodeType, false, {
       label: "",
       description: "",
+      // NOTE: convert to string which will be converted back to number internally
       valueExpr: node.value?.toString() || undefined,
       costExpr: node.cost?.toString() || undefined,
     });
@@ -194,7 +196,8 @@ export function convertAIStructureToDecisionTree(
     if (parentId) {
       const edge = createEdge(parentId, appNode.id, false, {
         label: branch?.label || "",
-        probability: branch?.probability || null,
+        // NOTE: convert to string which will be converted back to number internally
+        probabilityExpr: branch?.probability?.toString() || undefined,
         description: branch?.reason || "",
       });
       edges[edge.id] = edge;

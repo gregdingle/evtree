@@ -1,8 +1,8 @@
 // TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
 // TODO: should PropertyInputProps inherit from
+import React, { useEffect, useState } from "react";
 
 import { debounce } from "es-toolkit";
-import React, { useEffect, useState } from "react";
 
 // React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
@@ -12,9 +12,6 @@ interface PropertyInputProps {
   onChange?: (value: string) => void;
   placeholder?: string;
   type?: string;
-  max?: number;
-  min?: number;
-  step?: number;
   disabled?: boolean;
   children?: React.ReactNode;
 }
@@ -41,9 +38,9 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
 
     return (
       <div
-        className={`mb-2 flex flex-wrap space-x-2 ${
+        className={`mb-2 flex space-x-2 ${
           textarea ? "flex-col" : "items-center"
-        }`}
+        } ${children && !textarea ? "flex-nowrap" : "flex-wrap"}`}
       >
         <label htmlFor={label} className="w-20 cursor-pointer select-none">
           {label}
@@ -55,7 +52,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
             disabled={disabled}
-            className={`flex-1 rounded-md border-2 p-1 ${
+            className={`min-w-0 flex-grow rounded-md border-2 p-1 ${
               disabled
                 ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 : ""
@@ -71,7 +68,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
             disabled={disabled}
-            className={`flex-1 rounded-md border-2 p-1 ${
+            className={`min-w-0 flex-grow rounded-md border-2 p-1 ${
               disabled
                 ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 : ""

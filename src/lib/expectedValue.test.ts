@@ -9,6 +9,7 @@ import {
   toComputeEdge,
   toComputeNode,
 } from "../lib/expectedValue";
+import { AppEdge } from "./edge";
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
 
@@ -577,6 +578,143 @@ describe("toComputeNode expression evaluation", () => {
 
     expect(result.data.value).toEqual(1237567);
     expect(result.data.cost).toEqual(9000);
+  });
+});
+
+describe("toComputeEdge expression evaluation", () => {
+  const appEdge: AppEdge = {
+    id: "test-edge",
+    source: "source",
+    target: "target",
+    type: "custom",
+    data: {},
+  };
+
+  test("should return null when no expression is provided", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: undefined,
+      },
+    };
+
+    const result = toComputeEdge(testEdge);
+
+    expect(result.data?.probability).toBeNull();
+  });
+
+  test("should evaluate simple probability expressions", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "0.5",
+      },
+    };
+
+    const result = toComputeEdge(testEdge);
+
+    expect(result.data?.probability).toEqual(0.5);
+  });
+
+  test("should evaluate probability expressions with variables", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "winRate * confidence",
+      },
+    };
+
+    const variables = {
+      winRate: 0.8,
+      confidence: 0.75,
+    };
+
+    const result = toComputeEdge(testEdge, variables);
+
+    expect(result.data?.probability).toBeCloseTo(0.6); // 0.8 * 0.75
+  });
+
+  test("should handle complex probability expressions", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "baseProbability * (1 + adjustment)",
+      },
+    };
+
+    const variables = {
+      baseProbability: 0.4,
+      adjustment: 0.25,
+    };
+
+    const result = toComputeEdge(testEdge, variables);
+
+    expect(result.data?.probability).toEqual(0.5); // 0.4 * (1 + 0.25)
+  });
+
+  test("should strip currency symbols and commas from probability expressions", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "  $0.75", // with currency and whitespace
+      },
+    };
+
+    const result = toComputeEdge(testEdge);
+
+    expect(result.data?.probability).toEqual(0.75);
+  });
+
+  test("should handle conditional probability expressions", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "isHighRisk ? lowProbability : highProbability",
+      },
+    };
+
+    const variables = {
+      isHighRisk: 1, // truthy
+      lowProbability: 0.2,
+      highProbability: 0.8,
+    };
+
+    const result = toComputeEdge(testEdge, variables);
+
+    expect(result.data?.probability).toEqual(0.2); // isHighRisk is truthy
+  });
+
+  test("should fallback to null when expression fails", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "unknownVariable / 2", // This will fail
+      },
+    };
+
+    const consoleSpy = jest
+      .spyOn(console, "debug")
+      .mockImplementation(() => {});
+
+    const result = toComputeEdge(testEdge);
+
+    expect(result.data?.probability).toBeNull(); // Should fallback to null
+    expect(consoleSpy).toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
+
+  test("should handle empty string expressions", () => {
+    const testEdge = {
+      ...appEdge,
+      data: {
+        probabilityExpr: "",
+      },
+    };
+
+    const result = toComputeEdge(testEdge);
+
+    expect(result.data?.probability).toBeNull(); // Empty expressions should return null
   });
 });
 
