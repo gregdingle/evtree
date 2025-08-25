@@ -171,7 +171,8 @@ export default function RightSidePanel() {
                     hasVariables ? "Enter value or formula" : "Enter value"
                   }
                   disabled={allNodes[edge.source]?.type === "decision"}
-                  // NOTE: leave room for balance button
+                  // NOTE: for inlinining button
+                  noWrapChildren={true}
                 >
                   {allNodes[edge.source]?.type === "decision" ? null : (
                     <ToolbarButton
