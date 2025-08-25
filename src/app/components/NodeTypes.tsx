@@ -28,7 +28,7 @@ interface BaseNodeProps {
   isCollapsed: boolean;
 }
 
-const BaseNode = ({ data, children, id }: BaseNodeProps) => {
+const BaseNode = ({ children, id }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
