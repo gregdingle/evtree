@@ -110,6 +110,7 @@ export default function RightSidePanel() {
                     ) : null}
                   </PropertyInput>
                 ) : null}
+                {/* TODO: deprecated... remove if not needed
                 <PropertyInput
                   ref={
                     // NOTE: see above for special case for terminal nodes
@@ -123,7 +124,7 @@ export default function RightSidePanel() {
                     onNodeDataUpdate(node.id, { label: value })
                   }
                   placeholder="Enter node label"
-                />
+                /> */}
                 <PropertyInput
                   label="Cost"
                   value={node.data.costExpr}

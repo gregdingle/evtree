@@ -5,7 +5,15 @@ export type NodeType = "decision" | "chance" | "terminal";
 
 export type AppNode = Node<
   {
+    /**
+     * @deprecated
+     * TODO: remove label if not needed
+     */
     label?: string;
+    /**
+     * @deprecated
+     * TODO: remove description if not needed
+     */
     description?: string;
     // TODO: rename expr to formula?
     valueExpr?: string;

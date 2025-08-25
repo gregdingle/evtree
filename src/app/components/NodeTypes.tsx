@@ -36,7 +36,7 @@ const BaseNode = ({ data, children, id }: BaseNodeProps) => {
   return (
     <div className="nopan relative cursor-pointer text-xs">
       <div className="absolute -top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center whitespace-nowrap">
-        {data.label}
+        {/* TODO: deprecated... remove if not needed {data.label} */}
       </div>
       {children}
       <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
@@ -122,7 +122,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     <div className="nopan relative cursor-pointer text-xs">
       {data.label && (
         <div className="absolute -top-2 left-8 whitespace-nowrap">
-          {data.label}
+          {/* TODO: deprecated... remove if not needed {data.label} */}
         </div>
       )}
       <div
