@@ -209,9 +209,9 @@ function getBestChild(
   nodes: Record<string, ComputeNode>,
 ) {
   const childNetValues = children
-    .map(({ nodeId }) => nodes[nodeId]!.data)
-    .filter((data) => data.value !== null)
-    .map((data) => data.value!);
+    .map(({ nodeId }) => nodes[nodeId]?.data)
+    .filter((data) => data && data.value !== null)
+    .map((data) => data!.value!);
   if (childNetValues.length === 0) {
     return { maxChildValue: null, bestProbability: null };
   }

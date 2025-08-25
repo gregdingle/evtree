@@ -1,4 +1,5 @@
 import { values } from "es-toolkit/compat";
+
 import { AppNode } from "./node";
 
 export function getNearestUpstreamNode(
@@ -8,6 +9,7 @@ export function getNearestUpstreamNode(
   // Find all potential upstream nodes
   const potentialUpstreamNodes = values(nodes).filter((node) => {
     if (node.id === selectedNode.id) return false; // Exclude self
+    if (node.type === "terminal") return false; // Exclude terminal nodes
 
     // Node must be upstream (to the left) of selected node
     const nodeRightEdge = node.position.x + (node.measured?.width ?? 200);

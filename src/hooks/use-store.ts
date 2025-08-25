@@ -2,7 +2,6 @@
 
 import {
   EdgeChange,
-  NodeChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -489,6 +488,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               if (incomingEdge && clipboard.nodes.length > 0) {
                 const firstPastedNodeId = nodeIdMap.get(clipboard.nodes[0]!.id);
                 if (firstPastedNodeId) {
+                  clearSelections(tree);
                   const reconnectionEdge = createEdge(
                     incomingEdge.source,
                     firstPastedNodeId,
@@ -557,8 +557,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
-            const newNode = createNode(position, nodeType);
             clearSelections(tree);
+            const newNode = createNode(position, nodeType);
             tree.nodes[newNode.id] = newNode;
             tree.updatedAt = new Date().toISOString();
           }),
@@ -574,6 +574,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
+            clearSelections(tree);
             const newNode = createNode(position, nodeType);
             const newEdge = createEdge(fromNodeId, newNode.id);
             tree.nodes[newNode.id] = newNode;
@@ -707,40 +708,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     deleteSubTree: (nodeId: string) => {
       set(
         (state) =>
-          withCurrentTree(state, (tree) => {
-            const rootNode = tree.nodes[nodeId];
-            if (!rootNode) {
-              warnItemNotFound("Node", nodeId, "delete subtree");
-              return;
-            }
-
-            const parentToChildMap = buildParentToChildNodeMap(tree.edges);
-
-            // Collect all nodes in the subtree first
-            const nodesToDelete = new Set<string>();
-            const collectDescendants = (currentNodeId: string) => {
-              nodesToDelete.add(currentNodeId);
-              const children = parentToChildMap[currentNodeId] ?? [];
-              children.forEach((childNodeId) => {
-                collectDescendants(childNodeId);
-              });
-            };
-            collectDescendants(nodeId);
-
-            // Delete all edges that have source or target in the subtree
-            values(tree.edges).forEach((edge) => {
-              if (nodesToDelete.has(edge.source) || nodesToDelete.has(edge.target)) {
-                delete tree.edges[edge.id];
-              }
-            });
-
-            // Delete all nodes in the subtree
-            nodesToDelete.forEach((nodeId) => {
-              delete tree.nodes[nodeId];
-            });
-
-            tree.updatedAt = new Date().toISOString();
-          }),
+          withCurrentTree(state, (tree) => deleteSubTreeHelper(tree, nodeId)),
         undefined,
         { type: "deleteSubtree", nodeId },
       );
@@ -750,36 +718,19 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
-            const selectedNodes = values(tree.nodes).filter(
-              (node) => node.selected,
-            );
-            const selectedEdges = values(tree.edges).filter(
-              (edge) => edge.selected,
-            );
+            // Delete subtrees of all selected nodes to ensure valid tree where
+            // all edges are connecting
+            values(tree.nodes)
+              .filter((node) => node.selected)
+              .forEach((node) => deleteSubTreeHelper(tree, node.id));
 
-            if (selectedNodes.length === 0 && selectedEdges.length === 0)
-              return;
-
-            // TODO: is it needed to do this in terms of NodeChange and EdgeChange?
-            const nodeChanges: NodeChange<AppNode>[] = selectedNodes.map(
-              (node) => ({
-                type: "remove",
-                id: node.id,
-              }),
-            );
-
-            const edgeChanges: EdgeChange<AppEdge>[] = selectedEdges.map(
-              (edge) => ({
+            // Delete edges individually
+            const edgeChanges: EdgeChange<AppEdge>[] = values(tree.edges)
+              .filter((edge) => edge.selected)
+              .map((edge) => ({
                 type: "remove",
                 id: edge.id,
-              }),
-            );
-
-            // Apply the changes directly to the tree
-            tree.nodes = keyBy(
-              applyNodeChanges(nodeChanges, values(tree.nodes)),
-              (node) => node.id,
-            );
+              }));
             tree.edges = keyBy(
               applyEdgeChanges(edgeChanges, values(tree.edges)),
               (edge) => edge.id,
@@ -823,6 +774,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               return;
             }
 
+            clearSelections(tree);
             const newEdge = createEdge(nearestNode.id, selectedNode.id);
 
             tree.edges[newEdge.id] = newEdge;
@@ -870,4 +822,39 @@ function withCurrentTree(
     warnItemNotFound("Tree", currentTreeId);
   }
   return state;
+}
+
+function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
+  const rootNode = tree.nodes[nodeId];
+  if (!rootNode) {
+    warnItemNotFound("Node", nodeId, "delete subtree");
+    return;
+  }
+
+  const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+
+  // Collect all nodes in the subtree first
+  const nodesToDelete = new Set<string>();
+  const collectDescendants = (currentNodeId: string) => {
+    nodesToDelete.add(currentNodeId);
+    const children = parentToChildMap[currentNodeId] ?? [];
+    children.forEach((childNodeId) => {
+      collectDescendants(childNodeId);
+    });
+  };
+  collectDescendants(nodeId);
+
+  // Delete all edges that have source or target in the subtree
+  values(tree.edges).forEach((edge) => {
+    if (nodesToDelete.has(edge.source) || nodesToDelete.has(edge.target)) {
+      delete tree.edges[edge.id];
+    }
+  });
+
+  // Delete all nodes in the subtree
+  nodesToDelete.forEach((nodeId) => {
+    delete tree.nodes[nodeId];
+  });
+
+  tree.updatedAt = new Date().toISOString();
 }
