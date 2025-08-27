@@ -1,7 +1,3 @@
-import { useStore } from "@/hooks/use-store";
-import { buildChildToParentNodeMap } from "@/lib/maps";
-import { AppNode, NodeType } from "@/lib/node";
-import { selectCollapsible, selectCurrentEdges } from "@/lib/selectors";
 import {
   ArrowPathIcon,
   ChevronDownIcon,
@@ -14,6 +10,12 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
+
+import { useStore } from "@/hooks/use-store";
+import { buildChildToParentNodeMap } from "@/lib/maps";
+import { AppNode, NodeType } from "@/lib/node";
+import { selectCollapsible, selectCurrentEdges } from "@/lib/selectors";
+
 import { ContextMenuButton } from "./ContextMenuButton";
 import { ContextMenuSubmenu } from "./ContextMenuSubmenu";
 
@@ -47,6 +49,7 @@ export default function ContextMenu({
     onConvertNode,
     toggleNodeCollapse,
     selectSubtree,
+    arrangeSubtree,
     deleteSubTree,
     onCopy,
     connectToNearestNode,
@@ -88,6 +91,8 @@ export default function ContextMenu({
     };
 
     createNodeAt(newPosition, contextNode.id, nodeType);
+    // HACK: Delay the arrangement to ensure the new node is rendered first
+    setTimeout(() => arrangeSubtree(contextNode.id), 0);
     onClose?.();
   };
 
@@ -123,6 +128,12 @@ export default function ContextMenu({
               <ChevronDownIcon className="h-4 w-4" />
             )}
             {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
+          </ContextMenuButton>
+          <ContextMenuButton
+            onClick={() => contextNode && arrangeSubtree(contextNode.id)}
+          >
+            <RectangleGroupIcon className="h-4 w-4" />
+            Arrange {hasChildren ? "Subtree" : "Node"}
           </ContextMenuButton>
           <ContextMenuButton
             onClick={() => {

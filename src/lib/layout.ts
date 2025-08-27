@@ -1,5 +1,6 @@
 import dagre from "@dagrejs/dagre";
 import { Position } from "@xyflow/react";
+
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
 
@@ -17,7 +18,7 @@ const DEFAULT_NODE_HEIGHT = 72;
 
 // TODO: somehow, the branches are not splitting now at exactly the same
 // horizontal position so now there are weird tiny gaps between branches
-// TODO: should this be made more generic and moved to utils?
+// TODO: what's the point of returning edges?
 export const getLayoutedElements = (
   nodes: AppNode[],
   edges: AppEdge[],

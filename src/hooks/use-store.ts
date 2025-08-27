@@ -59,6 +59,7 @@ export interface StoreState {
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
   balanceEdgeProbability: (id: string) => void;
+  // TODO: rename all onX methods to simply X
   onCopy: (stripValues?: boolean) => void;
   onPaste: () => void;
   onReset: () => void;
@@ -72,6 +73,7 @@ export interface StoreState {
     nodeType?: NodeType,
   ) => void;
   onArrange: () => void;
+  arrangeSubtree: (nodeId: string) => void;
   toggleNodeCollapse: (nodeId: string) => void;
   onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
   selectSubtree: (nodeId: string) => void;
@@ -423,6 +425,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             clearSelections(tree);
 
             if (isReplacingNode) {
+              // TODO: arrangeSubtree after replacement
+              // TODO: add paste to context menu
+
               const nodeToReplace = selectedNodes[0]!;
 
               // Get the position and incoming edge info BEFORE deletion
@@ -437,6 +442,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 : null;
 
               // Delete the selected node's subtree (but preserve incoming edge info)
+              // TODO: use deleteSubTreeHelper? what about preserve incoming edge?
               const deleteDescendants = (currentNodeId: string) => {
                 const children = parentToChildMap[currentNodeId] ?? [];
                 children.forEach((childNodeId) => {
@@ -587,7 +593,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // Preserve relative vertical order during auto arrange
+    // NOTE: Preserves relative vertical order during auto arrange
     onArrange: () => {
       set(
         (state) =>
@@ -606,6 +612,70 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "arrangeNodes" },
+      );
+    },
+
+    // TODO: this would be even nicer with an animation!
+    arrangeSubtree: (nodeId: string) => {
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            const rootNode = tree.nodes[nodeId];
+            if (!rootNode) {
+              warnItemNotFound("Node", nodeId, "arrange subtree");
+              return;
+            }
+
+            // Store the original root position
+            const originalRootPosition = { ...rootNode.position };
+
+            // Collect all nodes in the subtree
+            const subtreeNodeIds = collectSubtreeNodeIds(tree, nodeId);
+
+            // Extract subtree nodes and edges
+            const subtreeNodes = Array.from(subtreeNodeIds).map(
+              (id) => tree.nodes[id]!,
+            );
+            const subtreeEdges = values(tree.edges).filter(
+              (edge) =>
+                subtreeNodeIds.has(edge.source) &&
+                subtreeNodeIds.has(edge.target),
+            );
+
+            // Apply layout to the subtree
+            const { nodes: layoutedNodes } = getLayoutedElements(
+              subtreeNodes,
+              subtreeEdges,
+              "LR", // direction
+              1.5, // verticalScale
+              3, // horizontalScale
+              true, // preserveVerticalOrder
+            );
+
+            // Find the root node in the layouted results to calculate offset
+            const layoutedRootNode = layoutedNodes.find(
+              (node) => node.id === nodeId,
+            );
+            if (!layoutedRootNode) return;
+
+            // Calculate offset to maintain root position
+            const offsetX =
+              originalRootPosition.x - layoutedRootNode.position.x;
+            const offsetY =
+              originalRootPosition.y - layoutedRootNode.position.y;
+
+            // Update positions of nodes in the subtree with offset
+            layoutedNodes.forEach((layoutedNode) => {
+              tree.nodes[layoutedNode.id]!.position = {
+                x: layoutedNode.position.x + offsetX,
+                y: layoutedNode.position.y + offsetY,
+              };
+            });
+
+            tree.updatedAt = new Date().toISOString();
+          }),
+        undefined,
+        { type: "arrangeSubtree", nodeId },
       );
     },
 
@@ -831,12 +901,30 @@ function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
     return;
   }
 
+  const nodeIdsToDelete = collectSubtreeNodeIds(tree, nodeId);
+
+  // Delete all edges that have source or target in the subtree
+  values(tree.edges).forEach((edge) => {
+    if (nodeIdsToDelete.has(edge.source) || nodeIdsToDelete.has(edge.target)) {
+      delete tree.edges[edge.id];
+    }
+  });
+
+  // Delete all nodes in the subtree
+  nodeIdsToDelete.forEach((nodeId) => {
+    delete tree.nodes[nodeId];
+  });
+
+  tree.updatedAt = new Date().toISOString();
+}
+
+function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
   const parentToChildMap = buildParentToChildNodeMap(tree.edges);
 
   // Collect all nodes in the subtree first
-  const nodesToDelete = new Set<string>();
+  const subTreeNodes = new Set<string>();
   const collectDescendants = (currentNodeId: string) => {
-    nodesToDelete.add(currentNodeId);
+    subTreeNodes.add(currentNodeId);
     const children = parentToChildMap[currentNodeId] ?? [];
     children.forEach((childNodeId) => {
       collectDescendants(childNodeId);
@@ -844,17 +932,5 @@ function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
   };
   collectDescendants(nodeId);
 
-  // Delete all edges that have source or target in the subtree
-  values(tree.edges).forEach((edge) => {
-    if (nodesToDelete.has(edge.source) || nodesToDelete.has(edge.target)) {
-      delete tree.edges[edge.id];
-    }
-  });
-
-  // Delete all nodes in the subtree
-  nodesToDelete.forEach((nodeId) => {
-    delete tree.nodes[nodeId];
-  });
-
-  tree.updatedAt = new Date().toISOString();
+  return subTreeNodes;
 }
