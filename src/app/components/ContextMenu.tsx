@@ -14,7 +14,11 @@ import { useReactFlow } from "@xyflow/react";
 import { useStore } from "@/hooks/use-store";
 import { buildChildToParentNodeMap } from "@/lib/maps";
 import { AppNode, NodeType } from "@/lib/node";
-import { selectCollapsible, selectCurrentEdges } from "@/lib/selectors";
+import {
+  selectClipboardNodes,
+  selectCollapsible,
+  selectCurrentEdges,
+} from "@/lib/selectors";
 
 import { ContextMenuButton } from "./ContextMenuButton";
 import { ContextMenuSubmenu } from "./ContextMenuSubmenu";
@@ -54,6 +58,7 @@ export default function ContextMenu({
     onCopy,
     connectToNearestNode,
     createNodeAt,
+    onPaste,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -61,6 +66,7 @@ export default function ContextMenu({
   );
 
   const edges = useStore(selectCurrentEdges);
+  const clipboardNodes = useStore(selectClipboardNodes);
 
   const { screenToFlowPosition } = useReactFlow();
 
@@ -163,6 +169,15 @@ export default function ContextMenu({
           >
             <TrashIcon className="h-4 w-4" />
             Delete {hasChildren ? "Subtree" : "Node"}
+          </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" />
+          <ContextMenuButton
+            onClick={() => onPaste()}
+            disabled={!clipboardNodes.length}
+          >
+            <TrashIcon className="h-4 w-4" />
+            {/* TODO: if clipboardNodes is not actually a subtree is that a problem? */}
+            Paste {clipboardNodes.length > 1 ? "Subtree" : "Node"}
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuSubmenu

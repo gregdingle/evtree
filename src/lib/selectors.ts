@@ -265,6 +265,12 @@ export function selectHasClipboardContent(state: StoreState) {
   return clipboard.nodes.length > 0 || clipboard.edges.length > 0;
 }
 
+export function selectClipboardNodes(state: StoreState) {
+  const { clipboard } = state;
+  if (!clipboard) return [];
+  return clipboard.nodes;
+}
+
 export function selectHasNodes(state: StoreState) {
   const tree = selectCurrentTree(state);
   if (!tree) return false;
