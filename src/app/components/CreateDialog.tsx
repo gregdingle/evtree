@@ -37,7 +37,7 @@ interface CreateDialogProps {
  * TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
  */
 export default function CreateDialog({ open, onClose }: CreateDialogProps) {
-  const { fitView } = useReactFlow();
+  const { fitView, zoomTo } = useReactFlow();
 
   const { createTree, loadTree, onArrange } = useStore.getState();
 
@@ -70,7 +70,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
 
       // NOTE: just to set zoom appropriately for first node
       setTimeout(() => {
-        fitView();
+        zoomTo(2);
       }, 100);
     }
   };

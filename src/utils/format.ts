@@ -1,4 +1,5 @@
 import HRNumbers from "human-readable-numbers";
+
 // TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
 export function formatValue(value: number | null | undefined): string {
   if (value === null || value === undefined) {
@@ -11,7 +12,7 @@ export function formatProbability(
   probability: number | null | undefined,
   sigDigits: number = 1,
   placeholder: string = "???",
-  prefix: string = "P="
+  prefix: string = "P=",
 ): string {
   if (probability === null || probability === undefined) {
     return placeholder;
@@ -31,4 +32,17 @@ export function formatCost(cost: number | undefined | null): string {
     return "";
   }
   return " " + formatValue(cost * -1);
+}
+
+/**
+ * YYYY-MM-DD format (no timezone)
+ */
+export function formatDate(date: Date | string | null | undefined): string {
+  if (date === null || date === undefined) {
+    return "";
+  }
+  if (typeof date === "string") {
+    date = new Date(date);
+  }
+  return date.toISOString().split("T")[0]!;
 }

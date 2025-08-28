@@ -1,7 +1,7 @@
 "use client";
 
-import { useStore } from "@/hooks/use-store";
-import { downloadJson, downloadPNG } from "@/lib/download";
+import { useState } from "react";
+
 import {
   ChevronDownIcon,
   DocumentArrowDownIcon,
@@ -12,7 +12,11 @@ import {
 import { useReactFlow } from "@xyflow/react";
 import { kebabCase, sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
-import { useState } from "react";
+
+import { useStore } from "@/hooks/use-store";
+import { downloadJson, downloadPNG } from "@/lib/download";
+import { formatDate } from "@/utils/format";
+
 import { ContextMenuButton } from "./ContextMenuButton";
 import CreateDialog from "./CreateDialog";
 import Tooltip from "./Tooltip";
@@ -120,8 +124,9 @@ export default function LeftSidePanel() {
                       </p>
                     )}
                     <p className="text-xs text-gray-500 dark:text-gray-500">
-                      {tree.updatedAt ??
-                        `Updated ${new Date(tree.updatedAt!).toLocaleDateString()}`}
+                      {tree.updatedAt !== tree.createdAt
+                        ? `Updated ${formatDate(tree.updatedAt)}`
+                        : `Created ${formatDate(tree.createdAt)}`}
                     </p>
                   </div>
                   <div className="ml-2 flex space-x-1">
