@@ -1,7 +1,9 @@
 "use client";
 
-import { ReactFlowProvider } from "@xyflow/react";
 import { useEffect, useState } from "react";
+
+import { ReactFlowProvider } from "@xyflow/react";
+
 import CollapsiblePanel from "./components/CollapsiblePanel";
 import { Histogram } from "./components/Histogram";
 import LeftSidePanel from "./components/LeftSidePanel";

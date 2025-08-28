@@ -28,6 +28,7 @@ export default function CustomEdge({
   targetY,
   data,
   selected,
+  style,
 }: EdgeProps<AppEdge>) {
   const { label } = data ?? {};
 
@@ -131,7 +132,15 @@ export default function CustomEdge({
         path={edgePath}
         // NOTE Tailwind: use ! to override inline/preceding stroke
         className={`${selected ? "!stroke-blue-500/50" : "!stroke-slate-400"}`}
-        style={{ strokeLinecap: "round", strokeWidth: 3 }}
+        style={{
+          strokeLinecap: "round",
+          strokeWidth: 3,
+          // TODO: animation is NOT finished... see getLayoutedElements
+          transition: style?.transition
+            ? // HACK: make animation work with SVG path
+              style.transition.replace("transform", "d")
+            : undefined,
+        }}
       />
       <EdgeLabelRenderer>
         <div className="nopan cursor-pointer text-xs">
@@ -139,6 +148,8 @@ export default function CustomEdge({
             style={{
               transform,
               pointerEvents: "all",
+              // TODO: animation is NOT finished... see getLayoutedElements
+              transition: style?.transition,
             }}
             className="absolute -top-3"
           >
@@ -166,6 +177,8 @@ export default function CustomEdge({
             style={{
               transform,
               pointerEvents: "all",
+              // TODO: animation is NOT finished... see getLayoutedElements
+              transition: style?.transition,
             }}
             className="absolute top-3"
           >

@@ -35,8 +35,6 @@ export function createNode(
     position,
     data: { label: "", description: "", ...data },
     origin: [0.5, 0.0] as [number, number],
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
     selected, // Mark as selected by default
   };
   return newNode;

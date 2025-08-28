@@ -1,5 +1,4 @@
 import dagre from "@dagrejs/dagre";
-import { Position } from "@xyflow/react";
 import { values } from "es-toolkit/compat";
 
 import { AppEdge } from "./edge";
@@ -8,6 +7,14 @@ import { AppNode } from "./node";
 //
 // NOTE: see https://reactflow.dev/examples/layout/dagre
 //
+
+// TODO: instead of free-flowing + arrange, consider this placeholder-based dynamic layout:
+// https://reactflow.dev/examples/layout/dynamic-layouting
+
+// TODO: instead of dagre, consider d3 hierarchy... see
+// https://codesandbox.io/p/sandbox/react-flow-d3-hierarchy-7p8xnf?file=%2Fsrc%2FFlow.js%3A2%2C1-3%2C1
+// https://d3js.org/d3-hierarchy/tree
+// https://reactflow.dev/examples/layout/auto-layout
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -28,8 +35,12 @@ export const getLayoutedElements = (
   verticalScale = 2,
   horizontalScale = 1,
   preserveVerticalOrder = false,
+  // TODO: animate arrange feature is NOT finished... we need to turn off the
+  // animation after arrange somehow... it may be better to do it all with a
+  // global state flag isArranging... I tried with a global conditional CSS
+  // class but it didn't work :(
+  animate = false,
 ): { nodes: AppNode[]; edges: AppEdge[] } => {
-  const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
@@ -42,6 +53,12 @@ export const getLayoutedElements = (
 
   edges.forEach((edge) => {
     dagreGraph.setEdge(edge.source, edge.target);
+    if (animate) {
+      // TODO: should return a copy???
+      edge.style = {
+        transition: "transform 1000ms ease",
+      };
+    }
   });
 
   dagre.layout(dagreGraph);
@@ -54,8 +71,6 @@ export const getLayoutedElements = (
 
     const newNode: AppNode = {
       ...node,
-      targetPosition: isHorizontal ? Position.Left : Position.Top,
-      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
       position: {
@@ -63,6 +78,12 @@ export const getLayoutedElements = (
         y: nodeWithPosition.y * verticalScale - height / 2,
       },
     };
+
+    if (animate) {
+      newNode.style = {
+        transition: "transform 1000ms ease",
+      };
+    }
 
     return newNode;
   });

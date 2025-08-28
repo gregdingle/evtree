@@ -19,8 +19,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -41,8 +39,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -65,8 +61,6 @@
         "costExpr": "-100000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -88,8 +82,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -111,8 +103,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -134,8 +124,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -158,8 +146,6 @@
         "costExpr": "-200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -182,8 +168,6 @@
         "costExpr": "-200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -205,8 +189,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -228,8 +210,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -251,8 +231,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -274,8 +252,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -297,8 +273,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -320,8 +294,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -343,8 +315,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -366,8 +336,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -389,8 +357,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -412,8 +378,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -435,8 +399,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -458,8 +420,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -481,8 +441,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -504,8 +462,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -527,8 +483,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -550,8 +504,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -573,8 +525,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -596,8 +546,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -619,8 +567,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -642,8 +588,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -665,8 +609,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -688,8 +630,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -711,8 +651,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -734,8 +672,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -757,8 +693,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -780,8 +714,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -803,8 +735,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -826,8 +756,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -849,8 +777,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -872,8 +798,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -895,8 +819,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -918,8 +840,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -941,8 +861,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -964,8 +882,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -987,8 +903,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -1010,8 +924,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -1033,8 +945,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -1056,8 +966,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1079,8 +987,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1102,8 +1008,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1125,8 +1029,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1148,8 +1050,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1171,8 +1071,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1194,8 +1092,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1217,8 +1113,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -1240,8 +1134,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30

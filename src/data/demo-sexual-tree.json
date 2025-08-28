@@ -19,8 +19,6 @@
         "x": 0,
         "y": 878
       },
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -41,8 +39,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -64,8 +60,6 @@
         "costExpr": "0"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -86,8 +80,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -110,8 +102,6 @@
         "costExpr": "100000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -132,8 +122,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -155,8 +143,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -179,8 +165,6 @@
         "costExpr": "3000000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -203,8 +187,6 @@
         "costExpr": "1500000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -227,8 +209,6 @@
         "costExpr": "750000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -250,8 +230,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -274,8 +252,6 @@
         "costExpr": "200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -298,8 +274,6 @@
         "costExpr": "300000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -322,8 +296,6 @@
         "costExpr": "300000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -346,8 +318,6 @@
         "costExpr": "250000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -369,8 +339,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -393,8 +361,6 @@
         "costExpr": "150000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -417,8 +383,6 @@
         "costExpr": "300000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -441,8 +405,6 @@
         "costExpr": "250000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -465,8 +427,6 @@
         "costExpr": "200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -488,8 +448,6 @@
         "cost": null
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 32,
         "height": 32
@@ -512,8 +470,6 @@
         "costExpr": "150000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -536,8 +492,6 @@
         "costExpr": "200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -560,8 +514,6 @@
         "costExpr": "200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
@@ -584,8 +536,6 @@
         "costExpr": "200000"
       },
       "origin": [0.5, 0],
-      "sourcePosition": "right",
-      "targetPosition": "left",
       "measured": {
         "width": 24,
         "height": 30
