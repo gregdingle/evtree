@@ -1,10 +1,10 @@
+import { keyBy } from "es-toolkit";
+
 import bathtubTreeData from "@/data/demo-bathtub-tree.json";
 import demoSexualTreeData from "@/data/demo-sexual-tree.json";
 import { AppEdge } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
 import { DecisionTree } from "@/lib/tree";
-import { Position } from "@xyflow/react";
-import { keyBy } from "es-toolkit";
 
 const initialNodes = keyBy(
   [
@@ -16,8 +16,6 @@ const initialNodes = keyBy(
         description: "decision description",
       },
       position: { x: 100, y: 0 },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
     },
     {
       id: "chance",
@@ -27,8 +25,6 @@ const initialNodes = keyBy(
         description: "chance description",
       },
       position: { x: 300, y: 0 },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
     },
     {
       id: "terminal1",
@@ -39,8 +35,6 @@ const initialNodes = keyBy(
         valueExpr: "500",
       },
       position: { x: 500, y: -75 },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
     },
     {
       id: "terminal2",
@@ -51,8 +45,6 @@ const initialNodes = keyBy(
         valueExpr: "1000",
       },
       position: { x: 500, y: 75 },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
     },
     {
       id: "terminal3",
@@ -63,8 +55,6 @@ const initialNodes = keyBy(
         valueExpr: "250",
       },
       position: { x: 300, y: 150 },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
     },
   ] as AppNode[],
   (node) => node.id,

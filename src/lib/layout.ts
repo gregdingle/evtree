@@ -18,7 +18,8 @@ const DEFAULT_NODE_WIDTH = 172;
 const DEFAULT_NODE_HEIGHT = 72;
 
 // TODO: somehow, the branches are not splitting now at exactly the same
-// horizontal position so now there are weird tiny gaps between branches
+// horizontal position so now there are weird tiny gaps between branches.
+// This seems to affect new created nodes on "hello world tree" only.
 // TODO: what's the point of returning edges?
 export const getLayoutedElements = (
   nodes: AppNode[],
@@ -118,12 +119,16 @@ function preserveNodesVerticalOrder(
       const totalHeight = maxY - minY;
       const spacing = totalHeight / Math.max(1, sortedNodes.length - 1);
 
+      // HACK: correct an observed inconsistency issue with branch length after arrange
+      const minX = Math.min(...sortedNodes.map((n) => n.position.x));
+
       sortedNodes.forEach((node, index) => {
         reorderedNodes.push({
           ...node,
           position: {
             ...node.position,
             y: minY + index * spacing,
+            x: minX, // HACK: see above
           },
         });
       });
