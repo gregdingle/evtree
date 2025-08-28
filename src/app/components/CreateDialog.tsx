@@ -1,12 +1,7 @@
 "use client";
 
-import { useStore } from "@/hooks/use-store";
-import {
-  convertAIStructureToDecisionTree,
-  extractTextFromFile,
-  generateDecisionTree,
-} from "@/lib/ai";
-import { type DecisionTree } from "@/lib/tree";
+import { useState } from "react";
+
 import {
   Dialog,
   DialogBackdrop,
@@ -21,7 +16,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
 import { isEmpty, truncate } from "es-toolkit/compat";
-import { useState } from "react";
+
+import { useStore } from "@/hooks/use-store";
+import {
+  convertAIStructureToDecisionTree,
+  extractTextFromFile,
+  generateDecisionTree,
+} from "@/lib/ai";
+import { type DecisionTree } from "@/lib/tree";
 
 interface CreateDialogProps {
   open: boolean;
@@ -65,6 +67,11 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       setNewTreeName("");
       setNewTreeDescription("");
       onClose();
+
+      // NOTE: just to set zoom appropriately for first node
+      setTimeout(() => {
+        fitView();
+      }, 100);
     }
   };
 
