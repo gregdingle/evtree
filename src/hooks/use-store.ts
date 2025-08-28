@@ -601,22 +601,20 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // NOTE: Preserves relative vertical order during auto arrange
     onArrange: () => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
-            const { nodes, edges } = getLayoutedElements(
-              values(tree.nodes),
-              values(tree.edges),
-              "LR", // direction
-              1.5, // verticalScale
-              3, // horizontalScale
-              true, // preserveVerticalOrder
-            );
-            tree.nodes = keyBy(nodes, (node) => node.id);
-            tree.edges = keyBy(edges, (edge) => edge.id);
-            tree.updatedAt = new Date().toISOString();
+            values(tree.nodes)
+              .filter((node) => {
+                // A root node has no incoming edges
+                return !values(tree.edges).some(
+                  (edge) => edge.target === node.id,
+                );
+              })
+              .forEach((node) => {
+                arrangeSubtreeHelper(tree, node.id);
+              });
           }),
         undefined,
         { type: "arrangeNodes" },
@@ -627,47 +625,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     arrangeSubtree: (nodeId: string) => {
       set(
         (state) =>
-          withCurrentTree(state, (tree) => {
-            // Collect all nodes in the subtree
-            const subtreeNodeIds = collectSubtreeNodeIds(tree, nodeId);
-
-            // Extract subtree nodes and edges
-            const subtreeNodes = Array.from(subtreeNodeIds).map(
-              (id) => tree.nodes[id]!,
-            );
-            const subtreeEdges = values(tree.edges).filter(
-              (edge) =>
-                subtreeNodeIds.has(edge.source) &&
-                subtreeNodeIds.has(edge.target),
-            );
-
-            // Apply layout to the subtree
-            const { nodes: layoutedNodes } = getLayoutedElements(
-              subtreeNodes,
-              subtreeEdges,
-              "LR", // direction
-              1.5, // verticalScale
-              3, // horizontalScale
-              true, // preserveVerticalOrder
-            );
-
-            const { offsetX, offsetY } = computeLayoutedNodeOffsets(
-              layoutedNodes,
-              nodeId,
-              tree.nodes,
-              subtreeNodeIds,
-            );
-
-            // Update positions of nodes in the subtree with final offset
-            layoutedNodes.forEach((layoutedNode) => {
-              tree.nodes[layoutedNode.id]!.position = {
-                x: layoutedNode.position.x + offsetX,
-                y: layoutedNode.position.y + offsetY,
-              };
-            });
-
-            tree.updatedAt = new Date().toISOString();
-          }),
+          withCurrentTree(state, (tree) => arrangeSubtreeHelper(tree, nodeId)),
         undefined,
         { type: "arrangeSubtree", nodeId },
       );
@@ -927,4 +885,44 @@ function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
   collectDescendants(nodeId);
 
   return subTreeNodes;
+}
+
+// TODO: move somewhere better?
+function arrangeSubtreeHelper(tree: DecisionTree, nodeId: string) {
+  // Collect all nodes in the subtree
+  const subtreeNodeIds = collectSubtreeNodeIds(tree, nodeId);
+
+  // Extract subtree nodes and edges
+  const subtreeNodes = Array.from(subtreeNodeIds).map((id) => tree.nodes[id]!);
+  const subtreeEdges = values(tree.edges).filter(
+    (edge) =>
+      subtreeNodeIds.has(edge.source) && subtreeNodeIds.has(edge.target),
+  );
+
+  // Apply layout to the subtree
+  const { nodes: layoutedNodes } = getLayoutedElements(
+    subtreeNodes,
+    subtreeEdges,
+    "LR", // direction
+    1.5, // verticalScale
+    3, // horizontalScale
+    true, // preserveVerticalOrder
+  );
+
+  const { offsetX, offsetY } = computeLayoutedNodeOffsets(
+    layoutedNodes,
+    nodeId,
+    tree.nodes,
+    subtreeNodeIds,
+  );
+
+  // Update positions of nodes in the subtree with final offset
+  layoutedNodes.forEach((layoutedNode) => {
+    tree.nodes[layoutedNode.id]!.position = {
+      x: layoutedNode.position.x + offsetX,
+      y: layoutedNode.position.y + offsetY,
+    };
+  });
+
+  tree.updatedAt = new Date().toISOString();
 }
