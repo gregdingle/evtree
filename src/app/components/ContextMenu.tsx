@@ -97,7 +97,8 @@ export default function ContextMenu({
     };
 
     createNodeAt(newPosition, contextNode.id, nodeType);
-    // HACK: Delay the arrangement to ensure the new node is rendered first
+    // HACK: Delay the arrangement to ensure the new node is rendered and
+    // positioned by ReactFlow first
     setTimeout(() => arrangeSubtree(contextNode.id), 0);
     onClose?.();
   };

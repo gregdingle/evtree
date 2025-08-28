@@ -1,5 +1,17 @@
 "use client";
 
+import {
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  ArrowsPointingOutIcon,
+  ChartBarIcon,
+  ClipboardDocumentIcon,
+  DocumentDuplicateIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { useHotkeys } from "react-hotkeys-hook";
+
 import { useStore } from "@/hooks/use-store";
 import { useTemporalStore } from "@/hooks/use-temporal-store";
 import {
@@ -8,17 +20,7 @@ import {
   selectHasSelectedItems,
   selectHasTerminalNodes,
 } from "@/lib/selectors";
-import {
-  ArrowsPointingOutIcon,
-  ArrowUturnLeftIcon,
-  ArrowUturnRightIcon,
-  ChartBarIcon,
-  ClipboardDocumentIcon,
-  DocumentDuplicateIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
-import Image from "next/image";
-import { useHotkeys } from "react-hotkeys-hook";
+
 import { ToolbarButton } from "./ToolbarButton";
 
 interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {

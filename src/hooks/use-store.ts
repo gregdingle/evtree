@@ -426,7 +426,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
             if (isReplacingNode) {
               // TODO: arrangeSubtree after replacement
-              // TODO: add paste to context menu
 
               const nodeToReplace = selectedNodes[0]!;
 
@@ -502,6 +501,15 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                     incomingEdge.data,
                   );
                   tree.edges[reconnectionEdge.id] = reconnectionEdge;
+
+                  // Also arrange the new subtree
+                  // NOTE: we need to do this here instead of in event handler like handleAddBranch
+                  // because we need to the new firstPastedNodeId
+                  // HACK: Delay the arrangement to ensure the new node is rendered and
+                  // positioned by ReactFlow first
+                  setTimeout(() => {
+                    useStore.getState().arrangeSubtree(firstPastedNodeId);
+                  }, 0);
                 }
               }
             } else {
