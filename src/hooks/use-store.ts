@@ -26,7 +26,7 @@ import { shallow } from "zustand/vanilla/shallow";
 import initialTrees from "@/data/initialTrees";
 import { AppEdge, cloneEdge, createEdge } from "@/lib/edge";
 import { toComputeEdge } from "@/lib/expectedValue";
-import { getLayoutedElements } from "@/lib/layout";
+import { computeLayoutedNodeOffsets, getLayoutedElements } from "@/lib/layout";
 import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
@@ -628,15 +628,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
-            const rootNode = tree.nodes[nodeId];
-            if (!rootNode) {
-              warnItemNotFound("Node", nodeId, "arrange subtree");
-              return;
-            }
-
-            // Store the original root position
-            const originalRootPosition = { ...rootNode.position };
-
             // Collect all nodes in the subtree
             const subtreeNodeIds = collectSubtreeNodeIds(tree, nodeId);
 
@@ -660,19 +651,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               true, // preserveVerticalOrder
             );
 
-            // Find the root node in the layouted results to calculate offset
-            const layoutedRootNode = layoutedNodes.find(
-              (node) => node.id === nodeId,
+            const { offsetX, offsetY } = computeLayoutedNodeOffsets(
+              layoutedNodes,
+              nodeId,
+              tree.nodes,
+              subtreeNodeIds,
             );
-            if (!layoutedRootNode) return;
 
-            // Calculate offset to maintain root position
-            const offsetX =
-              originalRootPosition.x - layoutedRootNode.position.x;
-            const offsetY =
-              originalRootPosition.y - layoutedRootNode.position.y;
-
-            // Update positions of nodes in the subtree with offset
+            // Update positions of nodes in the subtree with final offset
             layoutedNodes.forEach((layoutedNode) => {
               tree.nodes[layoutedNode.id]!.position = {
                 x: layoutedNode.position.x + offsetX,

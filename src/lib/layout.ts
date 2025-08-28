@@ -1,5 +1,6 @@
 import dagre from "@dagrejs/dagre";
 import { Position } from "@xyflow/react";
+import { values } from "es-toolkit/compat";
 
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
@@ -132,4 +133,81 @@ function preserveNodesVerticalOrder(
   });
 
   return reorderedNodes;
+}
+
+export function computeLayoutedNodeOffsets(
+  layoutedNodes: AppNode[],
+  targetNodeId: string,
+  nodes: Record<string, AppNode>,
+  subtreeNodeIds: Set<string>,
+) {
+  const rootNode = nodes[targetNodeId]!;
+
+  const layoutedRootNode = layoutedNodes.find(
+    (node) => node.id === targetNodeId,
+  )!;
+
+  // Calculate initial offset to maintain root position
+  const offsetX = rootNode.position.x - layoutedRootNode.position.x;
+  let offsetY = rootNode.position.y - layoutedRootNode.position.y;
+
+  // Calculate bounds of the layouted subtree with initial offset
+  const MINIMUM_DISTANCE = 100; // Minimum distance between subtree and surrounding nodes
+  const subtreeBounds = layoutedNodes.reduce(
+    (bounds, node) => {
+      const adjustedY = node.position.y + offsetY;
+      return {
+        minY: Math.min(bounds.minY, adjustedY),
+        maxY: Math.max(bounds.maxY, adjustedY),
+      };
+    },
+    { minY: Infinity, maxY: -Infinity },
+  );
+
+  // Check for overlaps with surrounding nodes and adjust if needed
+  // Get all nodes NOT in the subtree (surrounding nodes)
+  const surroundingNodes = values(nodes).filter(
+    (node) => !subtreeNodeIds.has(node.id) && !node.hidden,
+  );
+  if (surroundingNodes.length > 0) {
+    let adjustment = 0;
+    let hasOverlap = true;
+
+    while (hasOverlap) {
+      hasOverlap = false;
+      const currentSubtreeMinY = subtreeBounds.minY + adjustment;
+      const currentSubtreeMaxY = subtreeBounds.maxY + adjustment;
+
+      for (const surroundingNode of surroundingNodes) {
+        const surroundingY = surroundingNode.position.y;
+
+        // Check if there's vertical overlap
+        if (
+          currentSubtreeMinY - MINIMUM_DISTANCE < surroundingY &&
+          currentSubtreeMaxY + MINIMUM_DISTANCE > surroundingY
+        ) {
+          // Found overlap, need to adjust
+          hasOverlap = true;
+
+          // Determine whether to move subtree up or down
+          const distanceToMoveDown =
+            surroundingY + MINIMUM_DISTANCE - currentSubtreeMinY;
+          const distanceToMoveUp =
+            currentSubtreeMaxY + MINIMUM_DISTANCE - surroundingY;
+
+          // Choose the smaller adjustment
+          if (distanceToMoveDown < distanceToMoveUp) {
+            adjustment += distanceToMoveDown;
+          } else {
+            adjustment -= distanceToMoveUp;
+          }
+          break;
+        }
+      }
+    }
+
+    // Apply the vertical adjustment
+    offsetY += adjustment;
+  }
+  return { offsetX, offsetY };
 }
