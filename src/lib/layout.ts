@@ -24,6 +24,9 @@ const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 const DEFAULT_NODE_WIDTH = 172;
 const DEFAULT_NODE_HEIGHT = 72;
 
+const HORIZONTAL_TOLERANCE = 10; // Pixels tolerance for grouping
+export const MINIMUM_DISTANCE = 10; // Minimum distance between subtree and surrounding nodes
+
 // TODO: somehow, the branches are not splitting now at exactly the same
 // horizontal position so now there are weird tiny gaps between branches.
 // This seems to affect new created nodes on "hello world tree" only.
@@ -100,7 +103,7 @@ export const getLayoutedElements = (
  * Preserves the original vertical order of nodes within each horizontal group (same level/rank).
  * This maintains user-intended positioning while still benefiting from Dagre's layout algorithm.
  */
-function preserveNodesVerticalOrder(
+export function preserveNodesVerticalOrder(
   originalNodes: AppNode[],
   layoutedNodes: AppNode[],
 ): AppNode[] {
@@ -112,15 +115,23 @@ function preserveNodesVerticalOrder(
 
   // Group nodes by their horizontal position (same level/rank)
   const horizontalGroups = new Map<number, AppNode[]>();
-  const HORIZONTAL_TOLERANCE = 20; // Pixels tolerance for grouping
 
   layoutedNodes.forEach((node) => {
-    const roundedX =
-      Math.round(node.position.x / HORIZONTAL_TOLERANCE) * HORIZONTAL_TOLERANCE;
-    if (!horizontalGroups.has(roundedX)) {
-      horizontalGroups.set(roundedX, []);
+    let foundGroup = false;
+
+    // Check if this node can be added to an existing group
+    for (const [groupX, groupNodes] of horizontalGroups) {
+      if (Math.abs(node.position.x - groupX) <= HORIZONTAL_TOLERANCE) {
+        groupNodes.push(node);
+        foundGroup = true;
+        break;
+      }
     }
-    horizontalGroups.get(roundedX)!.push(node);
+
+    // If no existing group found, create a new one
+    if (!foundGroup) {
+      horizontalGroups.set(node.position.x, [node]);
+    }
   });
 
   // Reorder nodes within each horizontal group by original vertical position
@@ -140,16 +151,12 @@ function preserveNodesVerticalOrder(
       const totalHeight = maxY - minY;
       const spacing = totalHeight / Math.max(1, sortedNodes.length - 1);
 
-      // HACK: correct an observed inconsistency issue with branch length after arrange
-      const minX = Math.min(...sortedNodes.map((n) => n.position.x));
-
       sortedNodes.forEach((node, index) => {
         reorderedNodes.push({
           ...node,
           position: {
             ...node.position,
             y: minY + index * spacing,
-            x: minX, // HACK: see above
           },
         });
       });
@@ -178,62 +185,92 @@ export function computeLayoutedNodeOffsets(
   let offsetY = rootNode.position.y - layoutedRootNode.position.y;
 
   // Calculate bounds of the layouted subtree with initial offset
-  const MINIMUM_DISTANCE = 100; // Minimum distance between subtree and surrounding nodes
   const subtreeBounds = layoutedNodes.reduce(
     (bounds, node) => {
       const adjustedY = node.position.y + offsetY;
+      const nodeHeight = node.measured?.height ?? DEFAULT_NODE_HEIGHT;
       return {
         minY: Math.min(bounds.minY, adjustedY),
-        maxY: Math.max(bounds.maxY, adjustedY),
+        maxY: Math.max(bounds.maxY, adjustedY + nodeHeight),
       };
     },
     { minY: Infinity, maxY: -Infinity },
   );
 
   // Check for overlaps with surrounding nodes and adjust if needed
-  // Get all nodes NOT in the subtree (surrounding nodes)
-  const surroundingNodes = values(nodes).filter(
-    (node) => !subtreeNodeIds.has(node.id) && !node.hidden,
-  );
-  if (surroundingNodes.length > 0) {
-    let adjustment = 0;
-    let hasOverlap = true;
+  if (
+    values(nodes).some((node) => !subtreeNodeIds.has(node.id) && !node.hidden)
+  ) {
+    // Find the best position by analyzing all potential placements
+    const currentSubtreeMinY = subtreeBounds.minY;
+    const currentSubtreeMaxY = subtreeBounds.maxY;
+    const subtreeHeight = currentSubtreeMaxY - currentSubtreeMinY;
 
-    while (hasOverlap) {
-      hasOverlap = false;
-      const currentSubtreeMinY = subtreeBounds.minY + adjustment;
-      const currentSubtreeMaxY = subtreeBounds.maxY + adjustment;
+    // Collect surrounding nodes for potential placements
+    const surroundingNodes = values(nodes).filter(
+      (node) => !subtreeNodeIds.has(node.id) && !node.hidden,
+    );
 
+    // Generate potential Y positions: above and below each surrounding node
+    const potentialPositions: number[] = [];
+
+    for (const surroundingNode of surroundingNodes) {
+      const surroundingY = surroundingNode.position.y;
+      const surroundingHeight = surroundingNode.measured?.height ?? 50; // Default height
+
+      // Position above the surrounding node (subtree bottom should be MINIMUM_DISTANCE above surrounding top)
+      potentialPositions.push(surroundingY - MINIMUM_DISTANCE - subtreeHeight);
+      // Position below the surrounding node (subtree top should be MINIMUM_DISTANCE below surrounding bottom)
+      potentialPositions.push(
+        surroundingY + surroundingHeight + MINIMUM_DISTANCE,
+      );
+    }
+
+    // Also consider the current position
+    potentialPositions.push(currentSubtreeMinY);
+
+    // Find the position with minimal adjustment that has no conflicts
+    let bestAdjustment = 0;
+    let minAdjustmentMagnitude = Infinity;
+
+    for (const candidateMinY of potentialPositions) {
+      const candidateMaxY = candidateMinY + subtreeHeight;
+      const candidateAdjustment = candidateMinY - currentSubtreeMinY;
+
+      // Check if this position has any conflicts
+      let hasConflict = false;
       for (const surroundingNode of surroundingNodes) {
         const surroundingY = surroundingNode.position.y;
+        const surroundingHeight = surroundingNode.measured?.height ?? 50; // Default height
+        const surroundingMinY = surroundingY;
+        const surroundingMaxY = surroundingY + surroundingHeight;
 
-        // Check if there's vertical overlap
+        // Check for overlap: two rectangles overlap if they overlap in both dimensions
+        // Since we only care about vertical positioning, check vertical overlap with minimum distance
+        const subtreeWithDistanceMinY = candidateMinY - MINIMUM_DISTANCE;
+        const subtreeWithDistanceMaxY = candidateMaxY + MINIMUM_DISTANCE;
+
         if (
-          currentSubtreeMinY - MINIMUM_DISTANCE < surroundingY &&
-          currentSubtreeMaxY + MINIMUM_DISTANCE > surroundingY
+          subtreeWithDistanceMinY < surroundingMaxY &&
+          subtreeWithDistanceMaxY > surroundingMinY
         ) {
-          // Found overlap, need to adjust
-          hasOverlap = true;
-
-          // Determine whether to move subtree up or down
-          const distanceToMoveDown =
-            surroundingY + MINIMUM_DISTANCE - currentSubtreeMinY;
-          const distanceToMoveUp =
-            currentSubtreeMaxY + MINIMUM_DISTANCE - surroundingY;
-
-          // Choose the smaller adjustment
-          if (distanceToMoveDown < distanceToMoveUp) {
-            adjustment += distanceToMoveDown;
-          } else {
-            adjustment -= distanceToMoveUp;
-          }
+          hasConflict = true;
           break;
+        }
+      }
+
+      // If no conflict and smaller adjustment, use this position
+      if (!hasConflict) {
+        const adjustmentMagnitude = Math.abs(candidateAdjustment);
+        if (adjustmentMagnitude < minAdjustmentMagnitude) {
+          minAdjustmentMagnitude = adjustmentMagnitude;
+          bestAdjustment = candidateAdjustment;
         }
       }
     }
 
-    // Apply the vertical adjustment
-    offsetY += adjustment;
+    // Apply the best adjustment found
+    offsetY += bestAdjustment;
   }
   return { offsetX, offsetY };
 }
