@@ -56,6 +56,16 @@ const initialNodes = keyBy(
       },
       position: { x: 300, y: 150 },
     },
+    {
+      id: "note1",
+      type: "note",
+      data: {
+        label: "note1",
+        description: "hello world",
+        valueExpr: "250",
+      },
+      position: { x: 150, y: -150 },
+    },
   ] as AppNode[],
   (node) => node.id,
 );

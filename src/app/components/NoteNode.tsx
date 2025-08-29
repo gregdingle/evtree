@@ -62,14 +62,21 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         {isEditing ? (
           <textarea
             ref={inputRef}
-            value={data.description || ""}
+            defaultValue={data.description || ""}
             onChange={handleChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={`h-auto overflow-hidden px-1 m-0 text-gray-600 dark:text-gray-400 leading-relaxed bg-transparent border-none outline-none w-full resize-none min-h-[3rem] ${isEditing ? "nodrag" : ""}`}
             placeholder="Enter note content"
             spellCheck={false}
-            autoFocus={isEditing}
+            // NOTE: autoFocus needed when node is not selected
+            autoFocus={true}
+            // NOTE: onFocus needed because autoFocus
+            onFocus={(event) => {
+              // NOTE: sets cursor to end of text
+              const length = event.target.value.length;
+              event.target.setSelectionRange(length, length);
+            }}
           />
         ) : (
           <div
