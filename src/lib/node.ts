@@ -1,23 +1,21 @@
-import { Node, Position, XYPosition } from "@xyflow/react";
+import { Node, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
-export type NodeType = "decision" | "chance" | "terminal";
+export type NodeType = "decision" | "chance" | "terminal" | "note";
 
 export type AppNode = Node<
   {
-    /**
-     * @deprecated
-     * TODO: remove label if not needed
-     */
-    label?: string;
-    /**
-     * @deprecated
-     * TODO: remove description if not needed
-     */
-    description?: string;
     // TODO: rename expr to formula?
     valueExpr?: string;
     costExpr?: string;
+    /**
+     * NOTE: not used right now
+     */
+    label?: string;
+    /**
+     * NOTE: used by note type only right now
+     */
+    description?: string;
   },
   NodeType
 >;

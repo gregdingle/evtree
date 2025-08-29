@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
@@ -160,8 +160,90 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   );
 };
 
+const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+  // Local state for inline editing
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const { onNodeDataUpdate } = useStore.getState();
+
+  // Auto-resize textarea on content change
+  // TODO: fix small height diff bug
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+    }
+  }, [data.description, isEditing]);
+
+  const handleClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      setIsEditing(false);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setIsEditing(false);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = event.target.value;
+    onNodeDataUpdate(id, { description: value === "" ? undefined : value });
+
+    // Auto-resize textarea immediately on input
+    event.target.style.height = "auto";
+    event.target.style.height = `${event.target.scrollHeight - 4}px`;
+  };
+
+  return (
+    <div className="nopan relative cursor-pointer text-xs">
+      <div
+        className={`w-36 min-h-24 p-4 border-2 border-dashed ${
+          selected
+            ? "border-blue-500 bg-blue-500/10"
+            : "border-gray-400 bg-yellow-100 dark:bg-yellow-900/20"
+        }`}
+      >
+        {/* Description section */}
+        {isEditing ? (
+          <textarea
+            ref={inputRef}
+            value={data.description || ""}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed bg-transparent border-none outline-none w-full resize-none min-h-[3rem]"
+            placeholder="Enter note content"
+            spellCheck={false}
+          />
+        ) : (
+          <div
+            className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed cursor-text"
+            onClick={handleClick}
+          >
+            {data.description || (
+              <span className="text-gray-400 italic">
+                Click to edit note...
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const nodeTypes = {
   chance: ChanceNode,
   decision: DecisionNode,
   terminal: TerminalNode,
+  note: NoteNode,
 };

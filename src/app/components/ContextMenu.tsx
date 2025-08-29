@@ -4,6 +4,7 @@ import {
   ChevronRightIcon,
   DocumentDuplicateIcon,
   LinkIcon,
+  PencilSquareIcon,
   PlayIcon,
   PlusIcon,
   RectangleGroupIcon,
@@ -248,6 +249,11 @@ export default function ContextMenu({
           <ContextMenuButton onClick={() => handleCreateNode("terminal")}>
             <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
             Create Terminal Node
+          </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" />
+          <ContextMenuButton onClick={() => handleCreateNode("note")}>
+            <PencilSquareIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+            Create Note
           </ContextMenuButton>
         </>
       )}

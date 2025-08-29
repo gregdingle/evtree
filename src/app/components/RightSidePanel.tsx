@@ -100,38 +100,50 @@ export default function RightSidePanel() {
                     ) : null}
                   </PropertyInput>
                 ) : null}
-                {/* TODO: deprecated... remove if not needed
-                <PropertyInput
-                  label="Label"
-                  value={node.data.label}
-                  onChange={(value) =>
-                    onNodeDataUpdate(node.id, { label: value })
-                  }
-                  placeholder="Enter node label"
-                /> */}
-                <PropertyInput
-                  label="Cost"
-                  value={node.data.costExpr}
-                  onChange={(value) => {
-                    if (value === "") {
-                      onNodeDataUpdate(node.id, { costExpr: undefined });
-                    } else {
-                      onNodeDataUpdate(node.id, { costExpr: value });
+                {node.type === "note" ? (
+                  <PropertyInput
+                    label="Description"
+                    value={node.data.description}
+                    onChange={(value) =>
+                      onNodeDataUpdate(node.id, { description: value })
                     }
-                  }}
-                  placeholder={
-                    hasVariables ? "Enter cost or formula" : "Enter cost"
-                  }
-                >
-                  {hasVariables ? (
-                    <VariablesList
-                      variables={variables}
-                      node={node}
-                      className="my-1 ml-22"
-                      exprFor="costExpr"
-                    />
-                  ) : null}
-                </PropertyInput>
+                    placeholder="Enter note content"
+                    textarea={true}
+                  />
+                ) : (
+                  /* TODO: deprecated... remove if not needed
+                  <PropertyInput
+                    label="Label"
+                    value={node.data.label}
+                    onChange={(value) =>
+                      onNodeDataUpdate(node.id, { label: value })
+                    }
+                    placeholder="Enter node label"
+                  /> */
+                  <PropertyInput
+                    label="Cost"
+                    value={node.data.costExpr}
+                    onChange={(value) => {
+                      if (value === "") {
+                        onNodeDataUpdate(node.id, { costExpr: undefined });
+                      } else {
+                        onNodeDataUpdate(node.id, { costExpr: value });
+                      }
+                    }}
+                    placeholder={
+                      hasVariables ? "Enter cost or formula" : "Enter cost"
+                    }
+                  >
+                    {hasVariables ? (
+                      <VariablesList
+                        variables={variables}
+                        node={node}
+                        className="my-1 ml-22"
+                        exprFor="costExpr"
+                      />
+                    ) : null}
+                  </PropertyInput>
+                )}
               </div>
             ))}
             {edges.length > 1 ? (
