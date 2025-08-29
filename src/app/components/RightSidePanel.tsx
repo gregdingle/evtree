@@ -152,6 +152,7 @@ export default function RightSidePanel() {
                     netExpectedValues.nodeValues?.[node.id]?.toString() ?? ""
                   }
                   disabled={true}
+                  // TODO: add a subtle note when the node inherits costs from ancestor nodes
                 />
               </div>
             ))}
