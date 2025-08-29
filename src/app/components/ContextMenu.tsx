@@ -37,7 +37,7 @@ export interface ContextMenuProps {
  * @see https://reactflow.dev/examples/interaction/context-menu
  *
  * NOTE: need to adjust the height in useContextMenu to match the height of this
- * component! Currently set to 340px in useContextMenu.
+ * component! Currently set to 380px in useContextMenu.
  */
 export default function ContextMenu({
   top,

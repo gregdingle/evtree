@@ -1,6 +1,7 @@
+import { useRef, useState } from "react";
+
 import { ContextMenuProps } from "@/app/components/ContextMenu";
 import { AppNode } from "@/lib/node";
-import { useRef, useState } from "react";
 
 /**
  * @see https://reactflow.dev/examples/interaction/context-menu
@@ -29,7 +30,7 @@ export function useContextMenu() {
 
     // Approximate height of the context menu
     // TODO: make this dynamic based on the number of items in the menu
-    const menuHeight = 340;
+    const menuHeight = 380;
 
     setMenu({
       top: relativeY < pane.height - menuHeight ? relativeY : undefined,
