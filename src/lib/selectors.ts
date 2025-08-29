@@ -126,8 +126,7 @@ export function selectShouldShowProbabilityWarning(
   return (
     targetEdgeProbability < 0 ||
     targetEdgeProbability > 1 ||
-    probabilitySum < 0 ||
-    probabilitySum > 1
+    probabilitySum !== 1
   );
 }
 
