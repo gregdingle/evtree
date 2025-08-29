@@ -12,13 +12,6 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const { onNodeDataUpdate } = useStore.getState();
 
-  // Auto-enter edit mode when node is selected (but not if already editing)
-  // useEffect(() => {
-  //   if (selected && !isEditing) {
-  //     setIsEditing(true);
-  //   }
-  // }, [selected, isEditing]);
-
   // Auto-resize textarea on content change
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -32,6 +25,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   };
 
   const handleBlur = () => {
+    // TODO: onBlur, the text jumps a few pixels as it switches from textarea... not sure why
     setIsEditing(false);
   };
 
@@ -57,7 +51,8 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       className={`nopan relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
-        className={`w-36 min-h-24 p-2 border-2 border-dashed ${
+        className={`w-40 min-h-24 p-2 border-2 border-dashed ${
+          // TODO: when note is selected, the bg is transparent, so the underlying content is visible... it's weird
           selected
             ? "border-blue-500 bg-blue-500/10"
             : "border-gray-400 bg-yellow-100 dark:bg-yellow-900/20"
@@ -79,7 +74,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         ) : (
           <div
             // TODO: same hover colors as edge labels... but bg is yellow... do better?
-            className="px-1 text-gray-600 dark:text-gray-400 leading-relaxed  hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="px-1 text-gray-600 dark:text-gray-400 leading-relaxed  hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             onClick={isEditing ? undefined : handleClick}
           >
             {data.description || (
