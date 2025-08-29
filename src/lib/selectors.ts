@@ -51,7 +51,7 @@ export function selectCurrentEdges(state: StoreState) {
  * TODO: better to use createCachedSelector from reselect package?
  * TODO: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
  */
-const selectNetExpectedValues = memoize((state: StoreState) => {
+export const selectNetExpectedValues = memoize((state: StoreState) => {
   const { currentTreeId } = state;
   if (!currentTreeId) {
     return {};

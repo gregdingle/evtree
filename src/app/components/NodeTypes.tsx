@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
@@ -118,9 +118,45 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+  // Local state for inline editing
+  const [isEditingValue, setIsEditingValue] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { onNodeDataUpdate } = useStore.getState();
+
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
+
+  // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
+
+  // Auto-focus input when editing starts
+  useEffect(() => {
+    if (isEditingValue && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditingValue]);
+
+  const handleValueClick = () => {
+    // NOTE: do not stopPropagation so we also select the node
+    setIsEditingValue(true);
+  };
+
+  const handleBlur = () => {
+    setIsEditingValue(false);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === "Escape") {
+      event.preventDefault();
+      setIsEditingValue(false);
+    }
+  };
+
+  const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    onNodeDataUpdate(id, { valueExpr: value === "" ? undefined : value });
+  };
 
   return (
     <div
@@ -150,11 +186,29 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           data.label ? "top-2" : "-top-1"
         } whitespace-nowrap`}
       >
-        {/* NOTE: we only show the net path value, following silver decisions
-        {formatValue(data.value)}
-        {formatCost(data.cost)}
-        */}
-        {formatValue(pathValue)}
+        {isEditingValue ? (
+          // TODO: we only show the net path value, following silver decisions,
+          // but this causes an inconsistency when between the displayed value
+          // and the editing value when there is a cost to the node, or a cost
+          // upstream... diff valueExpr and pathValue
+          <input
+            ref={inputRef}
+            type="text"
+            value={data.valueExpr ?? ""}
+            onChange={handleValueChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="focus:outline-none"
+            spellCheck={false}
+          />
+        ) : (
+          <span
+            onClick={handleValueClick}
+            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1 py-0.5 -mx-1 rounded"
+          >
+            {formatValue(pathValue) || "???"}
+          </span>
+        )}
       </div>
       <div className={`absolute ${data.label ? "top-6" : "top-5"} left-8`}>
         {/*

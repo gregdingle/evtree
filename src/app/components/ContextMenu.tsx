@@ -188,13 +188,6 @@ export default function ContextMenu({
             disabled={false}
           >
             <ContextMenuButton
-              onClick={() => handleConvertNode("decision")}
-              disabled={contextNode?.type === "decision"}
-            >
-              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
-              Decision Node
-            </ContextMenuButton>
-            <ContextMenuButton
               onClick={() => handleConvertNode("chance")}
               disabled={contextNode?.type === "chance"}
             >
@@ -208,6 +201,13 @@ export default function ContextMenu({
               <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
               Terminal Node
             </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => handleConvertNode("decision")}
+              disabled={contextNode?.type === "decision"}
+            >
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
+            </ContextMenuButton>
           </ContextMenuSubmenu>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuSubmenu
@@ -215,10 +215,6 @@ export default function ContextMenu({
             icon={<PlusIcon className="h-4 w-4" />}
             disabled={contextNode?.type === "terminal"}
           >
-            <ContextMenuButton onClick={() => handleAddBranch("decision")}>
-              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
-              Decision Node
-            </ContextMenuButton>
             <ContextMenuButton onClick={() => handleAddBranch("chance")}>
               <div className="h-4 w-4 rounded-full border-1 border-current"></div>
               Chance Node
@@ -226,6 +222,10 @@ export default function ContextMenu({
             <ContextMenuButton onClick={() => handleAddBranch("terminal")}>
               <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
               Terminal Node
+            </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleAddBranch("decision")}>
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
             </ContextMenuButton>
           </ContextMenuSubmenu>
           <ContextMenuButton

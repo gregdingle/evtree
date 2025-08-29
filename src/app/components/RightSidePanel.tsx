@@ -7,6 +7,7 @@ import {
   selectCurrentEdges,
   selectCurrentNodes,
   selectCurrentTree,
+  selectNetExpectedValues,
 } from "@/lib/selectors";
 
 import PropertyInput from "./PropertyInput";
@@ -29,6 +30,7 @@ export default function RightSidePanel() {
       currentTree: selectCurrentTree(state),
     };
   });
+  const netExpectedValues = useStore(selectNetExpectedValues);
 
   const variables = currentTree?.variables ?? {};
   const hasVariables = keys(variables).length > 0;
@@ -144,6 +146,13 @@ export default function RightSidePanel() {
                     ) : null}
                   </PropertyInput>
                 )}
+                <PropertyInput
+                  label="Expected Net Value"
+                  value={
+                    netExpectedValues.nodeValues?.[node.id]?.toString() ?? ""
+                  }
+                  disabled={true}
+                />
               </div>
             ))}
             {edges.length > 1 ? (
