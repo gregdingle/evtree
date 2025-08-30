@@ -4,6 +4,9 @@ interface TooltipProps {
   className?: string;
 }
 
+/**
+ * See also .tooltip class in globals.css.
+ */
 export default function Tooltip({
   text,
   children,

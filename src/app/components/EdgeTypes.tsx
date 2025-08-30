@@ -33,7 +33,7 @@ export default function CustomEdge({
 }: EdgeProps<AppEdge>) {
   const { label } = data ?? {};
 
-  const { onEdgeDataUpdate } = useStore.getState();
+  const { onEdgeDataUpdate, balanceEdgeProbability } = useStore.getState();
 
   // Use computed probability instead of stored probability
   const computedProbability = useStore((state) =>
@@ -208,7 +208,19 @@ export default function CustomEdge({
                 {formatProbability(computedProbability, 0, "???", "")}
                 {shouldWarn ? (
                   // TODO: should we show this somehow in inline edit mode?
-                  <ExclamationCircleIcon className="ml-0.5 -mt-0.5 inline-block h-3 w-3 fill-red-600" />
+                  <span
+                    className="tooltip"
+                    data-tooltip="Incomplete probabilities. Click to fix."
+                  >
+                    <ExclamationCircleIcon
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        balanceEdgeProbability(id);
+                      }}
+                      className="ml-0.5 -mt-0.5 inline-block h-3 w-3 fill-red-600"
+                      // TODO: how to use Tooltip without messing up text size and other styles
+                    />
+                  </span>
                 ) : null}
               </span>
             )}

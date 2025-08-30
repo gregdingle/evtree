@@ -54,3 +54,31 @@ body {
   background-color: #fefefe !important;
   border: 1px solid #eee !important;
 }
+
+/*
+  NOTE: need alternative to <Tooltip /> for canvas
+  The styles here have been tweaked to look the same.
+*/
+.evtree .tooltip {
+  position: relative;
+}
+.evtree .tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -16px; /* show below */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 4px;
+  border-radius: 1px;
+  font-size: 6px;
+  /* TODO: dark mode */
+  background: black;
+  color: white;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.evtree .tooltip:hover::after {
+  opacity: 1;
+}
