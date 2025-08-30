@@ -210,6 +210,8 @@ export default function CustomEdge({
                   // TODO: should we show this somehow in inline edit mode?
                   <span
                     className="tooltip"
+                    // TODO: it doesn't always fix... if the sum of other
+                    // probabilities is >1, clicking this only sets it to 0%
                     data-tooltip="Incomplete probabilities. Click to fix."
                   >
                     <ExclamationCircleIcon
