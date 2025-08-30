@@ -13,6 +13,7 @@ import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import {
   selectComputedProbability,
+  selectHasDecisionNodeSource,
   selectShouldShowProbabilityWarning,
 } from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
@@ -32,12 +33,6 @@ export default function CustomEdge({
 }: EdgeProps<AppEdge>) {
   const { label } = data ?? {};
 
-  // Local state for inline editing
-  const [editingField, setEditingField] = useState<
-    "label" | "probability" | null
-  >(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const { onEdgeDataUpdate } = useStore.getState();
 
   // Use computed probability instead of stored probability
@@ -48,6 +43,16 @@ export default function CustomEdge({
   const shouldWarn = useStore((state) =>
     selectShouldShowProbabilityWarning(state, id),
   );
+
+  const hasDecisionNodeSource = useStore((state) =>
+    selectHasDecisionNodeSource(state, id),
+  );
+
+  // Local state for inline editing
+  const [editingField, setEditingField] = useState<
+    "label" | "probability" | null
+  >(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus input when editing starts
   useEffect(() => {
@@ -195,8 +200,10 @@ export default function CustomEdge({
               />
             ) : (
               <span
-                onClick={handleProbabilityClick}
-                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1 py-0.5 rounded"
+                onClick={
+                  hasDecisionNodeSource ? undefined : handleProbabilityClick
+                }
+                className={`cursor-pointer dark:hover:bg-gray-700 px-1 py-0.5 rounded ${hasDecisionNodeSource ? "" : "hover:bg-gray-100"}`}
               >
                 {formatProbability(computedProbability, 0, "???", "")}
                 {shouldWarn ? (

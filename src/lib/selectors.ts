@@ -2,6 +2,9 @@ import { mapValues, memoize, omit } from "es-toolkit";
 import { fromPairs, toPairs, values } from "es-toolkit/compat";
 
 import { StoreState } from "@/hooks/use-store";
+import { AppEdge } from "@/lib/edge";
+import { AppNode } from "@/lib/node";
+import { DecisionTree } from "@/lib/tree";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
 import {
@@ -16,7 +19,7 @@ import {
   buildParentToChildNodeMap,
 } from "../lib/maps";
 
-export function selectCurrentTree(state: StoreState) {
+export function selectCurrentTree(state: StoreState): DecisionTree | undefined {
   const { trees, currentTreeId } = state;
   if (!currentTreeId) {
     // NOTE: this should never happen
@@ -34,12 +37,12 @@ export function selectCurrentTree(state: StoreState) {
   return trees[currentTreeId];
 }
 
-export function selectCurrentNodes(state: StoreState) {
+export function selectCurrentNodes(state: StoreState): AppNode[] {
   const currentTree = selectCurrentTree(state);
   return currentTree ? values(currentTree.nodes) : [];
 }
 
-export function selectCurrentEdges(state: StoreState) {
+export function selectCurrentEdges(state: StoreState): AppEdge[] {
   const currentTree = selectCurrentTree(state);
   return currentTree ? values(currentTree.edges) : [];
 }
@@ -51,29 +54,36 @@ export function selectCurrentEdges(state: StoreState) {
  * TODO: better to use createCachedSelector from reselect package?
  * TODO: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
  */
-export const selectNetExpectedValues = memoize((state: StoreState) => {
-  const { currentTreeId } = state;
-  if (!currentTreeId) {
-    return {};
-  }
-  const tree = state.trees[currentTreeId];
-  if (!tree) {
-    return {};
-  }
+export const selectNetExpectedValues = memoize(
+  (
+    state: StoreState,
+  ): {
+    nodeValues?: Record<string, number | null>;
+    edgeProbabilities?: Record<string, number | null>;
+  } => {
+    const { currentTreeId } = state;
+    if (!currentTreeId) {
+      return {};
+    }
+    const tree = state.trees[currentTreeId];
+    if (!tree) {
+      return {};
+    }
 
-  const { nodes, edges } = computeNodeValues(
-    mapValues(tree.nodes, (node) => toComputeNode(node, tree.variables)),
-    mapValues(tree.edges, (edge) => toComputeEdge(edge, tree.variables)),
-  );
+    const { nodes, edges } = computeNodeValues(
+      mapValues(tree.nodes, (node) => toComputeNode(node, tree.variables)),
+      mapValues(tree.edges, (edge) => toComputeEdge(edge, tree.variables)),
+    );
 
-  return {
-    nodeValues: mapValues(nodes, (node) => node.data.value),
-    edgeProbabilities: mapValues(
-      edges,
-      (edge) => edge.data?.probability ?? null,
-    ),
-  };
-});
+    return {
+      nodeValues: mapValues(nodes, (node) => node.data.value),
+      edgeProbabilities: mapValues(
+        edges,
+        (edge) => edge.data?.probability ?? null,
+      ),
+    };
+  },
+);
 
 /**
  * Returns the computed probability for a specific edge.
@@ -214,7 +224,7 @@ export function selectNetExpectedValue(
 export function selectCollapsible(
   state: StoreState,
   nodeId: string | undefined,
-) {
+): { hasChildren: boolean; isCollapsed: boolean } {
   const tree = state.trees[state.currentTreeId!];
   if (!nodeId || !tree) {
     return { hasChildren: false, isCollapsed: false };
@@ -231,10 +241,13 @@ export function selectCollapsible(
   return { hasChildren, isCollapsed };
 }
 
-function selectParentNode(state: StoreState, nodeId: string | undefined) {
+function selectParentNode(
+  state: StoreState,
+  nodeId: string | undefined,
+): string | undefined {
   const tree = state.trees[state.currentTreeId!];
   if (!nodeId || !tree) {
-    return false;
+    return undefined;
   }
 
   const childToParentMap = buildChildToParentNodeMap(tree.edges);
@@ -244,11 +257,26 @@ function selectParentNode(state: StoreState, nodeId: string | undefined) {
 export function selectHasParentNode(
   state: StoreState,
   nodeId: string | undefined,
-) {
+): boolean {
   return Boolean(selectParentNode(state, nodeId));
 }
 
-export function selectHasSelectedItems(state: StoreState) {
+export function selectHasDecisionNodeSource(
+  state: StoreState,
+  edgeId: string | undefined,
+): boolean {
+  const tree = state.trees[state.currentTreeId!];
+  if (!edgeId || !tree) {
+    return false;
+  }
+  const edge = tree.edges[edgeId];
+  if (!edge || !edge.source) {
+    return false;
+  }
+  return tree.nodes[edge.source]?.type === "decision";
+}
+
+export function selectHasSelectedItems(state: StoreState): boolean {
   const tree = selectCurrentTree(state);
   if (!tree) return false;
 
@@ -258,33 +286,33 @@ export function selectHasSelectedItems(state: StoreState) {
   return hasSelectedNodes || hasSelectedEdges;
 }
 
-export function selectHasClipboardContent(state: StoreState) {
+export function selectHasClipboardContent(state: StoreState): boolean {
   const { clipboard } = state;
   if (!clipboard) return false;
   return clipboard.nodes.length > 0 || clipboard.edges.length > 0;
 }
 
-export function selectClipboardNodes(state: StoreState) {
+export function selectClipboardNodes(state: StoreState): AppNode[] {
   const { clipboard } = state;
   if (!clipboard) return [];
   return clipboard.nodes;
 }
 
-export function selectHasNodes(state: StoreState) {
+export function selectHasNodes(state: StoreState): boolean {
   const tree = selectCurrentTree(state);
   if (!tree) return false;
 
   return values(tree.nodes).length > 0;
 }
 
-export function selectHasTerminalNodes(state: StoreState) {
+export function selectHasTerminalNodes(state: StoreState): boolean {
   const tree = selectCurrentTree(state);
   if (!tree) return false;
 
   return values(tree.nodes).some((node) => node.type === "terminal");
 }
 
-export function selectUndoableState(state: StoreState) {
+export function selectUndoableState(state: StoreState): StoreState {
   // TODO: is going thru all the users trees necessary? why not just the current tree?
   return {
     ...state,

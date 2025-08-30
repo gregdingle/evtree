@@ -238,10 +238,6 @@ export default function ContextMenu({
         </>
       ) : (
         <>
-          <ContextMenuButton onClick={() => handleCreateNode("decision")}>
-            <div className="h-4 w-4 border-1 border-current"></div>
-            Create Decision Node
-          </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("chance")}>
             <div className="h-4 w-4 rounded-full border-1 border-current"></div>
             Create Chance Node
@@ -249,6 +245,10 @@ export default function ContextMenu({
           <ContextMenuButton onClick={() => handleCreateNode("terminal")}>
             <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
             Create Terminal Node
+          </ContextMenuButton>
+          <ContextMenuButton onClick={() => handleCreateNode("decision")}>
+            <div className="h-4 w-4 border-1 border-current"></div>
+            Create Decision Node
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuButton onClick={() => handleCreateNode("note")}>
