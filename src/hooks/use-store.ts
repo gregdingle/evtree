@@ -31,7 +31,7 @@ import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
 } from "@/lib/maps";
-import { getNearestUpstreamNode } from "@/lib/nearest";
+import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
 import { DecisionTree, createTree } from "@/lib/tree";
@@ -786,7 +786,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               return;
             }
 
-            const nearestNode = getNearestUpstreamNode(
+            const nearestNode = findNearestUpstreamNode(
               tree.nodes,
               selectedNode,
             );
