@@ -1,10 +1,19 @@
 import HRNumbers from "human-readable-numbers";
 
-// TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
+/**
+ * @see https://www.npmjs.com/package/human-readable-numbers
+ *
+ * TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
+ */
 export function formatValue(value: number | null | undefined): string {
   if (value === null || value === undefined) {
     return "";
   }
+  // NOTE: we don't want SI prefixes for small values here
+  if (value < 1) {
+    return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+
   return HRNumbers.toHumanString(value);
 }
 
@@ -45,4 +54,12 @@ export function formatDate(date: Date | string | null | undefined): string {
     date = new Date(date);
   }
   return date.toISOString().split("T")[0]!;
+}
+
+export function formatValueLong(value: number | null | undefined): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

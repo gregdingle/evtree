@@ -9,6 +9,7 @@ import {
   selectCurrentTree,
   selectNetExpectedValues,
 } from "@/lib/selectors";
+import { formatValueLong } from "@/utils/format";
 
 import PropertyInput from "./PropertyInput";
 import { ToolbarButton } from "./ToolbarButton";
@@ -148,9 +149,9 @@ export default function RightSidePanel() {
                 )}
                 <PropertyInput
                   label="Expected Net Value"
-                  value={
-                    netExpectedValues.nodeValues?.[node.id]?.toString() ?? ""
-                  }
+                  value={formatValueLong(
+                    netExpectedValues.nodeValues?.[node.id],
+                  )}
                   disabled={true}
                   // TODO: add a subtle note when the node inherits costs from ancestor nodes
                 />
