@@ -64,7 +64,7 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       hasChildren={hasChildren}
       isCollapsed={isCollapsed}
     >
-      <div className={`p-4 ${selected ? "bg-blue-500/50" : "bg-slate-400"}`}>
+      <div className={`p-4 ${selected ? "bg-blue-500/50" : "bg-red-400"}`}>
         <Handle
           type="target"
           position={Position.Left}
@@ -96,7 +96,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     >
       <div
         className={`rounded-full p-4 ${
-          selected ? "bg-blue-500/50" : "bg-slate-400"
+          selected ? "bg-blue-500/50" : "bg-yellow-400"
         }`}
       >
         <Handle
@@ -171,7 +171,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div
         // NOTE: this wacky CSS creates the triangle shape
         className={`h-0 w-0 border-t-[15px] border-r-[24px] border-b-[15px] border-l-0 border-t-transparent border-b-transparent border-l-transparent ${
-          selected ? "border-r-blue-500/50" : "border-r-slate-400"
+          selected ? "border-r-blue-500/50" : "border-r-green-400"
         }`}
       />
       <Handle
