@@ -7,7 +7,6 @@ import { AppEdge } from "@/lib/edge";
 import { buildChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 import {
-  Background,
   Connection,
   Controls,
   OnConnectEnd,
@@ -87,7 +86,6 @@ export default function ReactFlowApp() {
         minZoom={0.1}
         isValidConnection={(connection) => isValidConnection(edges, connection)}
       >
-        <Background />
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
       </ReactFlow>
 
