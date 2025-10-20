@@ -103,8 +103,8 @@ const middlewares = (
       equality: isEqual,
     }),
     {
-      // TODO: develop migration and invalidation protocol
-      name: "evtree-storage-v1",
+      // TODO: develop migration and invalidation protocol... but for now just v number
+      name: "evtree-storage-v2",
       // TODO: localStorage or sessionStorage?
       storage: createJSONStorage(() => window.localStorage),
     },

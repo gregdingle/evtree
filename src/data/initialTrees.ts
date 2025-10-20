@@ -12,7 +12,6 @@ const initialNodes = keyBy(
       id: "decision",
       type: "decision",
       data: {
-        label: "decision",
         description: "decision description",
       },
       position: { x: 100, y: 0 },
@@ -21,7 +20,6 @@ const initialNodes = keyBy(
       id: "chance",
       type: "chance",
       data: {
-        label: "chance",
         description: "chance description",
       },
       position: { x: 300, y: 0 },
@@ -30,7 +28,6 @@ const initialNodes = keyBy(
       id: "terminal1",
       type: "terminal",
       data: {
-        label: "terminal1",
         description: "terminal1 description",
         valueExpr: "500",
       },
@@ -40,7 +37,6 @@ const initialNodes = keyBy(
       id: "terminal2",
       type: "terminal",
       data: {
-        label: "terminal2",
         description: "terminal2 description",
         valueExpr: "1000",
       },
@@ -50,7 +46,6 @@ const initialNodes = keyBy(
       id: "terminal3",
       type: "terminal",
       data: {
-        label: "terminal3",
         description: "terminal3 description",
         valueExpr: "250",
       },
@@ -60,7 +55,6 @@ const initialNodes = keyBy(
       id: "note1",
       type: "note",
       data: {
-        label: "note1",
         description: "hello world",
         valueExpr: "250",
       },

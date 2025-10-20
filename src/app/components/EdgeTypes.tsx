@@ -148,7 +148,7 @@ export default function CustomEdge({
         }}
       />
       <EdgeLabelRenderer>
-        <div className="nopan cursor-pointer text-xs">
+        <div className="nopan cursor-pointer text-s">
           <div
             style={{
               transform,

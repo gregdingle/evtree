@@ -37,7 +37,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
 
   return (
     <div
-      className={`nopan relative text-xs  ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan relative text-s  ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div className="absolute -top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center whitespace-nowrap">
         {/* TODO: deprecated... remove if not needed {data.label} */}
@@ -161,7 +161,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
     <div
       // TODO: sholud also "nodrag" when not selected?
-      className={`nopan relative text-xs ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       {data.label && (
         <div className="absolute -top-2 left-8 whitespace-nowrap">
