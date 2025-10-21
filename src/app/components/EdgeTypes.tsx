@@ -52,14 +52,26 @@ export default function CustomEdge({
   const [editingField, setEditingField] = useState<
     "label" | "probability" | null
   >(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const labelInputRef = useRef<HTMLTextAreaElement>(null);
+  const probabilityInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus input when editing starts
   useEffect(() => {
-    if (editingField && inputRef.current) {
-      inputRef.current.focus();
+    if (editingField === "label" && labelInputRef.current) {
+      labelInputRef.current.focus();
+      handleTextareaResize(labelInputRef.current);
+    } else if (editingField === "probability" && probabilityInputRef.current) {
+      probabilityInputRef.current.focus();
     }
   }, [editingField]);
+
+  // Auto-resize textarea to fit content
+  const handleTextareaResize = (target: HTMLTextAreaElement) => {
+    // Reset height to recalculate
+    target.style.height = "0px";
+    // Set to scrollHeight
+    target.style.height = target.scrollHeight + "px";
+  };
 
   const handleLabelClick = () => {
     // NOTE: do not stopPropagation so we also select the edge
@@ -91,9 +103,10 @@ export default function CustomEdge({
     }
   };
 
-  const handleLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLabelChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = event.target.value;
     onEdgeDataUpdate(id, { label: value === "" ? undefined : value });
+    handleTextareaResize(event.target);
   };
 
   const handleProbabilityChange = (
@@ -129,6 +142,12 @@ export default function CustomEdge({
   const transform = `translate(-50%, -50%) translate(${translateX}px, ${
     labelY + adjY
   }px)`;
+  const transformLabel = `translate(-50%, -100%) translate(${translateX}px, ${
+    labelY + adjY
+  }px)`;
+
+  // TODO: how to connect this to the elbow widths above?
+  const labelWidth = 200;
 
   return (
     <>
@@ -151,45 +170,42 @@ export default function CustomEdge({
         <div className="nopan cursor-pointer text-s">
           <div
             style={{
-              transform,
+              transform: transformLabel,
               pointerEvents: "all",
               // TODO: animation is NOT finished... see getLayoutedElements
               transition: style?.transition,
+              maxWidth: `${labelWidth}px`,
             }}
-            className="absolute -top-3"
+            // HACK: adjust offset position based for textarea vs span
+            className={`absolute ${editingField === "label" ? "top-1" : "-top-1"} hover:bg-gray-100 dark:hover:bg-gray-700 ${editingField === "label" ? "bg-gray-100" : ""} rounded break-words inline-block text-center`}
+            onClick={handleLabelClick}
           >
             {editingField === "label" ? (
-              <input
-                ref={inputRef}
-                type="text"
+              <textarea
+                ref={labelInputRef}
                 value={label ?? ""}
                 onChange={handleLabelChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className="px-1 py-0.5 focus:outline-none text-center"
+                className="text-center resize-none overflow-hidden outline-none"
                 spellCheck={false}
+                style={{ width: `${labelWidth}px` }}
               />
             ) : (
-              <span
-                onClick={handleLabelClick}
-                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1 py-0.5 rounded"
-              >
-                {label || "???"}
-              </span>
+              <span>{label || "???"}</span>
             )}
           </div>
           <div
             style={{
               transform,
-              pointerEvents: "all",
               // TODO: animation is NOT finished... see getLayoutedElements
               transition: style?.transition,
             }}
-            className="absolute top-3"
+            className="absolute top-4"
           >
             {editingField === "probability" ? (
               <input
-                ref={inputRef}
+                ref={probabilityInputRef}
                 type="text"
                 value={data?.probabilityExpr ?? ""}
                 onChange={handleProbabilityChange}
@@ -204,6 +220,9 @@ export default function CustomEdge({
                   hasDecisionNodeSource ? undefined : handleProbabilityClick
                 }
                 className={`cursor-pointer dark:hover:bg-gray-700 px-1 py-0.5 rounded ${hasDecisionNodeSource ? "" : "hover:bg-gray-100"}`}
+                style={{
+                  pointerEvents: "all",
+                }}
               >
                 {formatProbability(computedProbability, 0, "???", "")}
                 {shouldWarn ? (
