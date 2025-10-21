@@ -201,6 +201,14 @@ export default function RightSidePanel() {
                       balance
                     </ToolbarButton>
                   )}
+                  {hasVariables ? (
+                    <VariablesList
+                      variables={variables}
+                      edge={edge}
+                      className="my-1 ml-22"
+                      exprFor="probabilityExpr"
+                    />
+                  ) : null}
                 </PropertyInput>
                 <PropertyInput
                   label="Description"
