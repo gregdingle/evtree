@@ -2,6 +2,8 @@ import {
   ArrowPathIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  CursorArrowRaysIcon,
+  CursorArrowRippleIcon,
   DocumentDuplicateIcon,
   LinkIcon,
   PencilSquareIcon,
@@ -38,7 +40,7 @@ export interface ContextMenuProps {
  * @see https://reactflow.dev/examples/interaction/context-menu
  *
  * NOTE: need to adjust the height in useContextMenu to match the height of this
- * component! Currently set to 380px in useContextMenu.
+ * component! Currently set to 280px in useContextMenu.
  */
 export default function ContextMenu({
   top,
@@ -120,58 +122,69 @@ export default function ContextMenu({
     >
       {contextNode ? (
         <>
-          <ContextMenuButton
-            onClick={() => contextNode && selectSubtree(contextNode.id)}
+          <ContextMenuSubmenu
+            title={hasChildren ? "Subtree..." : "Node..."}
+            icon={<CursorArrowRaysIcon className="h-4 w-4" />}
+            disabled={false}
           >
-            <RectangleGroupIcon className="h-4 w-4" />
-            Select {hasChildren ? "Subtree" : "Node"}
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => contextNode && toggleNodeCollapse(contextNode.id)}
-            disabled={!hasChildren}
-          >
-            {isCollapsed ? (
-              <ChevronRightIcon className="h-4 w-4" />
-            ) : (
-              <ChevronDownIcon className="h-4 w-4" />
+            <ContextMenuButton
+              onClick={() => contextNode && selectSubtree(contextNode.id)}
+            >
+              <CursorArrowRippleIcon className="h-4 w-4" />
+              Select {hasChildren ? "Subtree" : "Node"}
+            </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => {
+                if (contextNode) {
+                  selectSubtree(contextNode.id);
+                  onCopy();
+                }
+              }}
+            >
+              <DocumentDuplicateIcon className="h-4 w-4" />
+              Copy {hasChildren ? "Subtree" : "Node"}
+            </ContextMenuButton>
+            {hasChildren && (
+              <>
+                <ContextMenuButton
+                  onClick={() => {
+                    if (contextNode) {
+                      selectSubtree(contextNode.id);
+                      onCopy(true);
+                    }
+                  }}
+                >
+                  <span className="rotate-90 text-2xl">⑂</span>
+                  {/* TODO: is this a good name? */}
+                  Copy Structure Only
+                </ContextMenuButton>
+                <ContextMenuButton
+                  onClick={() =>
+                    contextNode && toggleNodeCollapse(contextNode.id)
+                  }
+                >
+                  {isCollapsed ? (
+                    <ChevronRightIcon className="h-4 w-4" />
+                  ) : (
+                    <ChevronDownIcon className="h-4 w-4" />
+                  )}
+                  {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
+                </ContextMenuButton>
+                <ContextMenuButton
+                  onClick={() => contextNode && arrangeSubtree(contextNode.id)}
+                >
+                  <RectangleGroupIcon className="h-4 w-4" />
+                  Arrange {hasChildren ? "Subtree" : "Node"}
+                </ContextMenuButton>
+              </>
             )}
-            {isCollapsed ? "Expand Subtree" : "Collapse Subtree"}
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => contextNode && arrangeSubtree(contextNode.id)}
-          >
-            <RectangleGroupIcon className="h-4 w-4" />
-            Arrange {hasChildren ? "Subtree" : "Node"}
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => {
-              if (contextNode) {
-                selectSubtree(contextNode.id);
-                onCopy();
-              }
-            }}
-          >
-            <DocumentDuplicateIcon className="h-4 w-4" />
-            Copy {hasChildren ? "Subtree" : "Node"}
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => {
-              if (contextNode) {
-                selectSubtree(contextNode.id);
-                onCopy(true);
-              }
-            }}
-          >
-            <span className="rotate-90 text-2xl">⑂</span>
-            {/* TODO: is this a good name? */}
-            Copy Structure Only
-          </ContextMenuButton>
-          <ContextMenuButton
-            onClick={() => contextNode && deleteSubTree(contextNode.id)}
-          >
-            <TrashIcon className="h-4 w-4" />
-            Delete {hasChildren ? "Subtree" : "Node"}
-          </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => contextNode && deleteSubTree(contextNode.id)}
+            >
+              <TrashIcon className="h-4 w-4" />
+              Delete {hasChildren ? "Subtree" : "Node"}
+            </ContextMenuButton>
+          </ContextMenuSubmenu>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuButton
             onClick={() => onPaste()}

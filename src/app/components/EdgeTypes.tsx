@@ -128,6 +128,7 @@ export default function CustomEdge({
     // NOTE: need to make space for potential terminal node label of previous
     // level in tree
     stepPosition,
+    borderRadius: 20, // increase from default of 5
   });
   // HACK: Adjust the default label position when at stepPosition > 0 from the
   // vertical segment to the horizontal. When the edge is not left-to-right,

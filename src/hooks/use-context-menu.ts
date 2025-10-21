@@ -30,7 +30,7 @@ export function useContextMenu() {
 
     // Approximate height of the context menu
     // TODO: make this dynamic based on the number of items in the menu
-    const menuHeight = 380;
+    const menuHeight = 280;
 
     setMenu({
       top: relativeY < pane.height - menuHeight ? relativeY : undefined,
