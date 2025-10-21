@@ -183,23 +183,24 @@ export default function RightSidePanel() {
                     hasVariables ? "Enter value or formula" : "Enter value"
                   }
                   disabled={allNodes[edge.source]?.type === "decision"}
-                  // NOTE: for inlinining button
-                  noWrapChildren={true}
+                  inlineButton={true}
                 >
                   {allNodes[edge.source]?.type === "decision" ? null : (
-                    <ToolbarButton
-                      tooltip={
-                        // TODO: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
-                        <span>
-                          Set the probability
-                          <br /> based on other
-                          <br /> branches
-                        </span>
-                      }
-                      onClick={() => balanceEdgeProbability(edge.id)}
-                    >
-                      balance
-                    </ToolbarButton>
+                    <div className="flex-1/4">
+                      <ToolbarButton
+                        tooltip={
+                          // TODO: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
+                          <span>
+                            Set the probability
+                            <br /> based on other
+                            <br /> branches
+                          </span>
+                        }
+                        onClick={() => balanceEdgeProbability(edge.id)}
+                      >
+                        balance
+                      </ToolbarButton>
+                    </div>
                   )}
                   {hasVariables ? (
                     <VariablesList

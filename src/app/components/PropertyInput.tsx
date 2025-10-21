@@ -11,7 +11,7 @@ interface PropertyInputProps {
   placeholder?: string;
   type?: string;
   disabled?: boolean;
-  noWrapChildren?: boolean;
+  inlineButton?: boolean;
   children?: React.ReactNode;
 }
 
@@ -26,16 +26,16 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
       textarea,
       disabled,
       children,
-      noWrapChildren,
+      inlineButton,
       ...props
     },
     ref,
   ) => {
     return (
       <div
-        className={`mb-2 flex space-x-2 ${
+        className={`mb-2 flex flex-wrap space-x-2 ${
           textarea ? "flex-col" : "items-center"
-        } ${noWrapChildren ? "flex-nowrap" : "flex-wrap"}`}
+        }`}
       >
         <label htmlFor={label} className="w-20 cursor-pointer select-none">
           {label}
@@ -47,7 +47,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 flex-grow rounded-md border-2 p-1 ${
+            className={`min-w-0 rounded-md border-2 p-1 ${
               disabled
                 ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 : ""
@@ -63,11 +63,13 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 flex-grow rounded-md border-2 p-1 ${
+            className={`min-w-0 rounded-md border-2 p-1 ${
               disabled
                 ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 : ""
-            }`}
+            }
+            ${inlineButton ? "flex-1/4" : "flex-1"}
+            `}
             spellCheck={false}
             {...props}
           />
