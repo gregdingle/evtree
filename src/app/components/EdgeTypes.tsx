@@ -117,6 +117,7 @@ export default function CustomEdge({
   };
 
   // NOTE: assumes the edge is always left to right
+  const stepPosition = 0.25;
   const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -126,28 +127,33 @@ export default function CustomEdge({
     targetPosition: Position.Left,
     // NOTE: need to make space for potential terminal node label of previous
     // level in tree
-    stepPosition: 0.25,
+    stepPosition,
   });
   // HACK: Adjust the default label position when at stepPosition > 0 from the
   // vertical segment to the horizontal. When the edge is not left-to-right,
-  // which should never happen, simply revert. Special-case when there is no
-  // bend, only a single horizontal segment.
+  // which should never happen, simply revert.
   // TODO: contribute this upstream to xyflow
   const isLeftToRight = sourceX < targetX;
   const midPointX = (targetX - sourceX) / 2;
   const adjY = isLeftToRight ? (labelY > sourceY ? offsetY : -offsetY) : 0;
   // Adjust X position based on step position to keep labels on horizontal segment
-  const adjX = isLeftToRight ? Math.min(midPointX, 40) : 0;
-  const translateX = sourceY == targetY ? sourceX + midPointX : labelX + adjX;
-  const transform = `translate(-50%, -50%) translate(${translateX}px, ${
+  // Min 20 px of margin from vertical segment
+  const adjX = isLeftToRight ? Math.min(midPointX, 20) : 0;
+  // Special-case when there is no bend, only a single horizontal segment.
+  const translateX = sourceY == targetY ? labelX : labelX + adjX;
+  const transformProb = `translate(-${(stepPosition / 2) * 100}%, -50%) translate(${translateX}px, ${
     labelY + adjY
   }px)`;
-  const transformLabel = `translate(-50%, -100%) translate(${translateX}px, ${
+  const transformLabel = `translate(-${(stepPosition / 2) * 100}%, -100%) translate(${translateX}px, ${
     labelY + adjY
   }px)`;
 
-  // TODO: how to connect this to the elbow widths above?
-  const labelWidth = 200;
+  // HACK: width by empirical testing
+  const labelWidth = (targetX - sourceX) / 1.5;
+
+  // TODO: The above code positions and sizes the label container pretty good,
+  // but not perfect. We need to start over from first principles of the
+  // getSmoothStepPath function and CSS transform to make it perfect.
 
   return (
     <>
@@ -167,7 +173,7 @@ export default function CustomEdge({
         }}
       />
       <EdgeLabelRenderer>
-        <div className="nopan cursor-pointer text-s">
+        <div className="nopan text-s">
           <div
             style={{
               transform: transformLabel,
@@ -177,7 +183,7 @@ export default function CustomEdge({
               maxWidth: `${labelWidth}px`,
             }}
             // HACK: adjust offset position based for textarea vs span
-            className={`absolute ${editingField === "label" ? "top-1" : "-top-1"} hover:bg-gray-100 dark:hover:bg-gray-700 ${editingField === "label" ? "bg-gray-100" : ""} rounded break-words inline-block text-center`}
+            className={`absolute ${editingField === "label" ? "top-1" : "-top-1"} text-center cursor-pointer`}
             onClick={handleLabelClick}
           >
             {editingField === "label" ? (
@@ -187,21 +193,27 @@ export default function CustomEdge({
                 onChange={handleLabelChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className="text-center resize-none overflow-hidden outline-none"
+                className="resize-none overflow-hidden text-center py-0.5"
                 spellCheck={false}
                 style={{ width: `${labelWidth}px` }}
               />
             ) : (
-              <span>{label || "???"}</span>
+              <span
+                style={{ width: `${labelWidth}px` }}
+                className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5"
+              >
+                {label || "???"}
+              </span>
             )}
           </div>
           <div
             style={{
-              transform,
+              transform: transformProb,
+              pointerEvents: "all",
               // TODO: animation is NOT finished... see getLayoutedElements
               transition: style?.transition,
             }}
-            className="absolute top-4"
+            className="absolute top-4 text-center"
           >
             {editingField === "probability" ? (
               <input
@@ -211,18 +223,17 @@ export default function CustomEdge({
                 onChange={handleProbabilityChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className="px-1 py-0.5 focus:outline-none text-center"
+                className="py-0.5 text-center"
                 spellCheck={false}
+                style={{ width: `${labelWidth}px` }}
               />
             ) : (
               <span
                 onClick={
                   hasDecisionNodeSource ? undefined : handleProbabilityClick
                 }
-                className={`cursor-pointer dark:hover:bg-gray-700 px-1 py-0.5 rounded ${hasDecisionNodeSource ? "" : "hover:bg-gray-100"}`}
-                style={{
-                  pointerEvents: "all",
-                }}
+                className={`block dark:hover:bg-gray-700 py-0.5 rounded ${hasDecisionNodeSource ? "cursor-not-allowed" : "hover:bg-gray-100 cursor-pointer"}`}
+                style={{ width: `${labelWidth}px` }}
               >
                 {formatProbability(computedProbability, 0, "???", "")}
                 {shouldWarn ? (
