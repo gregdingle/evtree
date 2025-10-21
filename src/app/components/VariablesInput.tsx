@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { range } from "es-toolkit";
 import { keys, toPairs } from "es-toolkit/compat";
@@ -11,10 +11,11 @@ import { selectCurrentTree } from "@/lib/selectors";
  * variables for an expression.
  */
 export default function VariablesInput() {
-  // Subscribe to store directly
-  const { variables, onTreeDataUpdate } = useStore((state) => {
+  // Subscribe to store directly - also get currentTreeId to detect tree switches
+  const { currentTreeId, variables, onTreeDataUpdate } = useStore((state) => {
     const currentTree = selectCurrentTree(state);
     return {
+      currentTreeId: state.currentTreeId,
       variables: currentTree?.variables ?? {},
       onTreeDataUpdate: state.onTreeDataUpdate,
     };
@@ -37,6 +38,12 @@ export default function VariablesInput() {
 
   // Local state for immediate UI updates
   const [localVariables, setLocalVariables] = useState(initialVariablesArray);
+
+  // Sync local state only when tree switches (not when variables change)
+  useEffect(() => {
+    setLocalVariables(initialVariablesArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTreeId]); // Only depend on tree ID, not variables
 
   // TODO: make deleting the name or value remove the variable from the UI, as
   // it does on reload
