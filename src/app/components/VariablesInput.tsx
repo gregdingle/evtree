@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 
 import { range } from "es-toolkit";
-import { toPairs } from "es-toolkit/compat";
+import { keys, toPairs } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import { selectCurrentTree } from "@/lib/selectors";
 
+/**
+ * See VariablesList for the complementing component that allows selecting
+ * variables for an expression.
+ */
 export default function VariablesInput() {
   // Subscribe to store directly
   const { variables, onTreeDataUpdate } = useStore((state) => {
@@ -83,8 +87,8 @@ export default function VariablesInput() {
   };
 
   return (
-    <div className="mb-2">
-      <label className="mb-2 block cursor-pointer select-none">Variables</label>
+    <details className="mb-2" open={keys(variables).length > 0}>
+      <summary className="cursor-pointer select-none">Variables</summary>
       <div className="space-y-1">
         {localVariables.map((variable, index) => (
           <div
@@ -117,6 +121,6 @@ export default function VariablesInput() {
           + more rows
         </button>
       </div>
-    </div>
+    </details>
   );
 }

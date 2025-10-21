@@ -1,6 +1,7 @@
+import { toPairs } from "es-toolkit/compat";
+
 import { useStore } from "@/hooks/use-store";
 import { AppNode } from "@/lib/node";
-import { toPairs } from "es-toolkit/compat";
 
 interface VariablesListProps extends React.HTMLAttributes<HTMLDetailsElement> {
   variables: Record<string, number>;
@@ -8,6 +9,9 @@ interface VariablesListProps extends React.HTMLAttributes<HTMLDetailsElement> {
   exprFor: "costExpr" | "valueExpr";
 }
 
+/**
+ * See VariablesInput for the complementing component that allows editing
+ */
 export function VariablesList({
   variables,
   node,
