@@ -170,9 +170,9 @@ export function selectPathProbability(
   // Find the edge that leads to this node
   const incomingEdgeId = nodeToIncomingEdge[nodeId];
 
-  // If no incoming edge, this is a root node or disconnected
+  // If no incoming edge, this is a root node
   if (!incomingEdgeId) {
-    return null;
+    return 1.0;
   }
 
   // Traverse the path from this node back to root, multiplying probabilities
@@ -323,7 +323,7 @@ export function selectHasTerminalNodes(state: StoreState): boolean {
 
 // NOTE: default here should match useStoreBase definition
 export function selectShowEVs(state: StoreState): boolean {
-  return state.settings.showEVs ?? true;
+  return state.settings.showEVs ?? false;
 }
 
 // NOTE: default here should match useStoreBase definition

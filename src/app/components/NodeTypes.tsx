@@ -130,7 +130,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
-  const showEVs = useStore((state) => state.settings.showEVs);
+  const showEVs = useStore(selectShowEVs);
 
   // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
 

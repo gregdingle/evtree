@@ -9,6 +9,7 @@ import {
   selectCurrentTree,
   selectNetExpectedValues,
   selectPathProbabilities,
+  selectShowEVs,
 } from "@/lib/selectors";
 import { formatProbability, formatValueLong } from "@/utils/format";
 
@@ -30,7 +31,7 @@ export default function RightSidePanel() {
       nodes: selectCurrentNodes(state).filter((node) => node.selected),
       edges: selectCurrentEdges(state).filter((edge) => edge.selected),
       currentTree: selectCurrentTree(state),
-      showEVs: state.settings.showEVs,
+      showEVs: selectShowEVs(state),
     };
   });
   const netExpectedValues = useStore(selectNetExpectedValues);
