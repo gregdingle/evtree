@@ -41,6 +41,9 @@ export interface StoreState {
   trees: Record<string, DecisionTree>;
   currentTreeId: string | null;
   clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
+  settings: {
+    showEVs: boolean;
+  };
 
   // Tree management
   createTree: (name: string, description?: string) => string;
@@ -80,6 +83,7 @@ export interface StoreState {
   deleteSubTree: (nodeId: string) => void;
   deleteSelected: () => void;
   connectToNearestNode: (nodeId: string) => void;
+  onShowEVs: () => void;
 }
 
 const middlewares = (
@@ -116,6 +120,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     trees: initialTrees,
     currentTreeId: "tree-1", // Default to the first tree
     clipboard: { nodes: [], edges: [] },
+    settings: {
+      showEVs: true, // Show EVs by default
+    },
 
     // Tree management functions
     createTree: (name: string, description?: string) => {
@@ -804,6 +811,17 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "connectToNearestNode", nodeId },
+      );
+    },
+
+    onShowEVs: () => {
+      set(
+        (state) => {
+          state.settings.showEVs = !state.settings.showEVs;
+          return state;
+        },
+        undefined,
+        { type: "onShowEVs" },
       );
     },
   })),

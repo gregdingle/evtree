@@ -318,6 +318,8 @@ export function selectUndoableState(state: StoreState): StoreState {
     ...state,
     // TODO: do we really want this to be undefined?
     clipboard: undefined,
+    // NOTE: settings are UI preferences, not part of the tree state
+    settings: undefined as unknown as StoreState["settings"],
     trees: fromPairs(
       toPairs(state.trees).map(([treeId, tree]) => [
         treeId,

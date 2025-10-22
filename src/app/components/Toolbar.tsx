@@ -4,6 +4,7 @@ import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
   ArrowsPointingOutIcon,
+  CalculatorIcon,
   ChartBarIcon,
   ClipboardDocumentIcon,
   DocumentDuplicateIcon,
@@ -36,13 +37,14 @@ export default function Toolbar({
     canUndo: state.pastStates.length > 0,
     canRedo: state.futureStates.length > 0,
   }));
-  // TODO: finish EVs toggle
-  const { onCopy, onPaste, onReset, onArrange, deleteSelected } =
+
+  const { onCopy, onPaste, onReset, onArrange, deleteSelected, onShowEVs } =
     useStore.getState();
   const hasSelectedItems = useStore(selectHasSelectedItems);
   const hasClipboardContent = useStore(selectHasClipboardContent);
   const hasNodes = useStore(selectHasNodes);
   const hasTerminalNodes = useStore(selectHasTerminalNodes);
+  const areEVsShowing = useStore((state) => state.settings.showEVs);
 
   // TODO: dark mode toggle button
 
@@ -57,6 +59,7 @@ export default function Toolbar({
   useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
   useHotkeys("ctrl+h", onHistogramClick, { enableOnFormTags: false });
+  useHotkeys("ctrl+e", onShowEVs, { enableOnFormTags: false });
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
 
   return (
@@ -147,8 +150,6 @@ export default function Toolbar({
           <ChartBarIcon className="h-4 w-4" />
           Histogram
         </ToolbarButton>
-        {/*
-        TODO: finish EVs toggle
         <ToolbarButton
           onClick={onShowEVs}
           tooltip={areEVsShowing ? "Hide EVs (Ctrl+E)" : "Show EVs (Ctrl+E)"}
@@ -157,8 +158,8 @@ export default function Toolbar({
           disabled={!hasTerminalNodes}
         >
           <CalculatorIcon className="h-4 w-4" />
-          Expected Values
-        </ToolbarButton> */}
+          Calculate
+        </ToolbarButton>
       </div>
     </div>
   );

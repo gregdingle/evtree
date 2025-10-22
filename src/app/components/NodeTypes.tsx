@@ -34,6 +34,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
+  const showEVs = useStore((state) => state.settings.showEVs);
 
   return (
     <div
@@ -43,10 +44,12 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
         {/* TODO: deprecated... remove if not needed {data.label} */}
       </div>
       {children}
-      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
-        {formatValue(pathValue)}
-        {/* TODO: show cost separately? {formatCost(data.cost)} */}
-      </div>
+      {showEVs && (
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
+          {formatValue(pathValue)}
+          {/* TODO: show cost separately? {formatCost(data.cost)} */}
+        </div>
+      )}
     </div>
   );
 };
