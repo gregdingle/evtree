@@ -47,11 +47,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 rounded-md border-2 p-1 ${
-              disabled
-                ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-                : ""
-            }`}
+            className={`min-w-0 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
             rows={4}
             {...props}
           />
@@ -63,12 +59,10 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 rounded-md border-2 p-1 ${
-              disabled
-                ? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-                : ""
+            className={`min-w-0 rounded-md p-1 ${
+              disabled ? "border-0" : "border-2"
             }
-            ${inlineButton ? "flex-1/4" : "flex-1"}
+            ${inlineButton ? "flex-1/4" : ""}
             `}
             spellCheck={false}
             {...props}

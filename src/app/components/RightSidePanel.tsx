@@ -171,21 +171,28 @@ export default function RightSidePanel() {
                   }
                   placeholder="Enter branch label"
                 />
-                <PropertyInput
-                  type="text"
-                  label="Probability"
-                  value={edge.data?.probabilityExpr ?? ""}
-                  onChange={(value) => {
-                    const probabilityExpr = value === "" ? undefined : value;
-                    onEdgeDataUpdate(edge.id, { probabilityExpr });
-                  }}
-                  placeholder={
-                    hasVariables ? "Enter value or formula" : "Enter value"
-                  }
-                  disabled={allNodes[edge.source]?.type === "decision"}
-                  inlineButton={true}
-                >
-                  {allNodes[edge.source]?.type === "decision" ? null : (
+                {allNodes[edge.source]?.type === "decision" ? (
+                  <PropertyInput
+                    type="text"
+                    label="Probability"
+                    // TODO: show actual probability... see selectComputedProbability
+                    placeholder="See decision node"
+                    disabled={true}
+                  />
+                ) : (
+                  <PropertyInput
+                    type="text"
+                    label="Probability"
+                    value={edge.data?.probabilityExpr ?? ""}
+                    onChange={(value) => {
+                      const probabilityExpr = value === "" ? undefined : value;
+                      onEdgeDataUpdate(edge.id, { probabilityExpr });
+                    }}
+                    placeholder={
+                      hasVariables ? "Enter value or formula" : "Enter value"
+                    }
+                    inlineButton={true}
+                  >
                     <div className="flex-1/4">
                       <ToolbarButton
                         tooltip={
@@ -201,16 +208,16 @@ export default function RightSidePanel() {
                         balance
                       </ToolbarButton>
                     </div>
-                  )}
-                  {hasVariables ? (
-                    <VariablesList
-                      variables={variables}
-                      edge={edge}
-                      className="my-1 ml-22"
-                      exprFor="probabilityExpr"
-                    />
-                  ) : null}
-                </PropertyInput>
+                    {hasVariables ? (
+                      <VariablesList
+                        variables={variables}
+                        edge={edge}
+                        className="my-1 ml-22"
+                        exprFor="probabilityExpr"
+                      />
+                    ) : null}
+                  </PropertyInput>
+                )}
                 <PropertyInput
                   label="Description"
                   textarea
