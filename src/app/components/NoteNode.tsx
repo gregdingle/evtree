@@ -51,7 +51,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       className={`nopan relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
-        className={`w-40 min-h-24 p-2 border-2 border-dashed ${
+        className={`w-40 min-h-12 p-2 border-2 border-dashed ${
           // TODO: when note is selected, the bg is transparent, so the underlying content is visible... it's weird
           selected
             ? "border-blue-500 bg-blue-500/10"
@@ -66,7 +66,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             onChange={handleChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className={`h-auto overflow-hidden px-1 m-0 text-gray-600 dark:text-gray-400 leading-relaxed bg-transparent border-none outline-none w-full resize-none min-h-[3rem] ${isEditing ? "nodrag" : ""}`}
+            className={`h-auto overflow-hidden px-1 py-0 m-0 text-gray-600 dark:text-gray-400 leading-relaxed bg-transparent border-none outline-none w-full resize-none ${isEditing ? "nodrag" : ""}`}
             placeholder="Enter note content"
             spellCheck={false}
             // NOTE: autoFocus needed when node is not selected
@@ -81,7 +81,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         ) : (
           <div
             // TODO: same hover colors as edge labels... but bg is yellow... do better?
-            className="px-1 text-gray-600 dark:text-gray-400 leading-relaxed  hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            className="px-1 py-0 text-gray-600 dark:text-gray-400 leading-relaxed  hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             onClick={isEditing ? undefined : handleClick}
           >
             {data.description || (
@@ -100,5 +100,8 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
  * NOTE: 7px is a hack to make it exact height... may need adjusting
  */
 function resizeTextarea(target: HTMLTextAreaElement) {
+  // Reset height to recalculate
+  target.style.height = "0px";
+  // Set to scrollHeight
   target.style.height = `${target.scrollHeight - 7}px`;
 }
