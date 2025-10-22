@@ -20,6 +20,8 @@ import {
   selectHasNodes,
   selectHasSelectedItems,
   selectHasTerminalNodes,
+  selectShowEVs,
+  selectShowHistogram,
 } from "@/lib/selectors";
 
 import { ToolbarButton } from "./ToolbarButton";
@@ -44,8 +46,8 @@ export default function Toolbar() {
   const hasClipboardContent = useStore(selectHasClipboardContent);
   const hasNodes = useStore(selectHasNodes);
   const hasTerminalNodes = useStore(selectHasTerminalNodes);
-  const areEVsShowing = useStore((state) => state.settings.showEVs);
-  const isHistogramOpen = useStore((state) => state.settings.showHistogram);
+  const areEVsShowing = useStore(selectShowEVs);
+  const isHistogramOpen = useStore(selectShowHistogram);
 
   // TODO: dark mode toggle button
 

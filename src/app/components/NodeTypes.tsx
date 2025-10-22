@@ -9,6 +9,7 @@ import {
   selectHasParentNode,
   selectNetExpectedValue,
   selectPathProbability,
+  selectShowEVs,
 } from "@/lib/selectors";
 import { formatProbability, formatValue } from "@/utils/format";
 
@@ -34,7 +35,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
-  const showEVs = useStore((state) => state.settings.showEVs);
+  const showEVs = useStore(selectShowEVs);
 
   return (
     <div

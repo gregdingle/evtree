@@ -321,6 +321,16 @@ export function selectHasTerminalNodes(state: StoreState): boolean {
   return values(tree.nodes).some((node) => node.type === "terminal");
 }
 
+// NOTE: default here should match useStoreBase definition
+export function selectShowEVs(state: StoreState): boolean {
+  return state.settings?.showEVs ?? true;
+}
+
+// NOTE: default here should match useStoreBase definition
+export function selectShowHistogram(state: StoreState): boolean {
+  return state.settings?.showHistogram ?? false;
+}
+
 export function selectUndoableState(state: StoreState): StoreState {
   // TODO: is going thru all the users trees necessary? why not just the current tree?
   return {

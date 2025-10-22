@@ -125,6 +125,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     currentTreeId: "tree-1", // Default to the first tree
     clipboard: { nodes: [], edges: [] },
     settings: {
+      // NOTE: see also defaults defined in selectors... they should match
       showEVs: true, // Show EVs by default
       showHistogram: false, // Hide histogram by default
     },
