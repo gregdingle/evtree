@@ -138,6 +138,9 @@ export default function Toolbar() {
           <ArrowsPointingOutIcon className="h-4 w-4" />
           Arrange
         </ToolbarButton>
+        <div className="pl-2" />
+        <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
+        <div className="pr-2" />
         <ToolbarButton
           onClick={onShowHistogram}
           tooltip={

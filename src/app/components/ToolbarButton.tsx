@@ -30,11 +30,9 @@ export function ToolbarButton({
     if (disabled) {
       return "flex items-center gap-1 rounded px-2 py-1 opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600 flex-shrink-0";
     }
-    return `flex items-center gap-1 rounded px-2 py-1 flex-shrink-0 ${
-      active
-        ? "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-        : "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
-    }`;
+    return `flex items-center gap-1 rounded px-2 py-1 flex-shrink-0
+      hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600
+    ${active ? "bg-gray-200 dark:bg-gray-600" : ""}`;
   };
 
   if (tooltip) {
