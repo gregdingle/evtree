@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 import { ReactFlowProvider } from "@xyflow/react";
 
+import { useStore } from "@/hooks/use-store";
+
 import CollapsiblePanel from "./components/CollapsiblePanel";
 import { Histogram } from "./components/Histogram";
 import LeftSidePanel from "./components/LeftSidePanel";
@@ -18,7 +20,7 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
-  const [showHistogram, setShowHistogram] = useState(false);
+  const showHistogram = useStore((state) => state.settings.showHistogram);
 
   if (!isClient) {
     // TODO: put some kind of loading spinner here?
@@ -30,12 +32,7 @@ export default function Home() {
       <div className="evtree">
         <div className="flex h-screen flex-col">
           <div className="border-b">
-            <Toolbar
-              onHistogramClick={() =>
-                showHistogram ? setShowHistogram(false) : setShowHistogram(true)
-              }
-              isHistogramOpen={showHistogram}
-            />
+            <Toolbar />
           </div>
           <div className="flex flex-1">
             <div className="border-r">

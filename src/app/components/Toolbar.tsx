@@ -24,27 +24,28 @@ import {
 
 import { ToolbarButton } from "./ToolbarButton";
 
-interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
-  onHistogramClick: () => void;
-  isHistogramOpen: boolean;
-}
-export default function Toolbar({
-  onHistogramClick,
-  isHistogramOpen,
-}: ToolbarProps) {
+export default function Toolbar() {
   const { undo, redo } = useStore.temporal.getState();
   const { canUndo, canRedo } = useTemporalStore((state) => ({
     canUndo: state.pastStates.length > 0,
     canRedo: state.futureStates.length > 0,
   }));
 
-  const { onCopy, onPaste, onReset, onArrange, deleteSelected, onShowEVs } =
-    useStore.getState();
+  const {
+    onCopy,
+    onPaste,
+    onReset,
+    onArrange,
+    deleteSelected,
+    onShowEVs,
+    onShowHistogram,
+  } = useStore.getState();
   const hasSelectedItems = useStore(selectHasSelectedItems);
   const hasClipboardContent = useStore(selectHasClipboardContent);
   const hasNodes = useStore(selectHasNodes);
   const hasTerminalNodes = useStore(selectHasTerminalNodes);
   const areEVsShowing = useStore((state) => state.settings.showEVs);
+  const isHistogramOpen = useStore((state) => state.settings.showHistogram);
 
   // TODO: dark mode toggle button
 
@@ -58,7 +59,7 @@ export default function Toolbar({
   // TODO: is reset sufficiently hidden from normal users?
   useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
-  useHotkeys("ctrl+h", onHistogramClick, { enableOnFormTags: false });
+  useHotkeys("ctrl+h", onShowHistogram, { enableOnFormTags: false });
   useHotkeys("ctrl+e", onShowEVs, { enableOnFormTags: false });
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
 
@@ -138,7 +139,7 @@ export default function Toolbar({
           Arrange
         </ToolbarButton>
         <ToolbarButton
-          onClick={onHistogramClick}
+          onClick={onShowHistogram}
           tooltip={
             isHistogramOpen
               ? "Hide Histogram (Ctrl+H)"

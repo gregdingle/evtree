@@ -43,6 +43,7 @@ export interface StoreState {
   clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
   settings: {
     showEVs: boolean;
+    showHistogram: boolean;
   };
 
   // Tree management
@@ -84,6 +85,7 @@ export interface StoreState {
   deleteSelected: () => void;
   connectToNearestNode: (nodeId: string) => void;
   onShowEVs: () => void;
+  onShowHistogram: () => void;
 }
 
 const middlewares = (
@@ -122,6 +124,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     clipboard: { nodes: [], edges: [] },
     settings: {
       showEVs: true, // Show EVs by default
+      showHistogram: false, // Hide histogram by default
     },
 
     // Tree management functions
@@ -822,6 +825,17 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         },
         undefined,
         { type: "onShowEVs" },
+      );
+    },
+
+    onShowHistogram: () => {
+      set(
+        (state) => {
+          state.settings.showHistogram = !state.settings.showHistogram;
+          return state;
+        },
+        undefined,
+        { type: "onShowHistogram" },
       );
     },
   })),
