@@ -8,8 +8,9 @@ import {
   selectCurrentNodes,
   selectCurrentTree,
   selectNetExpectedValues,
+  selectPathProbabilities,
 } from "@/lib/selectors";
-import { formatValueLong } from "@/utils/format";
+import { formatProbability, formatValueLong } from "@/utils/format";
 
 import PropertyInput from "./PropertyInput";
 import { ToolbarButton } from "./ToolbarButton";
@@ -24,14 +25,21 @@ export default function RightSidePanel() {
     balanceEdgeProbability,
   } = useStore.getState();
 
-  const { nodes, edges, currentTree } = useStore((state) => {
+  const { nodes, edges, currentTree, showEVs } = useStore((state) => {
     return {
       nodes: selectCurrentNodes(state).filter((node) => node.selected),
       edges: selectCurrentEdges(state).filter((edge) => edge.selected),
       currentTree: selectCurrentTree(state),
+      showEVs: state.settings.showEVs,
     };
   });
   const netExpectedValues = useStore(selectNetExpectedValues);
+  const pathProbabilities = useStore((state) =>
+    selectPathProbabilities(
+      state,
+      nodes.map((n) => n.id),
+    ),
+  );
 
   const variables = currentTree?.variables ?? {};
   const hasVariables = keys(variables).length > 0;
@@ -147,14 +155,30 @@ export default function RightSidePanel() {
                     ) : null}
                   </PropertyInput>
                 )}
-                <PropertyInput
-                  label="Expected Net Value"
-                  value={formatValueLong(
-                    netExpectedValues.nodeValues?.[node.id],
-                  )}
-                  disabled={true}
-                  // TODO: add a subtle note when the node inherits costs from ancestor nodes
-                />
+                {showEVs && (
+                  <>
+                    <PropertyInput
+                      label="Expected Net Value"
+                      value={formatValueLong(
+                        netExpectedValues.nodeValues?.[node.id],
+                      )}
+                      disabled={true}
+                      // TODO: add a subtle note when the node inherits costs from ancestor nodes?
+                    />
+                    <PropertyInput
+                      label="Path Probability"
+                      value={formatProbability(
+                        pathProbabilities[node.id],
+                        1,
+                        "???",
+                        "",
+                      )}
+                      disabled={true}
+                      // TODO: show this for terminal nodes only because the path probability
+                      // is only shown for terminal nodes on the canvas?
+                    />
+                  </>
+                )}
               </div>
             ))}
             {edges.length > 1 ? (

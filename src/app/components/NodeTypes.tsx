@@ -128,8 +128,8 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { onNodeDataUpdate } = useStore.getState();
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
-  const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
+  const showEVs = useStore((state) => state.settings.showEVs);
 
   // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
 
@@ -209,17 +209,23 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             onClick={handleValueClick}
             className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1 py-0.5 -mx-1 rounded"
           >
-            {formatValue(pathValue) || "???"}
+            {/* NOTE: unlike other nodes, we do not show EV here, only inputted value,
+              so it can be modified inline. See alternative:
+              {formatValue(pathValue) || "???"}
+            */}
+            {data.valueExpr ?? "???"}
           </span>
         )}
       </div>
-      <div className={`absolute ${data.label ? "top-6" : "top-5"} left-8`}>
-        {/*
+      {showEVs && (
+        <div className={`absolute ${data.label ? "top-6" : "top-5"} left-8`}>
+          {/*
          TODO: always show pathProbability?
          NOTE: don't show the ??? placeholder for null pathProbability
          */}
-        {formatProbability(pathProbability, 1, "")}
-      </div>
+          {formatProbability(pathProbability, 1, "")}
+        </div>
+      )}
     </div>
   );
 };

@@ -195,6 +195,15 @@ export function selectPathProbability(
   return totalProbability;
 }
 
+export function selectPathProbabilities(
+  state: StoreState,
+  nodeIds: string[],
+): Record<string, number | null> {
+  return fromPairs(
+    nodeIds.map((nodeId) => [nodeId, selectPathProbability(state, nodeId)]),
+  );
+}
+
 /**
  * Returns the expected value of a node in the tree considering costs along the
  * path to the node.
