@@ -42,8 +42,8 @@ export interface StoreState {
   currentTreeId: string | null;
   clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
   settings: {
-    showEVs: boolean;
-    showHistogram: boolean;
+    showEVs?: boolean;
+    showHistogram?: boolean;
   };
 
   // Tree management
@@ -124,11 +124,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     trees: initialTrees,
     currentTreeId: "tree-1", // Default to the first tree
     clipboard: { nodes: [], edges: [] },
-    settings: {
-      // NOTE: see also defaults defined in selectors... they should match
-      showEVs: true, // Show EVs by default
-      showHistogram: false, // Hide histogram by default
-    },
+    settings: {},
 
     // Tree management functions
     createTree: (name: string, description?: string) => {

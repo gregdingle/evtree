@@ -323,12 +323,12 @@ export function selectHasTerminalNodes(state: StoreState): boolean {
 
 // NOTE: default here should match useStoreBase definition
 export function selectShowEVs(state: StoreState): boolean {
-  return state.settings?.showEVs ?? true;
+  return state.settings.showEVs ?? true;
 }
 
 // NOTE: default here should match useStoreBase definition
 export function selectShowHistogram(state: StoreState): boolean {
-  return state.settings?.showHistogram ?? false;
+  return state.settings.showHistogram ?? false;
 }
 
 export function selectUndoableState(state: StoreState): StoreState {
@@ -338,7 +338,7 @@ export function selectUndoableState(state: StoreState): StoreState {
     // TODO: do we really want this to be undefined?
     clipboard: undefined,
     // NOTE: settings are UI preferences, not part of the tree state
-    settings: undefined as unknown as StoreState["settings"],
+    settings: {} as unknown as StoreState["settings"],
     trees: fromPairs(
       toPairs(state.trees).map(([treeId, tree]) => [
         treeId,
