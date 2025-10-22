@@ -1,11 +1,5 @@
 "use client";
 
-import { useContextMenu } from "@/hooks/use-context-menu";
-import { useDarkMode } from "@/hooks/use-dark-mode";
-import { useStore } from "@/hooks/use-store";
-import { AppEdge } from "@/lib/edge";
-import { buildChildToParentNodeMap } from "@/lib/maps";
-import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 import {
   Connection,
   Controls,
@@ -15,6 +9,14 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+
+import { useContextMenu } from "@/hooks/use-context-menu";
+import { useDarkMode } from "@/hooks/use-dark-mode";
+import { useStore } from "@/hooks/use-store";
+import { AppEdge } from "@/lib/edge";
+import { buildChildToParentNodeMap } from "@/lib/maps";
+import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
+
 import ContextMenu from "./ContextMenu";
 import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";

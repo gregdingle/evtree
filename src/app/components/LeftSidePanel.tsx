@@ -13,6 +13,7 @@ import { useReactFlow } from "@xyflow/react";
 import { kebabCase, sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
+import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/lib/download";
 import { formatDate } from "@/utils/format";
@@ -27,6 +28,8 @@ export default function LeftSidePanel() {
   const [isDialogOpen, setOpenDialog] = useState(false);
 
   const { fitView } = useReactFlow();
+
+  const isDarkMode = useDarkMode();
 
   const { trees, currentTreeId } = useStore((state) => ({
     trees: sortBy(values(state.trees), ["updatedAt"]).reverse(),
@@ -68,6 +71,8 @@ export default function LeftSidePanel() {
     downloadPNG(
       values(treeToExport.nodes ?? []),
       `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
+      // Use same colors as ReactFlow: bg-amber-50 (#fffbeb) for light, #141414 for dark
+      isDarkMode ? "#141414" : "#fffbeb",
     );
     setShowMoreMenu(null);
   };

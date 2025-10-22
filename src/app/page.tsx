@@ -43,6 +43,7 @@ export default function Home() {
             </div>
             <div
               // NOTE: #141414 copied from reactflow default dark mode
+              // NOTE: see also handleExportTree and download.ts
               className="flex-1 bg-amber-50 dark:bg-[#141414]"
             >
               {showHistogram ? (

@@ -1,11 +1,16 @@
 import { omit } from "es-toolkit";
 import { fromPairs, toPairs } from "es-toolkit/compat";
 import { toPng } from "html-to-image";
+
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
 
 // NOTE: see https://reactflow.dev/examples/misc/download-image
-export const downloadPNG = (nodes: AppNode[], filename: string) => {
+export const downloadPNG = (
+  nodes: AppNode[],
+  filename: string,
+  backgroundColor: string,
+) => {
   // Check if we have nodes to export
   if (nodes.length === 0) {
     console.error("[EVTree] No nodes to export");
@@ -43,7 +48,7 @@ export const downloadPNG = (nodes: AppNode[], filename: string) => {
   }
 
   toPng(viewportElem, {
-    backgroundColor: "transparent",
+    backgroundColor,
     width: imageWidth,
     height: imageHeight,
     style: {
