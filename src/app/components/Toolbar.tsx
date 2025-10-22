@@ -36,6 +36,7 @@ export default function Toolbar({
     canUndo: state.pastStates.length > 0,
     canRedo: state.futureStates.length > 0,
   }));
+  // TODO: finish EVs toggle
   const { onCopy, onPaste, onReset, onArrange, deleteSelected } =
     useStore.getState();
   const hasSelectedItems = useStore(selectHasSelectedItems);
@@ -146,6 +147,18 @@ export default function Toolbar({
           <ChartBarIcon className="h-4 w-4" />
           Histogram
         </ToolbarButton>
+        {/*
+        TODO: finish EVs toggle
+        <ToolbarButton
+          onClick={onShowEVs}
+          tooltip={areEVsShowing ? "Hide EVs (Ctrl+E)" : "Show EVs (Ctrl+E)"}
+          // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
+          active={areEVsShowing}
+          disabled={!hasTerminalNodes}
+        >
+          <CalculatorIcon className="h-4 w-4" />
+          Expected Values
+        </ToolbarButton> */}
       </div>
     </div>
   );
