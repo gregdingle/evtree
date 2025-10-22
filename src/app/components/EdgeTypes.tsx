@@ -88,7 +88,14 @@ export default function CustomEdge({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === "Escape") {
+    if (event.key === "Enter" && !event.shiftKey) {
+      // Enter without Shift saves
+      event.preventDefault();
+      setEditingField(null);
+    } else if (event.key === "Enter" && event.shiftKey) {
+      // Shift+Enter adds a line break (allow default behavior)
+      // No preventDefault needed - let textarea handle it naturally
+    } else if (event.key === "Escape") {
       event.preventDefault();
       setEditingField(null);
     } else if (event.key === "Tab") {
@@ -201,7 +208,7 @@ export default function CustomEdge({
             ) : (
               <span
                 style={{ width: `${labelWidth}px` }}
-                className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5"
+                className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap"
               >
                 {label || "???"}
               </span>
