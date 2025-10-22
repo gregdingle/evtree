@@ -24,6 +24,11 @@ export function useContextMenu() {
       return;
     }
 
+    if (node && node.type === "note") {
+      // TODO: support context menu for note nodes
+      return;
+    }
+
     // Get click position relative to the container
     const relativeX = event.clientX - pane.left;
     const relativeY = event.clientY - pane.top;
