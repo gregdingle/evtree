@@ -14,6 +14,8 @@ import { AppNode } from "./node";
 import promptTemplate from "./prompt.md";
 import { DecisionTree } from "./tree";
 
+// TODO: convert to use new firebase app evtree-1
+
 // HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
 // file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
 
