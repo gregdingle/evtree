@@ -106,6 +106,8 @@ export default function ContextMenu({
     onClose?.();
   };
 
+  // TODO: refactor to use more accurate findNearestUpstreamNode
+  // as in connectToNearestNode
   const childToParentMap = buildChildToParentNodeMap(edges);
 
   return (
