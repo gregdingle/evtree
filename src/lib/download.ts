@@ -65,7 +65,7 @@ function downloadImage(dataUrl: string, filename: string) {
   a.click();
 }
 
-export const downloadJson = (tree: DecisionTree, filename: string) => {
+export const cleanTree = (tree: DecisionTree): DecisionTree => {
   // Omit selected property from nodes and edges to create cleaner export
   const cleanTree: DecisionTree = {
     ...tree,
@@ -76,8 +76,11 @@ export const downloadJson = (tree: DecisionTree, filename: string) => {
       toPairs(tree.edges).map(([id, edge]) => [id, omit(edge, ["selected"])]),
     ),
   };
+  return cleanTree;
+};
 
-  const json = JSON.stringify(cleanTree, null, 2);
+export const downloadJson = (tree: DecisionTree, filename: string) => {
+  const json = JSON.stringify(cleanTree(tree), null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 

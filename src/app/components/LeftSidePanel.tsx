@@ -16,8 +16,10 @@ import { values } from "es-toolkit/compat";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/lib/download";
+import { DecisionTree } from "@/lib/tree";
 import { formatDate } from "@/utils/format";
 
+import { storage } from "@/lib/firebase";
 import { ContextMenuButton } from "./ContextMenuButton";
 import CreateDialog from "./CreateDialog";
 import Tooltip from "./Tooltip";
@@ -66,7 +68,7 @@ export default function LeftSidePanel() {
     }
   };
 
-  const handleExportTree = (treeToExport: NonNullable<(typeof trees)[0]>) => {
+  const handleExportTree = (treeToExport: DecisionTree) => {
     if (!treeToExport) return;
     downloadPNG(
       values(treeToExport.nodes ?? []),
@@ -77,14 +79,35 @@ export default function LeftSidePanel() {
     setShowMoreMenu(null);
   };
 
-  const handleDownloadTree = (
-    treeToDownload: NonNullable<(typeof trees)[0]>,
-  ) => {
+  const handleDownloadTree = (treeToDownload: DecisionTree) => {
     if (!treeToDownload) return;
     downloadJson(
       treeToDownload,
       `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
     );
+    setShowMoreMenu(null);
+  };
+
+import { ref, uploadString } from "firebase/storage";
+// TODO: clearn tree, json
+
+  const handleShareLink = (treeToShare: DecisionTree) => {
+    if (!treeToShare) return;
+
+    const storageRef = ref(storage, treeToShare.id);
+
+    const json = JSON.stringify(cleanTree, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+
+    uploadString(storageRef, blob).then((snapshot) => {
+      console.log('Uploaded a raw string!');
+    });
+
+
+    const shareableLink = `https://evtree.com/share/${treeToShare.id}`;
+    navigator.clipboard.writeText(shareableLink);
+    alert(`Shareable link copied to clipboard: ${shareableLink}`);
+
     setShowMoreMenu(null);
   };
 
@@ -193,6 +216,12 @@ export default function LeftSidePanel() {
                             >
                               <DocumentArrowDownIcon className="h-4 w-4" />
                               Download as JSON
+                            </ContextMenuButton>
+                            <ContextMenuButton
+                              onClick={() => handleShareLink(tree)}
+                            >
+                              <DocumentArrowDownIcon className="h-4 w-4" />
+                              Share link
                             </ContextMenuButton>
                           </div>
                         </>
