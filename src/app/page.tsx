@@ -6,7 +6,7 @@ import { ReactFlowProvider, useReactFlow } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
 import { selectShowHistogram } from "@/lib/selectors";
-import { extractShareHash, loadSharedTree } from "@/lib/share";
+import { downloadSharedTree, extractShareHash } from "@/lib/share";
 
 import CollapsiblePanel from "./components/CollapsiblePanel";
 import { Histogram } from "./components/Histogram";
@@ -66,7 +66,10 @@ export default function Home() {
   );
 }
 
-// TODO: what if there is a tree already with the same name? should we always append a "from share link" suffix?
+/**
+ * NOTE: This will replace an existing tree that has the same ID.
+ * TODO: should we warn the user when the current tree updatedAt is more recent?
+ */
 function ShareLinkLoader() {
   const { fitView } = useReactFlow();
 
@@ -76,12 +79,20 @@ function ShareLinkLoader() {
       const shareData = extractShareHash();
 
       if (shareData) {
-        loadSharedTree(shareData.hash, shareData.key)
+        // eslint-disable-next-line no-console
+        console.debug(
+          `[EVTree] Downloading tree ${shareData.hash} with key ${shareData.key}`,
+        );
+        downloadSharedTree(shareData.hash, shareData.key)
           .then((tree) => {
-            useStore.getState().loadTree(tree, false);
+            useStore.getState().loadTree(tree, true);
             // Clear the hash after successful load
             window.history.replaceState(null, "", window.location.pathname);
             fitView();
+            // eslint-disable-next-line no-console
+            console.debug(
+              `[EVTree] Download complete, loading tree "${tree.name}"`,
+            );
           })
           .catch((error) => {
             // TODO: better notification

@@ -79,7 +79,7 @@ export async function uploadTreeForSharing(
   return buildShareUrl(contentHash, keyBase64);
 }
 
-export async function loadSharedTree(
+export async function downloadSharedTree(
   contentHash: string,
   keyBase64: string,
 ): Promise<DecisionTree> {
