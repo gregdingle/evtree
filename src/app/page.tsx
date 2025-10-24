@@ -67,17 +67,16 @@ export default function Home() {
 }
 
 // TODO: what if there is a tree already with the same name? should we always append a "from share link" suffix?
-// TODO: implement e2e encryption of shared data
 function ShareLinkLoader() {
   const { fitView } = useReactFlow();
 
-  // Handle shared tree links (#share=abc123)
+  // Handle shared tree links (#share=abc123&key=...)
   useEffect(() => {
     const handleHashChange = () => {
-      const shareHash = extractShareHash();
+      const shareData = extractShareHash();
 
-      if (shareHash) {
-        loadSharedTree(shareHash)
+      if (shareData) {
+        loadSharedTree(shareData.hash, shareData.key)
           .then((tree) => {
             useStore.getState().loadTree(tree, false);
             // Clear the hash after successful load
