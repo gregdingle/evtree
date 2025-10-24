@@ -6,6 +6,7 @@ import {
   ChevronDownIcon,
   DocumentArrowDownIcon,
   DocumentDuplicateIcon,
+  LinkIcon,
   PhotoIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -16,10 +17,10 @@ import { values } from "es-toolkit/compat";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { downloadJson, downloadPNG } from "@/lib/download";
+import { uploadTreeForSharing } from "@/lib/share";
 import { DecisionTree } from "@/lib/tree";
 import { formatDate } from "@/utils/format";
 
-import { storage } from "@/lib/firebase";
 import { ContextMenuButton } from "./ContextMenuButton";
 import CreateDialog from "./CreateDialog";
 import Tooltip from "./Tooltip";
@@ -88,27 +89,22 @@ export default function LeftSidePanel() {
     setShowMoreMenu(null);
   };
 
-import { ref, uploadString } from "firebase/storage";
-// TODO: clearn tree, json
-
-  const handleShareLink = (treeToShare: DecisionTree) => {
+  const handleShareLink = async (treeToShare: DecisionTree) => {
     if (!treeToShare) return;
 
-    const storageRef = ref(storage, treeToShare.id);
-
-    const json = JSON.stringify(cleanTree, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-
-    uploadString(storageRef, blob).then((snapshot) => {
-      console.log('Uploaded a raw string!');
-    });
-
-
-    const shareableLink = `https://evtree.com/share/${treeToShare.id}`;
-    navigator.clipboard.writeText(shareableLink);
-    alert(`Shareable link copied to clipboard: ${shareableLink}`);
-
-    setShowMoreMenu(null);
+    try {
+      const shareableLink = await uploadTreeForSharing(treeToShare);
+      navigator.clipboard.writeText(shareableLink);
+      // TODO: better notification
+      window.alert(`Shareable link copied to clipboard: ${shareableLink}`);
+    } catch (error) {
+      // TODO: better notification
+      window.alert(
+        `Error uploading tree for sharing: ${(error as Error).message}`,
+      );
+    } finally {
+      setShowMoreMenu(null);
+    }
   };
 
   return (
@@ -209,7 +205,7 @@ import { ref, uploadString } from "firebase/storage";
                               onClick={() => handleExportTree(tree)}
                             >
                               <PhotoIcon className="h-4 w-4" />
-                              Export as PNG
+                              Export to PNG
                             </ContextMenuButton>
                             <ContextMenuButton
                               onClick={() => handleDownloadTree(tree)}
@@ -220,8 +216,8 @@ import { ref, uploadString } from "firebase/storage";
                             <ContextMenuButton
                               onClick={() => handleShareLink(tree)}
                             >
-                              <DocumentArrowDownIcon className="h-4 w-4" />
-                              Share link
+                              <LinkIcon className="h-4 w-4" />
+                              Copy Link
                             </ContextMenuButton>
                           </div>
                         </>

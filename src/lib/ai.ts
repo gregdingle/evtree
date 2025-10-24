@@ -1,7 +1,6 @@
 import { isPlainObject, memoize } from "es-toolkit";
 import { isEmpty } from "es-toolkit/compat";
 import { VertexAIBackend, getAI, getGenerativeModel } from "firebase/ai";
-import { initializeApp } from "firebase/app";
 
 import { createEdge } from "@/lib/edge";
 import { createNode } from "@/lib/node";
@@ -10,30 +9,13 @@ import { createTree } from "@/lib/tree";
 import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
 import aiSchemasText from "./ai-schemas.md";
 import { AppEdge } from "./edge";
+import { firebaseApp } from "./firebase";
 import { AppNode } from "./node";
 import promptTemplate from "./prompt.md";
 import { DecisionTree } from "./tree";
 
-// TODO: convert to use new firebase app evtree-1
-
 // HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
 // file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
-
-// TODO: Add SDKs for Firebase products that you want to use
-// TODO: appCheck?
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDLUkNaafYJGdQAJJOH1vpV_RjmtceP8oY",
-  // TODO: create a new project for evtree and use the new API key
-  authDomain: "bkcy-1.firebaseapp.com",
-  projectId: "bkcy-1",
-  storageBucket: "bkcy-1.appspot.com",
-  messagingSenderId: "460046349482",
-  appId: "1:460046349482:web:d76c96a7dba44b0dddccd3",
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
 
 const AIModel = getGenerativeModel(
   getAI(firebaseApp, { backend: new VertexAIBackend() }),
