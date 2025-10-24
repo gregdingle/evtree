@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { ReactFlowProvider } from "@xyflow/react";
+import { ReactFlowProvider, useReactFlow } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
 import { selectShowHistogram } from "@/lib/selectors";
@@ -24,45 +24,6 @@ export default function Home() {
 
   const showHistogram = useStore(selectShowHistogram);
 
-  // Handle shared tree links (#share=abc123)
-  useEffect(() => {
-    if (!isClient) return;
-
-    const handleHashChange = () => {
-      const shareHash = extractShareHash();
-
-      if (shareHash) {
-        loadSharedTree(shareHash)
-          .then((tree) => {
-            useStore.getState().loadTree(tree, false);
-            // Clear the hash after successful load
-            window.history.replaceState(null, "", window.location.pathname);
-            // TODO: better notification
-            window.alert(
-              `Shared tree "${tree.name}" has been imported successfully!`,
-            );
-          })
-          .catch((error) => {
-            // TODO: better notification
-            console.error("[EVTree] Failed to load shared tree:", error);
-            window.alert(
-              `Failed to load shared tree: ${(error as Error).message}`,
-            );
-          });
-      }
-    };
-
-    // Check hash on initial load
-    handleHashChange();
-
-    // Listen for hash changes
-    window.addEventListener("hashchange", handleHashChange);
-
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, [isClient]);
-
   if (!isClient) {
     // TODO: put some kind of loading spinner here?
     return null;
@@ -70,6 +31,7 @@ export default function Home() {
 
   return (
     <ReactFlowProvider>
+      <ShareLinkLoader />
       <div className="evtree">
         <div className="flex h-screen flex-col">
           <div className="border-b">
@@ -102,4 +64,49 @@ export default function Home() {
       </div>
     </ReactFlowProvider>
   );
+}
+
+// TODO: what if there is a tree already with the same name? should we always append a "from share link" suffix?
+// TODO: implement e2e encryption of shared data
+function ShareLinkLoader() {
+  const { fitView } = useReactFlow();
+
+  // Handle shared tree links (#share=abc123)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const shareHash = extractShareHash();
+
+      if (shareHash) {
+        loadSharedTree(shareHash)
+          .then((tree) => {
+            useStore.getState().loadTree(tree, false);
+            // Clear the hash after successful load
+            window.history.replaceState(null, "", window.location.pathname);
+            // TODO: optimize auto arrange, figure out what's going on with timing
+            setTimeout(() => {
+              fitView();
+            }, 100);
+          })
+          .catch((error) => {
+            // TODO: better notification
+            console.error("[EVTree] Failed to load shared tree:", error);
+            window.alert(
+              `Failed to load shared tree: ${(error as Error).message}`,
+            );
+          });
+      }
+    };
+
+    // Check hash on initial load
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [fitView]);
+
+  return <></>;
 }
