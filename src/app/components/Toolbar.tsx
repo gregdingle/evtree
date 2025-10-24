@@ -7,15 +7,20 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   ClipboardDocumentIcon,
+  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
+  LinkIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { kebabCase } from "es-toolkit";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { useStore } from "@/hooks/use-store";
 import { useTemporalStore } from "@/hooks/use-temporal-store";
+import { downloadJson } from "@/lib/download";
 import {
+  selectCurrentTree,
   selectHasClipboardContent,
   selectHasNodes,
   selectHasSelectedItems,
@@ -23,6 +28,8 @@ import {
   selectShowEVs,
   selectShowHistogram,
 } from "@/lib/selectors";
+import { uploadTreeForSharing } from "@/lib/share";
+import { DecisionTree } from "@/lib/tree";
 
 import { ToolbarButton } from "./ToolbarButton";
 
@@ -42,12 +49,36 @@ export default function Toolbar() {
     onShowEVs,
     onShowHistogram,
   } = useStore.getState();
+
+  const currentTree = useStore(selectCurrentTree);
   const hasSelectedItems = useStore(selectHasSelectedItems);
   const hasClipboardContent = useStore(selectHasClipboardContent);
+
   const hasNodes = useStore(selectHasNodes);
   const hasTerminalNodes = useStore(selectHasTerminalNodes);
   const areEVsShowing = useStore(selectShowEVs);
   const isHistogramOpen = useStore(selectShowHistogram);
+
+  const handleDownloadTree = (treeToDownload: DecisionTree) => {
+    if (!treeToDownload) return;
+    downloadJson(
+      treeToDownload,
+      `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
+    );
+  };
+
+  const handleShareLink = async (treeToShare: DecisionTree) => {
+    if (!treeToShare) return;
+
+    try {
+      const shareableLink = await uploadTreeForSharing(treeToShare);
+      window.navigator.clipboard.writeText(shareableLink);
+    } catch (error) {
+      console.error(
+        `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
+      );
+    }
+  };
 
   // TODO: dark mode toggle button
 
@@ -140,9 +171,7 @@ export default function Toolbar() {
           <ArrowsPointingOutIcon className="h-4 w-4" />
           Arrange
         </ToolbarButton>
-        <div className="pl-2" />
-        <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
-        <div className="pr-2" />
+        <VerticalDivider />
         <ToolbarButton
           onClick={onShowHistogram}
           tooltip={
@@ -166,7 +195,34 @@ export default function Toolbar() {
           <CalculatorIcon className="h-4 w-4" />
           Calculate
         </ToolbarButton>
+        <VerticalDivider />
+        <ToolbarButton
+          onClick={() => currentTree && handleDownloadTree(currentTree)}
+          tooltip="Download tree as JSON"
+          disabled={!hasNodes}
+        >
+          <DocumentArrowDownIcon className="h-4 w-4" />
+          Download
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => currentTree && handleShareLink(currentTree)}
+          tooltip="Copy URL for sharing"
+          disabled={!hasNodes}
+        >
+          <LinkIcon className="h-4 w-4" />
+          Copy Link
+        </ToolbarButton>
       </div>
     </div>
+  );
+}
+
+function VerticalDivider() {
+  return (
+    <>
+      <div className="pl-2" />
+      <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
+      <div className="pr-2" />
+    </>
   );
 }

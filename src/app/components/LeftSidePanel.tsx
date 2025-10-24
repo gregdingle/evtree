@@ -94,13 +94,10 @@ export default function LeftSidePanel() {
 
     try {
       const shareableLink = await uploadTreeForSharing(treeToShare);
-      navigator.clipboard.writeText(shareableLink);
-      // TODO: better notification
-      window.alert(`Shareable link copied to clipboard: ${shareableLink}`);
+      window.navigator.clipboard.writeText(shareableLink);
     } catch (error) {
-      // TODO: better notification
-      window.alert(
-        `Error uploading tree for sharing: ${(error as Error).message}`,
+      console.error(
+        `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
       );
     } finally {
       setShowMoreMenu(null);
