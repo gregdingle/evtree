@@ -6,6 +6,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
 import { selectShowHistogram } from "@/lib/selectors";
+import { extractShareHash, loadSharedTree } from "@/lib/share";
 
 import CollapsiblePanel from "./components/CollapsiblePanel";
 import { Histogram } from "./components/Histogram";
@@ -22,6 +23,45 @@ export default function Home() {
   useEffect(() => setIsClient(true), []);
 
   const showHistogram = useStore(selectShowHistogram);
+
+  // Handle shared tree links (#share=abc123)
+  useEffect(() => {
+    if (!isClient) return;
+
+    const handleHashChange = () => {
+      const shareHash = extractShareHash();
+
+      if (shareHash) {
+        loadSharedTree(shareHash)
+          .then((tree) => {
+            useStore.getState().loadTree(tree, false);
+            // Clear the hash after successful load
+            window.history.replaceState(null, "", window.location.pathname);
+            // TODO: better notification
+            window.alert(
+              `Shared tree "${tree.name}" has been imported successfully!`,
+            );
+          })
+          .catch((error) => {
+            // TODO: better notification
+            console.error("[EVTree] Failed to load shared tree:", error);
+            window.alert(
+              `Failed to load shared tree: ${(error as Error).message}`,
+            );
+          });
+      }
+    };
+
+    // Check hash on initial load
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [isClient]);
 
   if (!isClient) {
     // TODO: put some kind of loading spinner here?

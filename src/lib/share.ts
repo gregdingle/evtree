@@ -10,6 +10,9 @@ import { cleanTree } from "./download";
 import { firebaseApp } from "./firebase";
 import { DecisionTree } from "./tree";
 
+/**
+ * @see extractShareHash
+ */
 async function generateContentHash(content: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(content);
@@ -20,6 +23,15 @@ async function generateContentHash(content: string): Promise<string> {
     .join("");
   // Use first 16 characters for reasonable length while maintaining uniqueness
   return hashHex.substring(0, 16);
+}
+
+/**
+ * @see generateContentHash
+ */
+export function extractShareHash(): string | null {
+  const hash = window.location.hash;
+  const match = hash.match(/#share=([a-f0-9]{16})/);
+  return match && match[1] ? match[1] : null;
 }
 
 export async function uploadTreeForSharing(
@@ -43,12 +55,29 @@ export async function uploadTreeForSharing(
     variables: keys(tree.variables ?? {}).length.toString(),
   };
 
-  const snapshot = await uploadBytes(storageRef, blob, {
+  await uploadBytes(storageRef, blob, {
     contentType: "application/json",
     cacheControl: "public,max-age=31536000,immutable",
     contentEncoding: "utf-8",
     contentDisposition: "inline",
     customMetadata,
   });
-  return await getDownloadURL(snapshot.ref);
+
+  // Return hash fragment URL instead of direct Firebase Storage URL
+  const baseUrl = window.location.origin;
+  return `${baseUrl}/#share=${contentHash}`;
+}
+
+export async function loadSharedTree(
+  contentHash: string,
+): Promise<DecisionTree> {
+  const storageRef = ref(getStorage(firebaseApp), `share/${contentHash}.json`);
+  const downloadURL = await getDownloadURL(storageRef);
+  const response = await fetch(downloadURL);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch shared tree: ${response.statusText}`);
+  }
+
+  return await response.json();
 }
