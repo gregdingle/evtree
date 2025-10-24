@@ -28,9 +28,9 @@ export function ToolbarButton({
 
   const getButtonClasses = () => {
     if (disabled) {
-      return "flex items-center gap-1 rounded px-2 py-1 opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600 flex-shrink-0";
+      return "flex items-center gap-1 rounded px-2 py-1 opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600 flex-shrink-0 whitespace-nowrap";
     }
-    return `flex items-center gap-1 rounded px-2 py-1 flex-shrink-0
+    return `flex items-center gap-1 rounded px-2 py-1 flex-shrink-0 whitespace-nowrap
       hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600
     ${active ? "bg-gray-200 dark:bg-gray-600" : ""}`;
   };
