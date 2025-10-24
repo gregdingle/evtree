@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,8 +17,7 @@ export const metadata: Metadata = {
     ],
   },
   robots: {
-    // TODO: switch to true when ready for production
-    index: false,
+    index: true,
     follow: true,
   },
 };
