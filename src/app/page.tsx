@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 
 import { ReactFlowProvider, useReactFlow } from "@xyflow/react";
+import { ReCaptchaV3Provider, initializeAppCheck } from "firebase/app-check";
 
 import { useStore } from "@/hooks/use-store";
+import { firebaseApp } from "@/lib/firebase";
 import { selectShowHistogram } from "@/lib/selectors";
 import { downloadSharedTree, extractShareHash } from "@/lib/share";
 
@@ -20,7 +22,21 @@ export default function Home() {
   // Zustand loading from localStorage. See
   // https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+
+  useEffect(() => {
+    // See https://stackoverflow.com/questions/77482473/next-js-firebase-appcheck-error-recaptcha-placeholder-element-must-be-an-ele
+    if (process.env.NODE_ENV === "development") {
+      // @ts-expect-error: see https://firebase.google.com/docs/app-check/web/debug-provider
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
+    initializeAppCheck(firebaseApp, {
+      provider: new ReCaptchaV3Provider(
+        "6LepM_YrAAAAAHVY3Px_MrNBS3sp9vOKfItIU7dV",
+      ),
+    });
+
+    setIsClient(true);
+  }, []);
 
   const showHistogram = useStore(selectShowHistogram);
 
