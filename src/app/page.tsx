@@ -81,10 +81,7 @@ function ShareLinkLoader() {
             useStore.getState().loadTree(tree, false);
             // Clear the hash after successful load
             window.history.replaceState(null, "", window.location.pathname);
-            // TODO: optimize fitView, figure out what's going on with timing
-            setTimeout(() => {
-              fitView();
-            }, 100);
+            fitView();
           })
           .catch((error) => {
             // TODO: better notification
