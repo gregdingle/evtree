@@ -10,15 +10,18 @@ import {
   DocumentArrowDownIcon,
   DocumentDuplicateIcon,
   LinkIcon,
+  PhotoIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { kebabCase } from "es-toolkit";
+import { values } from "es-toolkit/compat";
 import Image from "next/image";
 import { useHotkeys } from "react-hotkeys-hook";
 
+import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { useTemporalStore } from "@/hooks/use-temporal-store";
-import { downloadJson } from "@/lib/download";
+import { downloadJson, downloadPNG } from "@/lib/download";
 import {
   selectCurrentTree,
   selectHasClipboardContent,
@@ -59,6 +62,8 @@ export default function Toolbar() {
   const areEVsShowing = useStore(selectShowEVs);
   const isHistogramOpen = useStore(selectShowHistogram);
 
+  const isDarkMode = useDarkMode();
+
   const handleDownloadTree = (treeToDownload: DecisionTree) => {
     if (!treeToDownload) return;
     downloadJson(
@@ -78,6 +83,16 @@ export default function Toolbar() {
         `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
       );
     }
+  };
+
+  const handleExportTree = (treeToExport: DecisionTree) => {
+    if (!treeToExport) return;
+    downloadPNG(
+      values(treeToExport.nodes ?? []),
+      `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
+      // Use same colors as ReactFlow: bg-amber-50 (#fffbeb) for light, #141414 for dark
+      isDarkMode ? "#141414" : "#fffbeb",
+    );
   };
 
   // TODO: dark mode toggle button
@@ -197,12 +212,20 @@ export default function Toolbar() {
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
+          onClick={() => currentTree && handleExportTree(currentTree)}
+          tooltip="Export tree to PNG"
+          disabled={!hasNodes}
+        >
+          <PhotoIcon className="h-4 w-4" />
+          Export Image
+        </ToolbarButton>
+        <ToolbarButton
           onClick={() => currentTree && handleDownloadTree(currentTree)}
           tooltip="Download tree as JSON"
           disabled={!hasNodes}
         >
           <DocumentArrowDownIcon className="h-4 w-4" />
-          Download
+          Download File
         </ToolbarButton>
         <ToolbarButton
           onClick={() => currentTree && handleShareLink(currentTree)}
