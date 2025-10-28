@@ -124,6 +124,69 @@ export default function ContextMenu({
     >
       {contextNode ? (
         <>
+          {/* TODO: deprecated... paste exists in toolbar also and hotkey... remove if not needed */}
+          {/* <ContextMenuButton
+            onClick={() => onPaste()}
+            disabled={!clipboardNodes.length}
+          >
+            <TrashIcon className="h-4 w-4" />
+            TODO: if clipboardNodes is not actually a subtree is that a problem?
+            Paste {clipboardNodes.length > 1 ? "Subtree" : "Node"}
+          </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" /> */}
+          <ContextMenuSubmenu
+            title="Add Branch to..."
+            icon={<PlusIcon className="h-4 w-4" />}
+            disabled={contextNode?.type === "terminal"}
+          >
+            <ContextMenuButton onClick={() => handleAddBranch("chance")}>
+              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
+              Chance Node
+            </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleAddBranch("terminal")}>
+              <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+              Terminal Node
+            </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleAddBranch("decision")}>
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
+            </ContextMenuButton>
+          </ContextMenuSubmenu>{" "}
+          <ContextMenuSubmenu
+            title="Convert to..."
+            icon={<ArrowPathIcon className="h-4 w-4" />}
+            disabled={false}
+          >
+            <ContextMenuButton
+              onClick={() => handleConvertNode("chance")}
+              disabled={contextNode?.type === "chance"}
+            >
+              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
+              Chance Node
+            </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => handleConvertNode("terminal")}
+              disabled={hasChildren || contextNode?.type === "terminal"}
+            >
+              <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+              Terminal Node
+            </ContextMenuButton>
+            <ContextMenuButton
+              onClick={() => handleConvertNode("decision")}
+              disabled={contextNode?.type === "decision"}
+            >
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
+            </ContextMenuButton>
+          </ContextMenuSubmenu>
+          <ContextMenuButton
+            onClick={() => contextNode && connectToNearestNode(contextNode.id)}
+            disabled={contextNode && !!childToParentMap[contextNode.id]}
+          >
+            <LinkIcon className="h-4 w-4" />
+            Connect to Nearest Node
+          </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuSubmenu
             title={hasChildren ? "Subtree..." : "Node..."}
             icon={<CursorArrowRaysIcon className="h-4 w-4" />}
@@ -187,69 +250,6 @@ export default function ContextMenu({
               Delete {hasChildren ? "Subtree" : "Node"}
             </ContextMenuButton>
           </ContextMenuSubmenu>
-          <hr className="m-2 border-gray-300 dark:border-gray-600" />
-          <ContextMenuButton
-            onClick={() => onPaste()}
-            disabled={!clipboardNodes.length}
-          >
-            <TrashIcon className="h-4 w-4" />
-            {/* TODO: if clipboardNodes is not actually a subtree is that a problem? */}
-            Paste {clipboardNodes.length > 1 ? "Subtree" : "Node"}
-          </ContextMenuButton>
-          <hr className="m-2 border-gray-300 dark:border-gray-600" />
-          <ContextMenuSubmenu
-            title="Convert to..."
-            icon={<ArrowPathIcon className="h-4 w-4" />}
-            disabled={false}
-          >
-            <ContextMenuButton
-              onClick={() => handleConvertNode("chance")}
-              disabled={contextNode?.type === "chance"}
-            >
-              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
-              Chance Node
-            </ContextMenuButton>
-            <ContextMenuButton
-              onClick={() => handleConvertNode("terminal")}
-              disabled={hasChildren || contextNode?.type === "terminal"}
-            >
-              <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
-              Terminal Node
-            </ContextMenuButton>
-            <ContextMenuButton
-              onClick={() => handleConvertNode("decision")}
-              disabled={contextNode?.type === "decision"}
-            >
-              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
-              Decision Node
-            </ContextMenuButton>
-          </ContextMenuSubmenu>
-          <hr className="m-2 border-gray-300 dark:border-gray-600" />
-          <ContextMenuSubmenu
-            title="Add Branch to..."
-            icon={<PlusIcon className="h-4 w-4" />}
-            disabled={contextNode?.type === "terminal"}
-          >
-            <ContextMenuButton onClick={() => handleAddBranch("chance")}>
-              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
-              Chance Node
-            </ContextMenuButton>
-            <ContextMenuButton onClick={() => handleAddBranch("terminal")}>
-              <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
-              Terminal Node
-            </ContextMenuButton>
-            <ContextMenuButton onClick={() => handleAddBranch("decision")}>
-              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
-              Decision Node
-            </ContextMenuButton>
-          </ContextMenuSubmenu>
-          <ContextMenuButton
-            onClick={() => contextNode && connectToNearestNode(contextNode.id)}
-            disabled={contextNode && !!childToParentMap[contextNode.id]}
-          >
-            <LinkIcon className="h-4 w-4" />
-            Connect to Nearest Node
-          </ContextMenuButton>
         </>
       ) : (
         <>
