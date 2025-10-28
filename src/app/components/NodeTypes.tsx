@@ -41,12 +41,9 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
     <div
       className={`nopan relative text-s  ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
-      <div className="absolute -top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center whitespace-nowrap">
-        {/* TODO: deprecated... remove if not needed {data.label} */}
-      </div>
       {children}
       {showEVs && (
-        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic">
           {formatValue(pathValue)}
           {/* TODO: show cost separately? {formatCost(data.cost)} */}
         </div>
@@ -167,11 +164,6 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       // TODO: sholud also "nodrag" when not selected?
       className={`nopan relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
-      {data.label && (
-        <div className="absolute -top-2 left-8 whitespace-nowrap">
-          {/* TODO: deprecated... remove if not needed {data.label} */}
-        </div>
-      )}
       <div
         // NOTE: this wacky CSS creates the triangle shape
         className={`h-0 w-0 border-t-[15px] border-r-[24px] border-b-[15px] border-l-0 border-t-transparent border-b-transparent border-l-transparent ${
@@ -187,7 +179,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       />
       <div
         className={`absolute left-8 max-w-32 ${
-          data.label ? "top-2" : "-top-1"
+          showEVs ? "-top-2" : "top-1"
         } whitespace-nowrap`}
       >
         {isEditingValue ? (
@@ -219,7 +211,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         )}
       </div>
       {showEVs && (
-        <div className={`absolute ${data.label ? "top-6" : "top-5"} left-8`}>
+        <div className={`absolute italic top-4 left-8`}>
           {/*
          TODO: always show pathProbability?
          NOTE: don't show the ??? placeholder for null pathProbability

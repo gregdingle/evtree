@@ -157,7 +157,7 @@ export default function RightSidePanel() {
                   </PropertyInput>
                 )}
                 {showEVs && (
-                  <>
+                  <div className="italic">
                     <PropertyInput
                       label="Expected Net Value"
                       value={formatValueLong(
@@ -178,7 +178,7 @@ export default function RightSidePanel() {
                       // TODO: show this for terminal nodes only because the path probability
                       // is only shown for terminal nodes on the canvas?
                     />
-                  </>
+                  </div>
                 )}
               </div>
             ))}
