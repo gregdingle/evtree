@@ -56,7 +56,8 @@ export default function RightSidePanel() {
           : ""; // multi
 
   return (
-    <div className="w-80 p-4">
+    // HACK: depends on Toolbar height also
+    <div className="w-80 p-4 h-[calc(100vh-70px)] relative">
       <h2 className="mb-8 text-lg font-semibold">{titlePrefix} Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
@@ -257,6 +258,15 @@ export default function RightSidePanel() {
           </div>
         )}
       </div>
+      <footer className="absolute bottom-5 right-0 w-80 text-center text-sm">
+        Feedback or questions?{" "}
+        <a
+          href="mailto:gregdingle@gmail.com?subject=EVTree"
+          className="text-blue-700 hover:underline"
+        >
+          Email us
+        </a>
+      </footer>
     </div>
   );
 }

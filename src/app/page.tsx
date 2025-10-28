@@ -75,15 +75,6 @@ export default function Home() {
                 <RightSidePanel />
               </CollapsiblePanel>
             </div>
-            <footer className="absolute bottom-5 right-0 w-80 text-center text-sm">
-              Feedback or questions?{" "}
-              <a
-                href="mailto:gregdingle@gmail.com?subject=EVTree"
-                className="text-blue-700 hover:underline"
-              >
-                Email us
-              </a>
-            </footer>
           </div>
         </div>
       </div>
