@@ -13,7 +13,7 @@ import {
 } from "@/lib/selectors";
 import { formatProbability, formatValue } from "@/utils/format";
 
-import { NoteNode } from "./NoteNode";
+import { GhostNode, NoteNode } from "./NoteNode";
 
 //
 // NOTE: adapted from example at
@@ -39,7 +39,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
 
   return (
     <div
-      className={`nopan relative text-s  ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       {children}
       {showEVs && (
@@ -70,11 +70,12 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           type="target"
           position={Position.Left}
           isConnectable={!hasParent}
+          className="opacity-0 group-hover:opacity-100"
         />
         <Handle
           type="source"
           position={Position.Right}
-          className={isCollapsed ? "collapsed" : ""}
+          className={`opacity-0 group-hover:opacity-100 ${isCollapsed ? "collapsed" : ""}`}
           isConnectable={isCollapsed ? false : true}
         />
       </div>
@@ -105,12 +106,12 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           position={Position.Left}
           isConnectable={!hasParent}
           // See https://reactflow.dev/learn/customization/handles#hiding-handles
-          className={!hasParent ? "" : "invisible"}
+          className={`opacity-0 group-hover:opacity-100 ${!hasParent ? "" : "invisible"}`}
         />
         <Handle
           type="source"
           position={Position.Right}
-          className={isCollapsed ? "collapsed" : ""}
+          className={`opacity-0 group-hover:opacity-100 ${isCollapsed ? "collapsed" : ""}`}
           isConnectable={isCollapsed ? false : true}
         />
       </div>
@@ -162,7 +163,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
     <div
       // TODO: sholud also "nodrag" when not selected?
-      className={`nopan relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
         // NOTE: this wacky CSS creates the triangle shape
@@ -175,7 +176,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         position={Position.Left}
         isConnectable={!hasParent}
         // See https://reactflow.dev/learn/customization/handles#hiding-handles
-        className={!hasParent ? "" : "invisible"}
+        className={`opacity-0 group-hover:opacity-100 ${!hasParent ? "" : "invisible"}`}
       />
       <div
         className={`absolute left-8 w-fit ${
@@ -230,4 +231,5 @@ export const nodeTypes = {
   decision: DecisionNode,
   terminal: TerminalNode,
   note: NoteNode,
+  ghost: GhostNode,
 };

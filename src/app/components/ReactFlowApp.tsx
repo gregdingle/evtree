@@ -1,9 +1,12 @@
 "use client";
 
+import { useRef } from "react";
+
 import {
   Connection,
   Controls,
   OnConnectEnd,
+  OnConnectStart,
   ReactFlow,
   SelectionMode,
   useReactFlow,
@@ -17,6 +20,7 @@ import { AppEdge } from "@/lib/edge";
 import { buildChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 
+import { ArrowMarker } from "./ArrowMarker";
 import ContextMenu from "./ContextMenu";
 import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
@@ -35,6 +39,13 @@ export default function ReactFlowApp() {
   // Context menu hook
   const { menu, ref, onContextMenu, closeMenu } = useContextMenu();
 
+  // Track which handle was clicked for connections
+  const connectingHandleId = useRef<string | null>(null);
+
+  const onConnectStart: OnConnectStart = (_event, { handleId }) => {
+    connectingHandleId.current = handleId;
+  };
+
   // NOTE: adapted from https://reactflow.dev/examples/nodes/add-node-on-edge-drop
   const onConnectEnd: OnConnectEnd = (event, connectionState) => {
     // when a connection is dropped on the pane it's not valid
@@ -48,9 +59,37 @@ export default function ReactFlowApp() {
         y: clientY,
       });
 
+      // Check min distance
+      const fromPosition = connectionState.fromNode.position;
+      const distanceSquared =
+        Math.pow(position.x - fromPosition.x, 2) +
+        Math.pow(position.y - fromPosition.y, 2);
+      // NOTE: 50 pixels minimum depends on the size of the nodes
+      if (distanceSquared < Math.pow(50, 2)) {
+        // eslint-disable-next-line no-console
+        console.debug("[EVTree] Connection too short, not creating node");
+        connectingHandleId.current = null;
+        return;
+      }
+
+      // For note nodes, create a ghost node with an arrow edge
+      // See https://reactflow.dev/examples/edges/temporary-edges
+      if (connectionState.fromNode.type === "note") {
+        const { createGhostNodeWithArrow } = useStore.getState();
+        createGhostNodeWithArrow(
+          connectionState.fromNode.id,
+          position,
+          connectingHandleId.current,
+        );
+        connectingHandleId.current = null;
+        return;
+      }
+
       // TODO: make this work for connection to upstream nodes also
       createNodeAt(position, connectionState.fromNode.id);
     }
+
+    connectingHandleId.current = null;
   };
 
   return (
@@ -79,6 +118,7 @@ export default function ReactFlowApp() {
           closeMenu();
         }}
         onConnect={onConnect}
+        onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onPaneContextMenu={(event) => onContextMenu(event)}
         onNodeContextMenu={(event, node) => onContextMenu(event, node)}
@@ -89,6 +129,9 @@ export default function ReactFlowApp() {
         isValidConnection={(connection) => isValidConnection(edges, connection)}
       >
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
+
+        {/* SVG definitions for arrow markers */}
+        {ArrowMarker()}
       </ReactFlow>
 
       {/* // TODO:  Controls positioned relative to viewport

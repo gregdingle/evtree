@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { NodeProps } from "@xyflow/react";
+import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
 import { AppNode } from "@/lib/node";
@@ -48,9 +48,10 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   return (
     <div
-      className={`nopan relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
+        // NOTE: border-dashed should match the strokeDasharray of ArrowEdge
         className={`w-40 min-h-12 p-2 border-2 border-dashed ${
           // TODO: when note is selected, the bg is transparent, so the underlying content is visible... it's weird
           selected
@@ -58,6 +59,40 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             : "border-gray-400 bg-yellow-100 dark:bg-yellow-900/20"
         }`}
       >
+        {/* Handles for creating arrow edges */}
+        <Handle
+          type="source"
+          position={Position.Right}
+          isConnectableStart={true}
+          isConnectableEnd={false}
+          id={`${id}-right`}
+          className="opacity-0 group-hover:opacity-100"
+        />
+        <Handle
+          type="source"
+          position={Position.Left}
+          isConnectableStart={true}
+          isConnectableEnd={false}
+          id={`${id}-left`}
+          className="opacity-0 group-hover:opacity-100"
+        />
+        <Handle
+          type="source"
+          position={Position.Top}
+          isConnectableStart={true}
+          isConnectableEnd={false}
+          id={`${id}-top`}
+          className="opacity-0 group-hover:opacity-100"
+        />
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          isConnectableStart={true}
+          isConnectableEnd={false}
+          id={`${id}-bottom`}
+          className="opacity-0 group-hover:opacity-100"
+        />
+
         {/* Description section */}
         {isEditing ? (
           <textarea
@@ -104,4 +139,18 @@ function resizeTextarea(target: HTMLTextAreaElement) {
   target.style.height = "0px";
   // Set to scrollHeight
   target.style.height = `${target.scrollHeight - 7}px`;
+}
+
+export function GhostNode({}: NodeProps<AppNode>) {
+  return (
+    <div className="nopan cursor-move w-4 h-4">
+      &nbsp;
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={false}
+        className="invisible !left-1/2 !translate-x-1/2"
+      />
+    </div>
+  );
 }

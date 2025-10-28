@@ -2,7 +2,7 @@ import { mapValues, memoize, omit } from "es-toolkit";
 import { fromPairs, toPairs, values } from "es-toolkit/compat";
 
 import { StoreState } from "@/hooks/use-store";
-import { AppEdge } from "@/lib/edge";
+import { AppEdge, filterTreeEdges } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
 import { DecisionTree } from "@/lib/tree";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
@@ -70,9 +70,13 @@ export const selectNetExpectedValues = memoize(
       return {};
     }
 
+    // Filter out arrow edges from tree logic calculations
+    const treeEdges = filterTreeEdges(values(tree.edges));
+    const treeEdgesMap = fromPairs(treeEdges.map((edge) => [edge.id, edge]));
+
     const { nodes, edges } = computeNodeValues(
       mapValues(tree.nodes, (node) => toComputeNode(node, tree.variables)),
-      mapValues(tree.edges, (edge) => toComputeEdge(edge, tree.variables)),
+      mapValues(treeEdgesMap, (edge) => toComputeEdge(edge, tree.variables)),
     );
 
     return {
@@ -124,9 +128,9 @@ export function selectShouldShowProbabilityWarning(
     return false;
   }
 
-  // Find all sibling edges (edges from the same source node)
-  // TODO: should this be optimized with a map?
-  const probabilitySum = values(tree.edges)
+  // Find all sibling edges (edges from the same source node), excluding arrow edges
+  const treeEdges = filterTreeEdges(values(tree.edges));
+  const probabilitySum = treeEdges
     .filter((edge) => edge.source === targetEdge.source)
     .reduce((sum, edge) => {
       const probability = edgeProbabilities[edge.id];

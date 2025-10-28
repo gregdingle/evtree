@@ -28,8 +28,14 @@ export default function RightSidePanel() {
 
   const { nodes, edges, currentTree, showEVs } = useStore((state) => {
     return {
-      nodes: selectCurrentNodes(state).filter((node) => node.selected),
-      edges: selectCurrentEdges(state).filter((edge) => edge.selected),
+      nodes: selectCurrentNodes(state).filter(
+        // HACK: filter out ghost nodes because they have no properties to edit
+        (node) => node.selected && node.type !== "ghost",
+      ),
+      edges: selectCurrentEdges(state).filter(
+        // HACK: filter out arrow edges because they have no properties to edit
+        (edge) => edge.selected && edge.type !== "arrow",
+      ),
       currentTree: selectCurrentTree(state),
       showEVs: selectShowEVs(state),
     };
@@ -262,7 +268,7 @@ export default function RightSidePanel() {
         Feedback or questions?{" "}
         <a
           href="mailto:gregdingle@gmail.com?subject=EVTree"
-          className="text-blue-700 hover:underline"
+          className="text-blue-700 dark:text-blue-400 hover:underline bold"
         >
           Email us
         </a>

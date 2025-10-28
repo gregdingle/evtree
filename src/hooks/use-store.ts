@@ -76,6 +76,11 @@ export interface StoreState {
     fromNodeId: string,
     nodeType?: NodeType,
   ) => void;
+  createGhostNodeWithArrow: (
+    fromNodeId: string,
+    position: { x: number; y: number },
+    sourceHandle?: string | null,
+  ) => void;
   onArrange: () => void;
   arrangeSubtree: (nodeId: string) => void;
   toggleNodeCollapse: (nodeId: string) => void;
@@ -266,11 +271,26 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
+            // NOTE: Special case: Delete any ghost nodes when their arrow edges
+            // are removed.
+            changes.forEach((change) => {
+              if (change.type === "remove") {
+                const edge = tree.edges[change.id];
+                if (
+                  edge?.type === "arrow" &&
+                  tree.nodes[edge.target]?.type === "ghost"
+                ) {
+                  delete tree.nodes[edge.target];
+                }
+              }
+            });
+
             const updatedEdgesArray = applyEdgeChanges(
               changes,
               values(tree.edges),
             );
             tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
+
             tree.updatedAt = new Date().toISOString();
           }),
         undefined,
@@ -278,7 +298,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // TODO: still not selecting newEdge always!
     onConnect: (connection) => {
       set(
         (state) =>
@@ -607,6 +626,40 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "createNodeAt", position, fromNodeId, nodeType },
+      );
+    },
+
+    createGhostNodeWithArrow: (fromNodeId, position, sourceHandle) => {
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            clearSelections(tree);
+            // Create a ghost node at the drop position
+            const ghostNode = createNode(position, "ghost", false);
+            // Mark it as a ghost node so we can style it differently
+            // ghostNode.draggable = false;
+            // ghostNode.selectable = false;
+
+            // Create an arrow edge from the source note to the ghost node
+            const arrowEdge = createEdge(
+              fromNodeId,
+              ghostNode.id,
+              false,
+              {},
+              "arrow",
+            );
+
+            // Set the source handle if provided
+            if (sourceHandle) {
+              arrowEdge.sourceHandle = sourceHandle;
+            }
+
+            tree.nodes[ghostNode.id] = ghostNode;
+            tree.edges[arrowEdge.id] = arrowEdge;
+            tree.updatedAt = new Date().toISOString();
+          }),
+        undefined,
+        { type: "createGhostNodeWithArrow", fromNodeId, position },
       );
     },
 

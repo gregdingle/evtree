@@ -1,6 +1,7 @@
 import { memoize } from "es-toolkit";
 import { values } from "es-toolkit/compat";
-import { AppEdge } from "./edge";
+
+import { AppEdge, filterTreeEdges } from "./edge";
 
 /**
  * NOTE: assumes a single incoming edge per node
@@ -13,7 +14,8 @@ export const buildChildToParentNodeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
-  values(edges).forEach((edge) => {
+  const treeEdges = filterTreeEdges(values(edges));
+  treeEdges.forEach((edge) => {
     childToParentMap[edge.target] = edge.source;
   });
   return childToParentMap;
@@ -23,7 +25,8 @@ export const buildNodeToIncomingEdgeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const nodeToIncomingEdge: Record<string, string> = {};
-  values(edges).forEach((edge) => {
+  const treeEdges = filterTreeEdges(values(edges));
+  treeEdges.forEach((edge) => {
     nodeToIncomingEdge[edge.target] = edge.id;
   });
   return nodeToIncomingEdge;
@@ -34,14 +37,16 @@ export const buildChildToParentEdgeMap = memoize(function (
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
 
+  const treeEdges = filterTreeEdges(values(edges));
+
   // First pass: build a lookup map from target node to edge ID (O(n))
   const nodeToIncomingEdge: Record<string, string> = {};
-  values(edges).forEach((edge) => {
+  treeEdges.forEach((edge) => {
     nodeToIncomingEdge[edge.target] = edge.id;
   });
 
   // Second pass: for each edge, find its parent edge using the lookup map (O(n))
-  values(edges).forEach((childEdge) => {
+  treeEdges.forEach((childEdge) => {
     const parentEdgeId = nodeToIncomingEdge[childEdge.source];
     if (parentEdgeId) {
       childToParentMap[childEdge.id] = parentEdgeId;
@@ -56,7 +61,8 @@ export const buildParentToChildNodeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string[]> {
   const parentToChildMap: Record<string, string[]> = {};
-  values(edges).forEach((edge) => {
+  const treeEdges = filterTreeEdges(values(edges));
+  treeEdges.forEach((edge) => {
     if (!parentToChildMap[edge.source]) {
       parentToChildMap[edge.source] = [];
     }

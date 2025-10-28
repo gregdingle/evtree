@@ -7,6 +7,7 @@ import {
   EdgeProps,
   Position,
   getSmoothStepPath,
+  getStraightPath,
 } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
@@ -271,6 +272,45 @@ export default function CustomEdge({
   );
 }
 
+/**
+ * Simple arrow edge for note nodes that doesn't participate in tree logic.
+ * Uses a straight path and arrow marker.
+ */
+function ArrowEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  selected,
+  style,
+}: EdgeProps<AppEdge>) {
+  // NOTE: getSimpleBezierPath will not point the arrow head as well
+  const [edgePath] = getStraightPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+  });
+
+  return (
+    <BaseEdge
+      id={id}
+      path={edgePath}
+      className={`${selected ? "!stroke-blue-500/50" : "!stroke-gray-400"}`}
+      style={{
+        strokeWidth: 2,
+        // NOTE: strokeDasharray should match the border of the NoteNode
+        strokeDasharray: "6,4",
+        transition: style?.transition,
+      }}
+      markerEnd={selected ? "url(#arrow-selected)" : "url(#arrow)"}
+    />
+  );
+}
+
 export const edgeTypes = {
+  // TODO: rename CustomEdge to BranchEdge or something
   custom: CustomEdge,
+  arrow: ArrowEdge,
 };

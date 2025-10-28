@@ -1,7 +1,7 @@
 import { Node, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
-export type NodeType = "decision" | "chance" | "terminal" | "note";
+export type NodeType = "decision" | "chance" | "terminal" | "note" | "ghost";
 
 export type AppNode = Node<
   {
