@@ -49,10 +49,15 @@ export default function VariablesInput() {
   // it does on reload
 
   const handleNameChange = (index: number, name: string) => {
+    // Whitelist: letters, numbers, underscores
+    // Strip out any other characters (spaces, special chars, etc.)
+    // NOTE: see Parser.evaluate for how variable names are actually parsed
+    const sanitizedName = name.replace(/[^a-zA-Z0-9_]/g, "");
+
     const newVariables = [...localVariables];
     const current = newVariables[index];
     if (current) {
-      newVariables[index] = { ...current, name };
+      newVariables[index] = { ...current, name: sanitizedName };
       setLocalVariables(newVariables);
       updateVariables(newVariables);
     }
