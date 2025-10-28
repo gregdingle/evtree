@@ -181,7 +181,7 @@ export default function CustomEdge({
         }}
       />
       <EdgeLabelRenderer>
-        <div className="nopan text-s">
+        <div className="nopan text-s leading-tight">
           <div
             style={{
               transform: transformLabel,
@@ -191,7 +191,7 @@ export default function CustomEdge({
               maxWidth: `${labelWidth}px`,
             }}
             // HACK: adjust offset position based for textarea vs span
-            className={`absolute ${editingField === "label" ? "top-1" : "-top-1"} text-center cursor-pointer`}
+            className={`absolute ${editingField === "label" ? "top-1" : "-top-0.5"} text-center cursor-pointer`}
             onClick={handleLabelClick}
           >
             {editingField === "label" ? (
