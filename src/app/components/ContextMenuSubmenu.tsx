@@ -20,6 +20,7 @@ export function ContextMenuSubmenu({
       className="relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <div
         className={`${

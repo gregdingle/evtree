@@ -121,6 +121,7 @@ export default function ContextMenu({
         zIndex: 1000,
       }}
       className="rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
+      onContextMenu={(e) => e.preventDefault()}
     >
       {contextNode ? (
         <>
