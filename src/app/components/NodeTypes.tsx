@@ -178,7 +178,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         className={!hasParent ? "" : "invisible"}
       />
       <div
-        className={`absolute left-8 max-w-32 ${
+        className={`absolute left-8 w-fit ${
           showEVs ? "-top-2" : "top-1"
         } whitespace-nowrap`}
       >
@@ -194,11 +194,14 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             onChange={handleValueChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className="focus:outline-none"
             spellCheck={false}
+            style={{
+              // NOTE: dynamically size input to fit content
+              width: `${Math.max(3, (data.valueExpr ?? "").length + 1)}ch`,
+            }}
           />
         ) : (
-          <span
+          <div
             onClick={handleValueClick}
             className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1 py-0.5 -mx-1 rounded"
           >
@@ -207,16 +210,15 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
               {formatValue(pathValue) || "???"}
             */}
             {data.valueExpr ?? "???"}
-          </span>
+          </div>
         )}
       </div>
       {showEVs && (
         <div className={`absolute italic top-4 left-8`}>
-          {/*
-         TODO: always show pathProbability?
-         NOTE: don't show the ??? placeholder for null pathProbability
-         */}
-          {formatProbability(pathProbability, 1, "")}
+          {
+            // NOTE: don't show the ??? placeholder for null pathProbability
+            formatProbability(pathProbability, 1, "")
+          }
         </div>
       )}
     </div>
