@@ -993,7 +993,7 @@ function arrangeSubtreeHelper(tree: DecisionTree, nodeId: string) {
     subtreeEdges,
     "LR", // direction
     1, // verticalScale
-    2, // horizontalScale
+    2.5, // horizontalScale
     true, // preserveVerticalOrder
   );
 
