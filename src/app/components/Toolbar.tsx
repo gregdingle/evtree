@@ -216,7 +216,8 @@ export default function Toolbar() {
         <ToolbarButton
           onClick={() => currentTree && handleExportTree(currentTree)}
           tooltip="Export tree to PNG"
-          disabled={!hasNodes}
+          // TODO: support export image of histogram one day?
+          disabled={!hasNodes || isHistogramOpen}
         >
           <PhotoIcon className="h-4 w-4" />
           Export Image
