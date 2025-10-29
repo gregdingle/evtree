@@ -1,0 +1,270 @@
+{
+  "id": "tree-1",
+  "name": "Hello World Tree",
+  "description": "This is a demo tree that has all the various types of nodes arranged in a typical pattern",
+  "createdAt": "2025-10-29T16:30:47.156Z",
+  "updatedAt": "2025-10-29T16:57:00.773Z",
+  "nodes": {
+    "decision": {
+      "id": "decision",
+      "type": "decision",
+      "data": {
+        "description": "decision description"
+      },
+      "position": {
+        "x": 100,
+        "y": 0
+      },
+      "measured": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    "chance": {
+      "id": "chance",
+      "type": "chance",
+      "data": {
+        "description": "chance description"
+      },
+      "position": {
+        "x": 300,
+        "y": 0
+      },
+      "measured": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    "terminal1": {
+      "id": "terminal1",
+      "type": "terminal",
+      "data": {
+        "description": "terminal1 description",
+        "valueExpr": "500"
+      },
+      "position": {
+        "x": 500,
+        "y": -75
+      },
+      "measured": {
+        "width": 24,
+        "height": 30
+      }
+    },
+    "terminal2": {
+      "id": "terminal2",
+      "type": "terminal",
+      "data": {
+        "description": "terminal2 description",
+        "valueExpr": "1000"
+      },
+      "position": {
+        "x": 500,
+        "y": 75
+      },
+      "measured": {
+        "width": 24,
+        "height": 30
+      }
+    },
+    "terminal3": {
+      "id": "terminal3",
+      "type": "terminal",
+      "data": {
+        "description": "terminal3 description",
+        "valueExpr": "250"
+      },
+      "position": {
+        "x": 300,
+        "y": 150
+      },
+      "measured": {
+        "width": 24,
+        "height": 30
+      }
+    },
+    "note1": {
+      "id": "note1",
+      "type": "note",
+      "data": {
+        "description": "This is a decision node. It represents a decision you will take by maximizing expected value.",
+        "valueExpr": "250"
+      },
+      "position": {
+        "x": -22.826630135073955,
+        "y": -202.5634802562166
+      },
+      "dragging": false,
+      "measured": {
+        "width": 192,
+        "height": 134
+      }
+    },
+    "k2iTTAYoxfdF": {
+      "id": "k2iTTAYoxfdF",
+      "type": "ghost",
+      "position": {
+        "x": 103.10868546158859,
+        "y": -26.426319167790382
+      },
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "origin": [0.5, 0],
+      "dragging": false,
+      "measured": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "MZ31ALsfrtYT": {
+      "id": "MZ31ALsfrtYT",
+      "type": "note",
+      "position": {
+        "x": 309.4740805007713,
+        "y": -199.98083489967956
+      },
+      "data": {
+        "label": "",
+        "description": "This is a chance node. It represents an event that has multiple possible outcomes."
+      },
+      "origin": [0.5, 0],
+      "dragging": false,
+      "measured": {
+        "width": 192,
+        "height": 112
+      }
+    },
+    "QIU4qCKwWY0m": {
+      "id": "QIU4qCKwWY0m",
+      "type": "ghost",
+      "position": {
+        "x": 315.13140527826937,
+        "y": -21.40754197908328
+      },
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "origin": [0.5, 0],
+      "dragging": false,
+      "measured": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "FDCgdUV1b0za": {
+      "id": "FDCgdUV1b0za",
+      "type": "note",
+      "position": {
+        "x": 542.2745416194874,
+        "y": -224.56473804723788
+      },
+      "data": {
+        "label": "",
+        "description": "This is a terminal node. It represents a final outcome or payoff."
+      },
+      "origin": [0.5, 0],
+      "dragging": false,
+      "measured": {
+        "width": 192,
+        "height": 112
+      }
+    },
+    "lt_DH4FrXd29": {
+      "id": "lt_DH4FrXd29",
+      "type": "ghost",
+      "position": {
+        "x": 531.741431909649,
+        "y": -92.30231590424702
+      },
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "origin": [0.5, 0],
+      "measured": {
+        "width": 16,
+        "height": 16
+      }
+    }
+  },
+  "edges": {
+    "decision-chance": {
+      "id": "decision-chance",
+      "source": "decision",
+      "target": "chance",
+      "type": "custom",
+      "data": {
+        "label": "d to c",
+        "description": "Connection from decision to chance"
+      }
+    },
+    "chance-terminal1": {
+      "id": "chance-terminal1",
+      "source": "chance",
+      "target": "terminal1",
+      "type": "custom",
+      "data": {
+        "label": "c to t1",
+        "description": "Path from chance to terminal1",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "chance-terminal2": {
+      "id": "chance-terminal2",
+      "source": "chance",
+      "target": "terminal2",
+      "type": "custom",
+      "data": {
+        "label": "c to t2",
+        "description": "Path from chance to terminal2",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "decision-terminal3": {
+      "id": "decision-terminal3",
+      "source": "decision",
+      "target": "terminal3",
+      "type": "custom",
+      "data": {
+        "label": "d to t3",
+        "description": "Path from decision to terminal3"
+      }
+    },
+    "enote1-k2iTTAYoxfdF": {
+      "id": "enote1-k2iTTAYoxfdF",
+      "source": "note1",
+      "target": "k2iTTAYoxfdF",
+      "type": "arrow",
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "sourceHandle": "note1-bottom"
+    },
+    "eMZ31ALsfrtYT-QIU4qCKwWY0m": {
+      "id": "eMZ31ALsfrtYT-QIU4qCKwWY0m",
+      "source": "MZ31ALsfrtYT",
+      "target": "QIU4qCKwWY0m",
+      "type": "arrow",
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "sourceHandle": "MZ31ALsfrtYT-bottom"
+    },
+    "eFDCgdUV1b0za-lt_DH4FrXd29": {
+      "id": "eFDCgdUV1b0za-lt_DH4FrXd29",
+      "source": "FDCgdUV1b0za",
+      "target": "lt_DH4FrXd29",
+      "type": "arrow",
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "sourceHandle": "FDCgdUV1b0za-bottom"
+    }
+  }
+}
