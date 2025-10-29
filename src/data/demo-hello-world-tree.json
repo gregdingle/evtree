@@ -3,7 +3,7 @@
   "name": "Hello World Tree",
   "description": "This is a demo tree that has all the various types of nodes arranged in a typical pattern",
   "createdAt": "2025-10-29T16:30:47.156Z",
-  "updatedAt": "2025-10-29T16:57:00.773Z",
+  "updatedAt": "2025-10-29T17:28:30.314Z",
   "nodes": {
     "decision": {
       "id": "decision",
@@ -104,8 +104,8 @@
       "id": "k2iTTAYoxfdF",
       "type": "ghost",
       "position": {
-        "x": 103.10868546158859,
-        "y": -26.426319167790382
+        "x": 105.48499330955953,
+        "y": -24.050011319819465
       },
       "data": {
         "label": "",
@@ -158,12 +158,12 @@
       "id": "FDCgdUV1b0za",
       "type": "note",
       "position": {
-        "x": 542.2745416194874,
-        "y": -224.56473804723788
+        "x": 561.3907200798603,
+        "y": -274.74470650571664
       },
       "data": {
         "label": "",
-        "description": "This is a terminal node. It represents a final outcome or payoff."
+        "description": "This is a terminal node. It represents a final outcome that has some payoff."
       },
       "origin": [0.5, 0],
       "dragging": false,
@@ -188,6 +188,42 @@
         "width": 16,
         "height": 16
       }
+    },
+    "CKZmWd_PJkvB": {
+      "id": "CKZmWd_PJkvB",
+      "type": "note",
+      "position": {
+        "x": 495.93278357576816,
+        "y": 173.264611297137
+      },
+      "data": {
+        "label": "",
+        "description": "This is a branch. It represents one possible outcome that has some probability of happening."
+      },
+      "origin": [0.5, 0],
+      "dragging": false,
+      "measured": {
+        "width": 192,
+        "height": 134
+      }
+    },
+    "l1jHn-tY_Gxh": {
+      "id": "l1jHn-tY_Gxh",
+      "type": "ghost",
+      "position": {
+        "x": 453.95134492828186,
+        "y": 115.44112032984458
+      },
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "origin": [0.5, 0],
+      "measured": {
+        "width": 16,
+        "height": 16
+      },
+      "dragging": false
     }
   },
   "edges": {
@@ -265,6 +301,17 @@
         "description": ""
       },
       "sourceHandle": "FDCgdUV1b0za-bottom"
+    },
+    "eCKZmWd_PJkvB-l1jHn-tY_Gxh": {
+      "id": "eCKZmWd_PJkvB-l1jHn-tY_Gxh",
+      "source": "CKZmWd_PJkvB",
+      "target": "l1jHn-tY_Gxh",
+      "type": "arrow",
+      "data": {
+        "label": "",
+        "description": ""
+      },
+      "sourceHandle": "CKZmWd_PJkvB-top"
     }
   }
 }
