@@ -15,7 +15,9 @@ export function ArrowMarker() {
         <marker
           id="arrow"
           viewBox="0 0 10 10"
-          refX="1"
+          // NOTE: There is a trade-off in refX where too low makes the arrow
+          // point too far from the cursor, and too high makes the arrow overlap the edge
+          refX="7"
           refY="5"
           markerWidth="8"
           markerHeight="8"
@@ -26,7 +28,7 @@ export function ArrowMarker() {
         <marker
           id="arrow-selected"
           viewBox="0 0 10 10"
-          refX="1"
+          refX="7"
           refY="5"
           markerWidth="8"
           markerHeight="8"

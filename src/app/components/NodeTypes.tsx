@@ -180,7 +180,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       />
       <div
         className={`absolute left-8 w-fit ${
-          showEVs ? "-top-2" : "top-1"
+          showEVs ? "-top-2.5" : "top-0.5"
         } whitespace-nowrap`}
       >
         {isEditingValue ? (
