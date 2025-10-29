@@ -1,12 +1,21 @@
 "use client";
+
 export function ArrowMarker() {
   return (
-    <svg style={{ position: "absolute", top: 0, left: 0, width: 0, height: 0 }}>
+    <svg
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+      }}
+    >
       <defs>
         <marker
           id="arrow"
           viewBox="0 0 10 10"
-          refX="9"
+          refX="1"
           refY="5"
           markerWidth="8"
           markerHeight="8"
@@ -17,7 +26,7 @@ export function ArrowMarker() {
         <marker
           id="arrow-selected"
           viewBox="0 0 10 10"
-          refX="9"
+          refX="1"
           refY="5"
           markerWidth="8"
           markerHeight="8"

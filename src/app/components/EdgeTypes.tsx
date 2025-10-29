@@ -284,11 +284,25 @@ function ArrowEdge({
   targetY,
   selected,
   style,
+  sourcePosition,
 }: EdgeProps<AppEdge>) {
+  // HACK: offset to make it look like edge is continuation of NoteNode border
+  const offsetY =
+    sourcePosition == Position.Top
+      ? 4
+      : sourcePosition == Position.Bottom
+        ? -4
+        : 0;
+  const offsetX =
+    sourcePosition == Position.Left
+      ? 4
+      : sourcePosition == Position.Right
+        ? -4
+        : 0;
   // NOTE: getSimpleBezierPath will not point the arrow head as well
   const [edgePath] = getStraightPath({
-    sourceX,
-    sourceY,
+    sourceX: sourceX + offsetX,
+    sourceY: sourceY + offsetY,
     targetX,
     targetY,
   });

@@ -64,8 +64,8 @@ export default function ReactFlowApp() {
       const distanceSquared =
         Math.pow(position.x - fromPosition.x, 2) +
         Math.pow(position.y - fromPosition.y, 2);
-      // NOTE: 50 pixels minimum depends on the size of the nodes
-      if (distanceSquared < Math.pow(50, 2)) {
+      // NOTE: 40 pixels minimum depends on the size of the nodes
+      if (distanceSquared < Math.pow(40, 2)) {
         // eslint-disable-next-line no-console
         console.debug("[EVTree] Connection too short, not creating node");
         connectingHandleId.current = null;
