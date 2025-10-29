@@ -3,9 +3,11 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
+import { safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
+  selectCurrentVariables,
   selectHasParentNode,
   selectNetExpectedValue,
   selectPathProbability,
@@ -14,6 +16,7 @@ import {
 import { formatProbability, formatValue } from "@/utils/format";
 
 import { GhostNode, NoteNode } from "./NoteNode";
+import { WarningCircle } from "./WarningCircle";
 
 //
 // NOTE: adapted from example at
@@ -120,16 +123,17 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  // Local state for inline editing
-  const [isEditingValue, setIsEditingValue] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const { onNodeDataUpdate } = useStore.getState();
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   const showEVs = useStore(selectShowEVs);
+  const variables = useStore(selectCurrentVariables);
 
+  // Local state for inline editing
+  const [isEditingValue, setIsEditingValue] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isParseable, setIsParseable] = useState(true);
   // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
 
   // Auto-focus input when editing starts
@@ -138,6 +142,18 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       inputRef.current.focus();
     }
   }, [isEditingValue]);
+
+  useEffect(() => {
+    const value = data.valueExpr;
+    if (value) {
+      const parsed = safeEvalExpr(value, variables, null);
+      if (parsed === null) {
+        setIsParseable(false);
+      } else {
+        setIsParseable(true);
+      }
+    }
+  }, [variables, data.valueExpr]);
 
   const handleValueClick = () => {
     // NOTE: do not stopPropagation so we also select the node
@@ -196,6 +212,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             spellCheck={false}
+            className="px-0.5 py-0 mt-0.5"
             style={{
               // NOTE: dynamically size input to fit content
               width: `${Math.max(3, (data.valueExpr ?? "").length + 1)}ch`,
@@ -204,13 +221,16 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         ) : (
           <div
             onClick={handleValueClick}
-            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1 py-0.5 -mx-1 rounded"
+            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
           >
             {/* NOTE: unlike other nodes, we do not show EV here, only inputted value,
               so it can be modified inline. See alternative:
               {formatValue(pathValue) || "???"}
             */}
             {data.valueExpr ?? "???"}
+            {!isParseable && (
+              <WarningCircle tooltip="Incomplete value expression. Click to edit." />
+            )}
           </div>
         )}
       </div>

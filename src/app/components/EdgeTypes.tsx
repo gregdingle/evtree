@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -18,6 +17,8 @@ import {
   selectShouldShowProbabilityWarning,
 } from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
+
+import { WarningCircle } from "./WarningCircle";
 
 /**
  * @see https://reactflow.dev/learn/customization/edge-labels
@@ -247,21 +248,13 @@ export default function CustomEdge({
                 {formatProbability(computedProbability, 0, "???", "")}
                 {shouldWarn ? (
                   // TODO: should we show this somehow in inline edit mode?
-                  <span
-                    className="tooltip"
-                    // TODO: it doesn't always fix... if the sum of other
-                    // probabilities is >1, clicking this only sets it to 0%
-                    data-tooltip="Incomplete probabilities. Click to fix."
-                  >
-                    <ExclamationCircleIcon
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        balanceEdgeProbability(id);
-                      }}
-                      className="ml-0.5 -mt-0.5 inline-block h-3 w-3 fill-red-600"
-                      // TODO: how to use Tooltip without messing up text size and other styles
-                    />
-                  </span>
+                  <WarningCircle
+                    tooltip="Incomplete probabilities. Click to fix."
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      balanceEdgeProbability(id);
+                    }}
+                  />
                 ) : null}
               </span>
             )}

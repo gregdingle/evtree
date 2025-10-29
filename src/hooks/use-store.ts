@@ -667,11 +667,15 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
+            // TODO: extract to global findRootNodes function?
+            const edgesArray = values(tree.edges);
             values(tree.nodes)
               .filter((node) => {
                 // A root node has no incoming edges
-                return !values(tree.edges).some(
-                  (edge) => edge.target === node.id,
+                return (
+                  !edgesArray.some((edge) => edge.target === node.id) &&
+                  node.type !== "note" &&
+                  node.type !== "ghost"
                 );
               })
               .forEach((node) => {

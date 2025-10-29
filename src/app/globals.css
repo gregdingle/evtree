@@ -81,12 +81,12 @@ body {
 .evtree .tooltip::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: -16px; /* show below */
+  bottom: -30px; /* show below */
   left: 50%;
   transform: translateX(-50%);
   padding: 2px 4px;
   border-radius: 1px;
-  font-size: 6px;
+  font-size: 10px;
   /* TODO: dark mode */
   background: black;
   color: white;

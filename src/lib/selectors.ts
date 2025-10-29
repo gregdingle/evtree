@@ -47,6 +47,13 @@ export function selectCurrentEdges(state: StoreState): AppEdge[] {
   return currentTree ? values(currentTree.edges) : [];
 }
 
+export function selectCurrentVariables(
+  state: StoreState,
+): Record<string, number> {
+  const currentTree = selectCurrentTree(state);
+  return currentTree?.variables ?? {};
+}
+
 /**
  * Returns computed values for all nodes in the current tree, performing
  * the expected value calculation on-demand during React component rendering.

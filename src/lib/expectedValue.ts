@@ -61,16 +61,22 @@ export function computeNodeValues(
   nodes: Record<string, ComputeNode>,
   edges: Record<string, ComputeEdge>,
 ): { nodes: Record<string, ComputeNode>; edges: Record<string, ComputeEdge> } {
+  const edgesArray = values(edges);
   const rootNodes = values(nodes).filter((node) => {
     // A root node has no incoming edges
-    return !values(edges).some((edge) => edge.target === node.id);
+    // TODO: extract to global findRootNodes function?
+    return (
+      !edgesArray.some((edge) => edge.target === node.id) &&
+      node.type !== "note" &&
+      node.type !== "ghost"
+    );
   });
   if (rootNodes.length === 0) {
     console.warn("[EVTree] No root nodes found, cannot compute values.");
     return { nodes, edges };
   }
 
-  const adjList = buildAdjacencyList(values(edges));
+  const adjList = buildAdjacencyList(edgesArray);
 
   rootNodes.forEach((rootNode) => {
     computeNodeValuesRecursive(
@@ -260,7 +266,7 @@ export function toComputeEdge(
 // TODO: dehumanize as in 1.0M to 1000000?
 // TODO: handle currencies globally... it should probably be a tree-level setting
 // NOTE: see handleNameChange in VariablesInput.tsx for variable name sanitization
-function safeEvalExpr(
+export function safeEvalExpr(
   expression: string | undefined,
   variables: Record<string, number>,
   defaultValue: number | null,
