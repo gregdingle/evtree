@@ -26,7 +26,10 @@ import { shallow } from "zustand/vanilla/shallow";
 import initialTrees from "@/data/initialTrees";
 import { AppEdge, cloneEdge, createEdge } from "@/lib/edge";
 import { toComputeEdge } from "@/lib/expectedValue";
-import { computeLayoutedNodeOffsets, getLayoutedElements } from "@/lib/layout";
+import {
+  computeLayoutedNodeOffsets,
+  getLayoutedElementsD3,
+} from "@/lib/layout";
 import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
@@ -663,6 +666,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
+    // TODO: why does auto arrange the hello world tree make it jump up?
+    // shouldn't the root position be preserved?
     onArrange: () => {
       set(
         (state) =>
@@ -976,9 +981,9 @@ function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
 }
 
 // TODO: move somewhere better?
-function arrangeSubtreeHelper(tree: DecisionTree, nodeId: string) {
+function arrangeSubtreeHelper(tree: DecisionTree, rootNodeId: string) {
   // Collect all nodes in the subtree
-  const subtreeNodeIds = collectSubtreeNodeIds(tree, nodeId);
+  const subtreeNodeIds = collectSubtreeNodeIds(tree, rootNodeId);
 
   // Extract subtree nodes and edges
   const subtreeNodes = Array.from(subtreeNodeIds).map((id) => tree.nodes[id]!);
@@ -988,18 +993,19 @@ function arrangeSubtreeHelper(tree: DecisionTree, nodeId: string) {
   );
 
   // Apply layout to the subtree
-  const { nodes: layoutedNodes } = getLayoutedElements(
+  const { nodes: layoutedNodes } = getLayoutedElementsD3(
+    rootNodeId,
     subtreeNodes,
     subtreeEdges,
     "LR", // direction
-    1, // verticalScale
-    2.5, // horizontalScale
-    true, // preserveVerticalOrder
+    { horizontal: 250, vertical: 100 },
+    false,
+    { siblings: 0.25, parents: 1.5 },
   );
 
   const { offsetX, offsetY } = computeLayoutedNodeOffsets(
     layoutedNodes,
-    nodeId,
+    rootNodeId,
     tree.nodes,
     subtreeNodeIds,
   );
