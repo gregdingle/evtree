@@ -13,7 +13,7 @@ import {
   selectPathProbability,
   selectShowEVs,
 } from "@/lib/selectors";
-import { formatProbability, formatValue } from "@/utils/format";
+import { formatCost, formatProbability, formatValue } from "@/utils/format";
 
 import { GhostNode, NoteNode } from "./NoteNode";
 import { WarningCircle } from "./WarningCircle";
@@ -47,7 +47,7 @@ const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
       {data.costExpr && (
         // TODO: how to disallow negative cost? see setIsParseable in TerminalNode
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
-          -{data.costExpr}
+          {formatCost(data.costExpr)}
         </div>
       )}
       {children}
@@ -192,6 +192,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     setEditingValue(event.target.value);
   };
 
+  const topOffset = showEVs ? "-top-2.5" : "top-0.5";
   return (
     <div
       // TODO: sholud also "nodrag" when not selected?
@@ -211,9 +212,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         className={`opacity-0 group-hover:opacity-100 ${!hasParent ? "" : "invisible"}`}
       />
       <div
-        className={`absolute left-8 w-fit ${
-          showEVs ? "-top-2.5" : "top-0.5"
-        } whitespace-nowrap z-10`}
+        className={`absolute left-8 w-fit ${topOffset} whitespace-nowrap z-10`}
       >
         {isEditingValue ? (
           // TODO: we only show the net path value, following silver decisions,
@@ -250,6 +249,19 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           </div>
         )}
       </div>
+      {data.costExpr && (
+        // TODO: how to disallow negative cost? see setIsParseable in TerminalNode
+        <div
+          className={`absolute ${topOffset}`}
+          style={{
+            // NOTE: dynamically size input to fit content
+            width: `${Math.max(3, data.costExpr.length + 1)}ch`,
+            left: `${Math.max(3, (data.valueExpr?.length ?? 0) + 4)}ch`,
+          }}
+        >
+          {formatCost(data.costExpr)}
+        </div>
+      )}
       {showEVs && (
         <div className={`absolute italic top-4 left-8`}>
           {

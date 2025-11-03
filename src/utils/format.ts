@@ -1,5 +1,7 @@
 import HRNumbers from "human-readable-numbers";
 
+import { normalizeExpression } from "@/lib/expectedValue";
+
 /**
  * @see https://www.npmjs.com/package/human-readable-numbers
  *
@@ -36,11 +38,19 @@ export function formatProbability(
   );
 }
 
-export function formatCost(cost: number | undefined | null): string {
+/**
+ * Wraps cost in parens and minus symbol so it works for expressions.
+ *
+ * @see https://graphicdesign.stackexchange.com/questions/68674/what-s-the-right-character-for-a-minus-sign
+ */
+export function formatCost(cost: string | number | undefined | null): string {
   if (cost === undefined || cost === null || cost == 0) {
     return "";
   }
-  return " " + formatValue(cost * -1);
+  if (Number.isFinite(Number(normalizeExpression(cost.toString())))) {
+    return `– ${cost}`;
+  }
+  return `– (${cost})`;
 }
 
 /**

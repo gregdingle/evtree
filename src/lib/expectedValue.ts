@@ -272,9 +272,7 @@ export function safeEvalExpr(
   defaultValue: number | null,
 ): number | null {
   // Trim leading whitespace and any currency symbol
-  expression = trimStart(expression?.trim() ?? "", "$");
-  // Strip commas
-  expression = expression?.replace(/,/g, "") ?? "";
+  expression = normalizeExpression(expression);
   if (!expression) {
     return defaultValue;
   }
@@ -296,4 +294,11 @@ export function safeEvalExpr(
     );
     return defaultValue;
   }
+}
+
+export function normalizeExpression(expression: string | undefined) {
+  expression = trimStart(expression?.trim() ?? "", "$");
+  // Strip commas
+  expression = expression?.replace(/,/g, "") ?? "";
+  return expression;
 }
