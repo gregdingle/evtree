@@ -15,6 +15,7 @@ import {
   selectComputedProbability,
   selectHasDecisionNodeSource,
   selectShouldShowProbabilityWarning,
+  selectShowEVs,
 } from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
 
@@ -49,6 +50,8 @@ export default function CustomEdge({
   const hasDecisionNodeSource = useStore((state) =>
     selectHasDecisionNodeSource(state, id),
   );
+
+  const showEVs = useStore(selectShowEVs);
 
   // Local state for inline editing
   const [editingField, setEditingField] = useState<
@@ -257,12 +260,19 @@ export default function CustomEdge({
                 spellCheck={false}
                 style={{ width: `${labelWidth}px` }}
               />
+            ) : hasDecisionNodeSource ? (
+              showEVs && (
+                <span
+                  className="block dark:hover:bg-gray-700 py-0.5 rounded italic"
+                  style={{ width: `${labelWidth}px` }}
+                >
+                  {formatProbability(computedProbability, 0, "???", "")}
+                </span>
+              )
             ) : (
               <span
-                onClick={
-                  hasDecisionNodeSource ? undefined : handleProbabilityClick
-                }
-                className={`block dark:hover:bg-gray-700 py-0.5 rounded ${hasDecisionNodeSource ? "cursor-not-allowed italic" : "hover:bg-gray-100 cursor-pointer"}`}
+                onClick={handleProbabilityClick}
+                className="block dark:hover:bg-gray-700 py-0.5 rounded hover:bg-gray-100 cursor-pointer"
                 style={{ width: `${labelWidth}px` }}
               >
                 {formatProbability(computedProbability, 0, "???", "")}
