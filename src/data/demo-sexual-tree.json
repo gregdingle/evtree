@@ -12,7 +12,7 @@
         "label": "Broker's Sexual Harassment",
         "description": "decision description",
         "value": -501808,
-        "valueExpr": "-501808",
+        "valueExpr": "-501,808",
         "cost": null
       },
       "position": {
@@ -35,7 +35,7 @@
         "label": "Settle for $",
         "description": "",
         "value": -1500000,
-        "valueExpr": "-1500000",
+        "valueExpr": "-1,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -55,7 +55,7 @@
         "label": "",
         "description": "",
         "value": -501808,
-        "valueExpr": "-501808",
+        "valueExpr": "-501,808",
         "cost": 0,
         "costExpr": "0"
       },
@@ -76,7 +76,7 @@
         "label": "",
         "description": "",
         "value": -30000,
-        "valueExpr": "-30000",
+        "valueExpr": "-30,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -97,9 +97,9 @@
         "label": "",
         "description": "",
         "value": -426640,
-        "valueExpr": "-426640",
+        "valueExpr": "-426,640",
         "cost": 100000,
-        "costExpr": "100000"
+        "costExpr": "100,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -118,7 +118,7 @@
         "label": "",
         "description": "",
         "value": -2133200,
-        "valueExpr": "-2133200",
+        "valueExpr": "-2,133,200",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -160,9 +160,9 @@
         "label": "",
         "description": "",
         "value": -886000,
-        "valueExpr": "-886000",
+        "valueExpr": "-886,000",
         "cost": 3000000,
-        "costExpr": "3000000"
+        "costExpr": "3,000,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -182,9 +182,9 @@
         "label": "",
         "description": "",
         "value": -522000,
-        "valueExpr": "-522000",
+        "valueExpr": "-522,000",
         "cost": 1500000,
-        "costExpr": "1500000"
+        "costExpr": "1,500,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -204,9 +204,9 @@
         "label": "",
         "description": "",
         "value": -400000,
-        "valueExpr": "-400000",
+        "valueExpr": "-400,000",
         "cost": 750000,
-        "costExpr": "750000"
+        "costExpr": "750,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -226,7 +226,7 @@
         "label": "",
         "description": "",
         "value": -1180000,
-        "valueExpr": "-1180000",
+        "valueExpr": "-1,180,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -249,7 +249,7 @@
         "value": 0,
         "valueExpr": "0",
         "cost": 200000,
-        "costExpr": "200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -269,9 +269,9 @@
         "label": "",
         "description": "",
         "value": -1500000,
-        "valueExpr": "-1500000",
+        "valueExpr": "-1,500,000",
         "cost": 300000,
-        "costExpr": "300000"
+        "costExpr": "300,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -291,9 +291,9 @@
         "label": "",
         "description": "",
         "value": -1000000,
-        "valueExpr": "-1000000",
+        "valueExpr": "-1,000,000",
         "cost": 300000,
-        "costExpr": "300000"
+        "costExpr": "300,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -313,9 +313,9 @@
         "label": "",
         "description": "",
         "value": -500000,
-        "valueExpr": "-500000",
+        "valueExpr": "-500,000",
         "cost": 250000,
-        "costExpr": "250000"
+        "costExpr": "250,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -335,7 +335,7 @@
         "label": "",
         "description": "",
         "value": -770000,
-        "valueExpr": "-770000",
+        "valueExpr": "-770,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -358,7 +358,7 @@
         "value": 0,
         "valueExpr": "0",
         "cost": 150000,
-        "costExpr": "150000"
+        "costExpr": "150,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -378,9 +378,9 @@
         "label": "",
         "description": "",
         "value": -1000000,
-        "valueExpr": "-1000000",
+        "valueExpr": "-1,000,000",
         "cost": 300000,
-        "costExpr": "300000"
+        "costExpr": "300,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -400,9 +400,9 @@
         "label": "",
         "description": "",
         "value": -500000,
-        "valueExpr": "-500000",
+        "valueExpr": "-500,000",
         "cost": 250000,
-        "costExpr": "250000"
+        "costExpr": "250,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -422,9 +422,9 @@
         "label": "",
         "description": "",
         "value": -250000,
-        "valueExpr": "-250000",
+        "valueExpr": "-250,000",
         "cost": 200000,
-        "costExpr": "200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -444,7 +444,7 @@
         "label": "",
         "description": "",
         "value": -650000,
-        "valueExpr": "-650000",
+        "valueExpr": "-650,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -467,7 +467,7 @@
         "value": 0,
         "valueExpr": "0",
         "cost": 150000,
-        "costExpr": "150000"
+        "costExpr": "150,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -487,9 +487,9 @@
         "label": "",
         "description": "",
         "value": -1000000,
-        "valueExpr": "-1000000",
+        "valueExpr": "-1,000,000",
         "cost": 200000,
-        "costExpr": "200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -509,9 +509,9 @@
         "label": "",
         "description": "",
         "value": -500000,
-        "valueExpr": "-500000",
+        "valueExpr": "-500,000",
         "cost": 200000,
-        "costExpr": "200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -531,9 +531,9 @@
         "label": "",
         "description": "",
         "value": -250000,
-        "valueExpr": "-250000",
+        "valueExpr": "-250,000",
         "cost": 200000,
-        "costExpr": "200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {

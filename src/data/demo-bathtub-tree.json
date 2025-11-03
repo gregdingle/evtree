@@ -2,7 +2,7 @@
   "id": "hE124YFaob13",
   "name": "Bathtub Blues Demo Tree",
   "createdAt": "2025-08-11T02:20:57.775Z",
-  "updatedAt": "2025-08-11T02:20:57.775Z",
+  "updatedAt": "2025-11-03T23:29:44.754Z",
   "nodes": {
     "EPr-9-hGhZ-Z": {
       "id": "EPr-9-hGhZ-Z",
@@ -15,7 +15,7 @@
         "label": "SWL&P vs I-S",
         "description": "",
         "value": 1264773.75,
-        "valueExpr": "1264773.75",
+        "valueExpr": "1,264,773.75",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -28,8 +28,8 @@
       "id": "GkVdBQghMqKa",
       "type": "terminal",
       "position": {
-        "x": 222,
-        "y": 1996
+        "x": 250,
+        "y": 1975.3476883811686
       },
       "data": {
         "label": "",
@@ -49,16 +49,16 @@
       "id": "gegk3HDwFXkN",
       "type": "chance",
       "position": {
-        "x": 222,
-        "y": 1824
+        "x": 250,
+        "y": 1845.6523116188312
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1164773.75,
-        "valueExpr": "1164773.75",
+        "valueExpr": "1,164,773.75",
         "cost": -100000,
-        "costExpr": "-100000"
+        "costExpr": "100,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -71,14 +71,14 @@
       "id": "rqUGsUDqijbf",
       "type": "chance",
       "position": {
-        "x": 444,
-        "y": 1738
+        "x": 500,
+        "y": 1782.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1663962.5,
-        "valueExpr": "1663962.5",
+        "valueExpr": "1,663,962.5",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -92,8 +92,8 @@
       "id": "uoH0-3DQQCI3",
       "type": "terminal",
       "position": {
-        "x": 440.4258327338327,
-        "y": 1910
+        "x": 500,
+        "y": 1909.7742174835942
       },
       "data": {
         "label": "",
@@ -113,8 +113,8 @@
       "id": "jfJq9sudaZy8",
       "type": "terminal",
       "position": {
-        "x": 666,
-        "y": 1394
+        "x": 750,
+        "y": 1083.5304057540684
       },
       "data": {
         "label": "",
@@ -134,16 +134,16 @@
       "id": "wdXTRv0ZN7hY",
       "type": "chance",
       "position": {
-        "x": 666,
-        "y": 1566
+        "x": 750,
+        "y": 1182.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1202250,
-        "valueExpr": "1202250",
+        "valueExpr": "1,202,250",
         "cost": -200000,
-        "costExpr": "-200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -156,16 +156,16 @@
       "id": "4TjmBmS3t4V1",
       "type": "chance",
       "position": {
-        "x": 681.7212568146765,
-        "y": 2028.1044404679728
+        "x": 750,
+        "y": 2482.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2286575,
-        "valueExpr": "2286575",
+        "valueExpr": "2,286,575",
         "cost": -200000,
-        "costExpr": "-200000"
+        "costExpr": "200,000"
       },
       "origin": [0.5, 0],
       "measured": {
@@ -178,14 +178,14 @@
       "id": "rwfKy39f7VeN",
       "type": "chance",
       "position": {
-        "x": 924.2451083108244,
-        "y": 2160.673019010512
+        "x": 1000,
+        "y": 2432.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 4573150,
-        "valueExpr": "4573150",
+        "valueExpr": "4,573,150",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -199,8 +199,8 @@
       "id": "N2aXLWPqL4pn",
       "type": "terminal",
       "position": {
-        "x": 855.8637036312518,
-        "y": 2432.712481412109
+        "x": 1000,
+        "y": 2533.5304057540684
       },
       "data": {
         "label": "",
@@ -220,14 +220,14 @@
       "id": "lmxtNbm4NGz_",
       "type": "chance",
       "position": {
-        "x": 1419.5818852220148,
-        "y": 2238.3414074661073
+        "x": 1250,
+        "y": 2132.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2324500,
-        "valueExpr": "2324500",
+        "valueExpr": "2,324,500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -241,14 +241,14 @@
       "id": "mB1g4w7PAI-E",
       "type": "chance",
       "position": {
-        "x": 1157.0418495491788,
-        "y": 2827.932175041069
+        "x": 1250,
+        "y": 2732.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 9820000,
-        "valueExpr": "9820000",
+        "valueExpr": "9,820,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -262,14 +262,14 @@
       "id": "9JWTBOX7F00j",
       "type": "chance",
       "position": {
-        "x": 1596.7463830038914,
-        "y": 1590.1951872155505
+        "x": 1500,
+        "y": 1782.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 4400000,
-        "valueExpr": "4400000",
+        "valueExpr": "4,400,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -283,14 +283,14 @@
       "id": "Zhi46E8Xu6lH",
       "type": "chance",
       "position": {
-        "x": 1641.5818852220148,
-        "y": 2238.3414074661073
+        "x": 1500,
+        "y": 2382.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2407500,
-        "valueExpr": "2407500",
+        "valueExpr": "2,407,500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -304,8 +304,8 @@
       "id": "Uxs0srfL5jff",
       "type": "terminal",
       "position": {
-        "x": 1614.859079701011,
-        "y": 2410.3414074661073
+        "x": 1500,
+        "y": 2483.5304057540684
       },
       "data": {
         "label": "",
@@ -325,14 +325,14 @@
       "id": "YBPMzjArpQE8",
       "type": "chance",
       "position": {
-        "x": 1863.5818852220148,
-        "y": 1894.3414074661073
+        "x": 1750,
+        "y": 2032.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1610000,
-        "valueExpr": "1610000",
+        "valueExpr": "1,610,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -346,14 +346,14 @@
       "id": "6DvqGabVOYXx",
       "type": "chance",
       "position": {
-        "x": 1863.5818852220148,
-        "y": 2410.3414074661073
+        "x": 1750,
+        "y": 2382.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2400000,
-        "valueExpr": "2400000",
+        "valueExpr": "2,400,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -367,14 +367,14 @@
       "id": "Bp60tJ0OXlRC",
       "type": "chance",
       "position": {
-        "x": 1863.5818852220148,
-        "y": 2926.3414074661073
+        "x": 1750,
+        "y": 2732.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3220000,
-        "valueExpr": "3220000",
+        "valueExpr": "3,220,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -388,14 +388,14 @@
       "id": "LHiYytSemHJ0",
       "type": "terminal",
       "position": {
-        "x": 2092.0961716357538,
-        "y": 1768.5271359448902
+        "x": 2000,
+        "y": 1933.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2300000,
-        "valueExpr": "2300000",
+        "valueExpr": "2,300,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -409,14 +409,14 @@
       "id": "ah2Hb2_pUgAu",
       "type": "terminal",
       "position": {
-        "x": 2085.581885222015,
-        "y": 1894.3414074661073
+        "x": 2000,
+        "y": 2033.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1700000,
-        "valueExpr": "1700000",
+        "valueExpr": "1,700,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -430,14 +430,14 @@
       "id": "x0TryoNsoKZL",
       "type": "terminal",
       "position": {
-        "x": 2094.267600440334,
-        "y": 2033.7699753974136
+        "x": 2000,
+        "y": 2133.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1000000,
-        "valueExpr": "1000000",
+        "valueExpr": "1,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -451,14 +451,14 @@
       "id": "RgcPbyS6h3x8",
       "type": "terminal",
       "position": {
-        "x": 2087.7533140265946,
-        "y": 2261.1414099141934
+        "x": 2000,
+        "y": 2283.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3500000,
-        "valueExpr": "3500000",
+        "valueExpr": "3,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -472,14 +472,14 @@
       "id": "5ym08O825lcP",
       "type": "terminal",
       "position": {
-        "x": 2085.581885222015,
-        "y": 2410.3414074661073
+        "x": 2000,
+        "y": 2383.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2500000,
-        "valueExpr": "2500000",
+        "valueExpr": "2,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -493,14 +493,14 @@
       "id": "mkyPDNV3Xmcy",
       "type": "terminal",
       "position": {
-        "x": 2088.839028428884,
-        "y": 2551.941404201993
+        "x": 2000,
+        "y": 2483.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1500000,
-        "valueExpr": "1500000",
+        "valueExpr": "1,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -514,14 +514,14 @@
       "id": "iRsrZcTN4Tqx",
       "type": "terminal",
       "position": {
-        "x": 2085.581885222015,
-        "y": 2754.3414074661073
+        "x": 2000,
+        "y": 2633.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 4600000,
-        "valueExpr": "4600000",
+        "valueExpr": "4,600,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -535,14 +535,14 @@
       "id": "n6ZRq_adkiAd",
       "type": "terminal",
       "position": {
-        "x": 2085.581885222015,
-        "y": 2926.3414074661073
+        "x": 2000,
+        "y": 2733.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3400000,
-        "valueExpr": "3400000",
+        "valueExpr": "3,400,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -556,14 +556,14 @@
       "id": "WKRh7m6s1kOQ",
       "type": "terminal",
       "position": {
-        "x": 2085.9891968651086,
-        "y": 3078.5496330645874
+        "x": 2000,
+        "y": 2833.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2000000,
-        "valueExpr": "2000000",
+        "valueExpr": "2,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -577,14 +577,14 @@
       "id": "Ry3TEmNn-wbP",
       "type": "terminal",
       "position": {
-        "x": 1379.0418495491788,
-        "y": 2655.932175041069
+        "x": 1500,
+        "y": 2633.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 14000000,
-        "valueExpr": "14000000",
+        "valueExpr": "14,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -598,14 +598,14 @@
       "id": "nIQhwlBTNHx0",
       "type": "terminal",
       "position": {
-        "x": 1379.0418495491788,
-        "y": 2827.932175041069
+        "x": 1500,
+        "y": 2733.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 9700000,
-        "valueExpr": "9700000",
+        "valueExpr": "9,700,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -619,14 +619,14 @@
       "id": "H3aYmvFwF2eX",
       "type": "terminal",
       "position": {
-        "x": 1379.0418495491788,
-        "y": 2999.932175041069
+        "x": 1500,
+        "y": 2833.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 6000000,
-        "valueExpr": "6000000",
+        "valueExpr": "6,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -640,14 +640,14 @@
       "id": "AfbNuvAx53qG",
       "type": "chance",
       "position": {
-        "x": 888,
-        "y": 620
+        "x": 1000,
+        "y": 1132.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2404500,
-        "valueExpr": "2404500",
+        "valueExpr": "2,404,500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -661,8 +661,8 @@
       "id": "4aiLV16f17x9",
       "type": "terminal",
       "position": {
-        "x": 918.5374668263412,
-        "y": 1483.0403490393114
+        "x": 1000,
+        "y": 1233.5304057540684
       },
       "data": {
         "label": "",
@@ -682,14 +682,14 @@
       "id": "yDjyuXS6Vs8x",
       "type": "chance",
       "position": {
-        "x": 1042.715298708034,
-        "y": 471.40337436242294
+        "x": 1250,
+        "y": 1132.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2404500,
-        "valueExpr": "2404500",
+        "valueExpr": "2,404,500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -703,8 +703,8 @@
       "id": "nrRKdy_1wslq",
       "type": "terminal",
       "position": {
-        "x": 1196.6206938924925,
-        "y": 672.1502096588259
+        "x": 1500,
+        "y": 1133.5304057540684
       },
       "data": {
         "label": "",
@@ -724,14 +724,14 @@
       "id": "P_Tkh2Uu214h",
       "type": "terminal",
       "position": {
-        "x": 1795.9463805558055,
-        "y": 1445.3380472727952
+        "x": 1750,
+        "y": 1683.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 7000000,
-        "valueExpr": "7000000",
+        "valueExpr": "7,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -745,14 +745,14 @@
       "id": "MDHjkQrRb6vG",
       "type": "terminal",
       "position": {
-        "x": 1791.6035229466463,
-        "y": 1550.0237543308274
+        "x": 1750,
+        "y": 1783.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 5000000,
-        "valueExpr": "5000000",
+        "valueExpr": "5,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -766,14 +766,14 @@
       "id": "I3Tya1jxWAdf",
       "type": "terminal",
       "position": {
-        "x": 1799.203523762675,
-        "y": 1649.2808893774106
+        "x": 1750,
+        "y": 1883.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3000000,
-        "valueExpr": "3000000",
+        "valueExpr": "3,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -787,14 +787,14 @@
       "id": "7AX1joeHFCA9",
       "type": "chance",
       "position": {
-        "x": 979.6357661848408,
-        "y": 1085.0736174608264
+        "x": 1500,
+        "y": 1432.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 4800000,
-        "valueExpr": "4800000",
+        "valueExpr": "4,800,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -808,14 +808,14 @@
       "id": "RPVanigp08Fs",
       "type": "terminal",
       "position": {
-        "x": 1201.635766184841,
-        "y": 913.0736174608264
+        "x": 1750,
+        "y": 1333.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 7000000,
-        "valueExpr": "7000000",
+        "valueExpr": "7,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -829,14 +829,14 @@
       "id": "XaMmRmBdvmJo",
       "type": "terminal",
       "position": {
-        "x": 1201.635766184841,
-        "y": 1085.0736174608264
+        "x": 1750,
+        "y": 1433.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 5000000,
-        "valueExpr": "5000000",
+        "valueExpr": "5,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -850,14 +850,14 @@
       "id": "9xiHDEFGMd5-",
       "type": "terminal",
       "position": {
-        "x": 1201.635766184841,
-        "y": 1257.0736174608262
+        "x": 1750,
+        "y": 1533.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3000000,
-        "valueExpr": "3000000",
+        "valueExpr": "3,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -871,14 +871,14 @@
       "id": "nLHlc_RhT5kT",
       "type": "chance",
       "position": {
-        "x": 1361.1997602868173,
-        "y": 390.9166277278149
+        "x": 1500,
+        "y": 832.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2407500,
-        "valueExpr": "2407500",
+        "valueExpr": "2,407,500",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -892,14 +892,14 @@
       "id": "r91vdMlCIEXw",
       "type": "chance",
       "position": {
-        "x": 1583.1997602868173,
-        "y": 46.916627727814955
+        "x": 1750,
+        "y": 482.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1610000,
-        "valueExpr": "1610000",
+        "valueExpr": "1,610,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -913,14 +913,14 @@
       "id": "54zOdGYgsKik",
       "type": "chance",
       "position": {
-        "x": 1616.8625857830573,
-        "y": 495.59097673533495
+        "x": 1750,
+        "y": 832.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2400000,
-        "valueExpr": "2400000",
+        "valueExpr": "2,400,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -934,14 +934,14 @@
       "id": "d13doGvkL48P",
       "type": "chance",
       "position": {
-        "x": 1622.0414820132482,
-        "y": 1001.2331842749536
+        "x": 1750,
+        "y": 1182.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3220000,
-        "valueExpr": "3220000",
+        "valueExpr": "3,220,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -955,14 +955,14 @@
       "id": "MLKuJZUlgd-0",
       "type": "terminal",
       "position": {
-        "x": 1811.714046700556,
-        "y": -78.8976437934021
+        "x": 2000,
+        "y": 383.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2300000,
-        "valueExpr": "2300000",
+        "valueExpr": "2,300,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -976,14 +976,14 @@
       "id": "t61_qAQsT7Dq",
       "type": "terminal",
       "position": {
-        "x": 1805.1997602868173,
-        "y": 46.916627727814955
+        "x": 2000,
+        "y": 483.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1700000,
-        "valueExpr": "1700000",
+        "valueExpr": "1,700,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -997,14 +997,14 @@
       "id": "ipMVIiLrdgQL",
       "type": "terminal",
       "position": {
-        "x": 1813.8854755051357,
-        "y": 186.34519565912103
+        "x": 2000,
+        "y": 583.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1000000,
-        "valueExpr": "1000000",
+        "valueExpr": "1,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1018,14 +1018,14 @@
       "id": "cW2K1dbOuu1i",
       "type": "terminal",
       "position": {
-        "x": 1841.0340145876369,
-        "y": 346.390979183421
+        "x": 2000,
+        "y": 733.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3500000,
-        "valueExpr": "3500000",
+        "valueExpr": "3,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1039,14 +1039,14 @@
       "id": "7Qnb_AsE8ATg",
       "type": "terminal",
       "position": {
-        "x": 1838.8625857830573,
-        "y": 495.59097673533495
+        "x": 2000,
+        "y": 833.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2500000,
-        "valueExpr": "2500000",
+        "valueExpr": "2,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1060,14 +1060,14 @@
       "id": "OTROWq0zaqtq",
       "type": "terminal",
       "position": {
-        "x": 1842.1197289899271,
-        "y": 637.1909734712207
+        "x": 2000,
+        "y": 933.5304057540683
       },
       "data": {
         "label": "",
         "description": "",
         "value": 1500000,
-        "valueExpr": "1500000",
+        "valueExpr": "1,500,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1081,14 +1081,14 @@
       "id": "X2kE-lM-ScSF",
       "type": "terminal",
       "position": {
-        "x": 1844.041482013248,
-        "y": 829.2331842749536
+        "x": 2000,
+        "y": 1083.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 4600000,
-        "valueExpr": "4600000",
+        "valueExpr": "4,600,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1102,14 +1102,14 @@
       "id": "xjmiSl2KflCM",
       "type": "terminal",
       "position": {
-        "x": 1844.041482013248,
-        "y": 1001.2331842749536
+        "x": 2000,
+        "y": 1183.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 3400000,
-        "valueExpr": "3400000",
+        "valueExpr": "3,400,000",
         "cost": null
       },
       "origin": [0.5, 0],
@@ -1123,14 +1123,14 @@
       "id": "FLASWILaAjVP",
       "type": "terminal",
       "position": {
-        "x": 1844.448793656342,
-        "y": 1153.4414098734337
+        "x": 2000,
+        "y": 1283.5304057540684
       },
       "data": {
         "label": "",
         "description": "",
         "value": 2000000,
-        "valueExpr": "2000000",
+        "valueExpr": "2,000,000",
         "cost": null
       },
       "origin": [0.5, 0],
