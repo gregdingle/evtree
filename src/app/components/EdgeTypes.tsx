@@ -147,8 +147,8 @@ export default function CustomEdge({
   const midPointX = (targetX - sourceX) / 2;
   const adjY = isLeftToRight ? (labelY > sourceY ? offsetY : -offsetY) : 0;
   // Adjust X position based on step position to keep labels on horizontal segment
-  // Min 20 px of margin from vertical segment
-  const adjX = isLeftToRight ? Math.min(midPointX, 20) : 0;
+  // HACK: Min 18px of margin from vertical segment looks good enough
+  const adjX = isLeftToRight ? Math.min(midPointX, 18) : 0;
   // Special-case when there is no bend, only a single horizontal segment.
   const translateX = sourceY == targetY ? labelX : labelX + adjX;
   const transformProb = `translate(-${(stepPosition / 2) * 100}%, -50%) translate(${translateX}px, ${
@@ -158,8 +158,8 @@ export default function CustomEdge({
     labelY + adjY
   }px)`;
 
-  // HACK: width by empirical testing
-  const labelWidth = (targetX - sourceX) / 1.5;
+  // HACK: width by empirical testing... 30px min to fit "???" placeholder
+  const labelWidth = Math.max(30, (targetX - sourceX) / 1.5);
 
   // TODO: The above code positions and sizes the label container pretty good,
   // but not perfect. We need to start over from first principles of the
