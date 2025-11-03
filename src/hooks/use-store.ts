@@ -456,7 +456,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             clearSelections(tree);
 
             if (isReplacingNode) {
-              // TODO: arrangeSubtree after replacement
+              // TODO: extend from the selected node if the copied subtree
+              // "starts with" a branch? current replace behavior is unintuitive
+              // in this case
 
               const nodeToReplace = selectedNodes[0]!;
 
@@ -614,7 +616,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
     // TODO: should this be in the store at all or should we just rely on onNodesChange?
     // And review all other store methods!
-    // TODO: why are newEdge and newNode not selected after create on canvas?
+    // TODO: why are newEdge and newNode not selected after create on canvas?!!!
     createNodeAt: (position, fromNodeId, nodeType = "chance") => {
       set(
         (state) =>

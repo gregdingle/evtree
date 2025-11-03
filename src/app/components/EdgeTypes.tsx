@@ -54,6 +54,8 @@ export default function CustomEdge({
   const [editingField, setEditingField] = useState<
     "label" | "probability" | null
   >(null);
+  const [editingLabel, setEditingLabel] = useState("");
+  const [editingProbability, setEditingProbability] = useState("");
   const labelInputRef = useRef<HTMLTextAreaElement>(null);
   const probabilityInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,23 +79,39 @@ export default function CustomEdge({
 
   const handleLabelClick = () => {
     // NOTE: do not stopPropagation so we also select the edge
+    setEditingLabel(label ?? "");
     setEditingField("label");
   };
 
   const handleProbabilityClick = () => {
     // NOTE: do not stopPropagation so we also select the edge
+    setEditingProbability(data?.probabilityExpr ?? "");
     setEditingField("probability");
   };
 
-  const handleBlur = () => {
+  const commitEditing = () => {
+    if (editingField === "label") {
+      onEdgeDataUpdate(id, {
+        label: editingLabel === "" ? undefined : editingLabel,
+      });
+    } else if (editingField === "probability") {
+      onEdgeDataUpdate(id, {
+        probabilityExpr:
+          editingProbability === "" ? undefined : editingProbability,
+      });
+    }
     setEditingField(null);
+  };
+
+  const handleBlur = () => {
+    commitEditing();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && !event.shiftKey) {
       // Enter without Shift saves
       event.preventDefault();
-      setEditingField(null);
+      commitEditing();
     } else if (event.key === "Enter" && event.shiftKey) {
       // Shift+Enter adds a line break (allow default behavior)
       // No preventDefault needed - let textarea handle it naturally
@@ -105,24 +123,26 @@ export default function CustomEdge({
       // Switch between label and probability inputs
       // TODO: should tab thru all siblings? or all inputs in tree?
       if (editingField === "label") {
+        commitEditing();
+        setEditingProbability(data?.probabilityExpr ?? "");
         setEditingField("probability");
       } else if (editingField === "probability") {
+        commitEditing();
+        setEditingLabel(label ?? "");
         setEditingField("label");
       }
     }
   };
 
   const handleLabelChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = event.target.value;
-    onEdgeDataUpdate(id, { label: value === "" ? undefined : value });
+    setEditingLabel(event.target.value);
     handleTextareaResize(event.target);
   };
 
   const handleProbabilityChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const value = event.target.value;
-    onEdgeDataUpdate(id, { probabilityExpr: value === "" ? undefined : value });
+    setEditingProbability(event.target.value);
   };
 
   // NOTE: assumes the edge is always left to right
@@ -199,7 +219,7 @@ export default function CustomEdge({
             {editingField === "label" ? (
               <textarea
                 ref={labelInputRef}
-                value={label ?? ""}
+                value={editingLabel}
                 onChange={handleLabelChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
@@ -229,7 +249,7 @@ export default function CustomEdge({
               <input
                 ref={probabilityInputRef}
                 type="text"
-                value={data?.probabilityExpr ?? ""}
+                value={editingProbability}
                 onChange={handleProbabilityChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}

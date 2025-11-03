@@ -132,6 +132,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   // Local state for inline editing
   const [isEditingValue, setIsEditingValue] = useState(false);
+  const [editingValue, setEditingValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isParseable, setIsParseable] = useState(true);
   // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
@@ -157,23 +158,33 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const handleValueClick = () => {
     // NOTE: do not stopPropagation so we also select the node
+    setEditingValue(data.valueExpr ?? "");
     setIsEditingValue(true);
   };
 
-  const handleBlur = () => {
+  const commitValue = () => {
+    onNodeDataUpdate(id, {
+      valueExpr: editingValue === "" ? undefined : editingValue,
+    });
     setIsEditingValue(false);
   };
 
+  const handleBlur = () => {
+    commitValue();
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === "Escape") {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitValue();
+    } else if (event.key === "Escape") {
       event.preventDefault();
       setIsEditingValue(false);
     }
   };
 
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    onNodeDataUpdate(id, { valueExpr: value === "" ? undefined : value });
+    setEditingValue(event.target.value);
   };
 
   return (
@@ -207,7 +218,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           <input
             ref={inputRef}
             type="text"
-            value={data.valueExpr ?? ""}
+            value={editingValue}
             onChange={handleValueChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
@@ -215,7 +226,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             className="px-0.5 py-0 mt-0.5"
             style={{
               // NOTE: dynamically size input to fit content
-              width: `${Math.max(3, (data.valueExpr ?? "").length + 1)}ch`,
+              width: `${Math.max(3, editingValue.length + 1)}ch`,
             }}
           />
         ) : (
