@@ -52,7 +52,9 @@ export default function VariablesInput() {
     // Whitelist: letters, numbers, underscores
     // Strip out any other characters (spaces, special chars, etc.)
     // NOTE: see Parser.evaluate for how variable names are actually parsed
-    const sanitizedName = name.replace(/[^a-zA-Z0-9_]/g, "");
+    const sanitizedName = name
+      .replace(/^[^a-zA-Z]/, "")
+      .replace(/[^a-zA-Z0-9_]/g, "");
 
     const newVariables = [...localVariables];
     const current = newVariables[index];
@@ -113,6 +115,7 @@ export default function VariablesInput() {
               onChange={(e) => handleNameChange(index, e.target.value)}
               placeholder={`var${index + 1}`}
               className="min-w-0 rounded-md border-2 p-1 text-sm"
+              spellCheck={false}
               // TODO: add validation for variable names
             />
             <span className="text-gray-500 dark:text-gray-400">=</span>
