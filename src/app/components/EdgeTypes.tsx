@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from "react";
-
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -19,6 +17,7 @@ import {
 } from "@/lib/selectors";
 import { formatProbability } from "@/utils/format";
 
+import { InlineEdit } from "./InlineEdit";
 import { WarningCircle } from "./WarningCircle";
 
 /**
@@ -53,99 +52,12 @@ export default function CustomEdge({
 
   const showEVs = useStore(selectShowEVs);
 
-  // Local state for inline editing
-  const [editingField, setEditingField] = useState<
-    "label" | "probability" | null
-  >(null);
-  const [editingLabel, setEditingLabel] = useState("");
-  const [editingProbability, setEditingProbability] = useState("");
-  const labelInputRef = useRef<HTMLTextAreaElement>(null);
-  const probabilityInputRef = useRef<HTMLInputElement>(null);
-
-  // Auto-focus input when editing starts
-  useEffect(() => {
-    if (editingField === "label" && labelInputRef.current) {
-      labelInputRef.current.focus();
-      handleTextareaResize(labelInputRef.current);
-    } else if (editingField === "probability" && probabilityInputRef.current) {
-      probabilityInputRef.current.focus();
-    }
-  }, [editingField]);
-
   // Auto-resize textarea to fit content
   const handleTextareaResize = (target: HTMLTextAreaElement) => {
     // Reset height to recalculate
     target.style.height = "0px";
     // Set to scrollHeight
     target.style.height = target.scrollHeight + "px";
-  };
-
-  const handleLabelClick = () => {
-    // NOTE: do not stopPropagation so we also select the edge
-    setEditingLabel(label ?? "");
-    setEditingField("label");
-  };
-
-  const handleProbabilityClick = () => {
-    // NOTE: do not stopPropagation so we also select the edge
-    setEditingProbability(data?.probabilityExpr ?? "");
-    setEditingField("probability");
-  };
-
-  const commitEditing = () => {
-    if (editingField === "label") {
-      onEdgeDataUpdate(id, {
-        label: editingLabel === "" ? undefined : editingLabel,
-      });
-    } else if (editingField === "probability") {
-      onEdgeDataUpdate(id, {
-        probabilityExpr:
-          editingProbability === "" ? undefined : editingProbability,
-      });
-    }
-    setEditingField(null);
-  };
-
-  const handleBlur = () => {
-    commitEditing();
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      // Enter without Shift saves
-      event.preventDefault();
-      commitEditing();
-    } else if (event.key === "Enter" && event.shiftKey) {
-      // Shift+Enter adds a line break (allow default behavior)
-      // No preventDefault needed - let textarea handle it naturally
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setEditingField(null);
-    } else if (event.key === "Tab") {
-      event.preventDefault();
-      // Switch between label and probability inputs
-      // TODO: should tab thru all siblings? or all inputs in tree?
-      if (editingField === "label") {
-        commitEditing();
-        setEditingProbability(data?.probabilityExpr ?? "");
-        setEditingField("probability");
-      } else if (editingField === "probability") {
-        commitEditing();
-        setEditingLabel(label ?? "");
-        setEditingField("label");
-      }
-    }
-  };
-
-  const handleLabelChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setEditingLabel(event.target.value);
-    handleTextareaResize(event.target);
-  };
-
-  const handleProbabilityChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setEditingProbability(event.target.value);
   };
 
   // NOTE: assumes the edge is always left to right
@@ -215,30 +127,19 @@ export default function CustomEdge({
               transition: style?.transition,
               maxWidth: `${labelWidth}px`,
             }}
-            // HACK: adjust offset position based for textarea vs span
-            className={`absolute ${editingField === "label" ? "top-1" : "-top-0.5"} text-center cursor-pointer z-10`}
-            onClick={handleLabelClick}
+            className="absolute -top-0.5 text-center z-10"
           >
-            {editingField === "label" ? (
-              <textarea
-                ref={labelInputRef}
-                value={editingLabel}
-                onChange={handleLabelChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                className="resize-none overflow-hidden text-center py-0.5"
-                spellCheck={false}
-                style={{ width: `${labelWidth}px` }}
-              />
-            ) : (
-              <div
-                // TODO: figure out width so that hover effect does not fill entire area
-                style={{ width: `${labelWidth}px` }}
-                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap"
-              >
-                {label || "???"}
-              </div>
-            )}
+            <InlineEdit
+              value={label}
+              onCommit={(value) => onEdgeDataUpdate(id, { label: value })}
+              placeholder="???"
+              multiline={true}
+              onResize={handleTextareaResize}
+              inputClassName="resize-none overflow-hidden text-center py-0.5 relative top-1.5"
+              displayClassName="hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap cursor-pointer"
+              inputStyle={{ width: `${labelWidth}px` }}
+              displayStyle={{ width: `${labelWidth}px` }}
+            />
           </div>
           <div
             style={{
@@ -249,19 +150,7 @@ export default function CustomEdge({
             }}
             className="absolute top-4 text-center z-10"
           >
-            {editingField === "probability" ? (
-              <input
-                ref={probabilityInputRef}
-                type="text"
-                value={editingProbability}
-                onChange={handleProbabilityChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                className="py-0.5 text-center"
-                spellCheck={false}
-                style={{ width: `${labelWidth}px` }}
-              />
-            ) : hasDecisionNodeSource ? (
+            {hasDecisionNodeSource ? (
               showEVs && (
                 <div
                   className="dark:hover:bg-gray-700 py-0.5 rounded italic"
@@ -271,14 +160,22 @@ export default function CustomEdge({
                 </div>
               )
             ) : (
-              <div
-                onClick={handleProbabilityClick}
-                className="dark:hover:bg-gray-700 py-0.5 rounded hover:bg-gray-100 cursor-pointer"
-                style={{ width: `${labelWidth}px` }}
-              >
-                {formatProbability(computedProbability, 0, "???", "")}
+              <div className="py-0.5" style={{ width: `${labelWidth}px` }}>
+                <InlineEdit
+                  value={data?.probabilityExpr}
+                  onCommit={(value) =>
+                    onEdgeDataUpdate(id, { probabilityExpr: value })
+                  }
+                  displayFormatter={() =>
+                    formatProbability(computedProbability, 0, "???", "")
+                  }
+                  placeholder="???"
+                  inputClassName="py-0.5 text-center"
+                  displayClassName="dark:hover:bg-gray-700 rounded hover:bg-gray-100 cursor-pointer"
+                  inputStyle={{ width: `${labelWidth}px` }}
+                  displayStyle={{ width: `${labelWidth}px` }}
+                />
                 {shouldWarn ? (
-                  // TODO: should we show this somehow in inline edit mode?
                   <WarningCircle
                     tooltip="Incomplete probabilities. Click to fix."
                     onClick={(event) => {
