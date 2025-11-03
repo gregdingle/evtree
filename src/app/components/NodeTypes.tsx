@@ -42,7 +42,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
 
   return (
     <div
-      className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
       {children}
       {showEVs && (
@@ -197,7 +197,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div
         className={`absolute left-8 w-fit ${
           showEVs ? "-top-2.5" : "top-0.5"
-        } whitespace-nowrap`}
+        } whitespace-nowrap z-10`}
       >
         {isEditingValue ? (
           // TODO: we only show the net path value, following silver decisions,

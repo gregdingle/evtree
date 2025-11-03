@@ -193,7 +193,7 @@ export default function CustomEdge({
               maxWidth: `${labelWidth}px`,
             }}
             // HACK: adjust offset position based for textarea vs span
-            className={`absolute ${editingField === "label" ? "top-1" : "-top-0.5"} text-center cursor-pointer`}
+            className={`absolute ${editingField === "label" ? "top-1" : "-top-0.5"} text-center cursor-pointer z-10`}
             onClick={handleLabelClick}
           >
             {editingField === "label" ? (
@@ -223,7 +223,7 @@ export default function CustomEdge({
               // TODO: animation is NOT finished... see getLayoutedElements
               transition: style?.transition,
             }}
-            className="absolute top-4 text-center"
+            className="absolute top-4 text-center z-10"
           >
             {editingField === "probability" ? (
               <input
