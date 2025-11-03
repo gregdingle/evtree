@@ -48,8 +48,9 @@ export function formatCost(cost: string | number | undefined | null): string {
     return "";
   }
   if (Number.isFinite(Number(normalizeExpression(cost.toString())))) {
-    return `– ${cost}`;
+    return `-${cost}`;
   }
+  // NOTE: use official minus sign for non-numeric costs... it just looks better
   return `– (${cost})`;
 }
 

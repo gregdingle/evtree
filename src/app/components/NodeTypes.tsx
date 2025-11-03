@@ -35,20 +35,83 @@ interface BaseNodeProps {
 }
 
 const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
+  const { onNodeDataUpdate } = useStore.getState();
+
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const showEVs = useStore(selectShowEVs);
+
+  // Local state for inline cost editing
+  const [isEditingCost, setIsEditingCost] = useState(false);
+  const [editingCost, setEditingCost] = useState("");
+  const costInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus input when editing starts
+  useEffect(() => {
+    if (isEditingCost && costInputRef.current) {
+      costInputRef.current.focus();
+    }
+  }, [isEditingCost]);
+
+  const handleCostClick = () => {
+    setEditingCost(data.costExpr ?? "");
+    setIsEditingCost(true);
+  };
+
+  const commitCost = () => {
+    onNodeDataUpdate(id, {
+      costExpr: editingCost === "" ? undefined : editingCost,
+    });
+    setIsEditingCost(false);
+  };
+
+  const handleCostBlur = () => {
+    commitCost();
+  };
+
+  const handleCostKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitCost();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setIsEditingCost(false);
+    }
+  };
+
+  const handleCostChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingCost(event.target.value);
+  };
 
   return (
     <div
       className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
       {data.costExpr && (
-        // TODO: should disallow negative cost? see setIsParseable in TerminalNode
-        // TODO: make cost inline editable also
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
-          {formatCost(data.costExpr)}
+          {isEditingCost ? (
+            <input
+              ref={costInputRef}
+              type="text"
+              value={editingCost}
+              onChange={handleCostChange}
+              onBlur={handleCostBlur}
+              onKeyDown={handleCostKeyDown}
+              spellCheck={false}
+              className="px-0.5 py-0 text-center"
+              style={{
+                width: `${Math.max(3, editingCost.length + 1)}ch`,
+              }}
+            />
+          ) : (
+            <div
+              onClick={handleCostClick}
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
+            >
+              {formatCost(data.costExpr)}
+            </div>
+          )}
         </div>
       )}
       {children}
@@ -139,16 +202,21 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   // Local state for inline editing
   const [isEditingValue, setIsEditingValue] = useState(false);
   const [editingValue, setEditingValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isEditingCost, setIsEditingCost] = useState(false);
+  const [editingCost, setEditingCost] = useState("");
+  const valueInputRef = useRef<HTMLInputElement>(null);
+  const costInputRef = useRef<HTMLInputElement>(null);
   const [isParseable, setIsParseable] = useState(true);
   // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
 
   // Auto-focus input when editing starts
   useEffect(() => {
-    if (isEditingValue && inputRef.current) {
-      inputRef.current.focus();
+    if (isEditingValue && valueInputRef.current) {
+      valueInputRef.current.focus();
+    } else if (isEditingCost && costInputRef.current) {
+      costInputRef.current.focus();
     }
-  }, [isEditingValue]);
+  }, [isEditingValue, isEditingCost]);
 
   useEffect(() => {
     const value = data.valueExpr;
@@ -193,6 +261,36 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     setEditingValue(event.target.value);
   };
 
+  const handleCostClick = () => {
+    setEditingCost(data.costExpr ?? "");
+    setIsEditingCost(true);
+  };
+
+  const commitCost = () => {
+    onNodeDataUpdate(id, {
+      costExpr: editingCost === "" ? undefined : editingCost,
+    });
+    setIsEditingCost(false);
+  };
+
+  const handleCostBlur = () => {
+    commitCost();
+  };
+
+  const handleCostKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitCost();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setIsEditingCost(false);
+    }
+  };
+
+  const handleCostChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingCost(event.target.value);
+  };
+
   const topOffset = showEVs ? "-top-2.5" : "top-0.5";
   return (
     <div
@@ -221,7 +319,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           // and the editing value when there is a cost to the node, or a cost
           // upstream... diff valueExpr and pathValue
           <input
-            ref={inputRef}
+            ref={valueInputRef}
             type="text"
             value={editingValue}
             onChange={handleValueChange}
@@ -251,17 +349,37 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         )}
       </div>
       {data.costExpr && (
-        // TODO: make cost inline editable also
-        // TODO: should disallow negative cost? see setIsParseable in TerminalNode
         <div
           className={`absolute ${topOffset}`}
           style={{
-            // NOTE: dynamically size input to fit content
-            width: `${Math.max(3, data.costExpr.length + 1)}ch`,
             left: `${Math.max(3, (data.valueExpr?.length ?? 0) + 4)}ch`,
           }}
         >
-          {formatCost(data.costExpr)}
+          {isEditingCost ? (
+            <input
+              ref={costInputRef}
+              type="text"
+              value={editingCost}
+              onChange={handleCostChange}
+              onBlur={handleCostBlur}
+              onKeyDown={handleCostKeyDown}
+              spellCheck={false}
+              className="px-0.5 py-0 mt-0.5"
+              style={{
+                width: `${Math.max(3, editingCost.length + 1)}ch`,
+              }}
+            />
+          ) : (
+            <div
+              onClick={handleCostClick}
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
+              style={{
+                width: `${Math.max(3, data.costExpr.length + 4)}ch`,
+              }}
+            >
+              {formatCost(data.costExpr)}
+            </div>
+          )}
         </div>
       )}
       {showEVs && (
