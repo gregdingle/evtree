@@ -238,7 +238,7 @@ export function selectNetExpectedValue(
   const { nodeValues } = selectNetExpectedValues(state);
   const nodeValue = nodeValues && nodeValues[nodeId];
 
-  return nodeValue ? nodeValue : null;
+  return Number.isFinite(nodeValue) ? Number(nodeValue) : null;
 }
 
 export function selectCollapsible(

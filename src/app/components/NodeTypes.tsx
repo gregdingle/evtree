@@ -34,7 +34,7 @@ interface BaseNodeProps {
   isCollapsed: boolean;
 }
 
-const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
+const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
   // TODO: make the labels allowed to be wider than children shape, but still
   // line-break at some max limit
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
@@ -44,11 +44,16 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
     <div
       className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
+      {data.costExpr && (
+        // TODO: how to disallow negative cost? see setIsParseable in TerminalNode
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
+          -{data.costExpr}
+        </div>
+      )}
       {children}
       {showEVs && (
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic">
           {formatValue(pathValue)}
-          {/* TODO: show cost separately? {formatCost(data.cost)} */}
         </div>
       )}
     </div>
