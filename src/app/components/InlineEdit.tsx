@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface InlineEditProps {
   value: string | undefined;
@@ -6,14 +6,12 @@ interface InlineEditProps {
   displayFormatter?: (value: string | undefined) => string;
   placeholder?: string;
   multiline?: boolean;
-  className?: string;
   inputClassName?: string;
   displayClassName?: string;
   displayStyle?: React.CSSProperties;
   inputStyle?: React.CSSProperties;
   autoFocus?: boolean;
   allowEmpty?: boolean;
-  onResize?: (element: HTMLTextAreaElement) => void;
 }
 
 /**
@@ -28,33 +26,47 @@ export function InlineEdit({
   displayFormatter,
   placeholder = "???",
   multiline = false,
-  className = "",
-  inputClassName = "px-0.5 py-0",
-  displayClassName = "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded",
+  inputClassName,
+  displayClassName,
   displayStyle,
   inputStyle,
   autoFocus = true,
   allowEmpty = false,
-  onResize,
 }: InlineEditProps) {
+  // Default classNames based on multiline mode
+  const defaultInputClassName = multiline
+    ? "resize-none overflow-hidden text-center py-0.5 relative top-1.5"
+    : "px-0.5 py-0 text-center";
+  const defaultDisplayClassName = multiline
+    ? "hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap cursor-pointer"
+    : "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded";
+
+  const finalInputClassName = inputClassName ?? defaultInputClassName;
+  const finalDisplayClassName = displayClassName ?? defaultDisplayClassName;
   const [isEditing, setIsEditing] = useState(false);
   const [editingValue, setEditingValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea to fit content
+  const handleTextareaResize = useCallback((target: HTMLTextAreaElement) => {
+    // Reset height to recalculate
+    target.style.height = "0px";
+    // Set to scrollHeight
+    target.style.height = target.scrollHeight + "px";
+  }, []);
 
   // Auto-focus input when editing starts
   useEffect(() => {
     if (isEditing && autoFocus) {
       if (multiline && textareaRef.current) {
         textareaRef.current.focus();
-        if (onResize) {
-          onResize(textareaRef.current);
-        }
+        handleTextareaResize(textareaRef.current);
       } else if (inputRef.current) {
         inputRef.current.focus();
       }
     }
-  }, [isEditing, autoFocus, multiline, onResize]);
+  }, [isEditing, autoFocus, multiline, handleTextareaResize]);
 
   const handleClick = () => {
     setEditingValue(value ?? "");
@@ -86,8 +98,12 @@ export function InlineEdit({
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setEditingValue(event.target.value);
-    if (multiline && onResize && event.target instanceof HTMLTextAreaElement) {
-      onResize(event.target);
+    if (
+      multiline &&
+      handleTextareaResize &&
+      event.target instanceof HTMLTextAreaElement
+    ) {
+      handleTextareaResize(event.target);
     }
   };
 
@@ -105,7 +121,7 @@ export function InlineEdit({
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           spellCheck={false}
-          className={`${inputClassName} ${className}`}
+          className={finalInputClassName}
           style={inputStyle}
         />
       );
@@ -120,7 +136,7 @@ export function InlineEdit({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         spellCheck={false}
-        className={`${inputClassName} ${className}`}
+        className={finalInputClassName}
         style={{
           // NOTE: dynamically size input to fit content
           width: `${Math.max(3, editingValue.length + 1)}ch`,
@@ -133,7 +149,7 @@ export function InlineEdit({
   return (
     <div
       onClick={handleClick}
-      className={`${displayClassName} ${className}`}
+      className={finalDisplayClassName}
       style={displayStyle}
     >
       {displayValue}

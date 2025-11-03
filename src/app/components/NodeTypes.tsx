@@ -51,7 +51,6 @@ const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
             value={data.costExpr}
             onCommit={(value) => onNodeDataUpdate(id, { costExpr: value })}
             displayFormatter={formatCost}
-            inputClassName="px-0.5 py-0 text-center"
           />
         </div>
       )}

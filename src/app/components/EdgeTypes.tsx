@@ -52,14 +52,6 @@ export default function CustomEdge({
 
   const showEVs = useStore(selectShowEVs);
 
-  // Auto-resize textarea to fit content
-  const handleTextareaResize = (target: HTMLTextAreaElement) => {
-    // Reset height to recalculate
-    target.style.height = "0px";
-    // Set to scrollHeight
-    target.style.height = target.scrollHeight + "px";
-  };
-
   // NOTE: assumes the edge is always left to right
   const stepPosition = 0.25;
   const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({
@@ -134,9 +126,6 @@ export default function CustomEdge({
               onCommit={(value) => onEdgeDataUpdate(id, { label: value })}
               placeholder="???"
               multiline={true}
-              onResize={handleTextareaResize}
-              inputClassName="resize-none overflow-hidden text-center py-0.5 relative top-1.5"
-              displayClassName="hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap cursor-pointer"
               inputStyle={{ width: `${labelWidth}px` }}
               displayStyle={{ width: `${labelWidth}px` }}
             />
@@ -171,7 +160,6 @@ export default function CustomEdge({
                   }
                   placeholder="???"
                   inputClassName="py-0.5 text-center"
-                  displayClassName="dark:hover:bg-gray-700 rounded hover:bg-gray-100 cursor-pointer"
                   inputStyle={{ width: `${labelWidth}px` }}
                   displayStyle={{ width: `${labelWidth}px` }}
                 />
