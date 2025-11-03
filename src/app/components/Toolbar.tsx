@@ -176,12 +176,7 @@ export default function Toolbar() {
           Reset
         </ToolbarButton> */}
         <ToolbarButton
-          onClick={() => {
-            onArrange();
-            // HACK: force fit view after arrange and reactflow updates position
-            // TODO: figure out why arrange is jumping around
-            // setTimeout(() => fitView(), 500);
-          }}
+          onClick={onArrange}
           tooltip="Ctrl+A"
           disabled={!hasNodes}
         >

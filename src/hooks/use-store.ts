@@ -136,7 +136,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
     // Tree management functions
     createTree: (name: string, description?: string) => {
-      // TODO: extract nanoid12 to a utility function
       const newTree = createTree(name, description);
       set(
         (state) => {
@@ -668,8 +667,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // TODO: why does auto arrange the hello world tree make it jump up?
-    // shouldn't the root position be preserved?
     onArrange: () => {
       set(
         (state) =>

@@ -38,8 +38,6 @@ interface BaseNodeProps {
 const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
   const { onNodeDataUpdate } = useStore.getState();
 
-  // TODO: make the labels allowed to be wider than children shape, but still
-  // line-break at some max limit
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const showEVs = useStore(selectShowEVs);
 

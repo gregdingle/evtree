@@ -12,7 +12,6 @@ export interface ToolbarButtonProps {
   disabled?: boolean;
 }
 
-// TODO: do disabled state, like no paste without copy
 export function ToolbarButton({
   onClick,
   children,

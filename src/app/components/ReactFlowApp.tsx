@@ -133,9 +133,6 @@ export default function ReactFlowApp() {
         {/* SVG definitions for arrow markers */}
         {ArrowMarker()}
       </ReactFlow>
-
-      {/* // TODO:  Controls positioned relative to viewport
-      // TODO: what happened to the background color? */}
       <Controls
         position="bottom-right"
         orientation="horizontal"

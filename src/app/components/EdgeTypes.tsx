@@ -172,8 +172,8 @@ export default function CustomEdge({
   // Adjust X position based on step position to keep labels on horizontal segment
   // HACK: Min 18px of margin from vertical segment looks good enough
   const adjX = isLeftToRight ? Math.min(midPointX, 18) : 0;
-  // Special-case when there is no bend, only a single horizontal segment.
-  const translateX = sourceY == targetY ? labelX : labelX + adjX;
+  // TODO: Special-case when there is no bend, only a single horizontal segment, no siblings?
+  const translateX = labelX + adjX;
   const transformProb = `translate(-${(stepPosition / 2) * 100}%, -50%) translate(${translateX}px, ${
     labelY + adjY
   }px)`;
