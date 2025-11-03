@@ -45,7 +45,8 @@ const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
       className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
       {data.costExpr && (
-        // TODO: how to disallow negative cost? see setIsParseable in TerminalNode
+        // TODO: should disallow negative cost? see setIsParseable in TerminalNode
+        // TODO: make cost inline editable also
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
           {formatCost(data.costExpr)}
         </div>
@@ -250,7 +251,8 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         )}
       </div>
       {data.costExpr && (
-        // TODO: how to disallow negative cost? see setIsParseable in TerminalNode
+        // TODO: make cost inline editable also
+        // TODO: should disallow negative cost? see setIsParseable in TerminalNode
         <div
           className={`absolute ${topOffset}`}
           style={{
