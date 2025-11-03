@@ -147,7 +147,7 @@ export function selectShouldShowProbabilityWarning(
   return (
     targetEdgeProbability < 0 ||
     targetEdgeProbability > 1 ||
-    probabilitySum !== 1
+    Math.abs(probabilitySum - 1) > 1e-6 // Allow small floating-point tolerance
   );
 }
 

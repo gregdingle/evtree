@@ -262,7 +262,7 @@ export default function CustomEdge({
                 onClick={
                   hasDecisionNodeSource ? undefined : handleProbabilityClick
                 }
-                className={`block dark:hover:bg-gray-700 py-0.5 rounded ${hasDecisionNodeSource ? "cursor-not-allowed" : "hover:bg-gray-100 cursor-pointer"}`}
+                className={`block dark:hover:bg-gray-700 py-0.5 rounded ${hasDecisionNodeSource ? "cursor-not-allowed italic" : "hover:bg-gray-100 cursor-pointer"}`}
                 style={{ width: `${labelWidth}px` }}
               >
                 {formatProbability(computedProbability, 0, "???", "")}

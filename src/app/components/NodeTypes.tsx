@@ -127,7 +127,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
-  const showEVs = useStore(selectShowEVs);
+  const showEVs = useStore(selectShowEVs) && pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
 
   // Local state for inline editing

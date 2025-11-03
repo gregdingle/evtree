@@ -204,13 +204,17 @@ export default function RightSidePanel() {
                   placeholder="Enter branch label"
                 />
                 {allNodes[edge.source]?.type === "decision" ? (
-                  <PropertyInput
-                    type="text"
-                    label="Probability"
-                    // TODO: show actual probability... see selectComputedProbability
-                    placeholder="See decision node"
-                    disabled={true}
-                  />
+                  <div className="italic">
+                    <PropertyInput
+                      type="text"
+                      label="Probability"
+                      // TODO: show actual probability... see
+                      // selectComputedProbability... and move to bottom like
+                      // other computed properties?
+                      placeholder="See decision node"
+                      disabled={true}
+                    />
+                  </div>
                 ) : (
                   <PropertyInput
                     type="text"

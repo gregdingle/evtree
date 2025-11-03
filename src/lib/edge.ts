@@ -4,6 +4,8 @@ export type AppEdge = Edge<{
   label?: string;
   description?: string;
   // NOTE: transformed into probability by safeEvalExpr in toComputeEdge
+  // TODO: consider allowing expressions in both percentage and decimal form...
+  // then also show expr inline instead of computed to be consistent with terminal values?
   probabilityExpr?: string;
 }>;
 
