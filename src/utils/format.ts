@@ -47,10 +47,13 @@ export function formatCost(cost: string | number | undefined | null): string {
   if (cost === undefined || cost === null || cost == 0) {
     return "";
   }
-  if (Number.isFinite(Number(normalizeExpression(cost.toString())))) {
+  // NOTE: common case... no expression
+  const num = Number(normalizeExpression(cost.toString()));
+  if (Number.isFinite(num) && num >= 0) {
     return `-${cost}`;
   }
   // NOTE: use official minus sign for non-numeric costs... it just looks better
+  // when prefixing the parens
   return `– (${cost})`;
 }
 
