@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
@@ -15,6 +15,7 @@ import {
 } from "@/lib/selectors";
 import { formatCost, formatProbability, formatValue } from "@/utils/format";
 
+import { InlineEdit } from "./InlineEdit";
 import { GhostNode, NoteNode } from "./NoteNode";
 import { WarningCircle } from "./WarningCircle";
 
@@ -42,76 +43,18 @@ const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const showEVs = useStore(selectShowEVs);
 
-  // Local state for inline cost editing
-  const [isEditingCost, setIsEditingCost] = useState(false);
-  const [editingCost, setEditingCost] = useState("");
-  const costInputRef = useRef<HTMLInputElement>(null);
-
-  // Auto-focus input when editing starts
-  useEffect(() => {
-    if (isEditingCost && costInputRef.current) {
-      costInputRef.current.focus();
-    }
-  }, [isEditingCost]);
-
-  const handleCostClick = () => {
-    setEditingCost(data.costExpr ?? "");
-    setIsEditingCost(true);
-  };
-
-  const commitCost = () => {
-    onNodeDataUpdate(id, {
-      costExpr: editingCost === "" ? undefined : editingCost,
-    });
-    setIsEditingCost(false);
-  };
-
-  const handleCostBlur = () => {
-    commitCost();
-  };
-
-  const handleCostKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      commitCost();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setIsEditingCost(false);
-    }
-  };
-
-  const handleCostChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEditingCost(event.target.value);
-  };
-
   return (
     <div
       className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
       {data.costExpr && (
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
-          {isEditingCost ? (
-            <input
-              ref={costInputRef}
-              type="text"
-              value={editingCost}
-              onChange={handleCostChange}
-              onBlur={handleCostBlur}
-              onKeyDown={handleCostKeyDown}
-              spellCheck={false}
-              className="px-0.5 py-0 text-center"
-              style={{
-                width: `${Math.max(3, editingCost.length + 1)}ch`,
-              }}
-            />
-          ) : (
-            <div
-              onClick={handleCostClick}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
-            >
-              {formatCost(data.costExpr)}
-            </div>
-          )}
+          <InlineEdit
+            value={data.costExpr}
+            onCommit={(value) => onNodeDataUpdate(id, { costExpr: value })}
+            displayFormatter={formatCost}
+            inputClassName="px-0.5 py-0 text-center"
+          />
         </div>
       )}
       {children}
@@ -199,24 +142,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const showEVs = useStore(selectShowEVs) && pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
 
-  // Local state for inline editing
-  const [isEditingValue, setIsEditingValue] = useState(false);
-  const [editingValue, setEditingValue] = useState("");
-  const [isEditingCost, setIsEditingCost] = useState(false);
-  const [editingCost, setEditingCost] = useState("");
-  const valueInputRef = useRef<HTMLInputElement>(null);
-  const costInputRef = useRef<HTMLInputElement>(null);
   const [isParseable, setIsParseable] = useState(true);
-  // TODO: extract common inline editing component from EdgeTypes.tsx and NodeTypes.tsx, and maybe even NoteNode.tsx
-
-  // Auto-focus input when editing starts
-  useEffect(() => {
-    if (isEditingValue && valueInputRef.current) {
-      valueInputRef.current.focus();
-    } else if (isEditingCost && costInputRef.current) {
-      costInputRef.current.focus();
-    }
-  }, [isEditingValue, isEditingCost]);
 
   useEffect(() => {
     const value = data.valueExpr;
@@ -229,67 +155,6 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       }
     }
   }, [variables, data.valueExpr]);
-
-  const handleValueClick = () => {
-    // NOTE: do not stopPropagation so we also select the node
-    setEditingValue(data.valueExpr ?? "");
-    setIsEditingValue(true);
-  };
-
-  const commitValue = () => {
-    onNodeDataUpdate(id, {
-      valueExpr: editingValue === "" ? undefined : editingValue,
-    });
-    setIsEditingValue(false);
-  };
-
-  const handleBlur = () => {
-    commitValue();
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      commitValue();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setIsEditingValue(false);
-    }
-  };
-
-  const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEditingValue(event.target.value);
-  };
-
-  const handleCostClick = () => {
-    setEditingCost(data.costExpr ?? "");
-    setIsEditingCost(true);
-  };
-
-  const commitCost = () => {
-    onNodeDataUpdate(id, {
-      costExpr: editingCost === "" ? undefined : editingCost,
-    });
-    setIsEditingCost(false);
-  };
-
-  const handleCostBlur = () => {
-    commitCost();
-  };
-
-  const handleCostKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      commitCost();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setIsEditingCost(false);
-    }
-  };
-
-  const handleCostChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEditingCost(event.target.value);
-  };
 
   const topOffset = showEVs ? "-top-2.5" : "top-0.5";
   return (
@@ -311,41 +176,15 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         className={`opacity-0 group-hover:opacity-100 ${!hasParent ? "" : "invisible"}`}
       />
       <div
-        className={`absolute left-8 w-fit ${topOffset} whitespace-nowrap z-10`}
+        className={`absolute left-8 w-fit ${topOffset} whitespace-nowrap z-10 flex items-center gap-1`}
       >
-        {isEditingValue ? (
-          // TODO: we only show the net path value, following silver decisions,
-          // but this causes an inconsistency when between the displayed value
-          // and the editing value when there is a cost to the node, or a cost
-          // upstream... diff valueExpr and pathValue
-          <input
-            ref={valueInputRef}
-            type="text"
-            value={editingValue}
-            onChange={handleValueChange}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            spellCheck={false}
-            className="px-0.5 py-0 mt-0.5"
-            style={{
-              // NOTE: dynamically size input to fit content
-              width: `${Math.max(3, editingValue.length + 1)}ch`,
-            }}
-          />
-        ) : (
-          <div
-            onClick={handleValueClick}
-            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
-          >
-            {/* NOTE: unlike other nodes, we do not show EV here, only inputted value,
-              so it can be modified inline. See alternative:
-              {formatValue(pathValue) || "???"}
-            */}
-            {data.valueExpr ?? "???"}
-            {!isParseable && (
-              <WarningCircle tooltip="Incomplete value expression. Click to edit." />
-            )}
-          </div>
+        <InlineEdit
+          value={data.valueExpr}
+          onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
+          inputClassName="px-0.5 py-0 mt-0.5"
+        />
+        {!isParseable && (
+          <WarningCircle tooltip="Incomplete value expression. Click to edit." />
         )}
       </div>
       {data.costExpr && (
@@ -355,31 +194,15 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             left: `${Math.max(3, (data.valueExpr?.length ?? 0) + 4)}ch`,
           }}
         >
-          {isEditingCost ? (
-            <input
-              ref={costInputRef}
-              type="text"
-              value={editingCost}
-              onChange={handleCostChange}
-              onBlur={handleCostBlur}
-              onKeyDown={handleCostKeyDown}
-              spellCheck={false}
-              className="px-0.5 py-0 mt-0.5"
-              style={{
-                width: `${Math.max(3, editingCost.length + 1)}ch`,
-              }}
-            />
-          ) : (
-            <div
-              onClick={handleCostClick}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
-              style={{
-                width: `${Math.max(3, data.costExpr.length + 4)}ch`,
-              }}
-            >
-              {formatCost(data.costExpr)}
-            </div>
-          )}
+          <InlineEdit
+            value={data.costExpr}
+            onCommit={(value) => onNodeDataUpdate(id, { costExpr: value })}
+            displayFormatter={formatCost}
+            inputClassName="px-0.5 py-0 mt-0.5"
+            displayStyle={{
+              width: `${Math.max(3, (data.costExpr?.length ?? 0) + 4)}ch`,
+            }}
+          />
         </div>
       )}
       {showEVs && (

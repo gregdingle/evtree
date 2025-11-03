@@ -231,12 +231,13 @@ export default function CustomEdge({
                 style={{ width: `${labelWidth}px` }}
               />
             ) : (
-              <span
+              <div
+                // TODO: figure out width so that hover effect does not fill entire area
                 style={{ width: `${labelWidth}px` }}
-                className="block hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap"
+                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap"
               >
                 {label || "???"}
-              </span>
+              </div>
             )}
           </div>
           <div
@@ -262,17 +263,17 @@ export default function CustomEdge({
               />
             ) : hasDecisionNodeSource ? (
               showEVs && (
-                <span
-                  className="block dark:hover:bg-gray-700 py-0.5 rounded italic"
+                <div
+                  className="dark:hover:bg-gray-700 py-0.5 rounded italic"
                   style={{ width: `${labelWidth}px` }}
                 >
                   {formatProbability(computedProbability, 0, "???", "")}
-                </span>
+                </div>
               )
             ) : (
-              <span
+              <div
                 onClick={handleProbabilityClick}
-                className="block dark:hover:bg-gray-700 py-0.5 rounded hover:bg-gray-100 cursor-pointer"
+                className="dark:hover:bg-gray-700 py-0.5 rounded hover:bg-gray-100 cursor-pointer"
                 style={{ width: `${labelWidth}px` }}
               >
                 {formatProbability(computedProbability, 0, "???", "")}
@@ -286,7 +287,7 @@ export default function CustomEdge({
                     }}
                   />
                 ) : null}
-              </span>
+              </div>
             )}
           </div>
         </div>
