@@ -166,7 +166,13 @@ export default function RightSidePanel() {
                 {showEVs && (
                   <div className="italic">
                     <PropertyInput
-                      label="Expected Net Value"
+                      label={
+                        // NOTE: special case terminal nodes because there is no
+                        // "expected" calculation at leaves in the tree
+                        node.type == "terminal"
+                          ? "Net Value"
+                          : "Expected Net Value"
+                      }
                       value={formatValueLong(
                         netExpectedValues.nodeValues?.[node.id],
                       )}
