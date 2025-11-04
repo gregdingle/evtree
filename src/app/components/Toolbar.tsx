@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -53,6 +55,8 @@ export default function Toolbar() {
     onShowHistogram,
   } = useStore.getState();
 
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+
   const currentTree = useStore(selectCurrentTree);
   const hasSelectedItems = useStore(selectHasSelectedItems);
   const hasClipboardContent = useStore(selectHasClipboardContent);
@@ -78,6 +82,7 @@ export default function Toolbar() {
     try {
       const shareableLink = await uploadTreeForSharing(treeToShare);
       window.navigator.clipboard.writeText(shareableLink);
+      setIsLinkCopied(true);
     } catch (error) {
       console.error(
         `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
@@ -225,14 +230,16 @@ export default function Toolbar() {
           <DocumentArrowDownIcon className="h-4 w-4" />
           Download File
         </ToolbarButton>
-        <ToolbarButton
-          onClick={() => currentTree && handleShareLink(currentTree)}
-          tooltip="Copy URL for sharing"
-          disabled={!hasNodes}
-        >
-          <LinkIcon className="h-4 w-4" />
-          Copy Link
-        </ToolbarButton>
+        <div onBlur={() => setIsLinkCopied(false)}>
+          <ToolbarButton
+            onClick={() => currentTree && handleShareLink(currentTree)}
+            tooltip="Copy URL for sharing"
+            disabled={!hasNodes}
+          >
+            <LinkIcon className="h-4 w-4" />
+            {isLinkCopied ? "Link Copied" : "Copy Link"}
+          </ToolbarButton>
+        </div>
       </div>
     </div>
   );
