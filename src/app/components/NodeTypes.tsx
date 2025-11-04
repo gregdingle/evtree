@@ -13,7 +13,7 @@ import {
   selectPathProbability,
   selectShowEVs,
 } from "@/lib/selectors";
-import { formatCost, formatProbability, formatValue } from "@/utils/format";
+import { formatProbability, formatValue } from "@/utils/format";
 
 import { InlineEdit } from "./InlineEdit";
 import { GhostNode, NoteNode } from "./NoteNode";
@@ -138,6 +138,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   const showEVs = useStore(selectShowEVs) && pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
+  const pathValue = useStore((state) => selectNetExpectedValue(state, id));
 
   const [isParseable, setIsParseable] = useState(true);
 
@@ -178,13 +179,21 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         <InlineEdit
           value={data.valueExpr}
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
+          displayFormatter={() => formatValue(pathValue)}
           inputClassName="px-0.5 py-0 mt-0.5"
+          displayClassName={
+            // NOTE: show how the value is computed when evaluated value differs
+            pathValue !== Number(data.valueExpr) ? "italic" : ""
+          }
         />
         {!isParseable && (
           <WarningCircle tooltip="Incomplete value expression. Click to edit." />
         )}
       </div>
-      {data.costExpr && (
+      {/*
+      TODO: deprecated... decided to show expected net value on canvas only...
+        remove me if no longer needed
+      data.costExpr && (
         <div
           className={`absolute ${topOffset}`}
           style={{
@@ -201,7 +210,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             }}
           />
         </div>
-      )}
+      )*/}
       {showEVs && (
         <div className={`absolute italic top-4 left-8`}>
           {
