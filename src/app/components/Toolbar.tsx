@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ArrowUturnLeftIcon,
@@ -56,6 +56,7 @@ export default function Toolbar() {
   } = useStore.getState();
 
   const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const [isArrangeDisabled, setIsArrangeDisabled] = useState(false);
 
   const currentTree = useStore(selectCurrentTree);
   const hasSelectedItems = useStore(selectHasSelectedItems);
@@ -100,6 +101,17 @@ export default function Toolbar() {
     );
   };
 
+  const handleArrange = () => {
+    onArrange();
+    // HACK: allow reactflow to before disabling
+    setTimeout(() => setIsArrangeDisabled(true), 0);
+  };
+
+  // Re-enable arrange button when nodes change
+  useEffect(() => {
+    setIsArrangeDisabled(false);
+  }, [currentTree?.nodes]);
+
   // TODO: dark mode toggle button
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
@@ -136,22 +148,6 @@ export default function Toolbar() {
       </div>
       <div className="flex justify-start space-x-2">
         <ToolbarButton
-          onClick={() => undo()}
-          tooltip="Ctrl+Z"
-          disabled={!canUndo}
-        >
-          <ArrowUturnLeftIcon className="h-4 w-4" />
-          Undo
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => redo()}
-          tooltip="Ctrl+Y"
-          disabled={!canRedo}
-        >
-          <ArrowUturnRightIcon className="h-4 w-4" />
-          Redo
-        </ToolbarButton>
-        <ToolbarButton
           onClick={onCopy}
           tooltip="Ctrl+C"
           disabled={!hasSelectedItems}
@@ -181,12 +177,29 @@ export default function Toolbar() {
           Reset
         </ToolbarButton> */}
         <ToolbarButton
-          onClick={onArrange}
+          onClick={handleArrange}
           tooltip="Ctrl+A"
-          disabled={!hasNodes}
+          disabled={!hasNodes || isArrangeDisabled}
         >
           <ArrowsPointingOutIcon className="h-4 w-4" />
           Arrange
+        </ToolbarButton>
+        {/* NOTE: by request, moved undo-redo next to arrange */}
+        <ToolbarButton
+          onClick={() => undo()}
+          tooltip="Ctrl+Z"
+          disabled={!canUndo}
+        >
+          <ArrowUturnLeftIcon className="h-4 w-4" />
+          Undo
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => redo()}
+          tooltip="Ctrl+Y"
+          disabled={!canRedo}
+        >
+          <ArrowUturnRightIcon className="h-4 w-4" />
+          Redo
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
