@@ -35,9 +35,7 @@ interface BaseNodeProps {
   isCollapsed: boolean;
 }
 
-const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
-  const { onNodeDataUpdate } = useStore.getState();
-
+const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const showEVs = useStore(selectShowEVs);
 
@@ -45,6 +43,7 @@ const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
     <div
       className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
+      {/* TODO: deprecated... remove if no longer needed
       {data.costExpr && (
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
           <InlineEdit
@@ -54,6 +53,7 @@ const BaseNode = ({ children, id, selected, data }: BaseNodeProps) => {
           />
         </div>
       )}
+         */}
       {children}
       {showEVs && (
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic">
