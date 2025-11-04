@@ -4,10 +4,7 @@ import { useState } from "react";
 
 import {
   ChevronDownIcon,
-  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
-  LinkIcon,
-  PhotoIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
@@ -197,24 +194,6 @@ export default function LeftSidePanel() {
                             >
                               <TrashIcon className="h-4 w-4" />
                               Delete Tree
-                            </ContextMenuButton>
-                            <ContextMenuButton
-                              onClick={() => handleExportTree(tree)}
-                            >
-                              <PhotoIcon className="h-4 w-4" />
-                              Export to PNG
-                            </ContextMenuButton>
-                            <ContextMenuButton
-                              onClick={() => handleDownloadTree(tree)}
-                            >
-                              <DocumentArrowDownIcon className="h-4 w-4" />
-                              Download as JSON
-                            </ContextMenuButton>
-                            <ContextMenuButton
-                              onClick={() => handleShareLink(tree)}
-                            >
-                              <LinkIcon className="h-4 w-4" />
-                              Copy Link
                             </ContextMenuButton>
                           </div>
                         </>
