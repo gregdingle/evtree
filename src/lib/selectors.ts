@@ -66,6 +66,7 @@ export const selectNetExpectedValues = memoize(
     state: StoreState,
   ): {
     nodeValues?: Record<string, number | null>;
+    nodeCumulativeCosts?: Record<string, number | null>;
     edgeProbabilities?: Record<string, number | null>;
   } => {
     const { currentTreeId } = state;
@@ -88,6 +89,7 @@ export const selectNetExpectedValues = memoize(
 
     return {
       nodeValues: mapValues(nodes, (node) => node.data.value),
+      nodeCumulativeCosts: mapValues(nodes, (node) => node.data.priorCosts),
       edgeProbabilities: mapValues(
         edges,
         (edge) => edge.data?.probability ?? null,

@@ -19,6 +19,7 @@ export interface ComputeNode {
   data: {
     value: number | null;
     cost: number | null;
+    priorCosts: number;
   };
 }
 
@@ -117,6 +118,8 @@ function computeNodeValuesRecursive(
       console.debug(`[EVTree] Terminal node ${currentNode.id} has null value.`);
     } else {
       currentNode.data.value -= cumulativeCost;
+      currentNode.data.priorCosts =
+        cumulativeCost - (currentNode.data.cost ?? 0);
     }
     return;
   }
@@ -178,6 +181,7 @@ function computeNodeValuesRecursive(
 
   // Assign the computed value (or leave as null if no non-null children)
   currentNode.data.value = expectedValue;
+  currentNode.data.priorCosts = cumulativeCost - (currentNode.data.cost ?? 0);
 
   if (totalProbability < 1) {
     // eslint-disable-next-line no-console
@@ -244,6 +248,7 @@ export function toComputeNode(
       // TODO: can we do better than null?
       value: safeEvalExpr(node.data.valueExpr, variables, null),
       cost: safeEvalExpr(node.data.costExpr, variables, null),
+      priorCosts: 0,
     },
   };
 }

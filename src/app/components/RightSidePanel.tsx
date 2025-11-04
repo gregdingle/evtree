@@ -163,6 +163,18 @@ export default function RightSidePanel() {
                     ) : null}
                   </PropertyInput>
                 )}
+                {node.type == "terminal" &&
+                netExpectedValues.nodeCumulativeCosts?.[node.id] ? (
+                  <div className="italic">
+                    <PropertyInput
+                      label="Prior Costs"
+                      value={formatValueLong(
+                        netExpectedValues.nodeCumulativeCosts?.[node.id],
+                      )}
+                      disabled={true}
+                    />
+                  </div>
+                ) : null}
                 {showEVs && (
                   <div className="italic">
                     <PropertyInput
@@ -177,7 +189,6 @@ export default function RightSidePanel() {
                         netExpectedValues.nodeValues?.[node.id],
                       )}
                       disabled={true}
-                      // TODO: add a subtle note when the node inherits costs from ancestor nodes?
                     />
                     <PropertyInput
                       label="Path Probability"
@@ -188,8 +199,7 @@ export default function RightSidePanel() {
                         "",
                       )}
                       disabled={true}
-                      // TODO: show this for terminal nodes only because the path probability
-                      // is only shown for terminal nodes on the canvas?
+                      // NOTE: terminal nodes also show path probability on the canvas
                     />
                   </div>
                 )}
