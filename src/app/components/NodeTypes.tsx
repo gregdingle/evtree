@@ -179,11 +179,14 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         <InlineEdit
           value={data.valueExpr}
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
+          // TODO: how to show currency here? global pref? tree property? infer from units in data?
           displayFormatter={() => formatValue(pathValue)}
           inputClassName="px-0.5 py-0 mt-0.5"
           displayClassName={
             // NOTE: show how the value is computed when evaluated value differs
-            pathValue !== Number(data.valueExpr) ? "italic" : ""
+            (pathValue !== Number(data.valueExpr) ? "italic " : "") +
+            // HACK: copied from InlineEdit defaultDisplayClassName
+            "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
           }
         />
         {!isParseable && (

@@ -1,4 +1,3 @@
-import { trimStart } from "es-toolkit";
 import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval";
 
@@ -296,9 +295,10 @@ export function safeEvalExpr(
   }
 }
 
+/**
+ * Strip commas, spaces and currency symbols.
+ * TODO: strip all common currency symbols and number separators.
+ */
 export function normalizeExpression(expression: string | undefined) {
-  expression = trimStart(expression?.trim() ?? "", "$");
-  // Strip commas
-  expression = expression?.replace(/,/g, "") ?? "";
-  return expression;
+  return expression?.trim().replace(/[, $€]/g, "") ?? "";
 }

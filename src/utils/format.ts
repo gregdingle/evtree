@@ -12,7 +12,7 @@ export function formatValue(value: number | null | undefined): string {
     return "";
   }
   // NOTE: we don't want SI prefixes for small values here
-  if (value < 1) {
+  if (Math.abs(value) < 1) {
     return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
   }
 
