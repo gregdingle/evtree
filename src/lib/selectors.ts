@@ -5,6 +5,7 @@ import { StoreState } from "@/hooks/use-store";
 import { AppEdge, filterTreeEdges } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
 import { DecisionTree } from "@/lib/tree";
+import { Variable } from "@/lib/variable";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
 import {
@@ -47,11 +48,9 @@ export function selectCurrentEdges(state: StoreState): AppEdge[] {
   return currentTree ? values(currentTree.edges) : [];
 }
 
-export function selectCurrentVariables(
-  state: StoreState,
-): Record<string, number> {
+export function selectCurrentVariables(state: StoreState): Variable[] {
   const currentTree = selectCurrentTree(state);
-  return currentTree?.variables ?? {};
+  return currentTree?.variables ?? [];
 }
 
 /**

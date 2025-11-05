@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
+import { Variable } from "./variable";
 
 // QUESTION: use nanoid from zod?
 export interface DecisionTree {
@@ -12,9 +13,7 @@ export interface DecisionTree {
   updatedAt?: string; // ISO date string
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
-  // TODO: should we separate vars into value variables and cost variables? it
-  // would help with suggestions in UI
-  variables?: Record<string, number>;
+  variables?: Variable[];
 }
 
 export function createTree(

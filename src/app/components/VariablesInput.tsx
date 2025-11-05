@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 import { range } from "es-toolkit";
-import { keys, toPairs } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import { selectCurrentTree } from "@/lib/selectors";
@@ -16,14 +15,14 @@ export default function VariablesInput() {
     const currentTree = selectCurrentTree(state);
     return {
       currentTreeId: state.currentTreeId,
-      variables: currentTree?.variables ?? {},
+      variables: currentTree?.variables ?? [],
       onTreeDataUpdate: state.onTreeDataUpdate,
     };
   });
 
   // Derive initial UI state from store variables
   const initialVariablesArray = React.useMemo(() => {
-    const entries = toPairs(variables);
+    const entries = variables.map((v) => [v.name, v.value] as const);
     const minRows = Math.max(3, entries.length + 1);
     return range(0, minRows).map((i) => {
       if (i < entries.length) {
@@ -78,16 +77,21 @@ export default function VariablesInput() {
   const updateVariables = (
     newVariables: Array<{ name: string; value: string }>,
   ) => {
-    // Convert back to Record<string, number>, filtering out empty entries
-    const filteredVariables: Record<string, number> = {};
-    newVariables.forEach(({ name, value }) => {
-      if (name.trim() && value.trim()) {
+    // Convert to VariableDefinition array, filtering out empty entries
+    const filteredVariables = newVariables
+      .filter(({ name, value }) => name.trim() && value.trim())
+      .map(({ name, value }) => {
         const numValue = parseFloat(value);
         if (!isNaN(numValue)) {
-          filteredVariables[name.trim()] = numValue;
+          return {
+            name: name.trim(),
+            value: numValue,
+            scope: "value" as const, // Default scope for now
+          };
         }
-      }
-    });
+        return null;
+      })
+      .filter((v): v is { name: string; value: number; scope: "value" } => v !== null);
 
     onTreeDataUpdate({ variables: filteredVariables });
   };
@@ -101,7 +105,7 @@ export default function VariablesInput() {
   };
 
   return (
-    <details className="mb-2" open={keys(variables).length > 0}>
+    <details className="mb-2" open={variables.length > 0}>
       <summary className="cursor-pointer select-none">Variables</summary>
       <div className="space-y-1">
         {localVariables.map((variable, index) => (

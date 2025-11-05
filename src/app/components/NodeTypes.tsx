@@ -13,6 +13,7 @@ import {
   selectPathProbability,
   selectShowEVs,
 } from "@/lib/selectors";
+import { variablesToRecord } from "@/lib/variable";
 import { formatProbability, formatValue } from "@/utils/format";
 
 import { InlineEdit } from "./InlineEdit";
@@ -148,7 +149,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     if (valueExpr === undefined) {
       setIsParseable(true);
     } else {
-      const parsed = safeEvalExpr(valueExpr, variables, null);
+      const parsed = safeEvalExpr(
+        valueExpr,
+        variablesToRecord(variables, "value"),
+        null,
+      );
       if (parsed === null) {
         setIsParseable(false);
       } else {

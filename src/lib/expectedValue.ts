@@ -3,6 +3,7 @@ import { Parser } from "expr-eval";
 
 import { AppEdge } from "./edge";
 import { AppNode, NodeType } from "./node";
+import { Variable, variablesToRecord } from "./variable";
 
 type AdjacencyList = Record<
   string,
@@ -238,7 +239,7 @@ function getBestChild(
 
 export function toComputeNode(
   node: AppNode,
-  variables: Record<string, number> = {},
+  variables: Variable[] = [],
 ): ComputeNode {
   return {
     id: node.id,
@@ -246,8 +247,16 @@ export function toComputeNode(
     data: {
       // NOTE: expressions evaluate to null if no expression is provided
       // TODO: can we do better than null?
-      value: safeEvalExpr(node.data.valueExpr, variables, null),
-      cost: safeEvalExpr(node.data.costExpr, variables, null),
+      value: safeEvalExpr(
+        node.data.valueExpr,
+        variablesToRecord(variables, "value"),
+        null,
+      ),
+      cost: safeEvalExpr(
+        node.data.costExpr,
+        variablesToRecord(variables, "cost"),
+        null,
+      ),
       priorCosts: 0,
     },
   };
@@ -255,14 +264,18 @@ export function toComputeNode(
 
 export function toComputeEdge(
   edge: AppEdge,
-  variables: Record<string, number> = {},
+  variables: Variable[] = [],
 ): ComputeEdge {
   return {
     id: edge.id,
     source: edge.source,
     target: edge.target,
     data: {
-      probability: safeEvalExpr(edge.data?.probabilityExpr, variables, null),
+      probability: safeEvalExpr(
+        edge.data?.probabilityExpr,
+        variablesToRecord(variables, "probability"),
+        null,
+      ),
     },
   };
 }

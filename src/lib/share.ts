@@ -63,7 +63,7 @@ export async function uploadTreeForSharing(
     updatedAt: tree.updatedAt ?? "",
     nodes: keys(tree.nodes).length.toString(),
     edges: keys(tree.edges).length.toString(),
-    variables: keys(tree.variables ?? {}).length.toString(),
+    variables: (tree.variables ?? []).length.toString(),
   };
 
   await uploadBytes(storageRef, encrypted, {

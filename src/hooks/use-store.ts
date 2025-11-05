@@ -120,7 +120,7 @@ const middlewares = (
       // TODO: develop migration and invalidation protocol...
       // maybe using `merge` function of `persist`...
       // but for now just increment v number
-      name: "evtree-storage-v5",
+      name: "evtree-storage-v6",
       // TODO: localStorage or sessionStorage?
       storage: createJSONStorage(() => window.localStorage),
     },

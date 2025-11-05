@@ -16,9 +16,9 @@ import { DecisionTree } from "./tree";
 describe("computeNodeValues", () => {
   test("should copy values for a simple sequence of 1.0 probabilities", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } },
-      { id: "2", data: { value: null, cost: null } },
-      { id: "3", data: { value: 30, cost: null } },
+      { id: "1", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "2", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "3", data: { value: 30, cost: null, priorCosts: 0 } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 1.0 } },
@@ -37,9 +37,9 @@ describe("computeNodeValues", () => {
 
   test("should weight values for a simple sequence", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } },
-      { id: "2", data: { value: null, cost: null } },
-      { id: "3", data: { value: 40, cost: null } },
+      { id: "1", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "2", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "3", data: { value: 40, cost: null, priorCosts: 0 } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 0.5 } },
@@ -60,10 +60,10 @@ describe("computeNodeValues", () => {
   // ancestors's costs not being subtracted!!!
   test("should compute expected value for a simple decision tree with costs", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: 10 } }, // Root decision node
-      { id: "2a", data: { value: 100, cost: null } }, // Outcome A
-      { id: "2b", data: { value: 50, cost: null } }, // Outcome B
-      { id: "2c", data: { value: 0, cost: 10 } }, // Outcome C
+      { id: "1", data: { value: null, cost: 10, priorCosts: 0 } }, // Root decision node
+      { id: "2a", data: { value: 100, cost: null, priorCosts: 0 } }, // Outcome A
+      { id: "2b", data: { value: 50, cost: null, priorCosts: 0 } }, // Outcome B
+      { id: "2c", data: { value: 0, cost: 10, priorCosts: 0 } }, // Outcome C
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.5 } },
@@ -85,9 +85,9 @@ describe("computeNodeValues", () => {
 
   test("should handle all null values gracefully", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } },
-      { id: "2", data: { value: null, cost: null } },
-      { id: "3", data: { value: null, cost: null } },
+      { id: "1", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "2", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "3", data: { value: null, cost: null, priorCosts: 0 } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 1.0 } },
@@ -107,9 +107,9 @@ describe("computeNodeValues", () => {
 
   test("should handle negative values correctly", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } }, // Root decision node
-      { id: "2a", data: { value: -50, cost: null } }, // Negative outcome A
-      { id: "2b", data: { value: 100, cost: null } }, // Positive outcome B
+      { id: "1", data: { value: null, cost: null, priorCosts: 0 } }, // Root decision node
+      { id: "2a", data: { value: -50, cost: null, priorCosts: 0 } }, // Negative outcome A
+      { id: "2b", data: { value: 100, cost: null, priorCosts: 0 } }, // Positive outcome B
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.4 } },
@@ -129,9 +129,9 @@ describe("computeNodeValues", () => {
 
   test("should ignore null children and compute from defined ones", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } }, // Root decision node
-      { id: "2a", data: { value: 100, cost: null } }, // Defined outcome A
-      { id: "2b", data: { value: null, cost: null } }, // Null outcome B
+      { id: "1", data: { value: null, cost: null, priorCosts: 0 } }, // Root decision node
+      { id: "2a", data: { value: 100, cost: null, priorCosts: 0 } }, // Defined outcome A
+      { id: "2b", data: { value: null, cost: null, priorCosts: 0 } }, // Null outcome B
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2a", data: { probability: 0.6 } },
@@ -151,11 +151,11 @@ describe("computeNodeValues", () => {
 
   test("should handle multiple root nodes correctly", () => {
     const nodes: ComputeNode[] = [
-      { id: "root1", data: { value: null, cost: null } }, // First root
-      { id: "child1a", data: { value: 80, cost: null } }, // Child of root1
-      { id: "child1b", data: { value: 20, cost: null } }, // Child of root1
-      { id: "root2", data: { value: null, cost: null } }, // Second root
-      { id: "child2", data: { value: 150, cost: null } }, // Child of root2
+      { id: "root1", data: { value: null, cost: null, priorCosts: 0 } }, // First root
+      { id: "child1a", data: { value: 80, cost: null, priorCosts: 0 } }, // Child of root1
+      { id: "child1b", data: { value: 20, cost: null, priorCosts: 0 } }, // Child of root1
+      { id: "root2", data: { value: null, cost: null, priorCosts: 0 } }, // Second root
+      { id: "child2", data: { value: 150, cost: null, priorCosts: 0 } }, // Child of root2
     ];
     const edges: ComputeEdge[] = [
       {
@@ -195,9 +195,9 @@ describe("computeNodeValues", () => {
 
   test("should handle zero root nodes gracefully", () => {
     const nodes: ComputeNode[] = [
-      { id: "1", data: { value: null, cost: null } },
-      { id: "2", data: { value: null, cost: null } },
-      { id: "3", data: { value: 30, cost: null } },
+      { id: "1", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "2", data: { value: null, cost: null, priorCosts: 0 } },
+      { id: "3", data: { value: 30, cost: null, priorCosts: 0 } },
     ];
     const edges: ComputeEdge[] = [
       { id: "e1", source: "1", target: "2", data: { probability: 1.0 } },
@@ -226,10 +226,26 @@ describe("computeNodeValues", () => {
 
   test("should update probabilities for decision nodes based on expected value and costs", () => {
     const nodes: ComputeNode[] = [
-      { id: "decision", type: "decision", data: { value: null, cost: 20 } }, // Decision node
-      { id: "outcome1", type: "terminal", data: { value: 100, cost: 20 } }, // Net value: 80
-      { id: "outcome2", type: "terminal", data: { value: 60, cost: 10 } }, // Net value: 50
-      { id: "outcome3", type: "terminal", data: { value: 120, cost: 40 } }, // Net value: 80
+      {
+        id: "decision",
+        type: "decision",
+        data: { value: null, cost: 20, priorCosts: 0 },
+      }, // Decision node
+      {
+        id: "outcome1",
+        type: "terminal",
+        data: { value: 100, cost: 20, priorCosts: 0 },
+      }, // Net value: 80
+      {
+        id: "outcome2",
+        type: "terminal",
+        data: { value: 60, cost: 10, priorCosts: 0 },
+      }, // Net value: 50
+      {
+        id: "outcome3",
+        type: "terminal",
+        data: { value: 120, cost: 40, priorCosts: 0 },
+      }, // Net value: 80
     ];
     const edges: ComputeEdge[] = [
       {
@@ -271,10 +287,26 @@ describe("computeNodeValues", () => {
 
   test("should update probabilities for decision nodes with single best outcome", () => {
     const nodes: ComputeNode[] = [
-      { id: "decision", type: "decision", data: { value: null, cost: null } }, // Decision node
-      { id: "outcome1", type: "terminal", data: { value: 100, cost: null } }, // Expected value: 100
-      { id: "outcome2", type: "terminal", data: { value: 50, cost: null } }, // Expected value: 50
-      { id: "outcome3", type: "terminal", data: { value: 30, cost: null } }, // Expected value: 30
+      {
+        id: "decision",
+        type: "decision",
+        data: { value: null, cost: null, priorCosts: 0 },
+      }, // Decision node
+      {
+        id: "outcome1",
+        type: "terminal",
+        data: { value: 100, cost: null, priorCosts: 0 },
+      }, // Expected value: 100
+      {
+        id: "outcome2",
+        type: "terminal",
+        data: { value: 50, cost: null, priorCosts: 0 },
+      }, // Expected value: 50
+      {
+        id: "outcome3",
+        type: "terminal",
+        data: { value: 30, cost: null, priorCosts: 0 },
+      }, // Expected value: 30
     ];
     const edges: ComputeEdge[] = [
       {
@@ -316,9 +348,21 @@ describe("computeNodeValues", () => {
 
   test("should not update probabilities for non-decision nodes", () => {
     const nodes: ComputeNode[] = [
-      { id: "chance", type: "chance", data: { value: null, cost: null } }, // Chance node
-      { id: "outcome1", type: "terminal", data: { value: 100, cost: null } },
-      { id: "outcome2", type: "terminal", data: { value: 50, cost: null } },
+      {
+        id: "chance",
+        type: "chance",
+        data: { value: null, cost: null, priorCosts: 0 },
+      }, // Chance node
+      {
+        id: "outcome1",
+        type: "terminal",
+        data: { value: 100, cost: null, priorCosts: 0 },
+      },
+      {
+        id: "outcome2",
+        type: "terminal",
+        data: { value: 50, cost: null, priorCosts: 0 },
+      },
     ];
     const edges: ComputeEdge[] = [
       {
@@ -352,9 +396,21 @@ describe("computeNodeValues", () => {
 
   test("should handle decision node with one null and one valued child without infinite loop", () => {
     const nodes: ComputeNode[] = [
-      { id: "decision", type: "decision", data: { value: null, cost: null } },
-      { id: "child1", type: "terminal", data: { value: null, cost: null } },
-      { id: "child2", type: "terminal", data: { value: 100, cost: null } },
+      {
+        id: "decision",
+        type: "decision",
+        data: { value: null, cost: null, priorCosts: 0 },
+      },
+      {
+        id: "child1",
+        type: "terminal",
+        data: { value: null, cost: null, priorCosts: 0 },
+      },
+      {
+        id: "child2",
+        type: "terminal",
+        data: { value: 100, cost: null, priorCosts: 0 },
+      },
     ];
     const edges: ComputeEdge[] = [
       {
@@ -447,13 +503,13 @@ describe("toComputeNode expression evaluation", () => {
       },
     };
 
-    const variables = {
-      baseValue: 1000,
-      multiplier: 1.5,
-      bonus: 200,
-      hourlyRate: 150,
-      hours: 8,
-    };
+    const variables = [
+      { name: "baseValue", value: 1000, scope: "value" as const },
+      { name: "multiplier", value: 1.5, scope: "value" as const },
+      { name: "bonus", value: 200, scope: "value" as const },
+      { name: "hourlyRate", value: 150, scope: "cost" as const },
+      { name: "hours", value: 8, scope: "cost" as const },
+    ];
 
     const result = toComputeNode(testNode, variables);
 
@@ -472,13 +528,13 @@ describe("toComputeNode expression evaluation", () => {
       },
     };
 
-    const variables = {
-      probability: 0.6,
-      outcome1: 1000,
-      outcome2: 500,
-      baseCost: 100,
-      taxRate: 0.08,
-    };
+    const variables = [
+      { name: "probability", value: 0.6, scope: "value" as const },
+      { name: "outcome1", value: 1000, scope: "value" as const },
+      { name: "outcome2", value: 500, scope: "value" as const },
+      { name: "baseCost", value: 100, scope: "cost" as const },
+      { name: "taxRate", value: 0.08, scope: "cost" as const },
+    ];
 
     const result = toComputeNode(testNode, variables);
 
@@ -498,14 +554,14 @@ describe("toComputeNode expression evaluation", () => {
       },
     };
 
-    const variables = {
-      condition: 1, // truthy
-      trueValue: 500,
-      falseValue: 300,
-      urgent: 0, // falsy
-      rushCost: 200,
-      normalCost: 100,
-    };
+    const variables = [
+      { name: "condition", value: 1, scope: "value" as const }, // truthy
+      { name: "trueValue", value: 500, scope: "value" as const },
+      { name: "falseValue", value: 300, scope: "value" as const },
+      { name: "urgent", value: 0, scope: "cost" as const }, // falsy
+      { name: "rushCost", value: 200, scope: "cost" as const },
+      { name: "normalCost", value: 100, scope: "cost" as const },
+    ];
 
     const result = toComputeNode(testNode, variables);
 
@@ -624,10 +680,10 @@ describe("toComputeEdge expression evaluation", () => {
       },
     };
 
-    const variables = {
-      winRate: 0.8,
-      confidence: 0.75,
-    };
+    const variables = [
+      { name: "winRate", value: 0.8, scope: "probability" as const },
+      { name: "confidence", value: 0.75, scope: "probability" as const },
+    ];
 
     const result = toComputeEdge(testEdge, variables);
 
@@ -642,10 +698,10 @@ describe("toComputeEdge expression evaluation", () => {
       },
     };
 
-    const variables = {
-      baseProbability: 0.4,
-      adjustment: 0.25,
-    };
+    const variables = [
+      { name: "baseProbability", value: 0.4, scope: "probability" as const },
+      { name: "adjustment", value: 0.25, scope: "probability" as const },
+    ];
 
     const result = toComputeEdge(testEdge, variables);
 
@@ -673,11 +729,11 @@ describe("toComputeEdge expression evaluation", () => {
       },
     };
 
-    const variables = {
-      isHighRisk: 1, // truthy
-      lowProbability: 0.2,
-      highProbability: 0.8,
-    };
+    const variables = [
+      { name: "isHighRisk", value: 1, scope: "probability" as const }, // truthy
+      { name: "lowProbability", value: 0.2, scope: "probability" as const },
+      { name: "highProbability", value: 0.8, scope: "probability" as const },
+    ];
 
     const result = toComputeEdge(testEdge, variables);
 
@@ -725,8 +781,12 @@ describe("toComputeEdge expression evaluation", () => {
 describe("snapshot test", () => {
   test("should compute values for demo tree data without errors", () => {
     const tree = demoTreeData as unknown as DecisionTree;
-    const computeNodes = mapValues(tree.nodes, (node) => toComputeNode(node));
-    const computeEdges = mapValues(tree.edges, (edge) => toComputeEdge(edge));
+    const computeNodes = mapValues(tree.nodes, (node) =>
+      toComputeNode(node, tree.variables),
+    );
+    const computeEdges = mapValues(tree.edges, (edge) =>
+      toComputeEdge(edge, tree.variables),
+    );
     const { nodes, edges } = computeNodeValues(computeNodes, computeEdges);
 
     // Just verify that computation doesn't crash and produces some results

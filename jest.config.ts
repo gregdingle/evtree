@@ -19,4 +19,15 @@ const config: Config = {
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default createJestConfig(config);
+const asyncConfig = createJestConfig(config);
+
+// Extend the config to handle d3 ES modules
+const extendedConfig = async () => {
+  const nextJestConfig = await asyncConfig();
+  return {
+    ...nextJestConfig,
+    transformIgnorePatterns: ["node_modules/(?!d3-)"],
+  };
+};
+
+export default extendedConfig;

@@ -1,7 +1,5 @@
 "use client";
 
-import { keys } from "es-toolkit/compat";
-
 import { useStore } from "@/hooks/use-store";
 import {
   selectCurrentEdges,
@@ -48,8 +46,8 @@ export default function RightSidePanel() {
     ),
   );
 
-  const variables = currentTree?.variables ?? {};
-  const hasVariables = keys(variables).length > 0;
+  const variables = currentTree?.variables ?? [];
+  const hasVariables = variables.length > 0;
   const allNodes = currentTree?.nodes ?? {};
 
   const titlePrefix =

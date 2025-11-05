@@ -1,11 +1,10 @@
-import { toPairs } from "es-toolkit/compat";
-
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
+import { Variable } from "@/lib/variable";
 
 interface VariablesListProps extends React.HTMLAttributes<HTMLDetailsElement> {
-  variables: Record<string, number>;
+  variables: Variable[];
   node?: AppNode;
   edge?: AppEdge;
   exprFor: "costExpr" | "valueExpr" | "probabilityExpr";
@@ -37,7 +36,8 @@ export function VariablesList({
     <details {...props}>
       <summary className="cursor-pointer select-none">variables</summary>
       <ul>
-        {toPairs(variables).map(([key, value]) => {
+        {variables.map((variable) => {
+          const { name: key, value } = variable;
           return (
             <li key={key}>
               <input
