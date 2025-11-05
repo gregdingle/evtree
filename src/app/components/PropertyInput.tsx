@@ -7,6 +7,8 @@ interface PropertyInputProps {
   label: string;
   value?: string;
   textarea?: boolean; // Optional prop to indicate if this is a textarea
+  select?: boolean; // Optional prop to indicate if this is a select
+  options?: Array<{ value: string; label: string }>; // Options for select
   onChange?: (value: string) => void;
   placeholder?: string;
   type?: string;
@@ -24,6 +26,8 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
       value,
       onChange,
       textarea,
+      select,
+      options,
       disabled,
       children,
       inlineButton,
@@ -51,6 +55,23 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             rows={4}
             {...props}
           />
+        ) : select ? (
+          <select
+            ref={ref as React.Ref<HTMLSelectElement>}
+            id={label}
+            value={value ?? ""}
+            onChange={(e) => onChange?.(e.target.value)}
+            disabled={disabled}
+            className={`min-w-0 rounded-md p-1 ${
+              disabled ? "border-0" : "border-2"
+            }`}
+          >
+            {options?.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         ) : (
           <input
             ref={ref}

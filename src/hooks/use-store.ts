@@ -57,7 +57,7 @@ export interface StoreState {
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree, replace: boolean) => string;
   onTreeDataUpdate: (
-    treeData: Partial<Pick<DecisionTree, "name" | "description" | "variables">>,
+    treeData: Partial<Pick<DecisionTree, "name" | "description" | "currency">>,
   ) => void;
   replaceVariables: (
     variables: Array<Omit<Variable, "value"> & { value: string }>,
@@ -248,9 +248,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (treeData.description !== undefined) {
               tree.description = treeData.description;
             }
-            // NOTE: see updateVariables
-            if (treeData.variables !== undefined) {
-              tree.variables = treeData.variables;
+            if (treeData.currency !== undefined) {
+              tree.currency = treeData.currency;
             }
             tree.updatedAt = new Date().toISOString();
           }),

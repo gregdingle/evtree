@@ -1,6 +1,9 @@
 "use client";
 
+import { toPairs } from "es-toolkit/compat";
+
 import { useStore } from "@/hooks/use-store";
+import { CURRENCIES, Currency } from "@/lib/Currency";
 import {
   selectCurrentEdges,
   selectCurrentNodes,
@@ -84,6 +87,18 @@ export default function RightSidePanel() {
                 value={currentTree.description}
                 onChange={(value) => onTreeDataUpdate({ description: value })}
                 placeholder="Enter tree description"
+              />
+              <PropertyInput
+                label="Currency"
+                select
+                value={currentTree.currency ?? CURRENCIES[""].code}
+                onChange={(value) =>
+                  onTreeDataUpdate({ currency: value as Currency })
+                }
+                options={toPairs(CURRENCIES).map(([code, data]) => ({
+                  value: code,
+                  label: `${data.symbol} ${data.code} - ${data.name}`,
+                }))}
               />
               <VariablesInput scope="value" />
               <VariablesInput scope="cost" />
