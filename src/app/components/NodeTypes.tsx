@@ -56,7 +56,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
          */}
       {children}
       {showEVs && (
-        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic">
+        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic border-green-400 border-1 px-1 rounded">
           {formatValue(pathValue)}
         </div>
       )}
