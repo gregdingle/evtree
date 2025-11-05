@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { range } from "es-toolkit";
+import { range, upperFirst } from "es-toolkit";
 
 import { useStore } from "@/hooks/use-store";
 import { selectCurrentTree } from "@/lib/selectors";
@@ -9,31 +9,40 @@ import { selectCurrentTree } from "@/lib/selectors";
  * See VariablesList for the complementing component that allows selecting
  * variables for an expression.
  */
-export default function VariablesInput() {
+export default function VariablesInput({
+  scope,
+}: {
+  scope: "value" | "cost" | "probability";
+}) {
   // Subscribe to store directly - also get currentTreeId to detect tree switches
-  const { currentTreeId, variables, onTreeDataUpdate } = useStore((state) => {
+  const { currentTreeId, variables } = useStore((state) => {
     const currentTree = selectCurrentTree(state);
     return {
       currentTreeId: state.currentTreeId,
-      variables: currentTree?.variables ?? [],
-      onTreeDataUpdate: state.onTreeDataUpdate,
+      variables: currentTree?.variables?.filter((v) => v.scope === scope) ?? [],
     };
   });
 
+  const { replaceVariables } = useStore.getState();
+
   // Derive initial UI state from store variables
   const initialVariablesArray = React.useMemo(() => {
-    const entries = variables.map((v) => [v.name, v.value] as const);
+    const entries = variables.map((v) => [v.name, v.value, v.scope] as const);
     const minRows = Math.max(3, entries.length + 1);
     return range(0, minRows).map((i) => {
       if (i < entries.length) {
         const entry = entries[i];
         if (entry) {
-          return { name: entry[0], value: entry[1].toString() };
+          return {
+            name: entry[0],
+            value: entry[1].toString(),
+            scope: entry[2],
+          };
         }
       }
-      return { name: "", value: "" };
+      return { name: "", value: "", scope };
     });
-  }, [variables]);
+  }, [scope, variables]);
 
   // Local state for immediate UI updates
   const [localVariables, setLocalVariables] = useState(initialVariablesArray);
@@ -60,7 +69,7 @@ export default function VariablesInput() {
     if (current) {
       newVariables[index] = { ...current, name: sanitizedName };
       setLocalVariables(newVariables);
-      updateVariables(newVariables);
+      replaceVariables(newVariables, scope);
     }
   };
 
@@ -70,43 +79,23 @@ export default function VariablesInput() {
     if (current) {
       newVariables[index] = { ...current, value };
       setLocalVariables(newVariables);
-      updateVariables(newVariables);
+      replaceVariables(newVariables, scope);
     }
-  };
-
-  const updateVariables = (
-    newVariables: Array<{ name: string; value: string }>,
-  ) => {
-    // Convert to VariableDefinition array, filtering out empty entries
-    const filteredVariables = newVariables
-      .filter(({ name, value }) => name.trim() && value.trim())
-      .map(({ name, value }) => {
-        const numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-          return {
-            name: name.trim(),
-            value: numValue,
-            scope: "value" as const, // Default scope for now
-          };
-        }
-        return null;
-      })
-      .filter((v): v is { name: string; value: number; scope: "value" } => v !== null);
-
-    onTreeDataUpdate({ variables: filteredVariables });
   };
 
   const addMoreRows = () => {
     const newVariables = [
       ...localVariables,
-      ...range(0, 3).map(() => ({ name: "", value: "" })),
+      ...range(0, 3).map(() => ({ name: "", value: "", scope })),
     ];
     setLocalVariables(newVariables);
   };
 
   return (
-    <details className="mb-2" open={variables.length > 0}>
-      <summary className="cursor-pointer select-none">Variables</summary>
+    <details className="mt-4" open={variables.length > 0}>
+      <summary className="cursor-pointer select-none">
+        {upperFirst(scope)} Variables
+      </summary>
       <div className="space-y-1">
         {localVariables.map((variable, index) => (
           <div
@@ -117,18 +106,23 @@ export default function VariablesInput() {
               type="text"
               value={variable.name}
               onChange={(e) => handleNameChange(index, e.target.value)}
-              placeholder={`var${index + 1}`}
+              placeholder={`${scope.slice(0, 4)}var${index + 1}`}
               className="min-w-0 rounded-md border-2 p-1 text-sm"
               spellCheck={false}
-              // TODO: add validation for variable names
             />
             <span className="text-gray-500 dark:text-gray-400">=</span>
             <input
               type="number"
               value={variable.value}
               onChange={(e) => handleValueChange(index, e.target.value)}
-              placeholder={`${index + 1}000`}
+              placeholder={
+                scope === "probability" ? `0.${index + 1}` : `${index + 1}000`
+              }
               className="min-w-0 rounded-md border-2 p-1 text-sm"
+              step={scope === "probability" ? 0.1 : 1000}
+              // TODO: always a good idea to have var values >= 0 ?
+              min={0}
+              max={scope === "probability" ? 1 : undefined}
             />
           </div>
         ))}

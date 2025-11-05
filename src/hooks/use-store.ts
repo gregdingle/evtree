@@ -38,6 +38,7 @@ import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
 import { DecisionTree, createTree } from "@/lib/tree";
+import { Variable } from "@/lib/variable";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
 export interface StoreState {
@@ -57,6 +58,10 @@ export interface StoreState {
   loadTree: (treeData: DecisionTree, replace: boolean) => string;
   onTreeDataUpdate: (
     treeData: Partial<Pick<DecisionTree, "name" | "description" | "variables">>,
+  ) => void;
+  replaceVariables: (
+    variables: Array<Omit<Variable, "value"> & { value: string }>,
+    scope: Variable["scope"],
   ) => void;
 
   // Node/Edge operations (work on current tree)
@@ -243,6 +248,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (treeData.description !== undefined) {
               tree.description = treeData.description;
             }
+            // NOTE: see updateVariables
             if (treeData.variables !== undefined) {
               tree.variables = treeData.variables;
             }
@@ -250,6 +256,38 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "updateTreeData", updates: treeData },
+      );
+    },
+
+    replaceVariables: (
+      newVariables: Array<Omit<Variable, "value"> & { value: string }>,
+      scope: Variable["scope"],
+    ) => {
+      const filteredVariables = newVariables
+        .filter(({ name }) => name.trim()) // remove empty named variables
+        .map(({ name, value }) => {
+          const numValue = parseFloat(value.trim() || "0"); // replace '' with 0
+          if (Number.isFinite(numValue)) {
+            return {
+              name: name.trim(),
+              value: numValue,
+              scope: scope,
+            };
+          }
+          return null;
+        })
+        .filter((v) => v !== null);
+
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            tree.variables = (tree.variables ?? [])
+              .filter((v) => v.scope !== scope)
+              .concat(filteredVariables);
+            tree.updatedAt = new Date().toISOString();
+          }),
+        undefined,
+        { type: "replaceVariables", variables: filteredVariables },
       );
     },
 

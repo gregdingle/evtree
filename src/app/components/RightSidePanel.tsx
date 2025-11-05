@@ -47,7 +47,12 @@ export default function RightSidePanel() {
   );
 
   const variables = currentTree?.variables ?? [];
-  const hasVariables = variables.length > 0;
+  const probabilityVariables = variables.filter(
+    (v) => v.scope === "probability",
+  );
+  const valueVariables = variables.filter((v) => v.scope === "value");
+  const costVariables = variables.filter((v) => v.scope === "cost");
+
   const allNodes = currentTree?.nodes ?? {};
 
   const titlePrefix =
@@ -80,7 +85,9 @@ export default function RightSidePanel() {
                 onChange={(value) => onTreeDataUpdate({ description: value })}
                 placeholder="Enter tree description"
               />
-              <VariablesInput />
+              <VariablesInput scope="value" />
+              <VariablesInput scope="cost" />
+              <VariablesInput scope="probability" />
             </div>
           ) : (
             <p className="">No tree selected</p>
@@ -104,12 +111,14 @@ export default function RightSidePanel() {
                       }
                     }}
                     placeholder={
-                      hasVariables ? "Enter value or formula" : "Enter value"
+                      valueVariables.length
+                        ? "Enter value or formula"
+                        : "Enter value"
                     }
                   >
-                    {hasVariables ? (
+                    {valueVariables.length ? (
                       <VariablesList
-                        variables={variables}
+                        variables={valueVariables}
                         node={node}
                         exprFor="valueExpr"
                         className="my-1 ml-22"
@@ -148,12 +157,14 @@ export default function RightSidePanel() {
                       }
                     }}
                     placeholder={
-                      hasVariables ? "Enter cost or formula" : "Enter cost"
+                      costVariables.length
+                        ? "Enter cost or formula"
+                        : "Enter cost"
                     }
                   >
-                    {hasVariables ? (
+                    {costVariables.length ? (
                       <VariablesList
-                        variables={variables}
+                        variables={costVariables}
                         node={node}
                         className="my-1 ml-22"
                         exprFor="costExpr"
@@ -239,7 +250,9 @@ export default function RightSidePanel() {
                       onEdgeDataUpdate(edge.id, { probabilityExpr });
                     }}
                     placeholder={
-                      hasVariables ? "Enter value or formula" : "Enter value"
+                      probabilityVariables.length
+                        ? "Enter value or formula"
+                        : "Enter value"
                     }
                     inlineButton={true}
                   >
@@ -258,9 +271,9 @@ export default function RightSidePanel() {
                         balance
                       </ToolbarButton>
                     </div>
-                    {hasVariables ? (
+                    {probabilityVariables.length ? (
                       <VariablesList
-                        variables={variables}
+                        variables={probabilityVariables}
                         edge={edge}
                         className="my-1 ml-22"
                         exprFor="probabilityExpr"
