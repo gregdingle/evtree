@@ -163,7 +163,6 @@ export default function CustomEdge({
                   inputStyle={{ width: `${labelWidth}px` }}
                   displayStyle={{ width: `${labelWidth}px` }}
                 >
-                  {" "}
                   {shouldWarn ? (
                     <WarningCircle
                       tooltip="Incomplete probabilities. Click to fix."

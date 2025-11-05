@@ -143,9 +143,12 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const [isParseable, setIsParseable] = useState(true);
 
   useEffect(() => {
-    const value = data.valueExpr;
-    if (value) {
-      const parsed = safeEvalExpr(value, variables, null);
+    const valueExpr = data.valueExpr;
+    // NOTE: if value is unset, consider it parseable
+    if (valueExpr === undefined) {
+      setIsParseable(true);
+    } else {
+      const parsed = safeEvalExpr(valueExpr, variables, null);
       if (parsed === null) {
         setIsParseable(false);
       } else {
@@ -180,18 +183,26 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           value={data.valueExpr}
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
           // TODO: how to show currency here? global pref? tree property? infer from units in data?
-          displayFormatter={() => formatValue(pathValue)}
+          displayFormatter={() =>
+            isParseable && pathValue !== null ? formatValue(pathValue) : "???"
+          }
           inputClassName="px-0.5 py-0 mt-0.5"
           displayClassName={
             // NOTE: show how the value is computed when evaluated value differs
-            (pathValue !== Number(data.valueExpr) ? "italic " : "") +
+            (isParseable &&
+            pathValue !== null &&
+            pathValue !== Number(data.valueExpr)
+              ? "italic "
+              : "") +
             // HACK: copied from InlineEdit defaultDisplayClassName
             "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded"
           }
-        />
-        {!isParseable && (
-          <WarningCircle tooltip="Incomplete value expression. Click to edit." />
-        )}
+          allowEmpty={true}
+        >
+          {!isParseable && (
+            <WarningCircle tooltip="Incomplete value expression. Click to edit." />
+          )}
+        </InlineEdit>
       </div>
       {/*
       TODO: deprecated... decided to show expected net value on canvas only...

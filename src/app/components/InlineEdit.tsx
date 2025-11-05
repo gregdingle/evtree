@@ -77,7 +77,7 @@ export function InlineEdit({
 
   const commitValue = () => {
     const trimmedValue = editingValue.trim();
-    onCommit(trimmedValue === "" && !allowEmpty ? undefined : editingValue);
+    onCommit(trimmedValue === "" && allowEmpty ? undefined : trimmedValue);
     setIsEditing(false);
   };
 
