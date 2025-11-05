@@ -19,6 +19,7 @@ import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
 } from "../lib/maps";
+import { Currency } from "./Currency";
 
 export function selectCurrentTree(state: StoreState): DecisionTree | undefined {
   const { trees, currentTreeId } = state;
@@ -51,6 +52,11 @@ export function selectCurrentEdges(state: StoreState): AppEdge[] {
 export function selectCurrentVariables(state: StoreState): Variable[] {
   const currentTree = selectCurrentTree(state);
   return currentTree?.variables ?? [];
+}
+
+export function selectCurrentCurrency(state: StoreState): Currency {
+  const currentTree = selectCurrentTree(state);
+  return currentTree?.currency ?? "";
 }
 
 /**

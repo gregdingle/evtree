@@ -7,6 +7,7 @@ import { safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
+  selectCurrentCurrency,
   selectCurrentVariables,
   selectHasParentNode,
   selectNetExpectedValue,
@@ -39,6 +40,7 @@ interface BaseNodeProps {
 const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   const showEVs = useStore(selectShowEVs);
+  const currency = useStore(selectCurrentCurrency);
 
   return (
     <div
@@ -58,7 +60,7 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
       {children}
       {showEVs && (
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic border-green-400 border-1 px-1 rounded">
-          {formatValue(pathValue)}
+          {formatValue(pathValue, currency)}
         </div>
       )}
     </div>
@@ -139,6 +141,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   const showEVs = useStore(selectShowEVs) && pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
+  const currency = useStore(selectCurrentCurrency);
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
 
   const [isParseable, setIsParseable] = useState(true);
@@ -189,7 +192,9 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
           // TODO: how to show currency here? global pref? tree property? infer from units in data?
           displayFormatter={() =>
-            isParseable && pathValue !== null ? formatValue(pathValue) : "???"
+            isParseable && pathValue !== null
+              ? formatValue(pathValue, currency)
+              : "???"
           }
           inputClassName="px-0.5 py-0 mt-0.5"
           displayClassName={

@@ -1,5 +1,6 @@
 import HRNumbers from "human-readable-numbers";
 
+import { CURRENCIES, Currency } from "@/lib/Currency";
 import { normalizeExpression } from "@/lib/expectedValue";
 
 /**
@@ -7,16 +8,36 @@ import { normalizeExpression } from "@/lib/expectedValue";
  *
  * TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
  */
-export function formatValue(value: number | null | undefined): string {
+export function formatValue(
+  value: number | null | undefined,
+  currencyCode: Currency,
+): string {
   if (value === null || value === undefined) {
     return "";
   }
+
   // NOTE: we don't want SI prefixes for small values here
   if (Math.abs(value) < 1) {
-    return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    return value.toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+      currency: currencyCode,
+      style: currencyCode ? "currency" : "decimal",
+    });
   }
-
-  return HRNumbers.toHumanString(value);
+  const humanized = HRNumbers.toHumanString(value);
+  if (!currencyCode) {
+    return humanized;
+  }
+  const currency = CURRENCIES[currencyCode];
+  if (!currency) {
+    console.error(`[EVTree] Unknown currency: ${currencyCode}`);
+    return humanized;
+  }
+  if (currency.before) {
+    return `${currency.symbol}${humanized}`;
+  }
+  // NOTE: put a half space here for humanized suffix like "M" or "K"
+  return `${humanized} ${currency.symbol}`;
 }
 
 export function formatProbability(
