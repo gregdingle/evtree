@@ -12,6 +12,7 @@ interface InlineEditProps {
   inputStyle?: React.CSSProperties;
   autoFocus?: boolean;
   allowEmpty?: boolean;
+  children?: React.ReactNode;
 }
 
 /**
@@ -32,6 +33,7 @@ export function InlineEdit({
   inputStyle,
   autoFocus = true,
   allowEmpty = false,
+  children,
 }: InlineEditProps) {
   // Default classNames based on multiline mode
   const defaultInputClassName = multiline
@@ -107,10 +109,6 @@ export function InlineEdit({
     }
   };
 
-  const displayValue = displayFormatter
-    ? displayFormatter(value)
-    : (value ?? placeholder);
-
   if (isEditing) {
     if (multiline) {
       return (
@@ -152,7 +150,8 @@ export function InlineEdit({
       className={finalDisplayClassName}
       style={displayStyle}
     >
-      {displayValue}
+      {displayFormatter ? displayFormatter(value) : (value ?? placeholder)}
+      {children}
     </div>
   );
 }

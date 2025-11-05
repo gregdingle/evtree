@@ -162,16 +162,18 @@ export default function CustomEdge({
                   inputClassName="py-0.5 text-center"
                   inputStyle={{ width: `${labelWidth}px` }}
                   displayStyle={{ width: `${labelWidth}px` }}
-                />
-                {shouldWarn ? (
-                  <WarningCircle
-                    tooltip="Incomplete probabilities. Click to fix."
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      balanceEdgeProbability(id);
-                    }}
-                  />
-                ) : null}
+                >
+                  {" "}
+                  {shouldWarn ? (
+                    <WarningCircle
+                      tooltip="Incomplete probabilities. Click to fix."
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        balanceEdgeProbability(id);
+                      }}
+                    />
+                  ) : null}
+                </InlineEdit>
               </div>
             )}
           </div>
