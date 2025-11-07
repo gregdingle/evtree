@@ -19,4 +19,4 @@ export const CURRENCIES = {
   BRL: { code: "BRL", symbol: "$", name: "Brazilian Real", before: true },
 } as const;
 
-export type Currency = keyof typeof CURRENCIES;
+export type CurrencyCode = keyof typeof CURRENCIES;

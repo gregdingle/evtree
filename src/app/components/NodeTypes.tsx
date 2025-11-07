@@ -190,7 +190,6 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         <InlineEdit
           value={data.valueExpr}
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
-          // TODO: how to show currency here? global pref? tree property? infer from units in data?
           displayFormatter={() =>
             isParseable && pathValue !== null
               ? formatValue(pathValue, currency)

@@ -2,32 +2,21 @@
 
 import React, { useEffect } from "react";
 
-import { round, values } from "es-toolkit/compat";
-import HRNumbers from "human-readable-numbers";
+import { round } from "es-toolkit/compat";
 
-import { StoreState, useStore } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
 import {
-  selectCurrentTree,
-  selectNetExpectedValue,
-  selectPathProbability,
-} from "@/lib/selectors";
-import { DecisionTree } from "@/lib/tree";
+  HistogramData,
+  TerminalNodeData,
+  getHistogramData,
+  getOverUnderData,
+  getTerminalNodesData,
+} from "@/lib/histogram";
+import { selectCurrentCurrency, selectCurrentTree } from "@/lib/selectors";
+import { formatHistogramNumber } from "@/utils/format";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface HistogramProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-interface TerminalNodeData {
-  nodeId: string;
-  probability: number | null;
-  value: number | null;
-}
-
-type HistogramData = {
-  value: number;
-  binEnd: number;
-  probability: number;
-  binSize: number;
-};
 
 // TODO: how to optimize display of negative numbers?
 export function Histogram(props: HistogramProps) {
@@ -132,18 +121,8 @@ export function Histogram(props: HistogramProps) {
   );
 }
 
-// Helper function to format numbers with 2 significant digits
-// TODO: handle currency in a general way
-const formatNumber = (num: number): string => {
-  // First humanize, then limit to 2 significant digits
-  const humanized = HRNumbers.toHumanString(num);
-
-  if (humanized.length <= 4) return "" + humanized;
-
-  return "" + humanized.slice(0, 4) + humanized.at(-1);
-};
-
 function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
+  const currency = useStore(selectCurrentCurrency);
   return (
     <div className="space-y-px">
       {histogramData.map(({ value, binEnd, probability, binSize }) => {
@@ -153,8 +132,8 @@ function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
         // Create bin label with humanized numbers
         const binLabel =
           binSize === 1
-            ? formatNumber(value)
-            : `${formatNumber(value)} - ${formatNumber(binEnd - 1)}`;
+            ? formatHistogramNumber(value, currency)
+            : `${formatHistogramNumber(value, currency)} - ${formatHistogramNumber(binEnd - 1, currency)}`;
 
         return (
           <div key={binLabel} className="flex items-center space-x-4">
@@ -183,127 +162,4 @@ function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
       })}
     </div>
   );
-}
-
-function getTerminalNodesData(
-  currentTree: DecisionTree | undefined,
-  storeState: StoreState,
-): TerminalNodeData[] {
-  if (!currentTree) return [];
-
-  const terminalNodes = values(currentTree.nodes).filter(
-    // TODO: should we only get type="terminal" nodes, or any nodes that do not have children?
-    (node) => node.type === "terminal",
-  );
-
-  return terminalNodes
-    .map((node) => ({
-      nodeId: node.id,
-      probability: selectPathProbability(storeState, node.id),
-      value: selectNetExpectedValue(storeState, node.id),
-    }))
-    .filter((data) => data.probability !== null && data.value !== null);
-}
-
-// TODO: extract to utils and add unit tests
-function getHistogramData(
-  terminalNodesData: TerminalNodeData[],
-): HistogramData[] {
-  if (terminalNodesData.length === 0) return [];
-
-  // Find the range of values
-  const values = terminalNodesData
-    .map(({ value }) => value!)
-    .filter((v) => v !== null);
-
-  if (values.length === 0) return [];
-
-  const minValue = Math.min(...values);
-  const maxValue = Math.max(...values);
-
-  // Determine bin size - you can adjust this logic
-  const range = maxValue - minValue;
-  const binSize = range <= 10 ? 1 : Math.ceil(range / 10); // Max 10 bins, or 1 unit bins for small ranges
-
-  // Create evenly spaced bins
-  const bins = new Map<number, { probability: number }>();
-
-  // Initialize all bins from min to max
-  for (
-    let binStart = Math.floor(minValue / binSize) * binSize;
-    binStart <= maxValue;
-    binStart += binSize
-  ) {
-    bins.set(binStart, { probability: 0 });
-  }
-
-  // Populate bins with data
-  terminalNodesData.forEach(({ probability, value }) => {
-    if (probability === null || value === null) return;
-
-    // Find which bin this value belongs to
-    const binStart = Math.floor(value / binSize) * binSize;
-
-    if (bins.has(binStart)) {
-      const bin = bins.get(binStart)!;
-      bin.probability += probability;
-    }
-  });
-
-  return Array.from(bins.entries())
-    .map(([binStart, { probability }]) => ({
-      value: binStart,
-      binEnd: binStart + binSize,
-      probability,
-      binSize,
-    }))
-    .sort((a, b) => a.value - b.value);
-}
-
-/**
- * Creates a two-bin histogram around a breakpoint value.
- * Returns bins for "under" and "over or equal to" the breakpoint.
- * TODO: extract to utils and add unit tests
- */
-function getOverUnderData(
-  terminalNodesData: TerminalNodeData[],
-  breakpoint: number,
-): HistogramData[] {
-  if (terminalNodesData.length === 0) return [];
-
-  let underProbability = 0;
-  let overProbability = 0;
-  let maxValue = -Infinity;
-
-  // Calculate probabilities for each bin and track max
-  terminalNodesData.forEach(({ probability, value }) => {
-    if (probability === null || value === null) return;
-
-    if (value < breakpoint) {
-      underProbability += probability;
-    } else {
-      overProbability += probability;
-    }
-
-    maxValue = Math.max(maxValue, value);
-  });
-
-  // Always return exactly two bins, starting from 0
-  return [
-    {
-      value: Math.min(
-        0,
-        Math.min(...terminalNodesData.map(({ value }) => value!)),
-      ),
-      binEnd: breakpoint,
-      probability: underProbability,
-      binSize: breakpoint,
-    },
-    {
-      value: breakpoint,
-      binEnd: maxValue > -Infinity ? maxValue + 1 : breakpoint + 1,
-      probability: overProbability,
-      binSize: maxValue > -Infinity ? maxValue - breakpoint + 1 : 1,
-    },
-  ];
 }

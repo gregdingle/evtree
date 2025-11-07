@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 
-import { Currency } from "./Currency";
+import { CurrencyCode } from "./Currency";
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
 import { Variable } from "./variable";
@@ -15,7 +15,7 @@ export interface DecisionTree {
   nodes: Record<string, AppNode>;
   edges: Record<string, AppEdge>;
   variables?: Variable[];
-  currency?: Currency;
+  currency?: CurrencyCode;
 }
 
 export function createTree(

@@ -3,7 +3,7 @@
 import { toPairs } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
-import { CURRENCIES, Currency } from "@/lib/Currency";
+import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
 import {
   selectCurrentEdges,
   selectCurrentNodes,
@@ -93,7 +93,7 @@ export default function RightSidePanel() {
                 select
                 value={currentTree.currency ?? CURRENCIES[""].code}
                 onChange={(value) =>
-                  onTreeDataUpdate({ currency: value as Currency })
+                  onTreeDataUpdate({ currency: value as CurrencyCode })
                 }
                 options={toPairs(CURRENCIES).map(([code, data]) => ({
                   value: code,

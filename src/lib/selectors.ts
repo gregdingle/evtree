@@ -19,7 +19,7 @@ import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
 } from "../lib/maps";
-import { Currency } from "./Currency";
+import { CurrencyCode } from "./Currency";
 
 export function selectCurrentTree(state: StoreState): DecisionTree | undefined {
   const { trees, currentTreeId } = state;
@@ -54,7 +54,7 @@ export function selectCurrentVariables(state: StoreState): Variable[] {
   return currentTree?.variables ?? [];
 }
 
-export function selectCurrentCurrency(state: StoreState): Currency {
+export function selectCurrentCurrency(state: StoreState): CurrencyCode {
   const currentTree = selectCurrentTree(state);
   return currentTree?.currency ?? "";
 }

@@ -1,6 +1,6 @@
 import HRNumbers from "human-readable-numbers";
 
-import { CURRENCIES, Currency } from "@/lib/Currency";
+import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
 import { normalizeExpression } from "@/lib/expectedValue";
 
 /**
@@ -10,7 +10,7 @@ import { normalizeExpression } from "@/lib/expectedValue";
  */
 export function formatValue(
   value: number | null | undefined,
-  currencyCode: Currency,
+  currencyCode: CurrencyCode,
 ): string {
   if (value === null || value === undefined) {
     return "";
@@ -98,3 +98,19 @@ export function formatValueLong(value: number | null | undefined): string {
 
   return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
+
+/**
+ * Helper function to format numbers with 2 significant digits
+ */
+export const formatHistogramNumber = (
+  num: number,
+  currencyCode: CurrencyCode,
+): string => {
+  const currency = CURRENCIES[currencyCode];
+  // First humanize, then limit to 2 significant digits
+  const humanized = HRNumbers.toHumanString(num);
+
+  if (humanized.length <= 4) return currency.symbol + humanized;
+
+  return currency.symbol + humanized.slice(0, 4) + humanized.at(-1);
+};
