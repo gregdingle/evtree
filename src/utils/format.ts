@@ -1,3 +1,4 @@
+import { trim } from "es-toolkit";
 import HRNumbers from "human-readable-numbers";
 
 import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
@@ -34,6 +35,10 @@ export function formatValue(
     return humanized;
   }
   if (currency.before) {
+    if (value < 0) {
+      // Move negative symbol before currency symbol
+      return `-${currency.symbol}${trim(humanized, "-")}`;
+    }
     return `${currency.symbol}${humanized}`;
   }
   // NOTE: put a half space here for humanized suffix like "M" or "K"
