@@ -1,5 +1,6 @@
 "use client";
 
+import { upperFirst } from "es-toolkit";
 import { toPairs } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
@@ -67,9 +68,9 @@ export default function RightSidePanel() {
     nodes.length + edges.length === 0
       ? "Tree"
       : nodes.length === 1
-        ? "Node"
+        ? `${upperFirst(nodes[0]!.type)} ${nodes[0]!.type == "note" ? "" : "Node"}`
         : edges.length === 1
-          ? "Edge"
+          ? "Branch"
           : ""; // multi
 
   return (
@@ -316,17 +317,15 @@ function NodeProperties({
           ) : null}
         </PropertyInput>
       )}
-      {node.type == "terminal" && cumulativeCosts ? (
-        <div className="italic">
-          <PropertyInput
-            label="Prior Costs"
-            value={formatValueLong(cumulativeCosts)}
-            disabled={true}
-          />
-        </div>
-      ) : null}
       {node.type == "terminal" && (
         <div className="italic">
+          {cumulativeCosts ? (
+            <PropertyInput
+              label="Prior Costs"
+              value={formatValueLong(cumulativeCosts)}
+              disabled={true}
+            />
+          ) : null}
           <PropertyInput
             label="Total Costs"
             value={formatValueLong(
@@ -339,19 +338,28 @@ function NodeProperties({
             )}
             disabled={true}
           />
-        </div>
-      )}
-      {showEVs && (
-        <div className="italic">
           <PropertyInput
-            label={
-              // NOTE: special case terminal nodes because there is no
-              // "expected" calculation at leaves in the tree
-              node.type == "terminal" ? "Net Value" : "Expected Net Value"
-            }
+            // NOTE: special case terminal nodes because there is no
+            // "expected" calculation at leaves in the tree
+            label="Net Value"
             value={formatValueLong(netExpectedValue)}
             disabled={true}
           />
+        </div>
+      )}
+      {showEVs && node.type !== "note" && (
+        <div className="italic">
+          {
+            // NOTE: special case terminal nodes because there is no
+            // "expected" calculation at leaves in the tree
+            node.type !== "terminal" && (
+              <PropertyInput
+                label="Expected Net Value"
+                value={formatValueLong(netExpectedValue)}
+                disabled={true}
+              />
+            )
+          }
           <PropertyInput
             label="Path Probability"
             value={formatProbability(pathProbability, 1, "???", "")}
