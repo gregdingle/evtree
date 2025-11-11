@@ -283,11 +283,11 @@ export function toComputeEdge(
 // TODO: dehumanize as in 1.0M to 1000000?
 // TODO: handle currencies globally... it should probably be a tree-level setting
 // NOTE: see handleNameChange in VariablesInput.tsx for variable name sanitization
-export function safeEvalExpr(
+export function safeEvalExpr<T extends number | null>(
   expression: string | undefined,
   variables: Record<string, number>,
-  defaultValue: number | null,
-): number | null {
+  defaultValue: number | T,
+): number | T {
   // Trim leading whitespace and any currency symbol
   expression = normalizeExpression(expression);
   if (!expression) {
