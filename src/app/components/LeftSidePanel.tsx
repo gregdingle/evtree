@@ -136,11 +136,6 @@ export default function LeftSidePanel() {
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate">{tree.name}</h3>
-                    {tree.description && (
-                      <p className="my-1 truncate text-gray-600 dark:text-gray-400">
-                        {tree.description}
-                      </p>
-                    )}
                     <p className="text-xs text-gray-500 dark:text-gray-500">
                       {tree.updatedAt !== tree.createdAt
                         ? `Updated ${formatDate(tree.updatedAt)}`

@@ -20,7 +20,7 @@ export function formatValue(
   if (Math.abs(value) < 1) {
     return value.toLocaleString(undefined, {
       maximumFractionDigits: 2,
-      currency: currencyCode,
+      currency: currencyCode || undefined,
       style: currencyCode ? "currency" : "decimal",
     });
   }
