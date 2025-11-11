@@ -251,6 +251,7 @@ function NodeProperties({
         <PropertyInput
           label="Outcome Value"
           value={node.data.valueExpr}
+          info={`The award, payoff, or payment \nassociated with this endpoint of the \ndecision tree`}
           onChange={(value) => {
             if (value === "") {
               onNodeDataUpdate(node.id, { valueExpr: undefined });

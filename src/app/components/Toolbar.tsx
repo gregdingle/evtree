@@ -206,8 +206,8 @@ export default function Toolbar() {
           onClick={onShowHistogram}
           tooltip={
             isHistogramOpen
-              ? "Hide Histogram (Ctrl+H)"
-              : "Show Histogram (Ctrl+H)"
+              ? `Hide Histogram \n(Ctrl+H)`
+              : `Show Histogram \n(Ctrl+H)`
           }
           active={isHistogramOpen}
           disabled={!hasTerminalNodes}
@@ -217,7 +217,9 @@ export default function Toolbar() {
         </ToolbarButton>
         <ToolbarButton
           onClick={onShowEVs}
-          tooltip={areEVsShowing ? "Hide EVs (Ctrl+E)" : "Show EVs (Ctrl+E)"}
+          tooltip={
+            areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
+          }
           // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
           active={areEVsShowing}
           disabled={!hasTerminalNodes}

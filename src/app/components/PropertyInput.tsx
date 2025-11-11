@@ -2,10 +2,15 @@
 // TODO: should PropertyInputProps inherit from
 import React from "react";
 
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+
+import Tooltip from "./Tooltip";
+
 // React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
   label: string;
   value?: string;
+  info?: string;
   optional?: boolean;
   textarea?: boolean; // Optional prop to indicate if this is a textarea
   select?: boolean; // Optional prop to indicate if this is a select
@@ -25,6 +30,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     {
       label,
       value,
+      info,
       optional,
       onChange,
       textarea,
@@ -46,7 +52,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
         <label
           htmlFor={label}
           // TODO: try to adjust width to fit all labels without line breaks?
-          className="w-20 cursor-pointer select-none"
+          className={`w-20 select-none ${disabled ? "" : "cursor-pointer"}`}
         >
           {label}
           <div
@@ -95,13 +101,22 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             className={`min-w-0 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"
             }
-            ${inlineButton ? "flex-1/4" : ""}
+            ${inlineButton ? "flex-1/4" : "flex-1/4"}
             `}
             spellCheck={false}
             {...props}
           />
         )}
         {children}
+        {info && (
+          <Tooltip
+            text={info}
+            position="left"
+            className="inline-block pl-1 cursor-pointer"
+          >
+            <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+          </Tooltip>
+        )}
       </div>
     );
   },
