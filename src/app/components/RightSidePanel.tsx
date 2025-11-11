@@ -83,6 +83,7 @@ export default function RightSidePanel() {
               />
               <PropertyInput
                 label="Description"
+                optional
                 textarea
                 value={currentTree.description}
                 onChange={(value) => onTreeDataUpdate({ description: value })}
@@ -163,6 +164,7 @@ export default function RightSidePanel() {
                   /> */
                   <PropertyInput
                     label="Cost"
+                    optional
                     value={node.data.costExpr}
                     onChange={(value) => {
                       if (value === "") {
@@ -233,7 +235,6 @@ export default function RightSidePanel() {
               <h3 className="mb-4 font-semibold">Branch Properties</h3>
             ) : null}
             {edges.map((edge) => (
-              // TODO: why is edge data optional?
               <div key={edge.id} className="mb-8">
                 <PropertyInput
                   label="Label"
@@ -298,6 +299,7 @@ export default function RightSidePanel() {
                 )}
                 <PropertyInput
                   label="Description"
+                  optional
                   textarea
                   value={edge.data?.description}
                   onChange={(value) =>

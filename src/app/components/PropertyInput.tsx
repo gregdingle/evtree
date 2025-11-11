@@ -6,6 +6,7 @@ import React from "react";
 interface PropertyInputProps {
   label: string;
   value?: string;
+  optional?: boolean;
   textarea?: boolean; // Optional prop to indicate if this is a textarea
   select?: boolean; // Optional prop to indicate if this is a select
   options?: Array<{ value: string; label: string }>; // Options for select
@@ -24,6 +25,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     {
       label,
       value,
+      optional,
       onChange,
       textarea,
       select,
@@ -41,8 +43,18 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           textarea ? "flex-col" : "items-center"
         }`}
       >
-        <label htmlFor={label} className="w-20 cursor-pointer select-none">
+        <label
+          htmlFor={label}
+          // TODO: try to adjust width to fit all labels without line breaks?
+          className="w-20 cursor-pointer select-none"
+        >
           {label}
+          <div
+            // NOTE: assumes textarea and select are on next line
+            className={`text-xs text-gray-500 ${textarea || select ? "inline pl-2" : "block"}`}
+          >
+            {optional ? "(optional)" : ""}
+          </div>
         </label>
         {textarea ? (
           <textarea
@@ -62,7 +74,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 rounded-md p-1 ${
+            className={`block min-w-0 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"
             }`}
           >
