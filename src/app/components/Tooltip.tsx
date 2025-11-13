@@ -1,8 +1,8 @@
 interface TooltipProps {
   text: string | React.ReactNode;
-  position: "top" | "bottom" | "left" | "right";
-  children: React.ReactNode;
+  position?: "top" | "bottom" | "left" | "right";
   className?: string;
+  children: React.ReactNode;
 }
 
 /**
