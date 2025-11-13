@@ -44,6 +44,7 @@ export function getTerminalNodesData(
 // TODO: add unit tests
 export function getHistogramData(
   terminalNodesData: TerminalNodeData[],
+  maxBins = 7,
 ): HistogramData[] {
   if (terminalNodesData.length === 0) return [];
 
@@ -59,7 +60,7 @@ export function getHistogramData(
 
   // Determine bin size - you can adjust this logic
   const range = maxValue - minValue;
-  const binSize = range <= 10 ? 1 : Math.ceil(range / 10); // Max 10 bins, or 1 unit bins for small ranges
+  const binSize = range <= maxBins ? 1 : Math.ceil(range / (maxBins - 1));
 
   // Create evenly spaced bins
   const bins = new Map<number, { probability: number }>();

@@ -86,19 +86,19 @@ export function Histogram(props: HistogramProps) {
     return (
       <div {...props}>
         <h3 className="mb-4 text-lg font-semibold">
-          Probability Distribution Of Terminal Values
+          Probability Distribution Of Outcome Values
         </h3>
         <p className="text-gray-500">
-          No terminal nodes with probability found
+          No terminal nodes with non-zero probability found
         </p>
       </div>
     );
   }
 
   return (
-    <div {...props}>
+    <div {...props} id="histogram-export">
       <h3 className="mb-4 text-lg font-semibold">
-        Probability Distribution Of Terminal Values
+        Probability Distribution of Outcome Values
       </h3>
       {HistogramBars(histogramData, maxProbability)}
       <h3 className="mt-8 mb-4 text-lg font-semibold">

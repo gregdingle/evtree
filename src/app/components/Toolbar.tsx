@@ -23,7 +23,11 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { useTemporalStore } from "@/hooks/use-temporal-store";
-import { downloadJson, downloadPNG } from "@/lib/download";
+import {
+  downloadHTMLElementAsPNG,
+  downloadJson,
+  downloadPNG,
+} from "@/lib/download";
 import {
   selectCurrentTree,
   selectHasClipboardContent,
@@ -91,14 +95,34 @@ export default function Toolbar() {
     }
   };
 
-  const handleExportTree = (treeToExport: DecisionTree) => {
-    if (!treeToExport) return;
-    downloadPNG(
-      values(treeToExport.nodes ?? []),
-      `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
-      // Use same colors as ReactFlow: bg-amber-50 (#fffbeb) for light, #141414 for dark
-      isDarkMode ? "#141414" : "#fffbeb",
-    );
+  const handleExportImage = (tree: DecisionTree) => {
+    if (!tree) return;
+
+    const filename = `evtree-${kebabCase(tree.name ?? "untitled")}`;
+    const backgroundColor = isDarkMode ? "#141414" : "#fffbeb";
+
+    // If histogram is open, export it instead of the tree
+    if (isHistogramOpen) {
+      const histogramElement = window.document.getElementById(
+        "histogram-export",
+      );
+      if (histogramElement) {
+        downloadHTMLElementAsPNG(
+          histogramElement,
+          `${filename}-histogram.png`,
+          backgroundColor,
+        );
+      } else {
+        console.error("[EVTree] Histogram element not found");
+      }
+    } else {
+      // Export the tree as usual
+      downloadPNG(
+        values(tree.nodes ?? []),
+        `${filename}.png`,
+        backgroundColor,
+      );
+    }
   };
 
   const handleArrange = () => {
@@ -229,10 +253,13 @@ export default function Toolbar() {
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
-          onClick={() => currentTree && handleExportTree(currentTree)}
-          tooltip="Export tree to PNG"
-          // TODO: support export image of histogram one day?
-          disabled={!hasNodes || isHistogramOpen}
+          onClick={() => currentTree && handleExportImage(currentTree)}
+          tooltip={
+            isHistogramOpen
+              ? "Export histogram to PNG"
+              : "Export tree to PNG"
+          }
+          disabled={!hasNodes}
         >
           <PhotoIcon className="h-4 w-4" />
           Export Image

@@ -5,6 +5,20 @@ import { toPng } from "html-to-image";
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
 
+/**
+ * Export an HTML element as PNG
+ */
+export const downloadHTMLElementAsPNG = (
+  element: HTMLElement,
+  filename: string,
+  backgroundColor: string,
+) => {
+  toPng(element, {
+    backgroundColor,
+    pixelRatio: 2, // Higher quality for text
+  }).then((dataUrl) => downloadImage(dataUrl, filename));
+};
+
 // NOTE: see https://reactflow.dev/examples/misc/download-image
 export const downloadPNG = (
   nodes: AppNode[],
@@ -57,7 +71,7 @@ export const downloadPNG = (
   }).then((dataUrl) => downloadImage(dataUrl, filename));
 };
 
-function downloadImage(dataUrl: string, filename: string) {
+export function downloadImage(dataUrl: string, filename: string) {
   const a = document.createElement("a");
 
   a.setAttribute("download", filename);
