@@ -17,11 +17,7 @@ import { useReactFlow } from "@xyflow/react";
 import { useStore } from "@/hooks/use-store";
 import { buildChildToParentNodeMap } from "@/lib/maps";
 import { AppNode, NodeType } from "@/lib/node";
-import {
-  selectClipboardNodes,
-  selectCollapsible,
-  selectCurrentEdges,
-} from "@/lib/selectors";
+import { selectCollapsible, selectCurrentEdges } from "@/lib/selectors";
 
 import { ContextMenuButton } from "./ContextMenuButton";
 import { ContextMenuSubmenu } from "./ContextMenuSubmenu";
@@ -61,7 +57,6 @@ export default function ContextMenu({
     onCopy,
     connectToNearestNode,
     createNodeAt,
-    onPaste,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -69,7 +64,8 @@ export default function ContextMenu({
   );
 
   const edges = useStore(selectCurrentEdges);
-  const clipboardNodes = useStore(selectClipboardNodes);
+  // TODO: deprecated... remove if no longer needed
+  // const clipboardNodes = useStore(selectClipboardNodes);
 
   const { screenToFlowPosition } = useReactFlow();
 

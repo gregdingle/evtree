@@ -8,14 +8,11 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
-import { kebabCase, sortBy } from "es-toolkit";
+import { sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
-import { downloadJson, downloadPNG } from "@/lib/download";
-import { uploadTreeForSharing } from "@/lib/share";
-import { DecisionTree } from "@/lib/tree";
 import { formatDate } from "@/utils/format";
 
 import { ContextMenuButton } from "./ContextMenuButton";
@@ -66,40 +63,41 @@ export default function LeftSidePanel() {
     }
   };
 
-  const handleExportTree = (treeToExport: DecisionTree) => {
-    if (!treeToExport) return;
-    downloadPNG(
-      values(treeToExport.nodes ?? []),
-      `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
-      // Use same colors as ReactFlow: bg-amber-50 (#fffbeb) for light, #141414 for dark
-      isDarkMode ? "#141414" : "#fffbeb",
-    );
-    setShowMoreMenu(null);
-  };
+  // TODO: deprecated... remove if no longer needed
+  // const handleExportTree = (treeToExport: DecisionTree) => {
+  //   if (!treeToExport) return;
+  //   downloadPNG(
+  //     values(treeToExport.nodes ?? []),
+  //     `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
+  //     // Use same colors as ReactFlow: bg-amber-50 (#fffbeb) for light, #141414 for dark
+  //     isDarkMode ? "#141414" : "#fffbeb",
+  //   );
+  //   setShowMoreMenu(null);
+  // };
 
-  const handleDownloadTree = (treeToDownload: DecisionTree) => {
-    if (!treeToDownload) return;
-    downloadJson(
-      treeToDownload,
-      `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
-    );
-    setShowMoreMenu(null);
-  };
+  // const handleDownloadTree = (treeToDownload: DecisionTree) => {
+  //   if (!treeToDownload) return;
+  //   downloadJson(
+  //     treeToDownload,
+  //     `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
+  //   );
+  //   setShowMoreMenu(null);
+  // };
 
-  const handleShareLink = async (treeToShare: DecisionTree) => {
-    if (!treeToShare) return;
+  // const handleShareLink = async (treeToShare: DecisionTree) => {
+  //   if (!treeToShare) return;
 
-    try {
-      const shareableLink = await uploadTreeForSharing(treeToShare);
-      window.navigator.clipboard.writeText(shareableLink);
-    } catch (error) {
-      console.error(
-        `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
-      );
-    } finally {
-      setShowMoreMenu(null);
-    }
-  };
+  //   try {
+  //     const shareableLink = await uploadTreeForSharing(treeToShare);
+  //     window.navigator.clipboard.writeText(shareableLink);
+  //   } catch (error) {
+  //     console.error(
+  //       `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
+  //     );
+  //   } finally {
+  //     setShowMoreMenu(null);
+  //   }
+  // };
 
   return (
     <div className="w-80 p-4">
