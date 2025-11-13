@@ -11,7 +11,6 @@ import { useReactFlow } from "@xyflow/react";
 import { sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
-import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { formatDate } from "@/utils/format";
 
@@ -25,8 +24,6 @@ export default function LeftSidePanel() {
   const [isDialogOpen, setOpenDialog] = useState(false);
 
   const { fitView } = useReactFlow();
-
-  const isDarkMode = useDarkMode();
 
   const { trees, currentTreeId } = useStore((state) => ({
     trees: sortBy(values(state.trees), ["updatedAt"]).reverse(),
@@ -63,52 +60,18 @@ export default function LeftSidePanel() {
     }
   };
 
-  // TODO: deprecated... remove if no longer needed
-  // const handleExportTree = (treeToExport: DecisionTree) => {
-  //   if (!treeToExport) return;
-  //   downloadPNG(
-  //     values(treeToExport.nodes ?? []),
-  //     `evtree-${kebabCase(treeToExport.name ?? "untitled")}.png`,
-  //     // Use same colors as ReactFlow: bg-amber-50 (#fffbeb) for light, #141414 for dark
-  //     isDarkMode ? "#141414" : "#fffbeb",
-  //   );
-  //   setShowMoreMenu(null);
-  // };
-
-  // const handleDownloadTree = (treeToDownload: DecisionTree) => {
-  //   if (!treeToDownload) return;
-  //   downloadJson(
-  //     treeToDownload,
-  //     `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
-  //   );
-  //   setShowMoreMenu(null);
-  // };
-
-  // const handleShareLink = async (treeToShare: DecisionTree) => {
-  //   if (!treeToShare) return;
-
-  //   try {
-  //     const shareableLink = await uploadTreeForSharing(treeToShare);
-  //     window.navigator.clipboard.writeText(shareableLink);
-  //   } catch (error) {
-  //     console.error(
-  //       `[EVTree] Error uploading tree for sharing: ${(error as Error).message}`,
-  //     );
-  //   } finally {
-  //     setShowMoreMenu(null);
-  //   }
-  // };
-
   return (
     <div className="w-80 p-4">
       <div className="mb-4 flex justify-between space-x-2">
-        <h2 className="text-lg font-semibold">Decision Trees</h2>
-        <button
-          onClick={() => setOpenDialog(true)}
-          className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
-        >
-          Create
-        </button>
+        <h2 className="text-lg font-semibold">Trees</h2>
+        <Tooltip text={`Create a new \ndecision tree`}>
+          <button
+            onClick={() => setOpenDialog(true)}
+            className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+          >
+            Create
+          </button>
+        </Tooltip>
         <CreateDialog
           open={isDialogOpen}
           onClose={() => setOpenDialog(false)}
@@ -142,7 +105,7 @@ export default function LeftSidePanel() {
                   </div>
                   <div className="ml-2 flex space-x-1">
                     <div className="relative">
-                      <Tooltip text="Tree actions">
+                      <Tooltip text="Act on this tree" position="left">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

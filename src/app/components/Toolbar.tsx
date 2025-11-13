@@ -77,7 +77,7 @@ export default function Toolbar() {
     if (!treeToDownload) return;
     downloadJson(
       treeToDownload,
-      `evtree-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
+      `treedecisions-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
     );
   };
 
@@ -98,14 +98,13 @@ export default function Toolbar() {
   const handleExportImage = (tree: DecisionTree) => {
     if (!tree) return;
 
-    const filename = `evtree-${kebabCase(tree.name ?? "untitled")}`;
+    const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}`;
     const backgroundColor = isDarkMode ? "#141414" : "#fffbeb";
 
     // If histogram is open, export it instead of the tree
     if (isHistogramOpen) {
-      const histogramElement = window.document.getElementById(
-        "histogram-export",
-      );
+      const histogramElement =
+        window.document.getElementById("histogram-export");
       if (histogramElement) {
         downloadHTMLElementAsPNG(
           histogramElement,
@@ -117,11 +116,7 @@ export default function Toolbar() {
       }
     } else {
       // Export the tree as usual
-      downloadPNG(
-        values(tree.nodes ?? []),
-        `${filename}.png`,
-        backgroundColor,
-      );
+      downloadPNG(values(tree.nodes ?? []), `${filename}.png`, backgroundColor);
     }
   };
 
@@ -163,12 +158,12 @@ export default function Toolbar() {
       >
         <Image
           src="/favicon.svg"
-          alt="EVTree logo"
+          alt="TreeDecisions logo"
           width={24}
           height={24}
           className="dark:invert"
         />
-        <h2 className="text-lg font-semibold">EVTree</h2>
+        <h2 className="text-lg">TreeDecisions</h2>
       </div>
       <div className="flex justify-start space-x-2">
         <ToolbarButton
@@ -255,9 +250,7 @@ export default function Toolbar() {
         <ToolbarButton
           onClick={() => currentTree && handleExportImage(currentTree)}
           tooltip={
-            isHistogramOpen
-              ? "Export histogram to PNG"
-              : "Export tree to PNG"
+            isHistogramOpen ? "Export histogram to PNG" : "Export tree to PNG"
           }
           disabled={!hasNodes}
         >

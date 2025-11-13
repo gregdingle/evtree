@@ -80,7 +80,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`block min-w-0 rounded-md p-1 ${
+            className={`flex-1/4 min-w-0 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"
             }`}
           >

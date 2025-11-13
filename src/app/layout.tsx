@@ -5,10 +5,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  // TODO: change app name
-  title: "EVTree",
+  // NOTE: the original app name was EVTree, then we switched it to
+  // TreeDecisions and decided to keep EVTree as a short name for the codebase.
+  title: "TreeDecisions",
   // TODO: refine app description
-  description: "EVTree – Make a decision tree",
+  description: "TreeDecisions – Make decision trees",
   icons: {
     icon: [
       {

@@ -139,7 +139,8 @@ export default function RightSidePanel() {
       <footer className="absolute bottom-5 right-0 w-80 text-center text-sm">
         Feedback or questions?{" "}
         <a
-          href="mailto:gregdingle@gmail.com?subject=EVTree"
+          // TODO: extract contact email to global config
+          href="mailto:gregdingle@gmail.com?subject=TreeDecisions"
           className="text-blue-700 dark:text-blue-400 hover:underline bold"
         >
           Email us
