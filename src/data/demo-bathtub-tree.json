@@ -2,7 +2,9 @@
   "id": "hE124YFaob13",
   "name": "Bathtub Blues Demo Tree",
   "createdAt": "2025-08-11T02:20:57.775Z",
-  "updatedAt": "2025-11-03T23:29:44.754Z",
+  "updatedAt": "2025-10-03T23:29:44.754Z",
+  "currency": "USD",
+  "rounding": "US",
   "nodes": {
     "EPr-9-hGhZ-Z": {
       "id": "EPr-9-hGhZ-Z",

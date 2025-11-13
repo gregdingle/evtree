@@ -4,6 +4,8 @@
   "description": "Defense Perspective:\n\nCost and Fees Assumptions\n$30,000 atty's fees through\n\nSummary Judgment\n$100,000 in attorneys fees\nland costs through trial\n\n$100,000 - $300,0000 plaintif!\nIs statutory attorneys fee\nlaward, depending upon\ndamages level. \n",
   "createdAt": "2025-08-11T02:22:34.437Z",
   "updatedAt": "2025-08-11T02:22:34.437Z",
+  "currency": "USD",
+  "rounding": "US",
   "nodes": {
     "decision": {
       "id": "decision",
