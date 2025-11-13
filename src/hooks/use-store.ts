@@ -37,7 +37,11 @@ import {
 import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
-import { DecisionTree, createTree } from "@/lib/tree";
+import {
+  DecisionTree,
+  DecisionTreeSimpleSettings,
+  createTree,
+} from "@/lib/tree";
 import { Variable } from "@/lib/variable";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
@@ -56,9 +60,7 @@ export interface StoreState {
   setCurrentTree: (treeId: string) => void;
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree, replace: boolean) => string;
-  onTreeDataUpdate: (
-    treeData: Partial<Pick<DecisionTree, "name" | "description" | "currency">>,
-  ) => void;
+  onTreeDataUpdate: (treeData: DecisionTreeSimpleSettings) => void;
   replaceVariables: (
     variables: Array<Omit<Variable, "value"> & { value: string }>,
     scope: Variable["scope"],
@@ -242,6 +244,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
+            // TODO: make more dynamic and derive possible keys from
+            // DecisionTreeSimpleSettings somehow
             if (treeData.name !== undefined) {
               tree.name = treeData.name;
             }
@@ -250,6 +254,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
             if (treeData.currency !== undefined) {
               tree.currency = treeData.currency;
+            }
+            if (treeData.rounding !== undefined) {
+              tree.rounding = treeData.rounding;
             }
             tree.updatedAt = new Date().toISOString();
           }),

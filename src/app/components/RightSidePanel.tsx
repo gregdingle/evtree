@@ -1,20 +1,21 @@
 "use client";
 
 import { upperFirst } from "es-toolkit";
-import { toPairs, values } from "es-toolkit/compat";
+import { keys, toPairs, values } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
 import { AppEdge } from "@/lib/edge";
 import { safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
+import { ROUNDING, RoundingCode } from "@/lib/rounding";
 import {
   selectCurrentTree,
   selectNetExpectedValues,
   selectPathProbabilities,
   selectShowEVs,
 } from "@/lib/selectors";
-import { DecisionTree } from "@/lib/tree";
+import { DecisionTree, DecisionTreeSimpleSettings } from "@/lib/tree";
 import { Variable, variablesToRecord } from "@/lib/variable";
 import { formatProbability, formatValueLong } from "@/utils/format";
 
@@ -402,9 +403,7 @@ function TreeProperties({
   onTreeDataUpdate,
 }: {
   currentTree: DecisionTree | undefined;
-  onTreeDataUpdate: (
-    treeData: Partial<Pick<DecisionTree, "name" | "description" | "currency">>,
-  ) => void;
+  onTreeDataUpdate: (treeData: DecisionTreeSimpleSettings) => void;
 }) {
   return currentTree ? (
     <div className="mb-8">
@@ -433,6 +432,20 @@ function TreeProperties({
         options={toPairs(CURRENCIES).map(([code, data]) => ({
           value: code,
           label: `${data.symbol} ${data.code} - ${data.name}`,
+        }))}
+      />
+      <PropertyInput
+        // TODO: make linebreak after label
+        label="Rounding"
+        info={`Determines how amounts will be \nrounded for display on the tree`}
+        select
+        value={currentTree.rounding ?? ROUNDING[""].code}
+        onChange={(value) =>
+          onTreeDataUpdate({ rounding: value as RoundingCode })
+        }
+        options={toPairs(ROUNDING).map(([code, data]) => ({
+          value: code,
+          label: `${data.name} ${data.scale ? " → " + keys(data.scale).join(", ") : ""}`,
         }))}
       />
       <VariablesInput

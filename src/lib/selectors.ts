@@ -20,6 +20,7 @@ import {
   buildParentToChildNodeMap,
 } from "../lib/maps";
 import { CurrencyCode } from "./Currency";
+import { RoundingCode } from "./rounding";
 
 export function selectCurrentTree(state: StoreState): DecisionTree | undefined {
   const { trees, currentTreeId } = state;
@@ -57,6 +58,11 @@ export function selectCurrentVariables(state: StoreState): Variable[] {
 export function selectCurrentCurrency(state: StoreState): CurrencyCode {
   const currentTree = selectCurrentTree(state);
   return currentTree?.currency ?? "";
+}
+
+export function selectCurrentRounding(state: StoreState): RoundingCode {
+  const currentTree = selectCurrentTree(state);
+  return currentTree?.rounding ?? "";
 }
 
 /**

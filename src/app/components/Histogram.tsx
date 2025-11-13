@@ -12,7 +12,11 @@ import {
   getOverUnderData,
   getTerminalNodesData,
 } from "@/lib/histogram";
-import { selectCurrentCurrency, selectCurrentTree } from "@/lib/selectors";
+import {
+  selectCurrentCurrency,
+  selectCurrentRounding,
+  selectCurrentTree,
+} from "@/lib/selectors";
 import { formatHistogramNumber } from "@/utils/format";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -123,6 +127,7 @@ export function Histogram(props: HistogramProps) {
 
 function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
   const currency = useStore(selectCurrentCurrency);
+  const rounding = useStore(selectCurrentRounding);
   return (
     <div className="space-y-px">
       {histogramData.map(({ value, binEnd, probability, binSize }) => {
@@ -132,8 +137,8 @@ function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
         // Create bin label with humanized numbers
         const binLabel =
           binSize === 1
-            ? formatHistogramNumber(value, currency)
-            : `${formatHistogramNumber(value, currency)} - ${formatHistogramNumber(binEnd - 1, currency)}`;
+            ? formatHistogramNumber(value, currency, rounding)
+            : `${formatHistogramNumber(value, currency, rounding)} - ${formatHistogramNumber(binEnd - 1, currency, rounding)}`;
 
         return (
           <div key={binLabel} className="flex items-center space-x-4">

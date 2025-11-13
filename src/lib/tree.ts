@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { CurrencyCode } from "./Currency";
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
+import { RoundingCode } from "./rounding";
 import { Variable } from "./variable";
 
 // QUESTION: use nanoid from zod?
@@ -16,7 +17,12 @@ export interface DecisionTree {
   edges: Record<string, AppEdge>;
   variables?: Variable[];
   currency?: CurrencyCode;
+  rounding?: RoundingCode;
 }
+
+export type DecisionTreeSimpleSettings = Partial<
+  Pick<DecisionTree, "name" | "description" | "currency" | "rounding">
+>;
 
 export function createTree(
   name: string,

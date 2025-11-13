@@ -1,31 +1,56 @@
 import { trim } from "es-toolkit";
-import HRNumbers from "human-readable-numbers";
+import humanFormat from "human-format";
 
 import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
 import { normalizeExpression } from "@/lib/expectedValue";
+import { ROUNDING, RoundingCode } from "@/lib/rounding";
 
 /**
- * @see https://www.npmjs.com/package/human-readable-numbers
- *
- * TODO: how to get nice Minus sign (−): Used for mathematical operations (Unicode U+2212)
+ * @see https://www.npmjs.com/package/human-format
  */
 export function formatValue(
   value: number | null | undefined,
   currencyCode: CurrencyCode,
+  roundingCode: RoundingCode,
 ): string {
   if (value === null || value === undefined) {
     return "";
   }
 
-  // NOTE: we don't want SI prefixes for small values here
-  if (Math.abs(value) < 1) {
-    return value.toLocaleString(undefined, {
+  // Get the rounding configuration
+  const rounding = ROUNDING[roundingCode];
+
+  // If no rounding code or scale is empty, don't round
+  if (!roundingCode || !rounding.scale) {
+    const formatted = value.toLocaleString(undefined, {
       maximumFractionDigits: 2,
-      currency: currencyCode || undefined,
-      style: currencyCode ? "currency" : "decimal",
     });
+    if (!currencyCode) {
+      return formatted;
+    }
+    const currency = CURRENCIES[currencyCode];
+    if (!currency) {
+      console.error(`[EVTree] Unknown currency: ${currencyCode}`);
+      return formatted;
+    }
+    if (currency.before) {
+      if (value < 0) {
+        return `-${currency.symbol}${trim(formatted, "-")}`;
+      }
+      return `${currency.symbol}${formatted}`;
+    }
+    return `${formatted} ${currency.symbol}`;
   }
-  const humanized = HRNumbers.toHumanString(value);
+
+  // Create custom scale from rounding configuration
+  const customScale = new humanFormat.Scale(rounding.scale);
+
+  // Use human-format with custom scale
+  const humanized = humanFormat(value, {
+    scale: customScale,
+    maxDecimals: "auto",
+    separator: "",
+  });
   if (!currencyCode) {
     return humanized;
   }
@@ -110,12 +135,28 @@ export function formatValueLong(value: number | null | undefined): string {
 export const formatHistogramNumber = (
   num: number,
   currencyCode: CurrencyCode,
+  roundingCode: RoundingCode,
 ): string => {
   const currency = CURRENCIES[currencyCode];
-  // First humanize, then limit to 2 significant digits
-  const humanized = HRNumbers.toHumanString(num);
+  const rounding = ROUNDING[roundingCode];
 
-  if (humanized.length <= 4) return currency.symbol + humanized;
+  // If no rounding code or scale is empty, format without scale
+  if (!roundingCode || !rounding.scale) {
+    const formatted = num.toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+      maximumSignificantDigits: 4,
+    });
+    return currency.symbol + formatted;
+  }
 
-  return currency.symbol + humanized.slice(0, 4) + humanized.at(-1);
+  // Create custom scale from rounding configuration
+  const customScale = new humanFormat.Scale(rounding.scale);
+
+  const humanized = humanFormat(num, {
+    scale: customScale,
+    maxDecimals: "auto",
+    separator: "",
+  });
+
+  return currency.symbol + humanized;
 };
