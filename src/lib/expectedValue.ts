@@ -280,8 +280,9 @@ export function toComputeEdge(
   };
 }
 
-// TODO: dehumanize as in 1.0M to 1000000?
-// TODO: handle currencies globally... it should probably be a tree-level setting
+// TODO: dehumanize as in 1.0M to 1000000
+// const customScale = new humanFormat.Scale(rounding.scale);
+// customScale.parse('900K')
 // NOTE: see handleNameChange in VariablesInput.tsx for variable name sanitization
 export function safeEvalExpr<T extends number | null>(
   expression: string | undefined,
@@ -315,7 +316,9 @@ export function safeEvalExpr<T extends number | null>(
 
 /**
  * Strip commas, spaces and currency symbols.
- * TODO: strip all common currency symbols and number separators.
+ *
+ * TODO: strip all common currency symbols and number separators, or depend on
+ * current currency setting? see currency.ts
  */
 export function normalizeExpression(expression: string | undefined) {
   return expression?.trim().replace(/[, $€]/g, "") ?? "";

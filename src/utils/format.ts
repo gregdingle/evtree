@@ -151,7 +151,6 @@ export const formatHistogramNumber = (
 
   // Create custom scale from rounding configuration
   const customScale = new humanFormat.Scale(rounding.scale);
-
   const humanized = humanFormat(num, {
     scale: customScale,
     maxDecimals: "auto",

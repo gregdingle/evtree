@@ -138,7 +138,7 @@ function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
         const binLabel =
           binSize === 1
             ? formatHistogramNumber(value, currency, rounding)
-            : `${formatHistogramNumber(value, currency, rounding)} - ${formatHistogramNumber(binEnd - 1, currency, rounding)}`;
+            : `${formatHistogramNumber(value, currency, rounding)} to ${formatHistogramNumber(binEnd - 1, currency, rounding)}`;
 
         return (
           <div key={binLabel} className="flex items-center space-x-4">
