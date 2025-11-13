@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { range, upperFirst } from "es-toolkit";
 
 import { useStore } from "@/hooks/use-store";
 import { selectCurrentTree } from "@/lib/selectors";
+
+import Tooltip from "./Tooltip";
 
 /**
  * See VariablesList for the complementing component that allows selecting
@@ -11,8 +14,10 @@ import { selectCurrentTree } from "@/lib/selectors";
  */
 export default function VariablesInput({
   scope,
+  info,
 }: {
   scope: "value" | "cost" | "probability";
+  info: string;
 }) {
   // Subscribe to store directly - also get currentTreeId to detect tree switches
   const { currentTreeId, variables } = useStore((state) => {
@@ -94,7 +99,16 @@ export default function VariablesInput({
   return (
     <details className="mt-4" open={variables.length > 0}>
       <summary className="cursor-pointer select-none">
-        {upperFirst(scope)} Variables
+        <span title={info}>{upperFirst(scope)} Variables</span>
+        {info && (
+          <Tooltip
+            text={info}
+            position="top"
+            className="inline-block pl-1 cursor-pointer"
+          >
+            <InformationCircleIcon className="h-6 w-6 -mb-1 text-gray-500" />
+          </Tooltip>
+        )}
       </summary>
       <div className="space-y-1">
         {localVariables.map((variable, index) => (

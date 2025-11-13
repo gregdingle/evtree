@@ -1,7 +1,7 @@
 "use client";
 
 import { upperFirst } from "es-toolkit";
-import { toPairs } from "es-toolkit/compat";
+import { toPairs, values } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
@@ -9,8 +9,6 @@ import { AppEdge } from "@/lib/edge";
 import { safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
-  selectCurrentEdges,
-  selectCurrentNodes,
   selectCurrentTree,
   selectNetExpectedValues,
   selectPathProbabilities,
@@ -33,20 +31,28 @@ export default function RightSidePanel() {
     balanceEdgeProbability,
   } = useStore.getState();
 
-  const { nodes, edges, currentTree, showEVs } = useStore((state) => {
-    return {
-      nodes: selectCurrentNodes(state).filter(
-        // HACK: filter out ghost nodes because they have no properties to edit
-        (node) => node.selected && node.type !== "ghost",
-      ),
-      edges: selectCurrentEdges(state).filter(
-        // HACK: filter out arrow edges because they have no properties to edit
-        (edge) => edge.selected && edge.type !== "arrow",
-      ),
-      currentTree: selectCurrentTree(state),
-      showEVs: selectShowEVs(state),
-    };
+  const currentTree = useStore(selectCurrentTree);
+  const showEVs = useStore(selectShowEVs);
+  const allNodes = currentTree?.nodes ?? {};
+  const nodes = values(allNodes).filter(
+    // HACK: filter out ghost nodes because they have no properties to edit
+    (node) => node.selected && node.type !== "ghost",
+  );
+  const allEdges = values(currentTree?.edges);
+  const edges = allEdges.filter(
+    // HACK: filter out arrow edges because they have no properties to edit
+    (edge) => edge.selected && edge.type !== "arrow",
+  );
+  const rootNodes = values(allNodes).filter((node) => {
+    // A root node has no incoming edges
+    // TODO: extract to global findRootNodes function?
+    return (
+      !allEdges.some((edge) => edge.target === node.id) &&
+      node.type !== "note" &&
+      node.type !== "ghost"
+    );
   });
+
   const netExpectedValues = useStore(selectNetExpectedValues);
   const pathProbabilities = useStore((state) =>
     selectPathProbabilities(
@@ -61,8 +67,6 @@ export default function RightSidePanel() {
   );
   const valueVariables = variables.filter((v) => v.scope === "value");
   const costVariables = variables.filter((v) => v.scope === "cost");
-
-  const allNodes = currentTree?.nodes ?? {};
 
   const titlePrefix =
     nodes.length + edges.length === 0
@@ -93,6 +97,9 @@ export default function RightSidePanel() {
                 netExpectedValues.nodeCumulativeCosts?.[node.id];
               const netExpectedValue = netExpectedValues.nodeValues?.[node.id];
               const pathProbability = pathProbabilities[node.id];
+              const isRootNode = Boolean(
+                rootNodes.find((root) => root.id == node.id),
+              );
               return (
                 <NodeProperties
                   key={node.id}
@@ -104,6 +111,7 @@ export default function RightSidePanel() {
                   showEVs={showEVs}
                   netExpectedValue={netExpectedValue}
                   pathProbability={pathProbability}
+                  isRootNode={isRootNode}
                 />
               );
             })}
@@ -235,6 +243,7 @@ function NodeProperties({
   showEVs,
   netExpectedValue,
   pathProbability,
+  isRootNode,
 }: {
   node: AppNode;
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
@@ -244,7 +253,15 @@ function NodeProperties({
   showEVs: boolean;
   netExpectedValue: number | null | undefined;
   pathProbability: number | null | undefined;
+  isRootNode: boolean;
 }) {
+  const totalCosts =
+    (cumulativeCosts ?? 0) +
+    safeEvalExpr(
+      node.data.costExpr,
+      variablesToRecord(costVariables, "cost"),
+      0,
+    );
   return (
     <div className="mb-8">
       {node.type === "terminal" ? (
@@ -295,6 +312,7 @@ function NodeProperties({
     /> */
         <PropertyInput
           label="Cost"
+          info={`Assigns a cost to this node${node.type == "terminal" ? "" : "\nthat is subtracted from the \nexpected values of the node \nand downstream nodes"}`}
           optional
           value={node.data.costExpr}
           onChange={(value) => {
@@ -323,29 +341,29 @@ function NodeProperties({
           {cumulativeCosts ? (
             <PropertyInput
               label="Prior Costs"
+              info={`The sum of all costs on \nthe path up to this node`}
               value={formatValueLong(cumulativeCosts)}
               disabled={true}
             />
           ) : null}
-          <PropertyInput
-            label="Total Costs"
-            value={formatValueLong(
-              (cumulativeCosts ?? 0) +
-                safeEvalExpr(
-                  node.data.costExpr,
-                  variablesToRecord(costVariables, "cost"),
-                  0,
-                ),
-            )}
-            disabled={true}
-          />
-          <PropertyInput
-            // NOTE: special case terminal nodes because there is no
-            // "expected" calculation at leaves in the tree
-            label="Net Value"
-            value={formatValueLong(netExpectedValue)}
-            disabled={true}
-          />
+          {totalCosts ? (
+            <>
+              <PropertyInput
+                label="Total Costs"
+                info={`The cost of this node \nplus all prior costs`}
+                value={formatValueLong(totalCosts)}
+                disabled={true}
+              />
+              <PropertyInput
+                // NOTE: special case terminal nodes because there is no
+                // "expected" calculation at leaves in the tree
+                label="Net Value"
+                info={`The value of this node \nafter subtracting all costs`}
+                value={formatValueLong(netExpectedValue)}
+                disabled={true}
+              />
+            </>
+          ) : null}
         </div>
       )}
       {showEVs && node.type !== "note" && (
@@ -355,17 +373,24 @@ function NodeProperties({
             // "expected" calculation at leaves in the tree
             node.type !== "terminal" && (
               <PropertyInput
-                label="Expected Net Value"
+                label={totalCosts ? "Expected Net Value" : "Expected Value"}
+                info={`The expected value of this node \nconsidering all downstream outcomes \nand probabilities${totalCosts ? ", net of any costs" : ""}`}
                 value={formatValueLong(netExpectedValue)}
                 disabled={true}
               />
             )
           }
-          <PropertyInput
-            label="Path Probability"
-            value={formatProbability(pathProbability, 1, "???", "")}
-            disabled={true}
-          />
+          {
+            // NOTE: path probability would always be 100% for root node
+            isRootNode ? null : (
+              <PropertyInput
+                label="Path Probability"
+                info={`The probability that this node \nwill be reached starting from \nthe root node of the tree`}
+                value={formatProbability(pathProbability, 1, "???", "")}
+                disabled={true}
+              />
+            )
+          }
         </div>
       )}
     </div>
@@ -399,6 +424,7 @@ function TreeProperties({
       />
       <PropertyInput
         label="Currency"
+        info={`Determines the symbol that will \nbe used to label amounts`}
         select
         value={currentTree.currency ?? CURRENCIES[""].code}
         onChange={(value) =>
@@ -409,9 +435,19 @@ function TreeProperties({
           label: `${data.symbol} ${data.code} - ${data.name}`,
         }))}
       />
-      <VariablesInput scope="value" />
-      <VariablesInput scope="cost" />
-      <VariablesInput scope="probability" />
+      <VariablesInput
+        scope="value"
+        // TODO: add 'See docs for more info on forumlas' when docs are done
+        info={`Creates variables that may be \nused in formulas for outcome values`}
+      />
+      <VariablesInput
+        scope="cost"
+        info={`Creates variables that may be \nused in formulas for node costs`}
+      />
+      <VariablesInput
+        scope="probability"
+        info={`Creates variables that may be \nused in formulas for branch \nprobabilities`}
+      />
     </div>
   ) : (
     <p className="">No tree selected</p>

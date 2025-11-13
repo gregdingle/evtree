@@ -54,7 +54,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           // TODO: try to adjust width to fit all labels without line breaks?
           className={`w-20 select-none ${disabled ? "" : "cursor-pointer"}`}
         >
-          {label}
+          <span title={info}>{label}</span>
           <div
             // NOTE: assumes textarea and select are on next line
             className={`text-xs text-gray-500 ${textarea || select ? "inline pl-2" : "block"}`}
@@ -112,7 +112,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           <Tooltip
             text={info}
             position="left"
-            className="inline-block pl-1 cursor-pointer"
+            className="inline-block pl-1 cursor-pointer not-italic"
           >
             <InformationCircleIcon className="h-6 w-6 text-gray-500" />
           </Tooltip>
