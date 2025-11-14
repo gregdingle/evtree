@@ -180,22 +180,18 @@ function computeNodeValuesRecursive(
     }
   });
 
-  // Assign the computed value (or leave as null if no non-null children)
-  currentNode.data.value = expectedValue;
   currentNode.data.priorCosts = cumulativeCost - (currentNode.data.cost ?? 0);
 
-  if (totalProbability < 1) {
+  if (totalProbability == 1) {
+    // Assign the computed value (or leave as null if no non-null children)
+    currentNode.data.value = expectedValue;
+  } else {
     // eslint-disable-next-line no-console
     console.debug(
-      `[EVTree] Node ${currentNode.id} has children with less than 1.0 total probability.`,
+      `[EVTree] Node ${currentNode.id} has children with total probability not equal to 1.0.`,
     );
-    // TODO: what to do about missing probability? highlight in UI somehow?
-  }
-  if (totalProbability > 1) {
-    console.warn(
-      `[EVTree] Node ${currentNode.id} has children with greater than 1.0 total probability.`,
-    );
-    // TODO: what to do about excess probability? set to null? currently still multiplied
+    // NOTE: a null value should show up in the UI as '???'
+    currentNode.data.value = null;
   }
 }
 
