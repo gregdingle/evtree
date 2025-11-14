@@ -117,7 +117,8 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         ) : (
           <div
             // TODO: same hover colors as edge labels... but bg is yellow... do better?
-            className="px-1 pb-1 text-gray-600 dark:text-gray-400 leading-snug  hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            // NOTE: whitespace-pre-wrap is important for manual new lines
+            className="px-1 pb-1 text-gray-600 dark:text-gray-400 leading-snug  hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-pre-wrap"
             onClick={isEditing ? undefined : handleClick}
           >
             {data.description || (
