@@ -99,6 +99,8 @@ export default function Toolbar() {
     if (!tree) return;
 
     const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}`;
+    // TODO: consider transparent bg color for embedding elsewhere more easily
+    // , or custom bg color
     const backgroundColor = isDarkMode ? "#141414" : "#fffbeb";
 
     // If histogram is open, export it instead of the tree
