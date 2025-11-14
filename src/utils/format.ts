@@ -21,7 +21,7 @@ export function formatValue(
   const rounding = ROUNDING[roundingCode];
 
   // If no rounding code or scale is empty, don't round
-  if (!roundingCode || !rounding.scale) {
+  if (!roundingCode || !rounding.scale || value < 1000) {
     const formatted = value.toLocaleString(undefined, {
       maximumFractionDigits: 2,
     });
@@ -141,7 +141,7 @@ export const formatHistogramNumber = (
   const rounding = ROUNDING[roundingCode];
 
   // If no rounding code or scale is empty, format without scale
-  if (!roundingCode || !rounding.scale) {
+  if (!roundingCode || !rounding.scale || num < 1000) {
     const formatted = num.toLocaleString(undefined, {
       maximumFractionDigits: 2,
       maximumSignificantDigits: 4,
