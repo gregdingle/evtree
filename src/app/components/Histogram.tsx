@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { round } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
+import { CurrencyCode } from "@/lib/Currency";
 import {
   HistogramData,
   TerminalNodeData,
@@ -12,6 +13,7 @@ import {
   getOverUnderData,
   getTerminalNodesData,
 } from "@/lib/histogram";
+import { RoundingCode } from "@/lib/rounding";
 import {
   selectCurrentCurrency,
   selectCurrentRounding,
@@ -28,6 +30,9 @@ export function Histogram(props: HistogramProps) {
     currentTree: selectCurrentTree(state),
     storeState: state,
   }));
+
+  const currency = useStore(selectCurrentCurrency);
+  const rounding = useStore(selectCurrentRounding);
 
   const terminalNodesData: TerminalNodeData[] = getTerminalNodesData(
     currentTree,
@@ -51,15 +56,6 @@ export function Histogram(props: HistogramProps) {
   useEffect(() => {
     setBreakpoint(initialOverUnder);
   }, [initialOverUnder]);
-
-  if (!currentTree) {
-    return (
-      <div {...props}>
-        <h3 className="mb-4 text-lg font-semibold">Histogram</h3>
-        <p className="text-gray-500">No tree selected</p>
-      </div>
-    );
-  }
 
   // Calculate histogram bins with even intervals
   const histogramData = getHistogramData(terminalNodesData);
@@ -100,7 +96,7 @@ export function Histogram(props: HistogramProps) {
       <h3 className="mb-4 text-lg font-semibold">
         Probability Distribution of Outcome Values
       </h3>
-      {HistogramBars(histogramData, maxProbability)}
+      {HistogramBars(histogramData, maxProbability, currency, rounding)}
       <h3 className="mt-8 mb-4 text-lg font-semibold">
         Probability Over-Under
         <input
@@ -119,15 +115,18 @@ export function Histogram(props: HistogramProps) {
         />
       </h3>
       <div className="space-y-px">
-        {HistogramBars(overUnderData, maxProbability)}
+        {HistogramBars(overUnderData, maxProbability, currency, rounding)}
       </div>
     </div>
   );
 }
 
-function HistogramBars(histogramData: HistogramData[], maxProbability: number) {
-  const currency = useStore(selectCurrentCurrency);
-  const rounding = useStore(selectCurrentRounding);
+function HistogramBars(
+  histogramData: HistogramData[],
+  maxProbability: number,
+  currency: CurrencyCode,
+  rounding: RoundingCode,
+) {
   return (
     <div className="space-y-px">
       {histogramData.map(({ value, binEnd, probability, binSize }) => {
