@@ -355,37 +355,39 @@ export function selectShowHistogram(state: StoreState): boolean {
   return state.settings.showHistogram ?? false;
 }
 
-export function selectUndoableState(state: StoreState): StoreState {
+export function selectUndoableState(
+  state: StoreState,
+): Omit<StoreState, "clipboard" | "settings"> {
   // TODO: is going thru all the users trees necessary? why not just the current tree?
-  return {
-    ...state,
-    // TODO: do we really want this to be undefined?
-    clipboard: undefined,
-    // NOTE: settings are UI preferences, not part of the tree state
-    settings: {} as unknown as StoreState["settings"],
-    trees: fromPairs(
-      toPairs(state.trees).map(([treeId, tree]) => [
-        treeId,
-        {
-          ...tree,
-          // TODO: do we really want this to be undefined?
-          updatedAt: undefined,
-          nodes: fromPairs(
-            toPairs(tree.nodes).map(([id, node]) => [
-              id,
-              // NOTE: measured is something that ReactFlow adds
-              // secondarily to nodes onNodesChange
-              omit(node, ["selected", "measured"]),
-            ]),
-          ),
-          edges: fromPairs(
-            toPairs(tree.edges).map(([id, edge]) => [
-              id,
-              omit(edge, ["selected"]),
-            ]),
-          ),
-        },
-      ]),
-    ),
-  };
+  return omit(
+    {
+      ...state,
+      trees: fromPairs(
+        toPairs(state.trees).map(([treeId, tree]) => [
+          treeId,
+          {
+            ...tree,
+            // TODO: do we really want this to be undefined?
+            updatedAt: undefined,
+            nodes: fromPairs(
+              toPairs(tree.nodes).map(([id, node]) => [
+                id,
+                // NOTE: measured is something that ReactFlow adds
+                // secondarily to nodes onNodesChange
+                omit(node, ["selected", "measured"]),
+              ]),
+            ),
+            edges: fromPairs(
+              toPairs(tree.edges).map(([id, edge]) => [
+                id,
+                omit(edge, ["selected"]),
+              ]),
+            ),
+          },
+        ]),
+      ),
+    },
+    // NOTE: settings are UI toggles, not part of the tree state
+    ["clipboard", "settings"],
+  );
 }
