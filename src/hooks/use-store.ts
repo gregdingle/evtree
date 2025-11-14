@@ -208,6 +208,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
           }
 
+          // Clear any display settings
+          state.display = {};
+
           // Switch to new tree
           state.currentTreeId = treeId;
           return state;
