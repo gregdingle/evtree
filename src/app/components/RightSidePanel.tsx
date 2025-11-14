@@ -15,7 +15,7 @@ import {
   selectPathProbabilities,
   selectShowEVs,
 } from "@/lib/selectors";
-import { DecisionTree, DecisionTreeSimpleSettings } from "@/lib/tree";
+import { DecisionTree, DecisionTreeSimpleProperties } from "@/lib/tree";
 import { Variable, variablesToRecord } from "@/lib/variable";
 import { formatProbability, formatValueLong } from "@/utils/format";
 
@@ -404,7 +404,7 @@ function TreeProperties({
   onTreeDataUpdate,
 }: {
   currentTree: DecisionTree | undefined;
-  onTreeDataUpdate: (treeData: DecisionTreeSimpleSettings) => void;
+  onTreeDataUpdate: (treeData: DecisionTreeSimpleProperties) => void;
 }) {
   return currentTree ? (
     <div className="mb-8">

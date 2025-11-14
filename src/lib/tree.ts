@@ -20,7 +20,7 @@ export interface DecisionTree {
   rounding?: RoundingCode;
 }
 
-export type DecisionTreeSimpleSettings = Partial<
+export type DecisionTreeSimpleProperties = Partial<
   Pick<DecisionTree, "name" | "description" | "currency" | "rounding">
 >;
 

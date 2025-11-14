@@ -39,7 +39,7 @@ import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
 import {
   DecisionTree,
-  DecisionTreeSimpleSettings,
+  DecisionTreeSimpleProperties,
   createTree,
 } from "@/lib/tree";
 import { Variable } from "@/lib/variable";
@@ -49,7 +49,7 @@ export interface StoreState {
   trees: Record<string, DecisionTree>;
   currentTreeId: string | null;
   clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
-  settings: {
+  display: {
     showEVs?: boolean;
     showHistogram?: boolean;
   };
@@ -60,7 +60,7 @@ export interface StoreState {
   setCurrentTree: (treeId: string) => void;
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree, replace: boolean) => string;
-  onTreeDataUpdate: (treeData: DecisionTreeSimpleSettings) => void;
+  onTreeDataUpdate: (treeData: DecisionTreeSimpleProperties) => void;
   replaceVariables: (
     variables: Array<Omit<Variable, "value"> & { value: string }>,
     scope: Variable["scope"],
@@ -139,7 +139,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     trees: initialTrees,
     currentTreeId: "tree-1", // Default to the first tree
     clipboard: { nodes: [], edges: [] },
-    settings: {},
+    display: {},
 
     // Tree management functions
     createTree: (name: string, description?: string) => {
@@ -245,7 +245,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         (state) =>
           withCurrentTree(state, (tree) => {
             // TODO: make more dynamic and derive possible keys from
-            // DecisionTreeSimpleSettings somehow
+            // DecisionTreeSimpleProperties somehow
             if (treeData.name !== undefined) {
               tree.name = treeData.name;
             }
@@ -924,7 +924,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     onShowEVs: () => {
       set(
         (state) => {
-          state.settings.showEVs = !state.settings.showEVs;
+          state.display.showEVs = !state.display.showEVs;
           return state;
         },
         undefined,
@@ -935,7 +935,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     onShowHistogram: () => {
       set(
         (state) => {
-          state.settings.showHistogram = !state.settings.showHistogram;
+          state.display.showHistogram = !state.display.showHistogram;
           return state;
         },
         undefined,

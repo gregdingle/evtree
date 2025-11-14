@@ -347,17 +347,17 @@ export function selectHasTerminalNodes(state: StoreState): boolean {
 
 // NOTE: default here should match useStoreBase definition
 export function selectShowEVs(state: StoreState): boolean {
-  return state.settings.showEVs ?? false;
+  return state.display.showEVs ?? false;
 }
 
 // NOTE: default here should match useStoreBase definition
 export function selectShowHistogram(state: StoreState): boolean {
-  return state.settings.showHistogram ?? false;
+  return state.display.showHistogram ?? false;
 }
 
 export function selectUndoableState(
   state: StoreState,
-): Omit<StoreState, "clipboard" | "settings"> {
+): Omit<StoreState, "clipboard" | "display"> {
   // TODO: is going thru all the users trees necessary? why not just the current tree?
   return omit(
     {
@@ -387,7 +387,6 @@ export function selectUndoableState(
         ]),
       ),
     },
-    // NOTE: settings are UI toggles, not part of the tree state
-    ["clipboard", "settings"],
+    ["clipboard", "display"],
   );
 }
