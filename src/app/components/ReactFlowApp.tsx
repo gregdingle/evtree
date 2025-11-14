@@ -21,6 +21,7 @@ import { buildChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 
 import { ArrowMarker } from "./ArrowMarker";
+import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
 import ContextMenu from "./ContextMenu";
 import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
@@ -141,11 +142,7 @@ export default function ReactFlowApp() {
 
       {/* Empty canvas help text */}
       {nodes.length === 0 && !menu && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="text-4xl text-gray-400 dark:text-gray-500">
-            Ctrl+click to start
-          </div>
-        </div>
+        <CanvasCenteredHelpMessage text="Ctrl+click to start" />
       )}
     </div>
   );

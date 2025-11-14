@@ -149,7 +149,7 @@ export default function Toolbar() {
 
   return (
     // HACK: see also RightSidePanel "Email us" feedback link that depends on
-    // height of Toolbar
+    // height of Toolbar, also 'Empty canvas help text'
     <div className="flex h-full items-center space-x-4 p-4">
       <div
         // NOTE: w-80 is the same width as the left side panel, so that the

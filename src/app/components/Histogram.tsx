@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 
-import { round } from "es-toolkit/compat";
+import { round, sum } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import { CurrencyCode } from "@/lib/Currency";
@@ -20,6 +20,8 @@ import {
   selectCurrentTree,
 } from "@/lib/selectors";
 import { formatHistogramNumber } from "@/utils/format";
+
+import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface HistogramProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -71,6 +73,10 @@ export function Histogram(props: HistogramProps) {
     terminalNodesData.length > 0
       ? Math.max(...terminalNodesData.map(({ value }) => value!))
       : 0;
+  const sumTerminalPathProb =
+    terminalNodesData.length > 0
+      ? sum(terminalNodesData.map(({ probability }) => probability!))
+      : 0;
 
   // Find max probability for scaling
   const maxProbability = Math.max(
@@ -78,15 +84,18 @@ export function Histogram(props: HistogramProps) {
     0,
   );
 
-  if (terminalNodesData.length === 0) {
+  if (sumTerminalPathProb < 1) {
     return (
       <div {...props}>
-        <h3 className="mb-4 text-lg font-semibold">
-          Probability Distribution Of Outcome Values
-        </h3>
-        <p className="text-gray-500">
-          No terminal nodes with non-zero probability found
-        </p>
+        <CanvasCenteredHelpMessage text="Missing terminal probabilities or values" />
+      </div>
+    );
+  }
+
+  if (sumTerminalPathProb > 1) {
+    return (
+      <div {...props}>
+        <CanvasCenteredHelpMessage text="Terminal probabilities sum to more than 1.0" />
       </div>
     );
   }
