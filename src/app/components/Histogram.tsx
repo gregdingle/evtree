@@ -115,7 +115,11 @@ export function Histogram(props: HistogramProps) {
           step={Math.abs(initialOverUnder)}
           min={minTerminalValue}
           max={maxTerminalValue}
-          onChange={(e) => setBreakpoint(parseFloat(e.target.value))}
+          onChange={(e) => {
+            // TODO: allow an empty value? what would it do?
+            const breakpoint = parseFloat(e.target.value);
+            setBreakpoint(Number.isFinite(breakpoint) ? breakpoint : 1);
+          }}
           className="mx-4 rounded border-2 p-1"
           style={{
             // NOTE: dynamically size input to fit content, +4 for up-down buttons
