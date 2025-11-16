@@ -84,18 +84,20 @@ export function Histogram(props: HistogramProps) {
     0,
   );
 
-  if (sumTerminalPathProb < 1) {
+  // HACK: Allow for floating point imprecision
+  if (sumTerminalPathProb - 1 < -0.000001) {
     return (
       <div {...props}>
-        <CanvasCenteredHelpMessage text="Missing terminal probabilities or values" />
+        <CanvasCenteredHelpMessage text="Missing probabilities or values" />
       </div>
     );
   }
 
-  if (sumTerminalPathProb > 1) {
+  // HACK: Allow for floating point imprecision
+  if (sumTerminalPathProb - 1 > 0.000001) {
     return (
       <div {...props}>
-        <CanvasCenteredHelpMessage text="Terminal probabilities sum to more than 1.0" />
+        <CanvasCenteredHelpMessage text="Terminal path probabilities sum to more than 1.0" />
       </div>
     );
   }

@@ -84,7 +84,8 @@ export const NodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
           (acc, outcome) => acc + outcome.probability,
           0,
         );
-        return Math.abs(sum - 1) < 0.000001; // Allow for floating point imprecision
+        // HACK: Allow for floating point imprecision
+        return Math.abs(sum - 1) < 0.000001;
       },
       {
         message: "Probabilities of non-empty branches must sum to 1",
