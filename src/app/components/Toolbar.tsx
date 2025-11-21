@@ -9,7 +9,6 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   ClipboardDocumentIcon,
-  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
   LinkIcon,
   PhotoIcon,
@@ -148,6 +147,16 @@ export default function Toolbar() {
   useHotkeys("ctrl+h", onShowHistogram, { enableOnFormTags: false });
   useHotkeys("ctrl+e", onShowEVs, { enableOnFormTags: false });
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
+  useHotkeys("ctrl+s", () => currentTree && handleShareLink(currentTree), {
+    enableOnFormTags: true,
+  });
+  useHotkeys(
+    "ctrl+shift+s",
+    () => currentTree && handleDownloadTree(currentTree),
+    {
+      enableOnFormTags: true,
+    },
+  );
 
   return (
     // HACK: see also RightSidePanel "Email us" feedback link that depends on
@@ -259,6 +268,7 @@ export default function Toolbar() {
           <PhotoIcon className="h-4 w-4" />
           Export Image
         </ToolbarButton>
+        {/* TODO: deprecated... remove if not needed
         <ToolbarButton
           onClick={() => currentTree && handleDownloadTree(currentTree)}
           tooltip="Download tree as JSON"
@@ -266,15 +276,15 @@ export default function Toolbar() {
         >
           <DocumentArrowDownIcon className="h-4 w-4" />
           Download File
-        </ToolbarButton>
+        </ToolbarButton> */}
         <div onBlur={() => setIsLinkCopied(false)}>
           <ToolbarButton
             onClick={() => currentTree && handleShareLink(currentTree)}
-            tooltip="Copy URL for sharing"
+            tooltip="Upload tree and copy URL for sharing"
             disabled={!hasNodes}
           >
             <LinkIcon className="h-4 w-4" />
-            {isLinkCopied ? "Link Copied" : "Copy Link"}
+            {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
           </ToolbarButton>
         </div>
       </div>
