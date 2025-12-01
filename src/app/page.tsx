@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { getStorage } from "@firebase/storage";
 import { ReactFlowProvider, useReactFlow } from "@xyflow/react";
 import {
   ReCaptchaV3Provider,
@@ -28,6 +29,13 @@ export default function Home() {
   const [isValidClient, setIsValidClient] = useState(false);
 
   useEffect(() => {
+    if (!firebaseApp) {
+      console.warn(
+        "[EVTree] Firebase app is not initialized, skipping App Check",
+      );
+      setIsValidClient(true);
+      return;
+    }
     // See https://stackoverflow.com/questions/77482473/next-js-firebase-appcheck-error-recaptcha-placeholder-element-must-be-an-ele
     if (process.env.NODE_ENV === "development") {
       // @ts-expect-error: see https://firebase.google.com/docs/app-check/web/debug-provider
@@ -106,7 +114,15 @@ function ShareLinkLoader() {
         console.debug(
           `[EVTree] Downloading tree ${shareData.hash} with key ${shareData.key}`,
         );
-        downloadSharedTree(shareData.hash, shareData.key)
+        if (!firebaseApp) {
+          console.error("[EVTree] Firebase app is not initialized");
+          window.alert(
+            `Failed to load shared tree: Firebase is not initialized`,
+          );
+          return;
+        }
+        const firebaseStorage = getStorage(firebaseApp);
+        downloadSharedTree(shareData.hash, shareData.key, firebaseStorage)
           .then((tree) => {
             useStore.getState().loadTree(tree, true);
             // Clear the hash after successful load

@@ -24,6 +24,7 @@ import {
   extractTextFromFile,
   generateDecisionTree,
 } from "@/lib/ai";
+import { firebaseApp } from "@/lib/firebase";
 import { type DecisionTree } from "@/lib/tree";
 
 interface CreateDialogProps {
@@ -53,9 +54,14 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
 
   const tabs = [
     { name: "Create New", id: "create", icon: PlusIcon },
-    { name: "Generate with AI", id: "ai", icon: SparklesIcon },
+    // NOTE: Although sharing links is preferred, always allow Import From File
+    // to handle edge cases
     { name: "Import from File", id: "open", icon: FolderOpenIcon },
   ];
+
+  if (firebaseApp) {
+    tabs.push({ name: "Generate with AI", id: "ai", icon: SparklesIcon });
+  }
 
   // TODO: replace with cx function?
   function classNames(...classes: (string | boolean | undefined)[]): string {

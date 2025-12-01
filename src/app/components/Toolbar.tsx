@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { getStorage } from "@firebase/storage";
 import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -9,6 +10,7 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   ClipboardDocumentIcon,
+  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
   LinkIcon,
   PhotoIcon,
@@ -27,6 +29,7 @@ import {
   downloadJson,
   downloadPNG,
 } from "@/lib/download";
+import { firebaseApp } from "@/lib/firebase";
 import {
   selectCurrentTree,
   selectHasClipboardContent,
@@ -81,10 +84,13 @@ export default function Toolbar() {
   };
 
   const handleShareLink = async (treeToShare: DecisionTree) => {
-    if (!treeToShare) return;
+    if (!treeToShare || !firebaseApp) return;
 
     try {
-      const shareableLink = await uploadTreeForSharing(treeToShare);
+      const shareableLink = await uploadTreeForSharing(
+        treeToShare,
+        getStorage(firebaseApp),
+      );
       window.navigator.clipboard.writeText(shareableLink);
       setIsLinkCopied(true);
     } catch (error) {
@@ -268,25 +274,30 @@ export default function Toolbar() {
           <PhotoIcon className="h-4 w-4" />
           Export Image
         </ToolbarButton>
-        {/* TODO: deprecated... remove if not needed
-        <ToolbarButton
-          onClick={() => currentTree && handleDownloadTree(currentTree)}
-          tooltip="Download tree as JSON"
-          disabled={!hasNodes}
-        >
-          <DocumentArrowDownIcon className="h-4 w-4" />
-          Download File
-        </ToolbarButton> */}
-        <div onBlur={() => setIsLinkCopied(false)}>
-          <ToolbarButton
-            onClick={() => currentTree && handleShareLink(currentTree)}
-            tooltip="Upload tree and copy URL for sharing"
-            disabled={!hasNodes}
-          >
-            <LinkIcon className="h-4 w-4" />
-            {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
-          </ToolbarButton>
-        </div>
+        {
+          // NOTE: saving and sharing links is preferred when firebase is configured
+          firebaseApp ? (
+            <div onBlur={() => setIsLinkCopied(false)}>
+              <ToolbarButton
+                onClick={() => currentTree && handleShareLink(currentTree)}
+                tooltip="Upload tree and copy URL for sharing"
+                disabled={!hasNodes}
+              >
+                <LinkIcon className="h-4 w-4" />
+                {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
+              </ToolbarButton>
+            </div>
+          ) : (
+            <ToolbarButton
+              onClick={() => currentTree && handleDownloadTree(currentTree)}
+              tooltip="Download tree as JSON"
+              disabled={!hasNodes}
+            >
+              <DocumentArrowDownIcon className="h-4 w-4" />
+              Download File
+            </ToolbarButton>
+          )
+        }
       </div>
     </div>
   );

@@ -1,13 +1,12 @@
 import {
+  FirebaseStorage,
   getDownloadURL,
-  getStorage,
   ref,
   uploadBytes,
 } from "@firebase/storage";
 import { keys } from "es-toolkit/compat";
 
 import { cleanTree } from "./download";
-import { firebaseApp } from "./firebase";
 import { DecisionTree } from "./tree";
 
 const fileExtension = ".json.enc";
@@ -38,6 +37,7 @@ export function buildShareUrl(contentHash: string, keyBase64: string) {
 
 export async function uploadTreeForSharing(
   tree: DecisionTree,
+  firebaseStorage: FirebaseStorage,
 ): Promise<string> {
   // Generate encryption key
   const encryptionKey = await generateEncryptionKey();
@@ -51,7 +51,7 @@ export async function uploadTreeForSharing(
 
   // Upload encrypted data to Firebase Storage
   const storageRef = ref(
-    getStorage(firebaseApp),
+    firebaseStorage,
     `share/${contentHash}${fileExtension}`,
   );
 
@@ -82,11 +82,12 @@ export async function uploadTreeForSharing(
 export async function downloadSharedTree(
   contentHash: string,
   keyBase64: string,
+  firebaseStorage: FirebaseStorage,
 ): Promise<DecisionTree> {
   try {
     // Get encrypted data from Firebase Storage
     const storageRef = ref(
-      getStorage(firebaseApp),
+      firebaseStorage,
       `share/${contentHash}${fileExtension}`,
     );
     const downloadURL = await getDownloadURL(storageRef);

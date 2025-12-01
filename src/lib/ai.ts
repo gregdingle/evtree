@@ -17,17 +17,23 @@ import { DecisionTree } from "./tree";
 // HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
 // file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
 
-const AIModel = getGenerativeModel(
-  getAI(firebaseApp, { backend: new VertexAIBackend() }),
-  {
-    // QUESTION: is this the best model?
-    // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
-    // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
-    // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
-    model: "gemini-2.0-flash", // follows example much better than gemini-2.5
-    // model: "gemini-2.5-flash-lite", // newest model, seems ok, but not as good as 2.0
-  },
-);
+function getAIModel() {
+  // NOTE: Callers of the functions in this file should check that firebaseApp exists.
+  if (!firebaseApp) {
+    throw new Error("[EVTree] Firebase app is not initialized");
+  }
+  return getGenerativeModel(
+    getAI(firebaseApp, { backend: new VertexAIBackend() }),
+    {
+      // QUESTION: is this the best model?
+      // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
+      // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
+      // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
+      model: "gemini-2.0-flash", // follows example much better than gemini-2.5
+      // model: "gemini-2.5-flash-lite", // newest model, seems ok, but not as good as 2.0
+    },
+  );
+}
 
 /**
  * Extracts plain text from a file using AI
@@ -46,7 +52,7 @@ Ignore footnotes.
     `.trim();
 
     // Generate content with the file data
-    const result = await AIModel.generateContent([
+    const result = await getAIModel().generateContent([
       {
         text: prompt,
       },
@@ -96,7 +102,7 @@ export const generateDecisionTree = memoize(async function (
       .replace("{{ZOD_SCHEMAS}}", aiSchemasText);
 
     // Generate the decision tree using AI
-    const result = await AIModel.generateContent(prompt);
+    const result = await getAIModel().generateContent(prompt);
     const response = await result.response;
     const generatedText = response.text();
 
