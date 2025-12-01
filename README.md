@@ -43,6 +43,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Deploying with AI, server-side storage
 
+<!-- TODO: Make firebase optional, disable features that need it when not present -->
+
 The app uses [Firebase](https://firebase.google.com/) for AI features and the share link feature. Sign up for an account there and fill in the credentials in `firebase.ts`.
 
 Note you will also need to add your domains (like `treedecisions.app` or `localhost:3000`) to the list of approved domains of your storage bucket. Try for example:
@@ -53,3 +55,5 @@ gsutil cors get gs://evtree-1.firebasestorage.app
 # create cors.json
 gsutil cors set cors.json gs://evtree-1.firebasestorage.app
 ```
+
+Likewise, you will need to add your domains to the [App Check domains](https://www.google.com/recaptcha/admin).
