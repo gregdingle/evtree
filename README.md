@@ -40,3 +40,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Deploying with AI, server-side storage
+
+The app uses [Firebase](https://firebase.google.com/) for AI features and the share link feature. Sign up for an account there and fill in the credentials in `firebase.ts`.
+
+Note you will also need to add your domains (like `treedecisions.app` or `localhost:3000`) to the list of approved domains of your storage bucket. Try for example:
+
+```
+gsutil cors get gs://evtree-1.firebasestorage.app
+
+# create cors.json
+gsutil cors set cors.json gs://evtree-1.firebasestorage.app
+```
