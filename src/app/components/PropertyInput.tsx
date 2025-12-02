@@ -44,11 +44,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     ref,
   ) => {
     return (
-      <div
-        className={`mb-2 flex flex-wrap space-x-2 ${
-          textarea ? "flex-col" : "items-center"
-        }`}
-      >
+      <div className={`mb-2 flex flex-wrap space-x-2 items-center`}>
         <label
           htmlFor={label}
           // TODO: try to adjust width to fit all labels without line breaks?
@@ -63,16 +59,27 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           </div>
         </label>
         {textarea ? (
-          <textarea
-            ref={ref as React.Ref<HTMLTextAreaElement>}
-            id={label}
-            value={value ?? ""}
-            onChange={(e) => onChange?.(e.target.value)}
-            disabled={disabled}
-            className={`min-w-0 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
-            rows={4}
-            {...props}
-          />
+          <>
+            <textarea
+              ref={ref as React.Ref<HTMLTextAreaElement>}
+              id={label}
+              value={value ?? ""}
+              onChange={(e) => onChange?.(e.target.value)}
+              disabled={disabled}
+              className={`flex-3/4 min-w-0 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
+              rows={4}
+              {...props}
+            />
+            {info && (
+              <Tooltip
+                text={info}
+                position="left"
+                className="pl-1 cursor-pointer not-italic"
+              >
+                <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+              </Tooltip>
+            )}
+          </>
         ) : select ? (
           <select
             ref={ref as React.Ref<HTMLSelectElement>}
@@ -98,16 +105,14 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 rounded-md p-1 ${
+            className={`min-w-0 rounded-md p-1 flex-1/4 ${
               disabled ? "border-0" : "border-2"
-            }
-            ${inlineButton ? "flex-1/4" : "flex-1/4"}
-            `}
+            }`}
             spellCheck={false}
             {...props}
           />
         )}
-        {info && (
+        {info && !textarea && (
           <Tooltip
             text={info}
             position="left"

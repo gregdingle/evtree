@@ -327,12 +327,13 @@ function NodeProperties({
           placeholder={
             costVariables.length ? "Enter cost or formula" : "Enter cost"
           }
+          textarea={costVariables.length > 0}
         >
           {costVariables.length ? (
             <VariablesList
               variables={costVariables}
               node={node}
-              className="my-1 pl-22 basis-full"
+              className="my-1 pl-1 basis-full"
               exprFor="costExpr"
             />
           ) : null}
