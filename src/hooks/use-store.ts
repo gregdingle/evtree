@@ -150,6 +150,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         (state) => {
           state.trees[newTree.id] = newTree;
           state.currentTreeId = newTree.id;
+
+          // Clear any display settings
+          state.display = {};
+
           return state;
         },
         undefined,
