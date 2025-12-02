@@ -143,11 +143,6 @@ export function selectShouldShowProbabilityWarning(
     return false;
   }
 
-  const targetEdgeProbability = edgeProbabilities[edgeId];
-  if (targetEdgeProbability === undefined || targetEdgeProbability === null) {
-    return false;
-  }
-
   // Find all sibling edges (edges from the same source node), excluding arrow edges
   const treeEdges = filterTreeEdges(values(tree.edges));
   const probabilitySum = treeEdges
@@ -157,10 +152,15 @@ export function selectShouldShowProbabilityWarning(
       return sum + (probability ?? 0);
     }, 0);
 
+  const targetEdgeProbability = edgeProbabilities[edgeId] ?? 0;
   return (
     targetEdgeProbability < 0 ||
     targetEdgeProbability > 1 ||
-    Math.abs(probabilitySum - 1) > 1e-6 // Allow small floating-point tolerance
+    // NOTE: only show sum warning if there is at least some probability
+    // assigned in a group of branches
+    (probabilitySum > 0 &&
+      // NOTE: Allow small floating-point tolerance
+      Math.abs(probabilitySum - 1) > 1e-6)
   );
 }
 
