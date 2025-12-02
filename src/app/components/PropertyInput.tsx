@@ -107,7 +107,6 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             {...props}
           />
         )}
-        {children}
         {info && (
           <Tooltip
             text={info}
@@ -117,6 +116,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             <InformationCircleIcon className="h-6 w-6 text-gray-500" />
           </Tooltip>
         )}
+        {children}
       </div>
     );
   },

@@ -218,7 +218,7 @@ function EdgeProperties({
             <VariablesList
               variables={probabilityVariables}
               edge={edge}
-              className="my-1 ml-22"
+              className="my-1 pl-22"
               exprFor="probabilityExpr"
             />
           ) : null}
@@ -287,7 +287,7 @@ function NodeProperties({
               variables={valueVariables}
               node={node}
               exprFor="valueExpr"
-              className="my-1 ml-22"
+              className="my-1 pl-22"
             />
           ) : null}
         </PropertyInput>
@@ -332,7 +332,7 @@ function NodeProperties({
             <VariablesList
               variables={costVariables}
               node={node}
-              className="my-1 ml-22"
+              className="my-1 pl-22 basis-full"
               exprFor="costExpr"
             />
           ) : null}
