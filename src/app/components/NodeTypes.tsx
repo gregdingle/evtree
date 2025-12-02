@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
-import { safeEvalExpr } from "@/lib/expectedValue";
+import { normalizeExpression, safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
@@ -205,7 +205,8 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             // NOTE: show how the value is computed when evaluated value differs
             (isParseable &&
             pathValue !== null &&
-            pathValue !== Number(data.valueExpr)
+            // TODO: used parsed value here?
+            pathValue !== Number(normalizeExpression(data.valueExpr))
               ? "italic "
               : "") +
             // HACK: copied from InlineEdit defaultDisplayClassName
