@@ -6,6 +6,7 @@ import {
   ComputeEdge,
   ComputeNode,
   computeNodeValues,
+  convertPercentage,
   toComputeEdge,
   toComputeNode,
 } from "../lib/expectedValue";
@@ -792,5 +793,52 @@ describe("snapshot test", () => {
     // Just verify that computation doesn't crash and produces some results
     expect(Object.keys(nodes).length).toBeGreaterThan(0);
     expect(Object.keys(edges).length).toBeGreaterThan(0);
+  });
+});
+
+describe("convertPercentage", () => {
+  test("should convert percentage string to decimal", () => {
+    expect(convertPercentage("25%")).toEqual("0.25");
+    expect(convertPercentage("50%")).toEqual("0.5");
+    expect(convertPercentage("100%")).toEqual("1");
+    expect(convertPercentage("0%")).toEqual("0");
+  });
+
+  test("should handle percentages with decimal values", () => {
+    expect(convertPercentage("12.5%")).toEqual("0.125");
+    expect(convertPercentage("99.9%")).toEqual("0.999");
+    expect(convertPercentage("0.1%")).toEqual("0.001");
+  });
+
+  test("should handle percentages with whitespace", () => {
+    expect(convertPercentage("  25%  ")).toEqual("0.25");
+    expect(convertPercentage("50 %")).toEqual("0.5");
+    expect(convertPercentage("  100  %  ")).toEqual("1");
+  });
+
+  test("should return original string if not a percentage", () => {
+    expect(convertPercentage("25")).toEqual("25");
+    expect(convertPercentage("0.5")).toEqual("0.5");
+    expect(convertPercentage("abc")).toEqual("abc");
+  });
+
+  test("should handle undefined and empty string", () => {
+    expect(convertPercentage(undefined)).toEqual("");
+    expect(convertPercentage("")).toEqual("");
+  });
+
+  test("should handle invalid percentage values", () => {
+    expect(convertPercentage("abc%")).toEqual("abc%"); // NaN case, returns original
+    expect(convertPercentage("%")).toEqual("%"); // Empty before %
+  });
+
+  test("should handle negative percentages", () => {
+    expect(convertPercentage("-25%")).toEqual("-0.25");
+    expect(convertPercentage("-100%")).toEqual("-1");
+  });
+
+  test("should handle large percentage values", () => {
+    expect(convertPercentage("200%")).toEqual("2");
+    expect(convertPercentage("1000%")).toEqual("10");
   });
 });

@@ -142,6 +142,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     display: {},
 
     // Tree management functions
+    // TODO: include tree management in undo/redo? it is strange to undo across
+    // tree creation boundary
     createTree: (name: string, description?: string) => {
       const newTree = createTree(name, description);
       set(

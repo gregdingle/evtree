@@ -435,8 +435,8 @@ function TreeProperties({
           label: `${data.symbol} ${data.code} - ${data.name}`,
         }))}
       />
+      {/* TODO: have a 'probabilities' setting for formating as decimal or percentage */}
       <PropertyInput
-        // TODO: make linebreak after label
         label="Rounding"
         info={`Determines how amounts will be \nrounded for display on the tree`}
         select

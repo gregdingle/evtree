@@ -124,6 +124,7 @@ export default function CustomEdge({
             <InlineEdit
               value={label}
               onCommit={(value) => onEdgeDataUpdate(id, { label: value })}
+              displayFormatter={() => label || "???"}
               placeholder="???"
               multiline={true}
               inputStyle={{ width: `${labelWidth}px` }}
@@ -156,7 +157,7 @@ export default function CustomEdge({
                     onEdgeDataUpdate(id, { probabilityExpr: value })
                   }
                   displayFormatter={() =>
-                    formatProbability(computedProbability, 0, "???", "")
+                    formatProbability(computedProbability, 0, "??%", "")
                   }
                   placeholder="???"
                   inputClassName="py-0.5 text-center"

@@ -285,8 +285,8 @@ export function safeEvalExpr<T extends number | null>(
   variables: Record<string, number>,
   defaultValue: number | T,
 ): number | T {
-  // Trim leading whitespace and any currency symbol
-  expression = normalizeExpression(expression);
+  // Trim leading whitespace and any currency symbol, convert percentage
+  expression = convertPercentage(normalizeExpression(expression));
   if (!expression) {
     return defaultValue;
   }
@@ -316,6 +316,25 @@ export function safeEvalExpr<T extends number | null>(
  * TODO: strip all common currency symbols and number separators, or depend on
  * current currency setting? see currency.ts
  */
-export function normalizeExpression(expression: string | undefined) {
+export function normalizeExpression(expression: string | undefined): string {
   return expression?.trim().replace(/[, $€]/g, "") ?? "";
+}
+
+/**
+ * Convert a percentage expression like "25%" to its decimal equivalent, "0.25"
+ *
+ * TODO: would it be better to expect percentages everywhere and not allow
+ * decimal probabilities? percentage is the current default for display
+ */
+export function convertPercentage(
+  expression: string | undefined,
+): string | undefined {
+  if (expression?.trim().endsWith("%")) {
+    const numStr = expression.trim().slice(0, -1).trim();
+    const num = Number(numStr);
+    if (!isNaN(num)) {
+      return (num / 100).toString();
+    }
+  }
+  return expression ?? "";
 }
