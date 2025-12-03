@@ -193,11 +193,11 @@ function EdgeProperties({
             onEdgeDataUpdate(edge.id, { probabilityExpr });
           }}
           placeholder={
+            // TODO: also make the prob input a textarea if there are many prob vars?
             probabilityVariables.length
               ? "Enter value or formula"
               : "Enter value"
           }
-          inlineButton={true}
         >
           <div className="flex-1/4">
             <ToolbarButton
@@ -281,13 +281,14 @@ function NodeProperties({
           placeholder={
             valueVariables.length ? "Enter value or formula" : "Enter value"
           }
+          textarea={valueVariables.length > 0}
         >
           {valueVariables.length ? (
             <VariablesList
               variables={valueVariables}
               node={node}
               exprFor="valueExpr"
-              className="my-1 pl-22"
+              className="my-1 pl-1 basis-full"
             />
           ) : null}
         </PropertyInput>

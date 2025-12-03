@@ -19,7 +19,6 @@ interface PropertyInputProps {
   placeholder?: string;
   type?: string;
   disabled?: boolean;
-  inlineButton?: boolean;
   children?: React.ReactNode;
 }
 
@@ -38,7 +37,6 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
       options,
       disabled,
       children,
-      inlineButton,
       ...props
     },
     ref,
@@ -50,7 +48,9 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           // TODO: try to adjust width to fit all labels without line breaks?
           className={`w-20 select-none ${disabled ? "" : "cursor-pointer"}`}
         >
-          <span title={info}>{label}</span>
+          <span title={info} className="whitespace-nowrap">
+            {label}
+          </span>
           <div
             // NOTE: assumes textarea and select are on next line
             className={`text-xs text-gray-500 ${textarea || select ? "inline pl-2" : "block"}`}
