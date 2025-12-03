@@ -388,7 +388,7 @@ function NodeProperties({
             // NOTE: path probability would always be 100% for root node
             isRootNode ? null : (
               <PropertyInput
-                label="Path Probability"
+                label={`Path\nProbability`}
                 info={`The probability that this node \nwill be reached starting from \nthe root node of the tree`}
                 value={formatProbability(pathProbability, 1, "???", "")}
                 disabled={true}

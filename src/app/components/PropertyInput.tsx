@@ -48,7 +48,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           // TODO: try to adjust width to fit all labels without line breaks?
           className={`w-20 select-none ${disabled ? "" : "cursor-pointer"}`}
         >
-          <span title={info} className="whitespace-nowrap">
+          <span title={info} className="whitespace-pre">
             {label}
           </span>
           <div
