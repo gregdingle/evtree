@@ -26,11 +26,12 @@ function getAIModel() {
     getAI(firebaseApp, { backend: new VertexAIBackend() }),
     {
       // QUESTION: is this the best model?
-      // NOTE: see https://firebase.google.com/docs/ai-logic/models?authuser=0
+      // NOTE: see https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions
       // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
       // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
       model: "gemini-2.0-flash", // follows example much better than gemini-2.5
       // model: "gemini-2.5-flash-lite", // newest model, seems ok, but not as good as 2.0
+      // model: "gemini-3-pro-preview",
     },
   );
 }

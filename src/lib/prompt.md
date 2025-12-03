@@ -19,7 +19,7 @@ If a dollar value of a claim is not provided, use a value of $1.
 Some guidelines:
 
 - The `reason` SHOULD explain why the associated probability estimate is justified. For example: "Federal court statistics show 62% of summary judgment motions fail".
-- Try to make labels 24 characters long or less
+- Try to make labels 32 characters long or less
 - When a node is a leaf node in the tree, it is considered a terminal node, and it MUST have a value
 - The probabilities in a group of branches MUST sum to 1
 - The tree always starts with a single root node
