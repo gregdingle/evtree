@@ -136,6 +136,7 @@ export default function Toolbar() {
   // Re-enable arrange button when nodes change
   useEffect(() => {
     setIsArrangeDisabled(false);
+    setIsLinkCopied(false);
   }, [currentTree?.nodes]);
 
   // TODO: dark mode toggle button
@@ -277,16 +278,14 @@ export default function Toolbar() {
         {
           // NOTE: saving and sharing links is preferred when firebase is configured
           firebaseApp ? (
-            <div onBlur={() => setIsLinkCopied(false)}>
-              <ToolbarButton
-                onClick={() => currentTree && handleShareLink(currentTree)}
-                tooltip="Upload tree and copy URL for sharing"
-                disabled={!hasNodes}
-              >
-                <LinkIcon className="h-4 w-4" />
-                {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
-              </ToolbarButton>
-            </div>
+            <ToolbarButton
+              onClick={() => currentTree && handleShareLink(currentTree)}
+              tooltip="Upload tree and copy URL for sharing"
+              disabled={!hasNodes || isLinkCopied}
+            >
+              <LinkIcon className="h-4 w-4" />
+              {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
+            </ToolbarButton>
           ) : (
             <ToolbarButton
               onClick={() => currentTree && handleDownloadTree(currentTree)}
