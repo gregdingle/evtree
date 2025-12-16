@@ -98,7 +98,7 @@ export default function CustomEdge({
         id={id}
         path={edgePath}
         // NOTE Tailwind: use ! to override inline/preceding stroke
-        className={`${selected ? "!stroke-blue-500/50" : "!stroke-slate-400"}`}
+        className={`${selected ? "!stroke-blue-500" : "!stroke-slate-400"}`}
         style={{
           strokeLinecap: "round",
           strokeWidth: 3,
@@ -222,7 +222,7 @@ function ArrowEdge({
     <BaseEdge
       id={id}
       path={edgePath}
-      className={`${selected ? "!stroke-blue-500/50" : "!stroke-gray-400"}`}
+      className={`${selected ? "!stroke-blue-500" : "!stroke-gray-400"}`}
       style={{
         strokeWidth: 2,
         // NOTE: strokeDasharray should match the border of the NoteNode

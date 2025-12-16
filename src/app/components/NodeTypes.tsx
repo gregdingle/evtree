@@ -84,7 +84,10 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       hasChildren={hasChildren}
       isCollapsed={isCollapsed}
     >
-      <div className={`p-4 ${selected ? "bg-blue-500/50" : "bg-red-400"}`}>
+      <div
+        // TODO: what transparency level looks best here?
+        className={`p-4 bg-red-400 ${selected ? "border-2 border-blue-500" : "border-2 border-red-500"}`}
+      >
         <Handle
           type="target"
           position={Position.Left}
@@ -116,9 +119,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       isCollapsed={isCollapsed}
     >
       <div
-        className={`rounded-full p-4 ${
-          selected ? "bg-blue-500/50" : "bg-yellow-400"
-        }`}
+        className={`rounded-full p-4 bg-yellow-400 ${selected ? "border-2 border-blue-500" : "border-2 border-yellow-500"}`}
       >
         <Handle
           type="target"
@@ -176,12 +177,18 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       // TODO: sholud also "nodrag" when not selected?
       className={`nopan group relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
-      <div
-        // NOTE: this wacky CSS creates the triangle shape
-        className={`h-0 w-0 border-t-[15px] border-r-[24px] border-b-[15px] border-l-0 border-t-transparent border-b-transparent border-l-transparent ${
-          selected ? "border-r-blue-500/50" : "border-r-green-400"
-        }`}
-      />
+      <div className="relative">
+        {/* Selection border triangle (outer) */}
+        <div
+          className={`absolute h-0 w-0 border-t-[18px] border-r-[30px] border-b-[18px] border-l-0 border-t-transparent border-b-transparent border-l-transparent ${selected ? "border-r-blue-500" : "border-r-green-500"}`}
+          style={{ top: "-3px", left: "-4px" }}
+        />
+        {/* Main triangle */}
+        <div
+          // NOTE: this wacky CSS creates the triangle shape
+          className={`relative h-0 w-0 border-t-[15px] border-r-[24px] border-b-[15px] border-l-0 border-t-transparent border-b-transparent border-l-transparent border-r-green-400`}
+        />
+      </div>
       <Handle
         type="target"
         position={Position.Left}
