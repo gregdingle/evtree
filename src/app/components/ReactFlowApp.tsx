@@ -133,17 +133,18 @@ export default function ReactFlowApp() {
 
         {/* SVG definitions for arrow markers */}
         {ArrowMarker()}
+        {/* Empty canvas help text */}
+        {nodes.length === 0 && !menu && (
+          <CanvasCenteredHelpMessage
+            text={`Right-click or \ncontrol+click to start`}
+          />
+        )}
       </ReactFlow>
       <Controls
         position="bottom-right"
         orientation="horizontal"
         showInteractive={false}
       />
-
-      {/* Empty canvas help text */}
-      {nodes.length === 0 && !menu && (
-        <CanvasCenteredHelpMessage text="Ctrl+click to start" />
-      )}
     </div>
   );
 }
