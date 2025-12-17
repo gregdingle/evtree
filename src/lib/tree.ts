@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 
-import { CurrencyCode } from "./Currency";
+import { CurrencyCode } from "./currency";
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
 import { RoundingCode } from "./rounding";

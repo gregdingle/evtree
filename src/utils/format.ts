@@ -1,7 +1,7 @@
 import { trim } from "es-toolkit";
 import humanFormat from "human-format";
 
-import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
+import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 import { normalizeExpression } from "@/lib/expectedValue";
 import { ROUNDING, RoundingCode } from "@/lib/rounding";
 

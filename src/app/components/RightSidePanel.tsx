@@ -4,7 +4,7 @@ import { upperFirst } from "es-toolkit";
 import { keys, toPairs, values } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
-import { CURRENCIES, CurrencyCode } from "@/lib/Currency";
+import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 import { AppEdge } from "@/lib/edge";
 import { safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";

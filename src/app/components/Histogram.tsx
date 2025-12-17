@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { round, sum } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
-import { CurrencyCode } from "@/lib/Currency";
+import { CurrencyCode } from "@/lib/currency";
 import {
   HistogramData,
   TerminalNodeData,

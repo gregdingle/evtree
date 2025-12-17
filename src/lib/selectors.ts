@@ -19,7 +19,7 @@ import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
 } from "../lib/maps";
-import { CurrencyCode } from "./Currency";
+import { CurrencyCode } from "./currency";
 import { RoundingCode } from "./rounding";
 
 export function selectCurrentTree(state: StoreState): DecisionTree | undefined {
