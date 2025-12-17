@@ -270,7 +270,7 @@ function NodeProperties({
         <PropertyInput
           label="Outcome Value"
           value={node.data.valueExpr}
-          info={`The award, payoff, or payment \nassociated with this endpoint of the \ndecision tree`}
+          info={`The award, payoff, or payment \nobligation at this end point`}
           onChange={(value) => {
             if (value === "") {
               onNodeDataUpdate(node.id, { valueExpr: undefined });
@@ -315,7 +315,7 @@ function NodeProperties({
     /> */
         <PropertyInput
           label="Cost"
-          info={`Assigns a cost to this node${node.type == "terminal" ? "" : "\nthat is subtracted from the \nexpected values of the node \nand downstream nodes"}`}
+          info={`Assigns a cost to this node${node.type == "terminal" ? "" : "\nthat is subtracted from the \nexpected values of the node \nand all downstream nodes"}`}
           optional
           value={node.data.costExpr}
           onChange={(value) => {

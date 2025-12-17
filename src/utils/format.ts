@@ -20,8 +20,8 @@ export function formatValue(
   // Get the rounding configuration
   const rounding = ROUNDING[roundingCode];
 
-  // If no rounding code or scale is empty, don't round
-  if (!roundingCode || !rounding.scale || value < 1000) {
+  // If no rounding code or scale is empty or less than 1000, don't round
+  if (!roundingCode || !rounding.scale || Math.abs(value) < 1000) {
     const formatted = value.toLocaleString(undefined, {
       maximumFractionDigits: 2,
     });
