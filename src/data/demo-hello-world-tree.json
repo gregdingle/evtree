@@ -9,7 +9,7 @@
       "id": "decision",
       "type": "decision",
       "data": {
-        "description": "decision description"
+        "description": ""
       },
       "position": {
         "x": 100,
@@ -24,7 +24,7 @@
       "id": "chance",
       "type": "chance",
       "data": {
-        "description": "chance description"
+        "description": ""
       },
       "position": {
         "x": 300,
@@ -39,7 +39,7 @@
       "id": "terminal1",
       "type": "terminal",
       "data": {
-        "description": "terminal1 description",
+        "description": "",
         "valueExpr": "500"
       },
       "position": {
@@ -55,7 +55,7 @@
       "id": "terminal2",
       "type": "terminal",
       "data": {
-        "description": "terminal2 description",
+        "description": "",
         "valueExpr": "1000"
       },
       "position": {
@@ -71,7 +71,7 @@
       "id": "terminal3",
       "type": "terminal",
       "data": {
-        "description": "terminal3 description",
+        "description": "",
         "valueExpr": "250"
       },
       "position": {
@@ -234,7 +234,7 @@
       "type": "custom",
       "data": {
         "label": "d to c",
-        "description": "Connection from decision to chance"
+        "description": ""
       }
     },
     "chance-terminal1": {
@@ -244,7 +244,7 @@
       "type": "custom",
       "data": {
         "label": "c to t1",
-        "description": "Path from chance to terminal1",
+        "description": "",
         "probabilityExpr": "0.5"
       }
     },
@@ -255,7 +255,7 @@
       "type": "custom",
       "data": {
         "label": "c to t2",
-        "description": "Path from chance to terminal2",
+        "description": "",
         "probabilityExpr": "0.5"
       }
     },
@@ -266,7 +266,7 @@
       "type": "custom",
       "data": {
         "label": "d to t3",
-        "description": "Path from decision to terminal3"
+        "description": ""
       }
     },
     "enote1-k2iTTAYoxfdF": {

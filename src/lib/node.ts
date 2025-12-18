@@ -1,20 +1,24 @@
 import { Node, XYPosition } from "@xyflow/react";
 import { nanoid } from "nanoid";
 
+/**
+ * NOTE: the "note" and "ghost" node types are for annotations outside of the
+ * logical decision tree.
+ */
 export type NodeType = "decision" | "chance" | "terminal" | "note" | "ghost";
 
+/**
+ * Core datastructure that extends the React Flow type. Each NodeType uses a
+ * subset of properties.
+ */
 export type AppNode = Node<
   {
-    // TODO: rename expr to formula?
     valueExpr?: string;
     costExpr?: string;
     /**
      * NOTE: not used right now
      */
     label?: string;
-    /**
-     * NOTE: used by note type only right now
-     */
     description?: string;
   },
   NodeType
@@ -47,4 +51,4 @@ export function cloneNode(node: AppNode, position: XYPosition): AppNode {
     selected: true,
   };
   return newNode;
-} // TODO: move types into a lib file
+}

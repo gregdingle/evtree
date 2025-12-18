@@ -399,6 +399,18 @@ function NodeProperties({
           }
         </div>
       )}
+      {(node.type === "decision" || node.type === "chance") && (
+        <PropertyInput
+          label="Description"
+          optional
+          value={node.data.description}
+          onChange={(value) =>
+            onNodeDataUpdate(node.id, { description: value })
+          }
+          placeholder="Enter description"
+          textarea={true}
+        />
+      )}
     </div>
   );
 }
