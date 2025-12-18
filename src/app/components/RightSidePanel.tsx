@@ -347,33 +347,29 @@ function NodeProperties({
       )}
       {node.type == "terminal" && (
         <div className="italic">
-          {cumulativeCosts ? (
-            <PropertyInput
-              // NOTE: also considered the label "Prior Costs"
-              label="Path Costs"
-              info={`The sum of all costs on \nthe path up to this node`}
-              value={formatValueLong(cumulativeCosts)}
-              disabled={true}
-            />
-          ) : null}
-          {totalCosts ? (
-            <>
-              <PropertyInput
-                label="Total Costs"
-                info={`The cost of this node \nplus all prior costs`}
-                value={formatValueLong(totalCosts)}
-                disabled={true}
-              />
-              <PropertyInput
-                // NOTE: special case terminal nodes because there is no
-                // "expected" calculation at leaves in the tree
-                label="Net Value"
-                info={`The value of this node \nafter subtracting all costs`}
-                value={formatValueLong(netExpectedValue)}
-                disabled={true}
-              />
-            </>
-          ) : null}
+          {/* TODO: should we revert back to showing these costs conditionally? */}
+          <PropertyInput
+            // NOTE: also considered the label "Prior Costs"
+            label="Path Costs"
+            info={`The sum of all costs on \nthe path up to this node`}
+            value={formatValueLong(cumulativeCosts)}
+            disabled={true}
+          />
+          {/* TODO: should we revert back to showing these costs conditional on nonzero totalCosts? */}
+          <PropertyInput
+            label="Total Costs"
+            info={`The cost of this node \nplus its path costs`}
+            value={formatValueLong(totalCosts)}
+            disabled={true}
+          />
+          <PropertyInput
+            // NOTE: special case terminal nodes because there is no
+            // "expected" calculation at leaves in the tree
+            label="Net Value"
+            info={`The value of this node \nafter subtracting all costs`}
+            value={formatValueLong(netExpectedValue)}
+            disabled={true}
+          />
         </div>
       )}
       {showEVs && node.type !== "note" && (
