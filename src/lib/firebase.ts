@@ -18,15 +18,15 @@ const FirebaseConfigSchema = z.object({
   measurementId: z.string().startsWith("G-").optional(),
 });
 
-// NOTE: get firebase config from Firebase console
+// NOTE: get firebase config from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCpQAoZEZufrRsOxev2TNcP_A_D0dwbasM",
-  authDomain: "evtree-1.firebaseapp.com",
-  projectId: "evtree-1",
-  storageBucket: "evtree-1.firebasestorage.app",
-  messagingSenderId: "121004750347",
-  appId: "1:121004750347:web:363a33cb86ebe5d51d790e",
-  measurementId: "G-QDEWK2W36Z",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 try {
