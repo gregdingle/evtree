@@ -86,7 +86,11 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     >
       <div
         // TODO: what transparency level looks best here?
-        className={`p-4 bg-red-400 ${selected ? "border-2 border-blue-500" : "border-2 border-red-500"}`}
+        className={`
+          p-4
+          bg-sky-400
+          ${selected ? "border-3 border-blue-500" : "border-3 border-sky-500"}
+        `}
       >
         <Handle
           type="target"
@@ -119,7 +123,12 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       isCollapsed={isCollapsed}
     >
       <div
-        className={`rounded-full p-4 bg-yellow-400 ${selected ? "border-2 border-blue-500" : "border-2 border-yellow-500"}`}
+        className={`
+          rounded-full
+          p-4
+        bg-red-400
+        ${selected ? "border-3 border-blue-500" : "border-3 border-red-500"}
+      `}
       >
         <Handle
           type="target"
@@ -180,13 +189,38 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div className="relative">
         {/* Selection border triangle (outer) */}
         <div
-          className={`absolute h-0 w-0 border-t-[18px] border-r-[30px] border-b-[18px] border-l-0 border-t-transparent border-b-transparent border-l-transparent ${selected ? "border-r-blue-500" : "border-r-green-500"}`}
-          style={{ top: "-3px", left: "-4px" }}
+          className={`
+            absolute
+            h-0
+            w-0
+            border-t-[19px]
+            border-r-[32px]
+            border-b-[19px]
+            border-l-0
+            border-t-transparent
+            border-b-transparent
+            border-l-transparent
+            ${selected ? "border-r-blue-500" : "border-r-green-500"}
+          `}
+          style={{ top: "-4px", left: "-3px" }}
         />
         {/* Main triangle */}
         <div
           // NOTE: this wacky CSS creates the triangle shape
-          className={`relative h-0 w-0 border-t-[15px] border-r-[24px] border-b-[15px] border-l-0 border-t-transparent border-b-transparent border-l-transparent border-r-green-400`}
+          className={`
+            relative
+            h-0
+            w-0
+            border-t-[15px]
+            border-r-[24px]
+            border-b-[15px]
+            border-l-0
+            border-t-transparent
+            border-b-transparent
+            border-l-transparent
+            border-r-green-400
+          `}
+          style={{ left: "2px" }}
         />
       </div>
       <Handle
@@ -197,7 +231,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         className={`opacity-0 group-hover:opacity-100 ${!hasParent ? "" : "invisible"}`}
       />
       <div
-        className={`absolute left-8 w-fit ${topOffset} whitespace-nowrap z-10 flex items-center gap-1`}
+        className={`absolute left-9 w-fit ${topOffset} whitespace-nowrap z-10 flex items-center gap-1`}
       >
         <InlineEdit
           value={data.valueExpr}
@@ -248,7 +282,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         </div>
       )*/}
       {showEVs && (
-        <div className={`absolute italic top-4 left-8`}>
+        <div className={`absolute italic top-4 left-9`}>
           {
             // NOTE: don't show the ??? placeholder for null pathProbability
             formatProbability(pathProbability, 1, "")
