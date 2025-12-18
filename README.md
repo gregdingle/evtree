@@ -41,6 +41,8 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+# Further Notes
+
 ## Deploying with AI, server-side storage
 
 The app uses [Firebase](https://firebase.google.com/) for AI features and the share link feature. Sign up for an account there and fill in the credentials in `firebase.ts`.
@@ -54,9 +56,9 @@ gsutil cors get gs://evtree-1.firebasestorage.app
 gsutil cors set cors.json gs://evtree-1.firebasestorage.app
 ```
 
-Likewise, you will need to add your domains to the [App Check domains](https://www.google.com/recaptcha/admin).
+Likewise, you will need to add your domains to the [App Check domains](https://www.google.com/recaptcha/admin) if using App Check (recommended).
 
-## License
+# License
 
 EVTree is licensed under the Business Source License 1.1. This means:
 
