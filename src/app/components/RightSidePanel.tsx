@@ -315,7 +315,7 @@ function NodeProperties({
     /> */
         <PropertyInput
           label="Cost"
-          info={`Assigns a cost to this node${node.type == "terminal" ? "" : "\nthat is subtracted from the \nexpected values of the node \nand all downstream nodes"}`}
+          info={`Assigns a cost to this node${node.type == "terminal" ? "" : " that is \nsubtracted from all outcome \nvalues downstream of this node"}`}
           optional
           value={node.data.costExpr}
           onChange={(value) => {
@@ -338,13 +338,19 @@ function NodeProperties({
               exprFor="costExpr"
             />
           ) : null}
+          <div className="my-2 pl-1 basis-full text-sm italic">
+            {/* TODO: better as "before the start of this subtree"? */}
+            Note: Ignore costs that occur before the start of the tree. Those
+            are sunk costs.
+          </div>
         </PropertyInput>
       )}
       {node.type == "terminal" && (
         <div className="italic">
           {cumulativeCosts ? (
             <PropertyInput
-              label="Prior Costs"
+              // NOTE: also considered the label "Prior Costs"
+              label="Path Costs"
               info={`The sum of all costs on \nthe path up to this node`}
               value={formatValueLong(cumulativeCosts)}
               disabled={true}
