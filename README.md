@@ -62,6 +62,6 @@ EVTree is licensed under the Business Source License 1.1. This means:
 
 - ✅ You can freely use, modify, and distribute this software for **non-production purposes**
 - ❌ Production use requires a commercial license (contact: gregdingle@gmail.com)
-- 🎉 On **January 15, 2029**, this software will automatically become Apache 2.0 licensed
+- 🎉 On **December 19, 2029**, this software will automatically become Apache 2.0 licensed
 
 See [LICENSE.md](./LICENSE.md) for full terms.
