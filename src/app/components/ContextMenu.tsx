@@ -116,7 +116,8 @@ export default function ContextMenu({
         bottom,
         zIndex: 1000,
       }}
-      className="rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
+      // NOTE: Responsive design! Read-only mode for below medium size screens
+      className="hidden md:block rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
       onContextMenu={(e) => e.preventDefault()}
     >
       {contextNode ? (

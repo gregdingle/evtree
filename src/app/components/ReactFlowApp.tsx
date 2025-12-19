@@ -13,6 +13,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
@@ -39,6 +40,8 @@ export default function ReactFlowApp() {
 
   // Context menu hook
   const { menu, ref, onContextMenu, closeMenu } = useContextMenu();
+
+  const isMediumScreenSizeOrLarger = useBreakpoint("md");
 
   // Track which handle was clicked for connections
   const connectingHandleId = useRef<string | null>(null);
@@ -104,8 +107,6 @@ export default function ReactFlowApp() {
         edges={edges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        elementsSelectable={true}
-        selectionOnDrag={true}
         selectionMode={SelectionMode.Partial}
         colorMode={colorMode}
         fitView
@@ -128,6 +129,13 @@ export default function ReactFlowApp() {
         maxZoom={4}
         minZoom={0.1}
         isValidConnection={(connection) => isValidConnection(edges, connection)}
+        // NOTE: Responsive design! Read-only mode for below medium size screens
+        elementsSelectable={isMediumScreenSizeOrLarger}
+        selectionOnDrag={isMediumScreenSizeOrLarger}
+        nodesDraggable={isMediumScreenSizeOrLarger}
+        nodesConnectable={isMediumScreenSizeOrLarger}
+        nodesFocusable={isMediumScreenSizeOrLarger}
+        edgesFocusable={isMediumScreenSizeOrLarger}
       >
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
 

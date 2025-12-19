@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useBreakpoint } from "@/hooks/use-breakpoint";
+
 interface InlineEditProps {
   value: string | undefined;
   onCommit: (value: string | undefined) => void;
@@ -39,6 +41,8 @@ export function InlineEdit({
   const defaultInputClassName = multiline
     ? "resize-none overflow-hidden text-center py-0.5 relative top-1.5"
     : "px-0.5 py-0 text-center";
+
+  // TODO: change hover behavior for Responsive design Read-only mode?
   const defaultDisplayClassName = multiline
     ? "hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap cursor-pointer"
     : "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded";
@@ -70,7 +74,13 @@ export function InlineEdit({
     }
   }, [isEditing, autoFocus, multiline, handleTextareaResize]);
 
+  const isMediumScreenSizeOrLarger = useBreakpoint("md");
+
   const handleClick = () => {
+    // NOTE: Responsive design! Read-only mode for below medium size screens
+    if (!isMediumScreenSizeOrLarger) {
+      return;
+    }
     setEditingValue(value ?? "");
     setIsEditing(true);
   };

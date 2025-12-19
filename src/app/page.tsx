@@ -65,7 +65,8 @@ export default function Home() {
       {isValidClient && <ShareLinkLoader />}
       <div className="evtree">
         <div className="flex h-screen flex-col">
-          <div className="border-b">
+          {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
+          <div className="hidden md:block border-b">
             <Toolbar />
           </div>
           <div className="flex flex-1">
@@ -77,7 +78,7 @@ export default function Home() {
             <div
               // NOTE: #141414 copied from reactflow default dark mode
               // NOTE: see also handleExportTree and download.ts
-              className="flex-1 bg-amber-50 dark:bg-[#141414]"
+              className="w-screen bg-amber-50 dark:bg-[#141414]"
             >
               {showHistogram ? (
                 <Histogram className="px-16 py-4" />
@@ -85,7 +86,8 @@ export default function Home() {
                 <ReactFlowApp />
               )}
             </div>
-            <div className="border-l">
+            {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
+            <div className="hidden md:block border-l">
               <CollapsiblePanel side="right">
                 <RightSidePanel />
               </CollapsiblePanel>

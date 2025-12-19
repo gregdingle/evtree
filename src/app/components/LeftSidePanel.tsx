@@ -61,8 +61,10 @@ export default function LeftSidePanel() {
   };
 
   return (
-    <div className="w-80 p-4">
-      <div className="mb-4 flex justify-between space-x-2">
+    /* NOTE: Responsive design! Smaller width below medium size screens */
+    <div className="w-60 md:w-80 p-4">
+      {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
+      <div className="hidden md:flex mb-4 justify-between space-x-2">
         <h2 className="text-lg font-semibold">Trees</h2>
         <Tooltip text={`Create a new \ndecision tree`}>
           <button
@@ -103,7 +105,8 @@ export default function LeftSidePanel() {
                         : `Created ${formatDate(tree.createdAt)}`}
                     </p>
                   </div>
-                  <div className="ml-2 flex space-x-1">
+                  {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
+                  <div className="hidden md:flex space-x-1 ml-2">
                     <div className="relative">
                       <Tooltip text="Act on this tree" position="left">
                         <button
@@ -161,6 +164,13 @@ export default function LeftSidePanel() {
             ))}
           </div>
         )}
+        <div
+          // TODO: beautify and standard warnings like this one
+          className="md:hidden mt-4 p-2 border-2 border-amber-400 rounded-sm italic"
+        >
+          Read-only mode active! Switch to a larger screen to create and edit
+          trees.
+        </div>
       </div>
     </div>
   );

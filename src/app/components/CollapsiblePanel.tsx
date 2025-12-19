@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/solid";
-import { useState } from "react";
 
 interface CollapsiblePanelProps {
   side: "left" | "right";
@@ -20,24 +21,26 @@ export default function CollapsiblePanel({
   const isLeft = side === "left";
 
   // Button positioning and styling based on side
-  const buttonClasses = `z-10 absolute top-6 w-4 h-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-900 flex items-center justify-center ${
+  // NOTE: Responsive design! Encourage hiding panel on small screens by making button bigger
+  const buttonClasses = `z-10 absolute top-6 w-8 h-12 md:w-4 md:h-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-900 flex items-center justify-center ${
     isLeft
-      ? "-right-4 rounded-r-md border-r border-t border-b"
-      : "-left-4 rounded-l-md border-l border-t border-b"
+      ? "-right-8 md:-right-4 rounded-r-md border-r border-t border-b"
+      : "-left-8 md:-left-4 rounded-l-md border-l border-t border-b"
   }`;
 
   const ChevronIcon = () => {
+    // NOTE: Responsive design! Encourage hiding panel on small screens by making button bigger
     if (isLeft) {
       return isCollapsed ? (
-        <ChevronDoubleRightIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleRightIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
       ) : (
-        <ChevronDoubleLeftIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleLeftIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
       );
     } else {
       return isCollapsed ? (
-        <ChevronDoubleLeftIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleLeftIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
       ) : (
-        <ChevronDoubleRightIcon className="h-4 w-4 cursor-pointer" />
+        <ChevronDoubleRightIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
       );
     }
   };
