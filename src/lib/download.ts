@@ -61,6 +61,24 @@ export const downloadPNG = (
     return;
   }
 
+  // Clone arrow marker definitions into viewport to ensure they're captured
+  const markerDefs = window.document.querySelectorAll(
+    'svg marker[id^="arrow"]',
+  );
+  const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  tempSvg.setAttribute("width", "0");
+  tempSvg.setAttribute("height", "0");
+  tempSvg.style.position = "absolute";
+  tempSvg.style.top = "0";
+  tempSvg.style.left = "0";
+
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  markerDefs.forEach((marker) => {
+    defs.appendChild(marker.cloneNode(true));
+  });
+  tempSvg.appendChild(defs);
+  viewportElem.appendChild(tempSvg);
+
   toPng(viewportElem, {
     backgroundColor,
     width: imageWidth,
@@ -68,7 +86,17 @@ export const downloadPNG = (
     style: {
       transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
     },
-  }).then((dataUrl) => downloadImage(dataUrl, filename));
+  })
+    .then((dataUrl) => {
+      downloadImage(dataUrl, filename);
+    })
+    .catch((error) => {
+      console.error("[EVTree] Failed to export PNG:", error);
+    })
+    .finally(() => {
+      // Clean up temporary SVG
+      viewportElem.removeChild(tempSvg);
+    });
 };
 
 export function downloadImage(dataUrl: string, filename: string) {

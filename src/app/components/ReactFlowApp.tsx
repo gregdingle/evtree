@@ -131,7 +131,10 @@ export default function ReactFlowApp() {
       >
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
 
-        {/* SVG definitions for arrow markers */}
+        {/*
+          SVG definitions for arrow markers
+          NOTE: see downloadPNG in download.ts for how this must be specially handled in export.
+        */}
         {ArrowMarker()}
         {/* Empty canvas help text */}
         {nodes.length === 0 && !menu && (
