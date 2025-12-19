@@ -97,14 +97,21 @@ export default function VariablesInput({
   };
 
   return (
-    <details className="mt-4" open={variables.length > 0}>
-      <summary className="cursor-pointer select-none">
+    <details className="my-4" open={variables.length > 0}>
+      <summary className="mb-2 cursor-pointer select-none">
         <span title={info}>{upperFirst(scope)} Variables</span>
+        <span
+          // NOTE: see also PropertyInput.tsx for similar styling
+          className="text-xs text-gray-500 pl-2"
+        >
+          {" "}
+          (optional)
+        </span>
         {info && (
           <Tooltip
             text={info}
             position="top"
-            className="inline-block pl-1 cursor-pointer"
+            className="inline-block pl-1 cursor-pointer float-right"
           >
             <InformationCircleIcon className="h-6 w-6 -mb-1 text-gray-500" />
           </Tooltip>

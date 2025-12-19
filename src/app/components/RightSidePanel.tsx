@@ -227,6 +227,7 @@ function EdgeProperties({
           ) : null}
         </PropertyInput>
       )}
+      <hr className="my-6 border-gray-500" />
       <PropertyInput
         label="Description"
         optional
@@ -349,7 +350,7 @@ function NodeProperties({
             ) : null}
           </PropertyInput>
           {node.type !== "terminal" && (
-            <div className="mt-0 mb-4 text-sm italic">
+            <div className="-mt-2 mb-4 text-sm italic">
               {/* TODO: better as "before the start of this subtree"? */}
               Note: Ignore costs that occur before the start of the tree. Those
               are sunk costs.
@@ -412,16 +413,20 @@ function NodeProperties({
         </div>
       )}
       {(node.type === "decision" || node.type === "chance") && (
-        <PropertyInput
-          label="Description"
-          optional
-          value={node.data.description}
-          onChange={(value) =>
-            onNodeDataUpdate(node.id, { description: value })
-          }
-          placeholder="Enter description"
-          textarea={true}
-        />
+        <>
+          {" "}
+          <hr className="my-6 border-gray-500" />
+          <PropertyInput
+            label="Description"
+            optional
+            value={node.data.description}
+            onChange={(value) =>
+              onNodeDataUpdate(node.id, { description: value })
+            }
+            placeholder="Enter description"
+            textarea={true}
+          />
+        </>
       )}
     </div>
   );
@@ -450,6 +455,7 @@ function TreeProperties({
         onChange={(value) => onTreeDataUpdate({ description: value })}
         placeholder="Enter tree description"
       />
+      <hr className="my-6 border-gray-500" />
       <PropertyInput
         label="Currency"
         info={`Determines the symbol that will \nbe used to label amounts`}
@@ -477,6 +483,7 @@ function TreeProperties({
           label: `${data.name} ${data.scale ? " → " + keys(data.scale).join(", ") : ""}`,
         }))}
       />
+      <hr className="my-6 border-gray-500" />
       <VariablesInput
         scope="value"
         // TODO: add 'See docs for more info on forumlas' when docs are done

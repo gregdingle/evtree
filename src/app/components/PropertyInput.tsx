@@ -46,7 +46,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     ref,
   ) => {
     return (
-      <div className={`mb-2 flex flex-wrap space-x-2 items-center`}>
+      <div className={`my-4 flex flex-wrap space-x-2 items-center`}>
         <label
           htmlFor={label}
           // TODO: try to adjust width to fit all labels without line breaks?
