@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 // Tailwind's default breakpoints
+// TODO: hook into Tailwind config directly
 const breakpoints = {
   sm: "640px",
   md: "768px",

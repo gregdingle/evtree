@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { normalizeExpression, safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
@@ -40,7 +41,9 @@ interface BaseNodeProps {
 
 const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
-  const showEVs = useStore(selectShowEVs);
+  // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
+  const isMediumScreenSizeOrLarger = useBreakpoint("md");
+  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
 
@@ -153,7 +156,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
-  const showEVs = useStore(selectShowEVs) && pathProbability !== null;
+  // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
+  const isMediumScreenSizeOrLarger = useBreakpoint("md");
+  const showEVs =
+    (useStore(selectShowEVs) || !isMediumScreenSizeOrLarger) &&
+    pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);

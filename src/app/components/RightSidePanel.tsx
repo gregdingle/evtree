@@ -3,6 +3,7 @@
 import { upperFirst } from "es-toolkit";
 import { keys, toPairs, values } from "es-toolkit/compat";
 
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 import { AppEdge } from "@/lib/edge";
@@ -33,7 +34,9 @@ export default function RightSidePanel() {
   } = useStore.getState();
 
   const currentTree = useStore(selectCurrentTree);
-  const showEVs = useStore(selectShowEVs);
+  // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
+  const isMediumScreenSizeOrLarger = useBreakpoint("md");
+  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
   const allNodes = currentTree?.nodes ?? {};
   const nodes = values(allNodes).filter(
     // HACK: filter out ghost nodes because they have no properties to edit

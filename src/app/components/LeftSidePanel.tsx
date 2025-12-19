@@ -168,8 +168,8 @@ export default function LeftSidePanel() {
           // TODO: beautify and standard warnings like this one
           className="md:hidden mt-4 p-2 border-2 border-amber-400 rounded-sm italic"
         >
-          Read-only mode active! Switch to a larger screen to create and edit
-          trees.
+          <b>Read-only mode active.</b> Switch to a larger screen to create and
+          edit trees.
         </div>
       </div>
     </div>

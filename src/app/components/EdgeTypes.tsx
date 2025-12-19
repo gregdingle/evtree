@@ -7,6 +7,7 @@ import {
   getStraightPath,
 } from "@xyflow/react";
 
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import {
@@ -50,7 +51,9 @@ export default function CustomEdge({
     selectHasDecisionNodeSource(state, id),
   );
 
-  const showEVs = useStore(selectShowEVs);
+  // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
+  const isMediumScreenSizeOrLarger = useBreakpoint("md");
+  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
 
   // NOTE: assumes the edge is always left to right
   const stepPosition = 0.25;
