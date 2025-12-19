@@ -43,7 +43,7 @@ export default function Home() {
     }
     const firebaseAppCheck = initializeAppCheck(firebaseApp, {
       provider: new ReCaptchaV3Provider(
-        "6LepM_YrAAAAAHVY3Px_MrNBS3sp9vOKfItIU7dV",
+        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
       ),
     });
     getToken(firebaseAppCheck).then(() => {
