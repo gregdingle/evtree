@@ -126,8 +126,8 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         className={`
           rounded-full
           p-4
-        bg-red-400
-        ${selected ? "border-3 border-blue-500" : "border-3 border-red-500"}
+        bg-rose-400
+        ${selected ? "border-3 border-blue-500" : "border-3 border-rose-500"}
       `}
       >
         <Handle
