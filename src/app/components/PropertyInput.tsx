@@ -10,7 +10,11 @@ import Tooltip from "./Tooltip";
 interface PropertyInputProps {
   label: string;
   value?: string;
+  // TODO: consider swithing to tailwind input that has right help icon. see:
+  // https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups#component-474bd025b849b44eb3c46df09a496b7a
   info?: string;
+  // TODO: consider switching to tailwind input that has right hint. see:
+  // https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups#component-cd2d41bc1bca37b76acacab5925d507c
   optional?: boolean;
   textarea?: boolean; // Optional prop to indicate if this is a textarea
   select?: boolean; // Optional prop to indicate if this is a select

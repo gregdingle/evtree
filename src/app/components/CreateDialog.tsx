@@ -8,7 +8,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-// QUESTION: how did headlessui get in the project?
+// NOTE: headlessui is complementary library from Tailwind Labs
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import {
   FolderOpenIcon,

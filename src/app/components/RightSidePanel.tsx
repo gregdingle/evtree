@@ -271,6 +271,7 @@ function NodeProperties({
     <div className="mb-8">
       {node.type === "terminal" ? (
         <PropertyInput
+          // TODO: should we prefix the input with the currency symbol here? or is it better implied?
           label="Outcome Value"
           value={node.data.valueExpr}
           info={`The award, payoff, or payment \nobligation at this end point`}
@@ -316,37 +317,45 @@ function NodeProperties({
       }
       placeholder="Enter node label"
     /> */
-        <PropertyInput
-          label="Cost"
-          info={`Assigns a cost to this node${node.type == "terminal" ? "" : " that is \nsubtracted from all outcome \nvalues downstream of this node"}`}
-          optional
-          value={node.data.costExpr}
-          onChange={(value) => {
-            if (value === "") {
-              onNodeDataUpdate(node.id, { costExpr: undefined });
-            } else {
-              onNodeDataUpdate(node.id, { costExpr: value });
+        <>
+          <PropertyInput
+            label="Cost"
+            info={`Assigns a cost to this node${
+              node.type == "terminal"
+                ? " that is \nsubtracted from its outcome value"
+                : " that is \nsubtracted from all outcome \nvalues downstream of this node"
+            }`}
+            optional
+            value={node.data.costExpr}
+            onChange={(value) => {
+              if (value === "") {
+                onNodeDataUpdate(node.id, { costExpr: undefined });
+              } else {
+                onNodeDataUpdate(node.id, { costExpr: value });
+              }
+            }}
+            placeholder={
+              costVariables.length ? "Enter cost or formula" : "Enter cost"
             }
-          }}
-          placeholder={
-            costVariables.length ? "Enter cost or formula" : "Enter cost"
-          }
-          textarea={costVariables.length > 0}
-        >
-          {costVariables.length ? (
-            <VariablesList
-              variables={costVariables}
-              node={node}
-              className="my-1 pl-1 basis-full"
-              exprFor="costExpr"
-            />
-          ) : null}
-          <div className="my-2 pl-1 basis-full text-sm italic">
-            {/* TODO: better as "before the start of this subtree"? */}
-            Note: Ignore costs that occur before the start of the tree. Those
-            are sunk costs.
-          </div>
-        </PropertyInput>
+            textarea={costVariables.length > 0}
+          >
+            {costVariables.length ? (
+              <VariablesList
+                variables={costVariables}
+                node={node}
+                className="my-1 pl-1 basis-full"
+                exprFor="costExpr"
+              />
+            ) : null}
+          </PropertyInput>
+          {node.type !== "terminal" && (
+            <div className="mt-0 mb-4 text-sm italic">
+              {/* TODO: better as "before the start of this subtree"? */}
+              Note: Ignore costs that occur before the start of the tree. Those
+              are sunk costs.
+            </div>
+          )}
+        </>
       )}
       {node.type == "terminal" && (
         <div className="italic">
