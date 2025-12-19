@@ -277,7 +277,7 @@ export default function Toolbar() {
         </ToolbarButton>
         {
           // NOTE: saving and sharing links is preferred when firebase is configured
-          firebaseApp ? (
+          firebaseApp && (
             <ToolbarButton
               onClick={() => currentTree && handleShareLink(currentTree)}
               tooltip="Upload tree and copy URL for sharing"
@@ -286,17 +286,16 @@ export default function Toolbar() {
               <LinkIcon className="h-4 w-4" />
               {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
             </ToolbarButton>
-          ) : (
-            <ToolbarButton
-              onClick={() => currentTree && handleDownloadTree(currentTree)}
-              tooltip="Download tree as JSON"
-              disabled={!hasNodes}
-            >
-              <DocumentArrowDownIcon className="h-4 w-4" />
-              Download File
-            </ToolbarButton>
           )
         }
+        <ToolbarButton
+          onClick={() => currentTree && handleDownloadTree(currentTree)}
+          tooltip="Download tree as JSON"
+          disabled={!hasNodes}
+        >
+          <DocumentArrowDownIcon className="h-4 w-4" />
+          Download File
+        </ToolbarButton>
       </div>
     </div>
   );
