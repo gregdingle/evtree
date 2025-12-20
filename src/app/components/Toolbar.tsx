@@ -244,6 +244,18 @@ export default function Toolbar() {
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
+          onClick={onShowEVs}
+          tooltip={
+            areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
+          }
+          // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
+          active={areEVsShowing}
+          disabled={!hasTerminalNodes}
+        >
+          <CalculatorIcon className="h-4 w-4" />
+          Calculate
+        </ToolbarButton>
+        <ToolbarButton
           onClick={onShowHistogram}
           tooltip={
             isHistogramOpen
@@ -256,29 +268,7 @@ export default function Toolbar() {
           <ChartBarIcon className="h-4 w-4" />
           Histogram
         </ToolbarButton>
-        <ToolbarButton
-          onClick={onShowEVs}
-          tooltip={
-            areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
-          }
-          // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
-          active={areEVsShowing}
-          disabled={!hasTerminalNodes}
-        >
-          <CalculatorIcon className="h-4 w-4" />
-          Calculate
-        </ToolbarButton>
         <VerticalDivider />
-        <ToolbarButton
-          onClick={() => currentTree && handleExportImage(currentTree)}
-          tooltip={
-            isHistogramOpen ? "Export histogram to PNG" : "Export tree to PNG"
-          }
-          disabled={!hasNodes}
-        >
-          <PhotoIcon className="h-4 w-4" />
-          Export Image
-        </ToolbarButton>
         {
           // NOTE: saving and sharing links is preferred when firebase is configured
           firebaseApp && (
@@ -293,12 +283,22 @@ export default function Toolbar() {
           )
         }
         <ToolbarButton
+          onClick={() => currentTree && handleExportImage(currentTree)}
+          tooltip={
+            isHistogramOpen ? "Export histogram to PNG" : "Export tree to PNG"
+          }
+          disabled={!hasNodes}
+        >
+          <PhotoIcon className="h-4 w-4" />
+          Export
+        </ToolbarButton>
+        <ToolbarButton
           onClick={() => currentTree && handleDownloadTree(currentTree)}
           tooltip="Download tree as JSON"
           disabled={!hasNodes}
         >
           <DocumentArrowDownIcon className="h-4 w-4" />
-          Download File
+          Download
         </ToolbarButton>
       </div>
     </div>
