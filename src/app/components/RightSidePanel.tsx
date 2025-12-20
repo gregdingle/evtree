@@ -497,7 +497,7 @@ function TreeProperties({
         // TODO: backgroundColor breaks dark mode!!!
         // TODO: word "background" is too long... but how to break?
         label="Background Color"
-        info={`Determines the background color of the tree`}
+        info={`Determines the background \ncolor of the tree. The \n"transparent" option affects \n export to image.`}
         select
         value={currentTree.backgroundColor ?? BACKGROUNDS[""].code}
         onChange={(value) =>
