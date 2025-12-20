@@ -90,7 +90,7 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div
         // TODO: what transparency level looks best here?
         className={`
-          p-4
+          p-3.5
           bg-sky-400
           ${selected ? "border-3 border-blue-500" : "border-3 border-sky-500"}
         `}
@@ -128,7 +128,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div
         className={`
           rounded-full
-          p-4
+          p-3.5
         bg-rose-400
         ${selected ? "border-3 border-blue-500" : "border-3 border-rose-500"}
       `}
