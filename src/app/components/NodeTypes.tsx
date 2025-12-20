@@ -35,11 +35,11 @@ interface BaseNodeProps {
   id: string;
   selected: boolean;
   children: ReactNode;
-  hasChildren: boolean;
   isCollapsed: boolean;
+  hasParent: boolean;
 }
 
-const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
+const BaseNode = ({ children, id, selected, hasParent }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const isMediumScreenSizeOrLarger = useBreakpoint("md");
@@ -64,7 +64,21 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
          */}
       {children}
       {showEVs && (
-        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap italic border-green-500 border-1 px-1 rounded">
+        <div
+          className={`
+            absolute
+            left-1/2
+            -translate-x-1/2
+            transform
+            text-center
+            whitespace-nowrap
+            italic
+            border-green-500
+            ${hasParent ? "border-1 -bottom-8" : "border-3 -bottom-9"}
+            px-1
+            rounded
+          `}
+        >
           {pathValue === null
             ? "???"
             : formatValue(pathValue, currency, rounding)}
@@ -75,17 +89,15 @@ const BaseNode = ({ children, id, selected }: BaseNodeProps) => {
 };
 
 const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  const { hasChildren, isCollapsed } = useStore((state) =>
-    selectCollapsible(state, id),
-  );
+  const { isCollapsed } = useStore((state) => selectCollapsible(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   return (
     <BaseNode
       data={data}
       id={id}
       selected={selected}
-      hasChildren={hasChildren}
       isCollapsed={isCollapsed}
+      hasParent={hasParent}
     >
       <div
         // TODO: what transparency level looks best here?
@@ -113,17 +125,15 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  const { hasChildren, isCollapsed } = useStore((state) =>
-    selectCollapsible(state, id),
-  );
+  const { isCollapsed } = useStore((state) => selectCollapsible(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   return (
     <BaseNode
       data={data}
       id={id}
       selected={selected}
-      hasChildren={hasChildren}
       isCollapsed={isCollapsed}
+      hasParent={hasParent}
     >
       <div
         className={`
