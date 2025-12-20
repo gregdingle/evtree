@@ -270,6 +270,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (treeData.showPathEVs !== undefined) {
               tree.showPathEVs = treeData.showPathEVs;
             }
+            if (treeData.backgroundColor !== undefined) {
+              tree.backgroundColor = treeData.backgroundColor;
+            }
             tree.updatedAt = new Date().toISOString();
           }),
         undefined,

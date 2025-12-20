@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 
+import { BackgroundColorCode } from "./background";
 import { CurrencyCode } from "./currency";
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
@@ -19,12 +20,18 @@ export interface DecisionTree {
   currency?: CurrencyCode;
   rounding?: RoundingCode;
   showPathEVs?: boolean;
+  backgroundColor?: BackgroundColorCode;
 }
 
 export type DecisionTreeSimpleProperties = Partial<
   Pick<
     DecisionTree,
-    "name" | "description" | "currency" | "rounding" | "showPathEVs"
+    | "name"
+    | "description"
+    | "currency"
+    | "rounding"
+    | "showPathEVs"
+    | "backgroundColor"
   >
 >;
 

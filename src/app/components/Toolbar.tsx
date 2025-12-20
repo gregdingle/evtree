@@ -104,9 +104,13 @@ export default function Toolbar() {
     if (!tree) return;
 
     const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}`;
-    // TODO: consider transparent bg color for embedding elsewhere more easily
-    // , or custom bg color
-    const backgroundColor = isDarkMode ? "#141414" : "#fffbeb";
+    const backgroundColor =
+      tree.backgroundColor === ""
+        ? isDarkMode
+          ? // NOTE: colors copied from reactflow default dark mode... see also page.tsx
+            "#141414"
+          : "#fffbeb"
+        : (tree.backgroundColor ?? "transparent");
 
     // If histogram is open, export it instead of the tree
     if (isHistogramOpen) {

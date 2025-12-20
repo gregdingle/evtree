@@ -5,6 +5,7 @@ import { keys, toPairs, values } from "es-toolkit/compat";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
+import { BACKGROUNDS, BackgroundColorCode } from "@/lib/background";
 import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 import { AppEdge } from "@/lib/edge";
 import { safeEvalExpr } from "@/lib/expectedValue";
@@ -484,13 +485,28 @@ function TreeProperties({
         }))}
       />
       <PropertyInput
-        label="Show path EVs"
+        label="Show Path Values"
         info={`Determines whether to show the \ncalculated values along the paths \nbetween the start of the tree and \nthe terminal nodes`}
         checkbox
         checked={currentTree.showPathEVs ?? true}
         onCheckboxChange={(checked) =>
           onTreeDataUpdate({ showPathEVs: checked })
         }
+      />
+      <PropertyInput
+        // TODO: backgroundColor breaks dark mode!!!
+        // TODO: word "background" is too long... but how to break?
+        label="Background Color"
+        info={`Determines the background color of the tree`}
+        select
+        value={currentTree.backgroundColor ?? BACKGROUNDS[""].code}
+        onChange={(value) =>
+          onTreeDataUpdate({ backgroundColor: value as BackgroundColorCode })
+        }
+        options={toPairs(BACKGROUNDS).map(([code, data]) => ({
+          value: code,
+          label: data.name,
+        }))}
       />
       <hr className="my-6 border-gray-500" />
       <VariablesInput
