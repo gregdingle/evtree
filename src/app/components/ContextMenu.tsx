@@ -2,6 +2,7 @@ import {
   ArrowPathIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ClipboardDocumentIcon,
   CursorArrowRaysIcon,
   CursorArrowRippleIcon,
   DocumentDuplicateIcon,
@@ -17,7 +18,11 @@ import { useReactFlow } from "@xyflow/react";
 import { useStore } from "@/hooks/use-store";
 import { buildChildToParentNodeMap } from "@/lib/maps";
 import { AppNode, NodeType } from "@/lib/node";
-import { selectCollapsible, selectCurrentEdges } from "@/lib/selectors";
+import {
+  selectCollapsible,
+  selectCurrentEdges,
+  selectHasClipboardContent,
+} from "@/lib/selectors";
 
 import { ContextMenuButton } from "./ContextMenuButton";
 import { ContextMenuSubmenu } from "./ContextMenuSubmenu";
@@ -57,6 +62,7 @@ export default function ContextMenu({
     onCopy,
     connectToNearestNode,
     createNodeAt,
+    onPaste,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -64,6 +70,7 @@ export default function ContextMenu({
   );
 
   const edges = useStore(selectCurrentEdges);
+  const hasClipboardContent = useStore(selectHasClipboardContent);
   // TODO: deprecated... remove if no longer needed
   // const clipboardNodes = useStore(selectClipboardNodes);
 
@@ -105,6 +112,12 @@ export default function ContextMenu({
   // TODO: refactor to use more accurate findNearestUpstreamNode
   // as in connectToNearestNode
   const childToParentMap = buildChildToParentNodeMap(edges);
+
+  const handlePaste = (clientX: number, clientY: number) => {
+    const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
+    onPaste(flowPosition);
+    onClose?.();
+  };
 
   return (
     <div
@@ -250,23 +263,36 @@ export default function ContextMenu({
           </ContextMenuSubmenu>
         </>
       ) : (
+        // TODO: do some kind of grid instead of micro optimizations of margins for alignment
         <>
           <ContextMenuButton onClick={() => handleCreateNode("chance")}>
             <div className="h-4 w-4 rounded-full border-1 border-current"></div>
             Create Chance Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("terminal")}>
-            <PlayIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+            <PlayIcon className="-ml-1 h-5 w-5 rotate-180" />
             Create Terminal Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("decision")}>
-            <div className="h-4 w-4 border-1 border-current"></div>
+            <div className="h-3.5 w-3.5 -ml-0.25 mr-0.5 border-1 border-current"></div>
             Create Decision Node
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />
           <ContextMenuButton onClick={() => handleCreateNode("note")}>
-            <PencilSquareIcon className="-ml-0.75 h-5 w-5 rotate-180" />
+            <PencilSquareIcon className="h-4 w-4" />
             Create Note
+          </ContextMenuButton>
+          <hr className="m-2 border-gray-300 dark:border-gray-600" />
+          <ContextMenuButton
+            onClick={() => {
+              if (contextPosition) {
+                handlePaste(contextPosition.x, contextPosition.y);
+              }
+            }}
+            disabled={!hasClipboardContent}
+          >
+            <ClipboardDocumentIcon className="h-4 w-4" />
+            Paste
           </ContextMenuButton>
         </>
       )}

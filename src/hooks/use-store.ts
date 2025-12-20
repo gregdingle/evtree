@@ -75,7 +75,7 @@ export interface StoreState {
   balanceEdgeProbability: (id: string) => void;
   // TODO: rename all onX methods to simply X
   onCopy: (stripValues?: boolean) => void;
-  onPaste: () => void;
+  onPaste: (position?: { x: number; y: number }) => void;
   onReset: () => void;
   onCreateNodeAt: (
     position: { x: number; y: number },
@@ -494,7 +494,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onPaste: () => {
+    onPaste: (position?: { x: number; y: number }) => {
       const { clipboard } = get();
       if (!clipboard) return;
 
@@ -604,15 +604,25 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 }
               }
             } else {
-              // Normal paste behavior - clear selections and paste with offset
+              // Normal paste behavior - clear selections and paste with offset or explicit position
+
+              let pasteOffsetX = PASTE_OFFSET;
+              let pasteOffsetY = PASTE_OFFSET;
+
+              if (position && clipboard.nodes.length > 0) {
+                // If position is provided, calculate offset to place first node at that position
+                const firstClipboardNode = clipboard.nodes[0]!;
+                pasteOffsetX = position.x - firstClipboardNode.position.x;
+                pasteOffsetY = position.y - firstClipboardNode.position.y;
+              }
 
               // First pass: create nodes with offset positions and build ID mapping
               clipboard.nodes.forEach((clipboardNode) => {
-                const position = {
-                  x: clipboardNode.position.x + PASTE_OFFSET,
-                  y: clipboardNode.position.y + PASTE_OFFSET,
+                const nodePosition = {
+                  x: clipboardNode.position.x + pasteOffsetX,
+                  y: clipboardNode.position.y + pasteOffsetY,
                 };
-                const newNode = cloneNode(clipboardNode, position);
+                const newNode = cloneNode(clipboardNode, nodePosition);
                 tree.nodes[newNode.id] = newNode;
                 nodeIdMap.set(clipboardNode.id, newNode.id);
               });

@@ -151,7 +151,7 @@ export default function Toolbar() {
   useHotkeys("ctrl+z", () => undo(), { enableOnFormTags: true });
   useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
   useHotkeys("ctrl+c", () => onCopy(), { enableOnFormTags: true });
-  useHotkeys("ctrl+v", onPaste, { enableOnFormTags: true });
+  useHotkeys("ctrl+v", () => onPaste(), { enableOnFormTags: true });
   // TODO: is reset sufficiently hidden from normal users?
   useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
