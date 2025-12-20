@@ -15,6 +15,7 @@ import {
   selectNetExpectedValue,
   selectPathProbability,
   selectShowEVs,
+  selectShowPathEVs,
 } from "@/lib/selectors";
 import { variablesToRecord } from "@/lib/variable";
 import { formatProbability, formatValue } from "@/utils/format";
@@ -44,8 +45,11 @@ const BaseNode = ({ children, id, selected, hasParent }: BaseNodeProps) => {
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const isMediumScreenSizeOrLarger = useBreakpoint("md");
   const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
+  const showPathEVs = useStore(selectShowPathEVs);
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
+
+  const shouldShowPathEV = showEVs && (showPathEVs || !hasParent);
 
   return (
     <div
@@ -63,7 +67,7 @@ const BaseNode = ({ children, id, selected, hasParent }: BaseNodeProps) => {
       )}
          */}
       {children}
-      {showEVs && (
+      {shouldShowPathEV && (
         <div
           className={`
             absolute

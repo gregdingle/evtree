@@ -483,6 +483,15 @@ function TreeProperties({
           label: `${data.name} ${data.scale ? " → " + keys(data.scale).join(", ") : ""}`,
         }))}
       />
+      <PropertyInput
+        label="Show path EVs"
+        info={`Determines whether to show the \ncalculated values along the paths \nbetween the start of the tree and \nthe terminal nodes`}
+        checkbox
+        checked={currentTree.showPathEVs ?? true}
+        onCheckboxChange={(checked) =>
+          onTreeDataUpdate({ showPathEVs: checked })
+        }
+      />
       <hr className="my-6 border-gray-500" />
       <VariablesInput
         scope="value"

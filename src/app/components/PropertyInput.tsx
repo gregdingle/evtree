@@ -10,6 +10,7 @@ import Tooltip from "./Tooltip";
 interface PropertyInputProps {
   label: string;
   value?: string;
+  checked?: boolean; // For checkbox type
   // TODO: consider swithing to tailwind input that has right help icon. see:
   // https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups#component-474bd025b849b44eb3c46df09a496b7a
   info?: string;
@@ -18,8 +19,10 @@ interface PropertyInputProps {
   optional?: boolean;
   textarea?: boolean; // Optional prop to indicate if this is a textarea
   select?: boolean; // Optional prop to indicate if this is a select
+  checkbox?: boolean; // Optional prop to indicate if this is a checkbox
   options?: Array<{ value: string; label: string }>; // Options for select
   onChange?: (value: string) => void;
+  onCheckboxChange?: (checked: boolean) => void;
   placeholder?: string;
   type?: string;
   disabled?: boolean;
@@ -33,11 +36,14 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     {
       label,
       value,
+      checked,
       info,
       optional,
       onChange,
+      onCheckboxChange,
       textarea,
       select,
+      checkbox,
       options,
       disabled,
       children,
@@ -52,7 +58,10 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           // TODO: try to adjust width to fit all labels without line breaks?
           className={`w-20 select-none ${disabled ? "" : "cursor-pointer"}`}
         >
-          <span title={info} className={textarea ? `whitespace-pre` : ""}>
+          <span
+            title={info}
+            className={textarea || checkbox ? `whitespace-pre` : ""}
+          >
             {label}
           </span>
           <div
@@ -62,7 +71,18 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             {optional ? "(optional)" : ""}
           </div>
         </label>
-        {textarea ? (
+        {checkbox ? (
+          <input
+            ref={ref}
+            id={label}
+            type="checkbox"
+            checked={checked ?? false}
+            onChange={(e) => onCheckboxChange?.(e.target.checked)}
+            disabled={disabled}
+            className="flex-1/4 h-5 w-5 cursor-pointer"
+            {...props}
+          />
+        ) : textarea ? (
           <>
             <textarea
               ref={ref as React.Ref<HTMLTextAreaElement>}

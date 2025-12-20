@@ -350,6 +350,12 @@ export function selectShowEVs(state: StoreState): boolean {
   return state.display.showEVs ?? false;
 }
 
+// NOTE: default here should match DecisionTree default
+export function selectShowPathEVs(state: StoreState): boolean {
+  const tree = selectCurrentTree(state);
+  return tree?.showPathEVs ?? true;
+}
+
 // NOTE: default here should match useStoreBase definition
 export function selectShowHistogram(state: StoreState): boolean {
   return state.display.showHistogram ?? false;

@@ -267,6 +267,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (treeData.rounding !== undefined) {
               tree.rounding = treeData.rounding;
             }
+            if (treeData.showPathEVs !== undefined) {
+              tree.showPathEVs = treeData.showPathEVs;
+            }
             tree.updatedAt = new Date().toISOString();
           }),
         undefined,
