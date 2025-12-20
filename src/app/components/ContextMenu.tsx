@@ -243,7 +243,7 @@ export default function ContextMenu({
               </>
             )}
             <ContextMenuButton
-              onClick={() => onPaste()}
+              onClick={() => onPaste(undefined, contextNode.id)}
               disabled={!hasClipboardContent}
             >
               <ClipboardDocumentIcon className="h-4 w-4" />

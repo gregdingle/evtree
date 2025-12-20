@@ -75,7 +75,10 @@ export interface StoreState {
   balanceEdgeProbability: (id: string) => void;
   // TODO: rename all onX methods to simply X
   onCopy: (stripValues?: boolean) => void;
-  onPaste: (position?: { x: number; y: number }) => void;
+  onPaste: (
+    position?: { x: number; y: number },
+    replaceNodeId?: string,
+  ) => void;
   onReset: () => void;
   onCreateNodeAt: (
     position: { x: number; y: number },
@@ -494,7 +497,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onPaste: (position?: { x: number; y: number }) => {
+    onPaste: (position?: { x: number; y: number }, replaceNodeId?: string) => {
       const { clipboard } = get();
       if (!clipboard) return;
 
@@ -508,7 +511,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const selectedNodes = values(tree.nodes).filter(
               (node) => node.selected,
             );
-            const isReplacingNode = selectedNodes.length === 1;
+            const isReplacingNode =
+              (replaceNodeId && replaceNodeId in tree.nodes) ||
+              selectedNodes.length === 1;
 
             // Clear selections
             clearSelections(tree);
@@ -518,7 +523,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               // "starts with" a branch? current replace behavior is unintuitive
               // in this case
 
-              const nodeToReplace = selectedNodes[0]!;
+              const nodeToReplace = replaceNodeId
+                ? tree.nodes[replaceNodeId]!
+                : selectedNodes[0]!;
 
               // Get the position and incoming edge info BEFORE deletion
               const replacementPosition = nodeToReplace.position;
@@ -593,14 +600,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                   );
                   tree.edges[reconnectionEdge.id] = reconnectionEdge;
 
-                  // Also arrange the new subtree
+                  // TODO: Also arrange the new subtree?
                   // NOTE: we need to do this here instead of in event handler like handleAddBranch
                   // because we need to the new firstPastedNodeId
                   // HACK: Delay the arrangement to ensure the new node is rendered and
-                  // positioned by ReactFlow first
-                  setTimeout(() => {
-                    useStore.getState().arrangeSubtree(firstPastedNodeId);
-                  }, 0);
+                  // positioned by ReactFlow first... but this causes double undo stack
+                  // setTimeout(() => {
+                  //   useStore.getState().arrangeSubtree(firstPastedNodeId);
+                  // }, 0);
                 }
               }
             } else {
