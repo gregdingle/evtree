@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ContextMenuSubmenuProps {
   title: string;
@@ -14,9 +14,32 @@ export function ContextMenuSubmenu({
   children,
 }: ContextMenuSubmenuProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [openUpwards, setOpenUpwards] = useState(false);
+  const submenuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  // NOTE: see also similar logic in use-context-menu.ts
+  useEffect(() => {
+    if (isHovered && submenuRef.current && triggerRef.current) {
+      const submenuRect = submenuRef.current.getBoundingClientRect();
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // Check if submenu would go off the bottom of the screen with buffer
+      const wouldGoOffBottom = submenuRect.bottom + 100 > viewportHeight;
+
+      // Check if there's enough space above
+      const spaceAbove = triggerRect.top;
+      const submenuHeight = submenuRect.height;
+      const hasSpaceAbove = spaceAbove >= submenuHeight;
+
+      setOpenUpwards(wouldGoOffBottom && hasSpaceAbove);
+    }
+  }, [isHovered]);
 
   return (
     <div
+      ref={triggerRef}
       className="relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -34,7 +57,10 @@ export function ContextMenuSubmenu({
 
       {isHovered && !disabled && (
         <div
-          className="absolute -top-1 left-full ml-0 rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
+          ref={submenuRef}
+          className={`absolute left-full ml-0 rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800 ${
+            openUpwards ? "bottom-0" : "-top-1"
+          }`}
           style={{ minWidth: "180px", zIndex: 1001 }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}

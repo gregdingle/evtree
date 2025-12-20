@@ -71,8 +71,6 @@ export default function ContextMenu({
 
   const edges = useStore(selectCurrentEdges);
   const hasClipboardContent = useStore(selectHasClipboardContent);
-  // TODO: deprecated... remove if no longer needed
-  // const clipboardNodes = useStore(selectClipboardNodes);
 
   const { screenToFlowPosition } = useReactFlow();
 
@@ -135,16 +133,6 @@ export default function ContextMenu({
     >
       {contextNode ? (
         <>
-          {/* TODO: deprecated... paste exists in toolbar also and hotkey... remove if not needed */}
-          {/* <ContextMenuButton
-            onClick={() => onPaste()}
-            disabled={!clipboardNodes.length}
-          >
-            <TrashIcon className="h-4 w-4" />
-            TODO: if clipboardNodes is not actually a subtree is that a problem?
-            Paste {clipboardNodes.length > 1 ? "Subtree" : "Node"}
-          </ContextMenuButton>
-          <hr className="m-2 border-gray-300 dark:border-gray-600" /> */}
           <ContextMenuSubmenu
             title="Add Branch to..."
             icon={<PlusIcon className="h-4 w-4" />}
@@ -254,6 +242,13 @@ export default function ContextMenu({
                 </ContextMenuButton>
               </>
             )}
+            <ContextMenuButton
+              onClick={() => onPaste()}
+              disabled={!hasClipboardContent}
+            >
+              <ClipboardDocumentIcon className="h-4 w-4" />
+              Paste onto {hasChildren ? "Subtree" : "Node"}
+            </ContextMenuButton>
             <ContextMenuButton
               onClick={() => contextNode && deleteSubTree(contextNode.id)}
             >
