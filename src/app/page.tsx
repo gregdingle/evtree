@@ -63,8 +63,12 @@ export default function Home() {
   return (
     <ReactFlowProvider>
       {isValidClient && <ShareLinkLoader />}
-      <div className="evtree">
-        <div className="flex h-screen flex-col">
+      <div
+        // NOTE: fixed positioning with inset-0 tells the element to attach itself
+        // to all four edges of the viewport
+        className="evtree fixed inset-0"
+      >
+        <div className="flex h-full flex-col">
           {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
           <div className="hidden md:block border-b">
             <Toolbar />
