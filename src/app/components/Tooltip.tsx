@@ -1,6 +1,6 @@
 interface TooltipProps {
   text: string | React.ReactNode;
-  position?: "top" | "bottom" | "left" | "right";
+  position?: "top" | "bottom" | "left" | "right" | "bottomright";
   className?: string;
   children: React.ReactNode;
 }
@@ -19,6 +19,8 @@ export default function Tooltip({
     bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
     left: "right-full top-1/2 -translate-y-1/2 mr-2",
     right: "left-full top-1/2 -translate-y-1/2 ml-2",
+    bottomleft: "top-full right-0 mt-2",
+    bottomright: "top-full left-0 mt-2",
   };
 
   return (

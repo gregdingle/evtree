@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   ChevronDownIcon,
   DocumentDuplicateIcon,
+  InformationCircleIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
@@ -65,7 +66,16 @@ export default function LeftSidePanel() {
     <div className="w-60 md:w-80 p-4">
       {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
       <div className="hidden md:flex mb-4 justify-between space-x-2">
-        <h2 className="text-lg font-semibold">Trees</h2>
+        <h2 className="text-lg font-semibold">
+          Trees
+          <Tooltip
+            text={`These are your decision trees, \nincluding some free examples. \n\nThese trees are stored locally in \nyour browser. Click \n“Save & Copy Link” to share an \nencrypted copy of your tree.`}
+            position="bottomright"
+            className="pl-1 cursor-pointer font-normal inline-block -mb-1.25"
+          >
+            <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+          </Tooltip>
+        </h2>
         <Tooltip text={`Create a new \ndecision tree`}>
           <button
             onClick={() => setOpenDialog(true)}
