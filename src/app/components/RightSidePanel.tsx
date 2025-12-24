@@ -140,7 +140,11 @@ export default function RightSidePanel() {
           </div>
         )}
       </div>
-      <footer className="absolute bottom-5 right-0 w-80 text-center text-sm">
+      <footer
+        // HACK: only show when at least 800px height to avoid overlapping with other content
+        // NOTE: see also message on ReactFlowApp canvas when less than 800px height
+        className="hidden [@media(min-height:800px)]:block absolute bottom-5 right-0 w-80 text-center text-sm"
+      >
         Feedback or questions?{" "}
         <a
           // TODO: extract contact email to global config
