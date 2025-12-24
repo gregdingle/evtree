@@ -87,7 +87,7 @@
       "id": "note1",
       "type": "note",
       "data": {
-        "description": "This is a decision node. It represents a decision you will take by maximizing expected value.",
+        "description": "This is a decision node, representing a decision you might makes, from which consequences will flow.",
         "valueExpr": "250"
       },
       "position": {
@@ -123,11 +123,11 @@
       "type": "note",
       "position": {
         "x": 309.4740805007713,
-        "y": -199.98083489967956
+        "y": -239.98083489967956
       },
       "data": {
         "label": "",
-        "description": "This is a chance node. It represents an event that has multiple possible outcomes."
+        "description": "This is a chance node, representing an event or others’ decision you don’t control, with various possible consequences."
       },
       "origin": [0.5, 0],
       "dragging": false,
@@ -163,7 +163,7 @@
       },
       "data": {
         "label": "",
-        "description": "This is a terminal node. It represents a final outcome that has some payoff."
+        "description": "This is a terminal node, representing a possible final outcome."
       },
       "origin": [0.5, 0],
       "dragging": false,
