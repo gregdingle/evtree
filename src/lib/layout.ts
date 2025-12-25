@@ -8,7 +8,6 @@ import { AppNode } from "./node";
 // Default node dimensions for layout when measured dimensions aren't available
 // These serve as fallbacks for newly created nodes that haven't been rendered yet
 // TODO: are these numbers actually similar to `measured`?
-const DEFAULT_NODE_WIDTH = 172;
 const DEFAULT_NODE_HEIGHT = 72;
 
 export const MINIMUM_DISTANCE = 10; // Minimum distance between subtree and surrounding nodes
@@ -127,10 +126,10 @@ export function computeLayoutedNodeOffsets(
 
 /**
  * Layout nodes using D3 hierarchy tree layout.
+ * Uses left-to-right (LR) layout direction.
  *
  * @param nodes - Array of nodes to layout
  * @param edges - Array of edges
- * @param direction - "LR" (left-to-right) or "TB" (top-to-bottom)
  * @param nodeSpacing - Spacing between nodes { horizontal, vertical }
  * @param animate - Whether to add transition animations
  * @param rightAligned - Whether to right-align all terminal nodes
@@ -143,7 +142,6 @@ export const getLayoutedElementsD3 = (
   rootNodeId: string,
   nodes: AppNode[],
   edges: AppEdge[],
-  direction: "LR" | "TB" = "LR",
   // TODO: node spacing dynamically by longest labels or terminal values?
   nodeSpacing = { horizontal: 200, vertical: 150 },
   animate = false,
@@ -189,10 +187,7 @@ export const getLayoutedElementsD3 = (
 
   // Create tree layout with improved separation to reduce crossings
   const treeLayout = tree<HierarchyNode>()
-    .nodeSize([
-      direction === "LR" ? nodeSpacing.vertical : nodeSpacing.horizontal,
-      direction === "LR" ? nodeSpacing.horizontal : nodeSpacing.vertical,
-    ])
+    .nodeSize([nodeSpacing.vertical, nodeSpacing.horizontal])
     .separation((a, b) => {
       // Increase separation based on subtree sizes to reduce crossings
       if (a.parent === b.parent) {
@@ -212,25 +207,22 @@ export const getLayoutedElementsD3 = (
   // Right-aligned mode: align all terminal nodes to the same depth
   // while maintaining depth-first ordering to prevent branch crossings
   if (rightAligned) {
-    applyRightAlignedLayout(root, edges, hierarchyData, direction, nodeSpacing);
+    applyRightAlignedLayout(root, edges, hierarchyData, nodeSpacing);
   }
 
   // Create node position map
   const nodePositions = new Map<string, { x: number; y: number }>();
   root.each((d) => {
     const node = nodes.find((n) => n.id === d.data.id);
-    const width = node?.measured?.width ?? DEFAULT_NODE_WIDTH;
     const height = node?.measured?.height ?? DEFAULT_NODE_HEIGHT;
 
     // D3 tree uses (x, y) where x is the perpendicular axis
     // For LR layout: swap x and y
-    // For TB layout: use as is
-    const [primaryAxis, secondaryAxis] =
-      direction === "LR" ? [d.y ?? 0, d.x ?? 0] : [d.x ?? 0, d.y ?? 0];
+    const [primaryAxis, secondaryAxis] = [d.y ?? 0, d.x ?? 0];
 
     nodePositions.set(d.data.id, {
-      x: primaryAxis - (direction === "LR" ? 0 : width / 2),
-      y: secondaryAxis - (direction === "LR" ? height / 2 : 0),
+      x: primaryAxis,
+      y: secondaryAxis - height / 2,
     });
   });
 
@@ -297,12 +289,12 @@ function buildDepthFirstPositionMap(hierarchyData: {
  * Applies right-aligned layout to terminal nodes.
  * Aligns all terminal nodes to the same depth while maintaining depth-first ordering
  * to prevent branch crossings.
+ * Uses left-to-right (LR) layout direction.
  */
 function applyRightAlignedLayout(
   root: ReturnType<typeof hierarchy<{ id: string }>>,
   edges: AppEdge[],
   hierarchyData: { id: string; children?: unknown[] },
-  direction: "LR" | "TB",
   nodeSpacing: { horizontal: number; vertical: number },
 ): void {
   const childrenMap = buildParentToChildNodeMap(edges);
@@ -317,10 +309,8 @@ function applyRightAlignedLayout(
 
   if (terminalNodes.length === 0) return;
 
-  // Find the rightmost depth for alignment
-  const maxDepth = Math.max(
-    ...terminalNodes.map((n) => (direction === "LR" ? (n.y ?? 0) : (n.x ?? 0))),
-  );
+  // Find the rightmost depth for alignment (LR layout uses y axis)
+  const maxDepth = Math.max(...terminalNodes.map((n) => n.y ?? 0));
 
   // Build depth-first ordering from hierarchyData (respects original vertical ordering)
   const depthFirstPosition = buildDepthFirstPositionMap(hierarchyData);
@@ -332,27 +322,19 @@ function applyRightAlignedLayout(
       (depthFirstPosition.get(b.data.id) ?? 0),
   );
 
-  // Calculate spacing and center position
-  const spacing =
-    direction === "LR" ? nodeSpacing.vertical : nodeSpacing.horizontal;
-  const originalPositions = terminalNodes.map((t) =>
-    direction === "LR" ? (t.x ?? 0) : (t.y ?? 0),
-  );
+  // Calculate spacing and center position (LR layout uses vertical spacing for y axis)
+  const spacing = nodeSpacing.vertical;
+  const originalPositions = terminalNodes.map((t) => t.x ?? 0);
   const avgPosition =
     originalPositions.reduce((sum, pos) => sum + pos, 0) /
     originalPositions.length;
   const totalHeight = (terminalNodes.length - 1) * spacing;
   let currentPosition = avgPosition - totalHeight / 2;
 
-  // Position terminals with even spacing
+  // Position terminals with even spacing (LR layout: y is depth, x is position)
   for (const terminal of terminalNodes) {
-    if (direction === "LR") {
-      terminal.y = maxDepth;
-      terminal.x = currentPosition;
-    } else {
-      terminal.x = maxDepth;
-      terminal.y = currentPosition;
-    }
+    terminal.y = maxDepth;
+    terminal.x = currentPosition;
     currentPosition += spacing;
   }
 }

@@ -1089,7 +1089,6 @@ function arrangeSubtreeHelper(
     rootNodeId,
     subtreeNodes,
     subtreeEdges,
-    "LR", // direction
     { horizontal: 250, vertical: 100 },
     false,
     { siblings: 0.25, parents: 1.5 },
