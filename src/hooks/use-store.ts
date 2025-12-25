@@ -955,9 +955,17 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) => {
           // NOTE: see ToolbarButton for available combinations
-          if (showPathEVs !== state.display.showPathEVs) {
+          if (
+            // button click with selected option
+            showPathEVs !== undefined &&
+            showPathEVs !== state.display.showPathEVs
+          ) {
             state.display.showPathEVs = showPathEVs;
+            if (!state.display.showEVs) {
+              state.display.showEVs = true;
+            }
           } else {
+            // hotkey toggle
             state.display.showEVs = !state.display.showEVs;
           }
           return state;
