@@ -133,6 +133,7 @@ export function computeLayoutedNodeOffsets(
  * @param direction - "LR" (left-to-right) or "TB" (top-to-bottom)
  * @param nodeSpacing - Spacing between nodes { horizontal, vertical }
  * @param animate - Whether to add transition animations
+ * @param rightAligned - Whether to right-align all terminal nodes
  *
  * @see https://reactflow.dev/examples/layout/auto-layout
  * @see https://d3js.org/d3-hierarchy/tree
@@ -147,6 +148,7 @@ export const getLayoutedElementsD3 = (
   nodeSpacing = { horizontal: 200, vertical: 150 },
   animate = false,
   separate = { siblings: 0.5, parents: 2 },
+  rightAligned = false,
 ): { nodes: AppNode[]; edges: AppEdge[] } => {
   const childrenMap = buildParentToChildNodeMap(edges);
 
@@ -207,6 +209,12 @@ export const getLayoutedElementsD3 = (
   // Apply layout
   treeLayout(root);
 
+  // Right-aligned mode: align all terminal nodes to the same depth
+  // while maintaining depth-first ordering to prevent branch crossings
+  if (rightAligned) {
+    applyRightAlignedLayout(root, edges, hierarchyData, direction, nodeSpacing);
+  }
+
   // Create node position map
   const nodePositions = new Map<string, { x: number; y: number }>();
   root.each((d) => {
@@ -260,3 +268,91 @@ export const getLayoutedElementsD3 = (
 
   return { nodes: newNodes, edges: newEdges };
 };
+
+/**
+ * Builds a map of node IDs to their depth-first traversal positions.
+ * Used for ordering terminal nodes in right-aligned layout to prevent branch crossings.
+ */
+function buildDepthFirstPositionMap(hierarchyData: {
+  id: string;
+  children?: unknown[];
+}): Map<string, number> {
+  const order: string[] = [];
+  const traverse = (node: { id: string; children?: unknown[] }) => {
+    order.push(node.id);
+    if (node.children) {
+      for (const child of node.children) {
+        traverse(child as { id: string; children?: unknown[] });
+      }
+    }
+  };
+  traverse(hierarchyData);
+
+  const positionMap = new Map<string, number>();
+  order.forEach((id, index) => positionMap.set(id, index));
+  return positionMap;
+}
+
+/**
+ * Applies right-aligned layout to terminal nodes.
+ * Aligns all terminal nodes to the same depth while maintaining depth-first ordering
+ * to prevent branch crossings.
+ */
+function applyRightAlignedLayout(
+  root: ReturnType<typeof hierarchy<{ id: string }>>,
+  edges: AppEdge[],
+  hierarchyData: { id: string; children?: unknown[] },
+  direction: "LR" | "TB",
+  nodeSpacing: { horizontal: number; vertical: number },
+): void {
+  const childrenMap = buildParentToChildNodeMap(edges);
+  type HierarchyNodeType = ReturnType<typeof hierarchy<{ id: string }>>;
+
+  // Find all terminal nodes (leaf nodes with no children)
+  const terminalNodes: HierarchyNodeType[] = [];
+  root.each((d) => {
+    const isTerminal = (childrenMap[d.data.id]?.length ?? 0) === 0;
+    if (isTerminal) terminalNodes.push(d);
+  });
+
+  if (terminalNodes.length === 0) return;
+
+  // Find the rightmost depth for alignment
+  const maxDepth = Math.max(
+    ...terminalNodes.map((n) => (direction === "LR" ? (n.y ?? 0) : (n.x ?? 0))),
+  );
+
+  // Build depth-first ordering from hierarchyData (respects original vertical ordering)
+  const depthFirstPosition = buildDepthFirstPositionMap(hierarchyData);
+
+  // Sort terminals by depth-first position to prevent branch crossings
+  terminalNodes.sort(
+    (a, b) =>
+      (depthFirstPosition.get(a.data.id) ?? 0) -
+      (depthFirstPosition.get(b.data.id) ?? 0),
+  );
+
+  // Calculate spacing and center position
+  const spacing =
+    direction === "LR" ? nodeSpacing.vertical : nodeSpacing.horizontal;
+  const originalPositions = terminalNodes.map((t) =>
+    direction === "LR" ? (t.x ?? 0) : (t.y ?? 0),
+  );
+  const avgPosition =
+    originalPositions.reduce((sum, pos) => sum + pos, 0) /
+    originalPositions.length;
+  const totalHeight = (terminalNodes.length - 1) * spacing;
+  let currentPosition = avgPosition - totalHeight / 2;
+
+  // Position terminals with even spacing
+  for (const terminal of terminalNodes) {
+    if (direction === "LR") {
+      terminal.y = maxDepth;
+      terminal.x = currentPosition;
+    } else {
+      terminal.x = maxDepth;
+      terminal.y = currentPosition;
+    }
+    currentPosition += spacing;
+  }
+}

@@ -95,8 +95,8 @@ export interface StoreState {
     position: { x: number; y: number },
     sourceHandle?: string | null,
   ) => void;
-  onArrange: () => void;
-  arrangeSubtree: (nodeId: string) => void;
+  onArrange: (rightAligned?: boolean) => void;
+  arrangeSubtree: (nodeId: string, rightAligned?: boolean) => void;
   toggleNodeCollapse: (nodeId: string) => void;
   onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
   selectSubtree: (nodeId: string) => void;
@@ -741,7 +741,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onArrange: () => {
+    onArrange: (rightAligned = false) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -757,21 +757,23 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 );
               })
               .forEach((node) => {
-                arrangeSubtreeHelper(tree, node.id);
+                arrangeSubtreeHelper(tree, node.id, rightAligned);
               });
           }),
         undefined,
-        { type: "arrangeNodes" },
+        { type: "arrangeNodes", rightAligned },
       );
     },
 
     // TODO: this would be even nicer with an animation!
-    arrangeSubtree: (nodeId: string) => {
+    arrangeSubtree: (nodeId: string, rightAligned = false) => {
       set(
         (state) =>
-          withCurrentTree(state, (tree) => arrangeSubtreeHelper(tree, nodeId)),
+          withCurrentTree(state, (tree) =>
+            arrangeSubtreeHelper(tree, nodeId, rightAligned),
+          ),
         undefined,
-        { type: "arrangeSubtree", nodeId },
+        { type: "arrangeSubtree", nodeId, rightAligned },
       );
     },
 
@@ -1067,7 +1069,11 @@ function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
 }
 
 // TODO: move somewhere better?
-function arrangeSubtreeHelper(tree: DecisionTree, rootNodeId: string) {
+function arrangeSubtreeHelper(
+  tree: DecisionTree,
+  rootNodeId: string,
+  rightAligned = false,
+) {
   // Collect all nodes in the subtree
   const subtreeNodeIds = collectSubtreeNodeIds(tree, rootNodeId);
 
@@ -1087,6 +1093,7 @@ function arrangeSubtreeHelper(tree: DecisionTree, rootNodeId: string) {
     { horizontal: 250, vertical: 100 },
     false,
     { siblings: 0.25, parents: 1.5 },
+    rightAligned,
   );
 
   const { offsetX, offsetY } = computeLayoutedNodeOffsets(

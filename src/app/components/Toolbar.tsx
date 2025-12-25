@@ -129,8 +129,8 @@ export default function Toolbar() {
     }
   };
 
-  const handleArrange = () => {
-    onArrange();
+  const handleArrange = (mode?: string) => {
+    onArrange(mode === "rightAligned");
     // HACK: allow reactflow to before disabling
     setTimeout(() => setIsArrangeDisabled(true), 0);
   };
@@ -163,7 +163,7 @@ export default function Toolbar() {
   useHotkeys("ctrl+v", () => onPaste(), { enableOnFormTags: true });
   // NOTE: reset only available as a hotkey as a hidden feature
   useHotkeys("ctrl+shift+r", handleReset, { enableOnFormTags: true });
-  useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
+  useHotkeys("ctrl+a", () => onArrange(), { enableOnFormTags: false });
   useHotkeys("ctrl+h", onShowHistogram, { enableOnFormTags: false });
   useHotkeys("ctrl+e", () => onShowEVs(), { enableOnFormTags: false });
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
@@ -230,11 +230,10 @@ export default function Toolbar() {
           onClick={handleArrange}
           tooltip="Ctrl+A"
           disabled={!hasNodes || isArrangeDisabled}
-          // TODO: finish implementing app logic for right-aligned
-          // dropdownItems={{
-          //   show: "Compact",
-          //   hide: "Right-aligned",
-          // }}
+          dropdownItems={{
+            compact: "Compact",
+            rightAligned: "Right-aligned",
+          }}
         >
           <ArrowsPointingOutIcon className="h-4 w-4" />
           Arrange

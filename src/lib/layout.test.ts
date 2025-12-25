@@ -1,4 +1,9 @@
-import { MINIMUM_DISTANCE, computeLayoutedNodeOffsets } from "./layout";
+import { createEdge } from "./edge";
+import {
+  MINIMUM_DISTANCE,
+  computeLayoutedNodeOffsets,
+  getLayoutedElementsD3,
+} from "./layout";
 import { AppNode } from "./node";
 
 describe("computeLayoutedNodeOffsets", () => {
@@ -409,5 +414,314 @@ describe("computeLayoutedNodeOffsets", () => {
     // Should handle the constraint and find the best available position
     expect(Number.isFinite(result.offsetX)).toBe(true);
     expect(Number.isFinite(result.offsetY)).toBe(true);
+  });
+});
+
+describe("getLayoutedElementsD3 with right-aligned", () => {
+  it("should align all terminal nodes to the right in LR layout", () => {
+    // Create test nodes: root -> branch1 and branch2 -> terminal nodes
+    const nodes: AppNode[] = [
+      {
+        id: "root",
+        type: "decision",
+        position: { x: 0, y: 0 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "branch1",
+        type: "chance",
+        position: { x: 200, y: -50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal1",
+        type: "terminal",
+        position: { x: 400, y: -50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "branch2",
+        type: "chance",
+        position: { x: 200, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "subbranch",
+        type: "chance",
+        position: { x: 400, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal2",
+        type: "terminal",
+        position: { x: 600, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+    ];
+
+    const edges = [
+      createEdge("root", "branch1"),
+      createEdge("branch1", "terminal1"),
+      createEdge("root", "branch2"),
+      createEdge("branch2", "subbranch"),
+      createEdge("subbranch", "terminal2"),
+    ];
+
+    // Apply right-aligned layout
+    const { nodes: layoutedNodes } = getLayoutedElementsD3(
+      "root",
+      nodes,
+      edges,
+      "LR",
+      { horizontal: 200, vertical: 100 },
+      false,
+      { siblings: 0.5, parents: 2 },
+      true, // rightAligned
+    );
+
+    // Find terminal nodes
+    const terminal1 = layoutedNodes.find((n: AppNode) => n.id === "terminal1");
+    const terminal2 = layoutedNodes.find((n: AppNode) => n.id === "terminal2");
+
+    // Both terminal nodes should have the same x position (aligned to the right)
+    expect(terminal1).toBeDefined();
+    expect(terminal2).toBeDefined();
+    expect(terminal1!.position.x).toBe(terminal2!.position.x);
+
+    // Terminal nodes should be further right than non-terminal nodes
+    const branch1 = layoutedNodes.find((n: AppNode) => n.id === "branch1");
+    const subbranch = layoutedNodes.find((n: AppNode) => n.id === "subbranch");
+    expect(terminal1!.position.x).toBeGreaterThan(branch1!.position.x);
+    expect(terminal2!.position.x).toBeGreaterThan(subbranch!.position.x);
+  });
+
+  it("should maintain compact layout when rightAligned is false", () => {
+    const nodes: AppNode[] = [
+      {
+        id: "root",
+        type: "decision",
+        position: { x: 0, y: 0 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal1",
+        type: "terminal",
+        position: { x: 200, y: 0 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "branch",
+        type: "chance",
+        position: { x: 200, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal2",
+        type: "terminal",
+        position: { x: 400, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+    ];
+
+    const edges = [
+      createEdge("root", "terminal1"),
+      createEdge("root", "branch"),
+      createEdge("branch", "terminal2"),
+    ];
+
+    // Apply compact layout (rightAligned = false)
+    const { nodes: layoutedNodes } = getLayoutedElementsD3(
+      "root",
+      nodes,
+      edges,
+      "LR",
+      { horizontal: 200, vertical: 100 },
+      false,
+      { siblings: 0.5, parents: 2 },
+      false, // rightAligned = false (compact)
+    );
+
+    const terminal1 = layoutedNodes.find((n: AppNode) => n.id === "terminal1");
+    const terminal2 = layoutedNodes.find((n: AppNode) => n.id === "terminal2");
+
+    // In compact layout, terminal nodes should NOT have the same x position
+    // terminal1 should be closer to root than terminal2
+    expect(terminal1!.position.x).toBeLessThan(terminal2!.position.x);
+  });
+
+  it("should maintain even spacing between all terminals", () => {
+    const nodes: AppNode[] = [
+      {
+        id: "root",
+        type: "decision",
+        position: { x: 0, y: 0 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal1",
+        type: "terminal",
+        position: { x: 200, y: -100 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "branch",
+        type: "chance",
+        position: { x: 200, y: 0 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal2",
+        type: "terminal",
+        position: { x: 400, y: -50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal3",
+        type: "terminal",
+        position: { x: 400, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+    ];
+
+    const edges = [
+      createEdge("root", "terminal1"),
+      createEdge("root", "branch"),
+      createEdge("branch", "terminal2"),
+      createEdge("branch", "terminal3"),
+    ];
+
+    const nodeSpacing = { horizontal: 200, vertical: 100 };
+
+    const { nodes: layoutedNodes } = getLayoutedElementsD3(
+      "root",
+      nodes,
+      edges,
+      "LR",
+      nodeSpacing,
+      false,
+      { siblings: 0.5, parents: 2 },
+      true,
+    );
+
+    const terminal1 = layoutedNodes.find((n: AppNode) => n.id === "terminal1");
+    const terminal2 = layoutedNodes.find((n: AppNode) => n.id === "terminal2");
+    const terminal3 = layoutedNodes.find((n: AppNode) => n.id === "terminal3");
+
+    // All terminals should be aligned
+    expect(terminal1!.position.x).toBe(terminal2!.position.x);
+    expect(terminal2!.position.x).toBe(terminal3!.position.x);
+
+    // Check spacing between consecutive terminals
+    const spacing1 = Math.abs(terminal2!.position.y - terminal1!.position.y);
+    const spacing2 = Math.abs(terminal3!.position.y - terminal2!.position.y);
+
+    expect(spacing1).toBe(nodeSpacing.vertical);
+    expect(spacing2).toBe(nodeSpacing.vertical);
+  });
+
+  it("should follow depth-first order to prevent branch crossings", () => {
+    // Create a tree where wrong ordering would cause crossings
+    const nodes: AppNode[] = [
+      {
+        id: "root",
+        type: "decision",
+        position: { x: 0, y: 0 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "branch1",
+        type: "chance",
+        position: { x: 200, y: -100 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal1",
+        type: "terminal",
+        position: { x: 400, y: -150 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal2",
+        type: "terminal",
+        position: { x: 400, y: -50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "branch2",
+        type: "chance",
+        position: { x: 200, y: 100 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal3",
+        type: "terminal",
+        position: { x: 400, y: 50 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+      {
+        id: "terminal4",
+        type: "terminal",
+        position: { x: 400, y: 150 },
+        data: {},
+        measured: { width: 100, height: 50 },
+      },
+    ];
+
+    const edges = [
+      createEdge("root", "branch1"),
+      createEdge("branch1", "terminal1"),
+      createEdge("branch1", "terminal2"),
+      createEdge("root", "branch2"),
+      createEdge("branch2", "terminal3"),
+      createEdge("branch2", "terminal4"),
+    ];
+
+    const { nodes: layoutedNodes } = getLayoutedElementsD3(
+      "root",
+      nodes,
+      edges,
+      "LR",
+      { horizontal: 200, vertical: 100 },
+      false,
+      { siblings: 0.5, parents: 2 },
+      true,
+    );
+
+    const terminal1 = layoutedNodes.find((n: AppNode) => n.id === "terminal1");
+    const terminal2 = layoutedNodes.find((n: AppNode) => n.id === "terminal2");
+    const terminal3 = layoutedNodes.find((n: AppNode) => n.id === "terminal3");
+    const terminal4 = layoutedNodes.find((n: AppNode) => n.id === "terminal4");
+
+    // Terminals from branch1 should come before terminals from branch2
+    // (following depth-first order)
+    expect(terminal1!.position.y).toBeLessThan(terminal3!.position.y);
+    expect(terminal1!.position.y).toBeLessThan(terminal4!.position.y);
+    expect(terminal2!.position.y).toBeLessThan(terminal3!.position.y);
+    expect(terminal2!.position.y).toBeLessThan(terminal4!.position.y);
+
+    // Within each branch, terminals should maintain their order
+    expect(terminal1!.position.y).toBeLessThan(terminal2!.position.y);
+    expect(terminal3!.position.y).toBeLessThan(terminal4!.position.y);
   });
 });
