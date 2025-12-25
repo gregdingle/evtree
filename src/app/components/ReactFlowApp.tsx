@@ -118,7 +118,7 @@ export default function ReactFlowApp() {
       TODO: re-enable height check when Marjorie laptop investigated
       <div className="block [@media(min-height:800px)]:hidden">
         <CanvasCenteredHelpMessage
-          text={`Window too small \nTry a bigger screen`}
+          text={`Window too small \nTry maximizing your window, \nzooming out, or using \na bigger screen`}
         />
       </div> */}
       <ReactFlow

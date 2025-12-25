@@ -137,6 +137,17 @@ export default function Toolbar() {
     setTimeout(() => setIsArrangeDisabled(true), 0);
   };
 
+  const handleReset = () => {
+    if (
+      // TODO: upgrade to proper modal dialog
+      window.confirm(
+        "Are you sure you want to reset all trees? This will delete all your work.",
+      )
+    ) {
+      onReset();
+    }
+  };
+
   // Re-enable arrange button when nodes change
   useEffect(() => {
     setIsArrangeDisabled(false);
@@ -152,8 +163,8 @@ export default function Toolbar() {
   useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
   useHotkeys("ctrl+c", () => onCopy(), { enableOnFormTags: true });
   useHotkeys("ctrl+v", () => onPaste(), { enableOnFormTags: true });
-  // TODO: is reset sufficiently hidden from normal users?
-  useHotkeys("ctrl+shift+r", onReset, { enableOnFormTags: true });
+  // NOTE: reset only available as a hotkey as a hidden feature
+  useHotkeys("ctrl+shift+r", handleReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
   useHotkeys("ctrl+h", onShowHistogram, { enableOnFormTags: false });
   useHotkeys("ctrl+e", onShowEVs, { enableOnFormTags: false });
