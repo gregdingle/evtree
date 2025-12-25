@@ -51,6 +51,7 @@ export interface StoreState {
   clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
   display: {
     showEVs?: boolean;
+    showPathEVs?: boolean;
     showHistogram?: boolean;
   };
 
@@ -102,7 +103,7 @@ export interface StoreState {
   deleteSubTree: (nodeId: string) => void;
   deleteSelected: () => void;
   connectToNearestNode: (nodeId: string) => void;
-  onShowEVs: () => void;
+  onShowEVs: (showPathEVs?: boolean) => void;
   onShowHistogram: () => void;
 }
 
@@ -269,9 +270,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
             if (treeData.rounding !== undefined) {
               tree.rounding = treeData.rounding;
-            }
-            if (treeData.showPathEVs !== undefined) {
-              tree.showPathEVs = treeData.showPathEVs;
             }
             if (treeData.backgroundColor !== undefined) {
               tree.backgroundColor = treeData.backgroundColor;
@@ -953,10 +951,15 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onShowEVs: () => {
+    onShowEVs: (showPathEVs?: boolean) => {
       set(
         (state) => {
-          state.display.showEVs = !state.display.showEVs;
+          // NOTE: see ToolbarButton for available combinations
+          if (showPathEVs !== state.display.showPathEVs) {
+            state.display.showPathEVs = showPathEVs;
+          } else {
+            state.display.showEVs = !state.display.showEVs;
+          }
           return state;
         },
         undefined,

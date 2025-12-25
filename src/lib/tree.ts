@@ -19,19 +19,13 @@ export interface DecisionTree {
   variables?: Variable[];
   currency?: CurrencyCode;
   rounding?: RoundingCode;
-  showPathEVs?: boolean;
   backgroundColor?: BackgroundColorCode;
 }
 
 export type DecisionTreeSimpleProperties = Partial<
   Pick<
     DecisionTree,
-    | "name"
-    | "description"
-    | "currency"
-    | "rounding"
-    | "showPathEVs"
-    | "backgroundColor"
+    "name" | "description" | "currency" | "rounding" | "backgroundColor"
   >
 >;
 

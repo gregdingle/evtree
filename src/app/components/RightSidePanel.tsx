@@ -489,15 +489,6 @@ function TreeProperties({
         }))}
       />
       <PropertyInput
-        label="Show Path Values"
-        info={`Determines whether to show the \ncalculated values along the paths \nbetween the start of the tree and \nthe terminal nodes`}
-        checkbox
-        checked={currentTree.showPathEVs ?? true}
-        onCheckboxChange={(checked) =>
-          onTreeDataUpdate({ showPathEVs: checked })
-        }
-      />
-      <PropertyInput
         // TODO: backgroundColor breaks dark mode!!!
         // TODO: word "background" is too long... but how to break?
         label="Background Color"

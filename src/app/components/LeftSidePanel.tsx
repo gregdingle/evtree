@@ -128,7 +128,10 @@ export default function LeftSidePanel() {
                           }}
                           className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
-                          <ChevronDownIcon className="h-5 w-5" />
+                          <ChevronDownIcon
+                            // TODO: make chevron color same as primary text?
+                            className="h-5 w-5"
+                          />
                         </button>
                       </Tooltip>
                       {showMoreMenu === tree.id && (
@@ -140,6 +143,7 @@ export default function LeftSidePanel() {
                           />
                           {/* More menu */}
                           <div
+                            // TODO: consolidate menu styles somewhere. see also ContextMenu.tsx and ToolbarButton
                             className={`absolute z-20 w-48 rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800 ${
                               index >= trees.length - 1
                                 ? "right-0 bottom-8"

@@ -76,7 +76,6 @@ export default function Toolbar() {
   const isDarkMode = useDarkMode();
 
   const handleDownloadTree = (treeToDownload: DecisionTree) => {
-    if (!treeToDownload) return;
     downloadJson(
       treeToDownload,
       `treedecisions-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
@@ -84,7 +83,7 @@ export default function Toolbar() {
   };
 
   const handleShareLink = async (treeToShare: DecisionTree) => {
-    if (!treeToShare || !firebaseApp) return;
+    if (!firebaseApp) return;
 
     try {
       const shareableLink = await uploadTreeForSharing(
@@ -100,17 +99,16 @@ export default function Toolbar() {
     }
   };
 
-  const handleExportImage = (tree: DecisionTree) => {
-    if (!tree) return;
-
+  const handleExportImage = (tree: DecisionTree, backgroundColor?: string) => {
     const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}`;
-    const backgroundColor =
-      tree.backgroundColor === ""
+    backgroundColor =
+      backgroundColor ??
+      (tree.backgroundColor === ""
         ? isDarkMode
           ? // NOTE: colors copied from reactflow default dark mode... see also page.tsx
             "#141414"
           : "#fffbeb"
-        : (tree.backgroundColor ?? "transparent");
+        : (tree.backgroundColor ?? "transparent"));
 
     // If histogram is open, export it instead of the tree
     if (isHistogramOpen) {
@@ -167,7 +165,7 @@ export default function Toolbar() {
   useHotkeys("ctrl+shift+r", handleReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", onArrange, { enableOnFormTags: false });
   useHotkeys("ctrl+h", onShowHistogram, { enableOnFormTags: false });
-  useHotkeys("ctrl+e", onShowEVs, { enableOnFormTags: false });
+  useHotkeys("ctrl+e", () => onShowEVs(), { enableOnFormTags: false });
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
   useHotkeys("ctrl+s", () => currentTree && handleShareLink(currentTree), {
     enableOnFormTags: true,
@@ -200,7 +198,7 @@ export default function Toolbar() {
       </div>
       <div className="flex justify-start space-x-2 mx-8">
         <ToolbarButton
-          onClick={onCopy}
+          onClick={() => onCopy()}
           tooltip="Ctrl+C"
           disabled={!hasSelectedItems}
         >
@@ -208,7 +206,7 @@ export default function Toolbar() {
           Copy
         </ToolbarButton>
         <ToolbarButton
-          onClick={onPaste}
+          onClick={() => onPaste()}
           tooltip="Ctrl+V"
           disabled={!hasClipboardContent}
         >
@@ -232,6 +230,11 @@ export default function Toolbar() {
           onClick={handleArrange}
           tooltip="Ctrl+A"
           disabled={!hasNodes || isArrangeDisabled}
+          // TODO: finish implementing app logic for right-aligned
+          // dropdownItems={{
+          //   show: "Compact",
+          //   hide: "Right-aligned",
+          // }}
         >
           <ArrowsPointingOutIcon className="h-4 w-4" />
           Arrange
@@ -255,13 +258,18 @@ export default function Toolbar() {
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
-          onClick={onShowEVs}
+          onClick={(key) => onShowEVs(key === "show")}
           tooltip={
             areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
           }
           // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
           active={areEVsShowing}
           disabled={!hasTerminalNodes}
+          // TODO: finish implementing app logic for dropdown
+          dropdownItems={{
+            show: "Show path values",
+            hide: "Hide path values",
+          }}
         >
           <CalculatorIcon className="h-4 w-4" />
           Calculate
@@ -299,6 +307,12 @@ export default function Toolbar() {
             isHistogramOpen ? "Export histogram to PNG" : "Export tree to PNG"
           }
           disabled={!hasNodes}
+          // TODO: finish "menu type" button dropdown behavior
+          // dropdownItems={{
+          //   png: "Export PNG",
+          //   transparentPng: "Export transparent PNG",
+          //   json: "Export JSON",
+          // }}
         >
           <PhotoIcon className="h-4 w-4" />
           Export
