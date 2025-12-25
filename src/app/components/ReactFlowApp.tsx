@@ -114,15 +114,13 @@ export default function ReactFlowApp() {
     // produce this effect by adding more and more variables to a tree.
     // NOTE: see also message on RightSidePanel when more than 800px height
     <div ref={ref} className="relative h-full w-full">
-      {/*
-      TODO: re-enable height check when Marjorie laptop investigated
-      <div className="block [@media(min-height:800px)]:hidden">
+      <div className="block [@media(min-height:600px)]:hidden">
         <CanvasCenteredHelpMessage
           text={`Window too small \nTry maximizing your window, \nzooming out, or using \na bigger screen`}
         />
-      </div> */}
+      </div>
       <ReactFlow
-        // className="hidden [@media(min-height:800px)]:block"
+        className="hidden [@media(min-height:600px)]:block"
         ref={ref}
         nodes={nodes}
         edges={edges}
