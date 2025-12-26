@@ -20,6 +20,12 @@ export interface ToolbarButtonProps {
 }
 
 /**
+ * When dropdownItems are provided, the button gains a down chevron that opens a
+ * dropdown menu. When dropdownItems are strings, they are treated as options
+ * that modify the action of the main button. When dropdownItems are objects
+ * with onClick handlers, they are treated as actions that perform an action
+ * immediately.
+ *
  * @see https://tailwindcss.com/plus/ui-blocks/application-ui/elements/button-groups#component-bfc7e9cc9d7b5762cb139096ac3266c1
  */
 export function ToolbarButton({
@@ -139,36 +145,35 @@ export function ToolbarButton({
         {isDropdownOpen && (
           <div
             // TODO: consolidate menu styles somewhere. see also ContextMenu.tsx and LeftSidePanel.tsx
-            className="absolute right-0 top-full mt-1 py-1 dark:bg-gray-800 shadow-lg bg-white z-50"
+            className="absolute right-0 top-full w-fit mt-1 py-1 dark:bg-gray-800 shadow-lg bg-white z-50"
+            role="menu"
           >
-            <div className="py-1" role="menu">
-              {toPairs(dropdownItems).map(([key, label]) => {
-                const isActionItem =
-                  typeof label === "object" && "onClick" in label;
-                return (
-                  <button
-                    key={key}
-                    onClick={() =>
-                      handleDropdownItemClick(
-                        key,
-                        isActionItem ? label.onClick : undefined,
-                      )
-                    }
-                    className={`block text-left px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`}
-                    role="menuitem"
-                  >
-                    {!isActionItem && (
-                      <CheckIcon
-                        className={`inline-block ${dropdownKey === key ? "" : "invisible"} align-text-bottom h-5 w-5 stroke-gray-700 dark:stroke-gray-100`}
-                      />
-                    )}
-                    <span className="mx-1 text-gray-700 dark:text-gray-200">
-                      {isActionItem ? label.label : label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {toPairs(dropdownItems).map(([key, label]) => {
+              const isActionItem =
+                typeof label === "object" && "onClick" in label;
+              return (
+                <button
+                  key={key}
+                  onClick={() =>
+                    handleDropdownItemClick(
+                      key,
+                      isActionItem ? label.onClick : undefined,
+                    )
+                  }
+                  className={`block w-full text-left px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`}
+                  role="menuitem"
+                >
+                  {!isActionItem && (
+                    <CheckIcon
+                      className={`inline-block ${dropdownKey === key ? "" : "invisible"} align-text-bottom h-5 w-5 stroke-gray-700 dark:stroke-gray-100`}
+                    />
+                  )}
+                  <span className="mx-1 text-gray-700 dark:text-gray-200">
+                    {isActionItem ? label.label : label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
