@@ -198,7 +198,7 @@ export default function Toolbar() {
       </div>
       <div className="flex justify-start space-x-2 mx-8">
         <ToolbarButton
-          onClick={() => onCopy()}
+          onButtonClick={() => onCopy()}
           tooltip="Ctrl+C"
           disabled={!hasSelectedItems}
         >
@@ -206,7 +206,7 @@ export default function Toolbar() {
           Copy
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => onPaste()}
+          onButtonClick={() => onPaste()}
           tooltip="Ctrl+V"
           disabled={!hasClipboardContent}
         >
@@ -214,7 +214,7 @@ export default function Toolbar() {
           Paste
         </ToolbarButton>
         <ToolbarButton
-          onClick={deleteSelected}
+          onButtonClick={deleteSelected}
           tooltip="Ctrl+Delete"
           disabled={!hasSelectedItems}
         >
@@ -227,7 +227,7 @@ export default function Toolbar() {
           Reset
         </ToolbarButton> */}
         <ToolbarButton
-          onClick={handleArrange}
+          onButtonClick={handleArrange}
           tooltip="Ctrl+A"
           disabled={!hasNodes || isArrangeDisabled}
           dropdownItems={{
@@ -240,7 +240,7 @@ export default function Toolbar() {
         </ToolbarButton>
         {/* NOTE: by request, moved undo-redo next to arrange */}
         <ToolbarButton
-          onClick={() => undo()}
+          onButtonClick={() => undo()}
           tooltip="Ctrl+Z"
           disabled={!canUndo}
         >
@@ -248,7 +248,7 @@ export default function Toolbar() {
           Undo
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => redo()}
+          onButtonClick={() => redo()}
           tooltip="Ctrl+Y"
           disabled={!canRedo}
         >
@@ -257,7 +257,7 @@ export default function Toolbar() {
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
-          onClick={(key) => onShowEVs(key === "show")}
+          onButtonClick={(key) => onShowEVs(key === "show")}
           tooltip={
             areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
           }
@@ -274,7 +274,7 @@ export default function Toolbar() {
           Calculate
         </ToolbarButton>
         <ToolbarButton
-          onClick={onShowHistogram}
+          onButtonClick={onShowHistogram}
           tooltip={
             isHistogramOpen
               ? `Hide Histogram \n(Ctrl+H)`
@@ -291,7 +291,7 @@ export default function Toolbar() {
           // NOTE: saving and sharing links is preferred when firebase is configured
           firebaseApp && (
             <ToolbarButton
-              onClick={() => currentTree && handleShareLink(currentTree)}
+              onButtonClick={() => currentTree && handleShareLink(currentTree)}
               tooltip="Upload tree and copy URL for sharing"
               disabled={!hasNodes || isLinkCopied}
             >
@@ -301,23 +301,32 @@ export default function Toolbar() {
           )
         }
         <ToolbarButton
-          onClick={() => currentTree && handleExportImage(currentTree)}
+          onButtonClick={() => currentTree && handleExportImage(currentTree)}
           tooltip={
-            isHistogramOpen ? "Export histogram to PNG" : "Export tree to PNG"
+            isHistogramOpen ? "Export histogram to file" : "Export tree to file"
           }
           disabled={!hasNodes}
-          // TODO: finish "menu type" button dropdown behavior
-          // dropdownItems={{
-          //   png: "Export PNG",
-          //   transparentPng: "Export transparent PNG",
-          //   json: "Export JSON",
-          // }}
+          dropdownItems={{
+            png: {
+              label: "Export PNG",
+              onClick: () => currentTree && handleExportImage(currentTree),
+            },
+            transparentPng: {
+              label: "Export transparent PNG",
+              onClick: () =>
+                currentTree && handleExportImage(currentTree, "transparent"),
+            },
+            json: {
+              label: "Export JSON",
+              onClick: () => currentTree && handleDownloadTree(currentTree),
+            },
+          }}
         >
           <PhotoIcon className="h-4 w-4" />
           Export
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => currentTree && handleDownloadTree(currentTree)}
+          onButtonClick={() => currentTree && handleDownloadTree(currentTree)}
           tooltip="Download tree as JSON"
           disabled={!hasNodes}
         >

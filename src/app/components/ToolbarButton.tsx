@@ -9,19 +9,21 @@ import { keys, toPairs, values } from "es-toolkit/compat";
 import Tooltip from "./Tooltip";
 
 export interface ToolbarButtonProps {
-  onClick: (dropdownKey?: string) => void;
+  onButtonClick: (dropdownKey?: string) => void;
   children: React.ReactNode;
   tooltip?: string | React.ReactNode;
   active?: boolean;
   disabled?: boolean;
-  dropdownItems?: Record<string, string>;
+  dropdownItems?:
+    | Record<string, string> // options
+    | Record<string, { label: string; onClick: () => void }>; // actions
 }
 
 /**
  * @see https://tailwindcss.com/plus/ui-blocks/application-ui/elements/button-groups#component-bfc7e9cc9d7b5762cb139096ac3266c1
  */
 export function ToolbarButton({
-  onClick,
+  onButtonClick,
   children,
   tooltip,
   active = false,
@@ -29,17 +31,19 @@ export function ToolbarButton({
   dropdownItems = {},
 }: ToolbarButtonProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const firstDropdownKey = keys(dropdownItems)[0];
   const [dropdownKey, setDropdownKey] = useState<string | undefined>(
     // TODO: is this a good way to set initial dropdown key?
     // does it assume static dropdownItems?
     // what is the selected option is set outside the component?
-    keys(dropdownItems)[0],
+    firstDropdownKey,
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
     if (!disabled) {
-      onClick(dropdownKey);
+      onButtonClick(dropdownKey);
       setIsDropdownOpen(false);
     }
   };
@@ -50,15 +54,21 @@ export function ToolbarButton({
     }
   };
 
-  const handleDropdownItemClick = (key: string) => {
+  const handleDropdownItemClick = (key: string, onClick?: () => void) => {
     setDropdownKey(key);
-    // TODO: finish "menu type" button dropdown behavior
-    if (active) {
-      onClick(key);
-    }
 
-    // TODO: make dropdown fade out smoothly so user can see selection
-    // setIsDropdownOpen(false);
+    if (onClick) {
+      // action item
+      onClick();
+      // TODO: make dropdown fade out smoothly so user can see selection
+      setIsDropdownOpen(false);
+    } else {
+      // option item
+      if (active) {
+        // NOTE: allow live toggle between options of an active modal button
+        onButtonClick(key);
+      }
+    }
   };
 
   // Close dropdown when clicking outside
@@ -81,6 +91,11 @@ export function ToolbarButton({
     };
   }, [isDropdownOpen]);
 
+  const hasActionItems =
+    firstDropdownKey &&
+    typeof dropdownItems[firstDropdownKey] === "object" &&
+    "onClick" in dropdownItems[firstDropdownKey];
+
   const getButtonClasses = () => {
     if (disabled) {
       return "flex items-center gap-1 rounded px-2 py-1 opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600 flex-shrink-0 whitespace-nowrap select-none";
@@ -99,22 +114,27 @@ export function ToolbarButton({
         <div className="inline-flex rounded">
           <Tooltip text={tooltip}>
             <button
-              onClick={handleClick}
+              onClick={hasActionItems ? handleDropdownToggle : handleClick}
               disabled={disabled}
               className={`${getButtonClasses()} rounded-l rounded-r-none`}
             >
               {children}
+              {hasActionItems && (
+                <ChevronDownIcon className="h-4 w-4 stroke-gray-700 dark:stroke-gray-100" />
+              )}
             </button>
           </Tooltip>
-          <button
-            onClick={handleDropdownToggle}
-            disabled={disabled}
-            className={`${getButtonClasses()} rounded-r rounded-l-none`}
-            aria-expanded={isDropdownOpen}
-            aria-haspopup="true"
-          >
-            <ChevronDownIcon className="h-4 w-4 -mx-1 stroke-gray-700 dark:stroke-gray-100" />
-          </button>
+          {!hasActionItems && (
+            <button
+              onClick={handleDropdownToggle}
+              disabled={disabled}
+              className={`${getButtonClasses()} rounded-r rounded-l-none`}
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="true"
+            >
+              <ChevronDownIcon className="h-4 w-4 -mx-1 stroke-gray-700 dark:stroke-gray-100" />
+            </button>
+          )}
         </div>
         {isDropdownOpen && (
           <div
@@ -122,21 +142,32 @@ export function ToolbarButton({
             className="absolute right-0 top-full mt-1 py-1 dark:bg-gray-800 shadow-lg bg-white z-50"
           >
             <div className="py-1" role="menu">
-              {toPairs(dropdownItems).map(([key, label]) => (
-                <button
-                  key={key}
-                  onClick={() => handleDropdownItemClick(key)}
-                  className={`block text-left px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`}
-                  role="menuitem"
-                >
-                  <CheckIcon
-                    className={`inline-block ${dropdownKey === key ? "" : "invisible"} align-text-bottom h-5 w-5 stroke-gray-700 dark:stroke-gray-100`}
-                  />
-                  <span className="mx-1 text-gray-700 dark:text-gray-200">
-                    {label}
-                  </span>
-                </button>
-              ))}
+              {toPairs(dropdownItems).map(([key, label]) => {
+                const isActionItem =
+                  typeof label === "object" && "onClick" in label;
+                return (
+                  <button
+                    key={key}
+                    onClick={() =>
+                      handleDropdownItemClick(
+                        key,
+                        isActionItem ? label.onClick : undefined,
+                      )
+                    }
+                    className={`block text-left px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`}
+                    role="menuitem"
+                  >
+                    {!isActionItem && (
+                      <CheckIcon
+                        className={`inline-block ${dropdownKey === key ? "" : "invisible"} align-text-bottom h-5 w-5 stroke-gray-700 dark:stroke-gray-100`}
+                      />
+                    )}
+                    <span className="mx-1 text-gray-700 dark:text-gray-200">
+                      {isActionItem ? label.label : label}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

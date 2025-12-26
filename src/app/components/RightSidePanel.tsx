@@ -217,7 +217,7 @@ function EdgeProperties({
                   <br /> branches
                 </span>
               }
-              onClick={() => balanceEdgeProbability(edge.id)}
+              onButtonClick={() => balanceEdgeProbability(edge.id)}
             >
               balance
             </ToolbarButton>

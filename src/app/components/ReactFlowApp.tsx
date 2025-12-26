@@ -116,7 +116,7 @@ export default function ReactFlowApp() {
     <div ref={ref} className="relative h-full w-full">
       <div className="block [@media(min-height:600px)]:hidden">
         <CanvasCenteredHelpMessage
-          text={`Window too small \nTry maximizing your window, \nzooming out, or using \na bigger screen`}
+          text={`Window too small. \nTry maximizing your window, \nzooming out, or using \na bigger screen.`}
         />
       </div>
       <ReactFlow
