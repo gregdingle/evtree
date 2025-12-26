@@ -19,6 +19,9 @@ export interface DecisionTree {
   variables?: Variable[];
   currency?: CurrencyCode;
   rounding?: RoundingCode;
+  /**
+   * @deprecated talk to Marjorie... isn't transparent background on export enough?
+   */
   backgroundColor?: BackgroundColorCode;
 }
 

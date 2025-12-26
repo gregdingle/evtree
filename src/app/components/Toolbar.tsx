@@ -10,7 +10,6 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   ClipboardDocumentIcon,
-  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
   LinkIcon,
   PhotoIcon,
@@ -103,12 +102,11 @@ export default function Toolbar() {
     const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}`;
     backgroundColor =
       backgroundColor ??
-      (tree.backgroundColor === ""
-        ? isDarkMode
-          ? // NOTE: colors copied from reactflow default dark mode... see also page.tsx
-            "#141414"
-          : "#fffbeb"
-        : (tree.backgroundColor ?? "transparent"));
+      tree.backgroundColor ??
+      (isDarkMode
+        ? // NOTE: colors copied from reactflow default dark mode... see also page.tsx
+          "#141414"
+        : "#fffbeb");
 
     // If histogram is open, export it instead of the tree
     if (isHistogramOpen) {
@@ -302,36 +300,29 @@ export default function Toolbar() {
         }
         <ToolbarButton
           onButtonClick={() => currentTree && handleExportImage(currentTree)}
-          tooltip={
-            isHistogramOpen ? "Export histogram to file" : "Export tree to file"
-          }
+          // NOTE: no tooltip because it conflicts with dropdown... remove if no solution
+          // tooltip={
+          //   isHistogramOpen ? "Export histogram to file" : "Export tree to file"
+          // }
           disabled={!hasNodes}
           dropdownItems={{
             png: {
-              label: "Export PNG",
+              label: "Export to PNG",
               onClick: () => currentTree && handleExportImage(currentTree),
             },
             transparentPng: {
-              label: "Export transparent PNG",
+              label: "Export to transparent PNG",
               onClick: () =>
                 currentTree && handleExportImage(currentTree, "transparent"),
             },
             json: {
-              label: "Export JSON",
+              label: "Export to JSON",
               onClick: () => currentTree && handleDownloadTree(currentTree),
             },
           }}
         >
           <PhotoIcon className="h-4 w-4" />
-          Export
-        </ToolbarButton>
-        <ToolbarButton
-          onButtonClick={() => currentTree && handleDownloadTree(currentTree)}
-          tooltip="Download tree as JSON"
-          disabled={!hasNodes}
-        >
-          <DocumentArrowDownIcon className="h-4 w-4" />
-          Download
+          Export to File
         </ToolbarButton>
       </div>
     </div>

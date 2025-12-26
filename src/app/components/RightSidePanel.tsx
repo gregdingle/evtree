@@ -5,7 +5,6 @@ import { keys, toPairs, values } from "es-toolkit/compat";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
-import { BACKGROUNDS, BackgroundColorCode } from "@/lib/background";
 import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 import { AppEdge } from "@/lib/edge";
 import { safeEvalExpr } from "@/lib/expectedValue";
@@ -488,6 +487,7 @@ function TreeProperties({
           label: `${data.name} ${data.scale ? " → " + keys(data.scale).join(", ") : ""}`,
         }))}
       />
+      {/* TODO: talk to Marjorie... isn't transparent background on export enough?
       <PropertyInput
         // TODO: backgroundColor breaks dark mode!!!
         // TODO: word "background" is too long... but how to break?
@@ -503,6 +503,7 @@ function TreeProperties({
           label: data.name,
         }))}
       />
+       */}
       <hr className="my-6 border-gray-500" />
       <VariablesInput
         scope="value"
