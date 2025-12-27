@@ -26,6 +26,7 @@ import { useTemporalStore } from "@/hooks/use-temporal-store";
 import {
   downloadHTMLElementAsPNG,
   downloadJson,
+  downloadPDF,
   downloadPNG,
 } from "@/lib/download";
 import { firebaseApp } from "@/lib/firebase";
@@ -125,6 +126,18 @@ export default function Toolbar() {
       // Export the tree as usual
       downloadPNG(values(tree.nodes ?? []), `${filename}.png`, backgroundColor);
     }
+  };
+
+  const handleExportPDF = (tree: DecisionTree) => {
+    const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}.pdf`;
+    const backgroundColor =
+      tree.backgroundColor ??
+      (isDarkMode
+        ? // NOTE: colors copied from reactflow default dark mode
+          "#141414"
+        : "#fffbeb");
+
+    downloadPDF(values(tree.nodes ?? []), filename, backgroundColor);
   };
 
   const handleArrange = (mode?: string) => {
@@ -314,6 +327,10 @@ export default function Toolbar() {
               label: "Export to transparent PNG",
               onClick: () =>
                 currentTree && handleExportImage(currentTree, "transparent"),
+            },
+            pdf: {
+              label: "Export to PDF",
+              onClick: () => currentTree && handleExportPDF(currentTree),
             },
             json: {
               label: "Export to JSON",

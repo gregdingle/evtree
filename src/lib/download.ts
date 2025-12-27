@@ -1,6 +1,5 @@
 import { omit } from "es-toolkit";
 import { fromPairs, toPairs } from "es-toolkit/compat";
-import { toPng } from "html-to-image";
 
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
@@ -8,11 +7,12 @@ import { DecisionTree } from "./tree";
 /**
  * Export an HTML element as PNG
  */
-export const downloadHTMLElementAsPNG = (
+export const downloadHTMLElementAsPNG = async (
   element: HTMLElement,
   filename: string,
   backgroundColor: string,
 ) => {
+  const { toPng } = await import("html-to-image");
   toPng(element, {
     backgroundColor,
     pixelRatio: 2, // Higher quality for text
@@ -20,7 +20,7 @@ export const downloadHTMLElementAsPNG = (
 };
 
 // NOTE: see https://reactflow.dev/examples/misc/download-image
-export const downloadPNG = (
+export const downloadPNG = async (
   nodes: AppNode[],
   filename: string,
   backgroundColor: string,
@@ -79,6 +79,8 @@ export const downloadPNG = (
   tempSvg.appendChild(defs);
   viewportElem.appendChild(tempSvg);
 
+  const { toPng } = await import("html-to-image");
+
   toPng(viewportElem, {
     backgroundColor,
     width: imageWidth,
@@ -87,10 +89,10 @@ export const downloadPNG = (
       transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
     },
   })
-    .then((dataUrl) => {
+    .then((dataUrl: string) => {
       downloadImage(dataUrl, filename);
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.error("[EVTree] Failed to export PNG:", error);
     })
     .finally(() => {
@@ -202,3 +204,108 @@ function calculateViewport(
 
   return { x, y, zoom };
 }
+
+/**
+ * Export nodes as PDF by converting to PNG first, then embedding in PDF
+ */
+export const downloadPDF = async (
+  nodes: AppNode[],
+  filename: string,
+  backgroundColor: string,
+) => {
+  // Check if we have nodes to export
+  if (nodes.length === 0) {
+    console.error("[EVTree] No nodes to export");
+    return;
+  }
+
+  nodes = nodes.filter((node) => !node.hidden);
+
+  // Calculate bounding box first to determine dynamic image size
+  const bounds = calculateNodesBounds(nodes);
+
+  // Make width and height dynamic to fit small and large trees
+  const padding = 100;
+  const minImageSize = 400;
+  const maxImageSize = 4096;
+
+  // Calculate base image size based on content bounds with padding
+  const baseWidth = bounds.width + 2 * (padding * 2);
+  const baseHeight = bounds.height + 2 * padding;
+
+  // Ensure minimum size and cap at maximum size
+  const imageWidth = Math.min(Math.max(baseWidth, minImageSize), maxImageSize);
+  const imageHeight = Math.min(
+    Math.max(baseHeight, minImageSize),
+    maxImageSize,
+  );
+
+  // Calculate viewport transform
+  const viewport = calculateViewport(bounds, imageWidth, imageHeight);
+
+  const viewportElem = window.document.querySelector(".react-flow__viewport");
+  if (!viewportElem || !(viewportElem instanceof HTMLElement)) {
+    console.error("[EVTree] Viewport element not found");
+    return;
+  }
+
+  // Clone arrow marker definitions into viewport
+  const markerDefs = window.document.querySelectorAll(
+    'svg marker[id^="arrow"]',
+  );
+  const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  tempSvg.setAttribute("width", "0");
+  tempSvg.setAttribute("height", "0");
+  tempSvg.style.position = "absolute";
+  tempSvg.style.top = "0";
+  tempSvg.style.left = "0";
+
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  markerDefs.forEach((marker) => {
+    defs.appendChild(marker.cloneNode(true));
+  });
+  tempSvg.appendChild(defs);
+  viewportElem.appendChild(tempSvg);
+
+  const { toPng } = await import("html-to-image");
+  const { default: jsPDF } = await import("jspdf");
+
+  toPng(viewportElem, {
+    backgroundColor,
+    width: imageWidth,
+    height: imageHeight,
+    style: {
+      transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+    },
+  })
+    .then((dataUrl: string) => {
+      // Create PDF with appropriate dimensions
+      // Convert pixels to mm (assuming 96 DPI: 1 inch = 25.4 mm, 96 px = 25.4 mm)
+      const pxToMm = 25.4 / 96;
+      const pdfWidth = imageWidth * pxToMm;
+      const pdfHeight = imageHeight * pxToMm;
+
+      // Determine orientation based on aspect ratio
+      const orientation = pdfWidth > pdfHeight ? "landscape" : "portrait";
+
+      // Create PDF with custom dimensions
+      const pdf = new jsPDF({
+        orientation,
+        unit: "mm",
+        format: [pdfWidth, pdfHeight],
+      });
+
+      // Add the image to the PDF
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      // Save the PDF
+      pdf.save(filename);
+    })
+    .catch((error: Error) => {
+      console.error("[EVTree] Failed to export PDF:", error);
+    })
+    .finally(() => {
+      // Clean up temporary SVG
+      viewportElem.removeChild(tempSvg);
+    });
+};
