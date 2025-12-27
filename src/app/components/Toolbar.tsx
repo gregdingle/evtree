@@ -24,11 +24,11 @@ import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { useTemporalStore } from "@/hooks/use-temporal-store";
 import {
-  downloadHTMLElementAsPNG,
-  downloadJson,
-  downloadPDF,
-  downloadPNG,
-} from "@/lib/download";
+  exportHTMLElementAsPNG,
+  exportJson,
+  exportPDF,
+  exportPNG,
+} from "@/lib/export";
 import { firebaseApp } from "@/lib/firebase";
 import {
   selectCurrentTree,
@@ -76,7 +76,7 @@ export default function Toolbar() {
   const isDarkMode = useDarkMode();
 
   const handleDownloadTree = (treeToDownload: DecisionTree) => {
-    downloadJson(
+    exportJson(
       treeToDownload,
       `treedecisions-${kebabCase(treeToDownload.name ?? "untitled")}.json`,
     );
@@ -114,7 +114,7 @@ export default function Toolbar() {
       const histogramElement =
         window.document.getElementById("histogram-export");
       if (histogramElement) {
-        downloadHTMLElementAsPNG(
+        exportHTMLElementAsPNG(
           histogramElement,
           `${filename}-histogram.png`,
           backgroundColor,
@@ -124,7 +124,7 @@ export default function Toolbar() {
       }
     } else {
       // Export the tree as usual
-      downloadPNG(values(tree.nodes ?? []), `${filename}.png`, backgroundColor);
+      exportPNG(values(tree.nodes ?? []), `${filename}.png`, backgroundColor);
     }
   };
 
@@ -137,7 +137,7 @@ export default function Toolbar() {
           "#141414"
         : "#fffbeb");
 
-    downloadPDF(values(tree.nodes ?? []), filename, backgroundColor);
+    exportPDF(values(tree.nodes ?? []), filename, backgroundColor);
   };
 
   const handleArrange = (mode?: string) => {

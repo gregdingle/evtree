@@ -7,7 +7,7 @@ import { DecisionTree } from "./tree";
 /**
  * Export an HTML element as PNG
  */
-export const downloadHTMLElementAsPNG = async (
+export const exportHTMLElementAsPNG = async (
   element: HTMLElement,
   filename: string,
   backgroundColor: string,
@@ -16,11 +16,11 @@ export const downloadHTMLElementAsPNG = async (
   toPng(element, {
     backgroundColor,
     pixelRatio: 2, // Higher quality for text
-  }).then((dataUrl) => downloadImage(dataUrl, filename));
+  }).then((dataUrl) => exportImage(dataUrl, filename));
 };
 
 // NOTE: see https://reactflow.dev/examples/misc/download-image
-export const downloadPNG = async (
+export const exportPNG = async (
   nodes: AppNode[],
   filename: string,
   backgroundColor: string,
@@ -90,7 +90,7 @@ export const downloadPNG = async (
     },
   })
     .then((dataUrl: string) => {
-      downloadImage(dataUrl, filename);
+      exportImage(dataUrl, filename);
     })
     .catch((error: Error) => {
       console.error("[EVTree] Failed to export PNG:", error);
@@ -101,7 +101,7 @@ export const downloadPNG = async (
     });
 };
 
-export function downloadImage(dataUrl: string, filename: string) {
+export function exportImage(dataUrl: string, filename: string) {
   const a = document.createElement("a");
 
   a.setAttribute("download", filename);
@@ -123,7 +123,7 @@ export const cleanTree = (tree: DecisionTree): DecisionTree => {
   return cleanTree;
 };
 
-export const downloadJson = (tree: DecisionTree, filename: string) => {
+export const exportJson = (tree: DecisionTree, filename: string) => {
   const json = JSON.stringify(cleanTree(tree), null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -208,7 +208,7 @@ function calculateViewport(
 /**
  * Export nodes as PDF by converting to PNG first, then embedding in PDF
  */
-export const downloadPDF = async (
+export const exportPDF = async (
   nodes: AppNode[],
   filename: string,
   backgroundColor: string,

@@ -112,6 +112,7 @@ const middlewares = (
   f: StateCreator<StoreState, [["zustand/devtools", unknown]]>,
 ) =>
   persist(
+    // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
     temporal(immer(devtools(f)), {
       // NOTE: throttling is needed for actions like dragging nodes across the canvas
       handleSet: (handleSet) =>
@@ -998,6 +999,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
 export const useStore = createSelectorFunctions(
+  // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
   useStoreBase,
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
 

@@ -6,7 +6,7 @@ import {
 } from "@firebase/storage";
 import { keys } from "es-toolkit/compat";
 
-import { cleanTree } from "./download";
+import { cleanTree } from "./export";
 import { DecisionTree } from "./tree";
 
 const fileExtension = ".json.enc";
