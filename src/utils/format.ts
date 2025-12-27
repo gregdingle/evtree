@@ -94,14 +94,39 @@ export function formatProbability(
  *
  * @see https://graphicdesign.stackexchange.com/questions/68674/what-s-the-right-character-for-a-minus-sign
  */
-export function formatCost(cost: string | number | undefined | null): string {
+export function formatCost(
+  cost: string | number | undefined | null,
+  currencyCode: CurrencyCode,
+  roundingCode: RoundingCode,
+): string {
   if (cost === undefined || cost === null || cost == 0) {
     return "";
   }
   // NOTE: common case... no expression
   const num = Number(normalizeExpression(cost.toString()));
   if (Number.isFinite(num) && num >= 0) {
-    return `-${cost}`;
+    // TODO: consolidate this currency and rounding logic with formatValue and with formatHistogramNumber
+    const currency = CURRENCIES[currencyCode];
+    const rounding = ROUNDING[roundingCode];
+
+    // If no rounding code or scale is empty, format without scale
+    if (!roundingCode || !rounding.scale || Math.abs(num) < 1000) {
+      const formatted = num.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+        maximumSignificantDigits: 4,
+      });
+      return `-${currency.symbol}${formatted}\u00A0`; // add non-breaking space for centering better
+    }
+
+    // Create custom scale from rounding configuration
+    const customScale = new humanFormat.Scale(rounding.scale);
+    const humanized = humanFormat(num, {
+      scale: customScale,
+      maxDecimals: "auto",
+      separator: "",
+    });
+
+    return `-${currency.symbol}${humanized}\u00A0`; // add non-breaking space for centering better
   }
   // NOTE: use official minus sign for non-numeric costs... it just looks better
   // when prefixing the parens
@@ -137,11 +162,12 @@ export const formatHistogramNumber = (
   currencyCode: CurrencyCode,
   roundingCode: RoundingCode,
 ): string => {
+  // TODO: consolidate this currency and rounding logic with formatValue and with formatCost
   const currency = CURRENCIES[currencyCode];
   const rounding = ROUNDING[roundingCode];
 
   // If no rounding code or scale is empty, format without scale
-  if (!roundingCode || !rounding.scale || num < 1000) {
+  if (!roundingCode || !rounding.scale || Math.abs(num) < 1000) {
     const formatted = num.toLocaleString(undefined, {
       maximumFractionDigits: 2,
       maximumSignificantDigits: 4,

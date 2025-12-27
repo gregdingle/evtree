@@ -18,7 +18,7 @@ import {
   selectShowPathEVs,
 } from "@/lib/selectors";
 import { variablesToRecord } from "@/lib/variable";
-import { formatProbability, formatValue } from "@/utils/format";
+import { formatCost, formatProbability, formatValue } from "@/utils/format";
 
 import { InlineEdit } from "./InlineEdit";
 import { GhostNode, NoteNode } from "./NoteNode";
@@ -40,7 +40,13 @@ interface BaseNodeProps {
   hasParent: boolean;
 }
 
-const BaseNode = ({ children, id, selected, hasParent }: BaseNodeProps) => {
+const BaseNode = ({
+  children,
+  id,
+  selected,
+  hasParent,
+  data,
+}: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const isMediumScreenSizeOrLarger = useBreakpoint("md");
@@ -50,22 +56,21 @@ const BaseNode = ({ children, id, selected, hasParent }: BaseNodeProps) => {
   const rounding = useStore(selectCurrentRounding);
 
   const shouldShowPathEV = showEVs && (showPathEVs || !hasParent);
+  const { onNodeDataUpdate } = useStore.getState();
 
   return (
     <div
       className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
-      {/* TODO: deprecated... remove if no longer needed
       {data.costExpr && (
-        <div className="absolute -top-6 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
+        <div className="absolute -top-6.5 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
           <InlineEdit
             value={data.costExpr}
             onCommit={(value) => onNodeDataUpdate(id, { costExpr: value })}
-            displayFormatter={formatCost}
+            displayFormatter={(cost) => formatCost(cost, currency, rounding)}
           />
         </div>
       )}
-         */}
       {children}
       {shouldShowPathEV && (
         <div

@@ -974,7 +974,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           return state;
         },
         undefined,
-        { type: "onShowEVs" },
+        { type: "onShowEVs", showPathEVs },
       );
     },
 
