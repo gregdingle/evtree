@@ -8,7 +8,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "simple-git-hooks"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.5",
@@ -60,8 +61,12 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.6.2",
+    "simple-git-hooks": "^2.13.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm test"
   }
 }
