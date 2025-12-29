@@ -1,4 +1,4 @@
-import { CanvasCenteredHelpMessage } from "./components/CanvasCenteredHelpMessage";
+import { CanvasCenteredHelpMessage } from "@/components/CanvasCenteredHelpMessage";
 
 export default function Loading() {
   // TODO: something fancier

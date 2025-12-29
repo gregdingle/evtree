@@ -1,6 +1,6 @@
 "use client";
 
-import { CanvasCenteredHelpMessage } from "./components/CanvasCenteredHelpMessage";
+import { CanvasCenteredHelpMessage } from "@/components/CanvasCenteredHelpMessage";
 
 /**
  * see https://nextjs.org/docs/app/api-reference/file-conventions/error#global-error

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { ContextMenuProps } from "@/app/components/ContextMenu";
+import { ContextMenuProps } from "@/components/ContextMenu";
 import { AppNode } from "@/lib/node";
 
 /**

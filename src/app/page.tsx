@@ -10,17 +10,16 @@ import {
   initializeAppCheck,
 } from "firebase/app-check";
 
+import CollapsiblePanel from "@/components/CollapsiblePanel";
+import { Histogram } from "@/components/Histogram";
+import LeftSidePanel from "@/components/LeftSidePanel";
+import ReactFlowApp from "@/components/ReactFlowApp";
+import RightSidePanel from "@/components/RightSidePanel";
+import Toolbar from "@/components/Toolbar";
 import { useStore } from "@/hooks/use-store";
 import { firebaseApp } from "@/lib/firebase";
 import { selectShowHistogram } from "@/lib/selectors";
 import { downloadSharedTree, extractShareHash } from "@/lib/share";
-
-import CollapsiblePanel from "./components/CollapsiblePanel";
-import { Histogram } from "./components/Histogram";
-import LeftSidePanel from "./components/LeftSidePanel";
-import ReactFlowApp from "./components/ReactFlowApp";
-import RightSidePanel from "./components/RightSidePanel";
-import Toolbar from "./components/Toolbar";
 
 export default function Home() {
   // NOTE: Prevents hydration mismatch on server-side rendering caused by
