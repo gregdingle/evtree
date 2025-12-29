@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="font-black flex flex-col items-center justify-center space-y-0 py-20">
+    <div className="flex flex-col items-center justify-center space-y-0 py-20">
       <h1 className="text-2xl">Welcome to</h1>
       <div
         // NOTE: see also logo in Toolbar.tsx

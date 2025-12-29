@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-} from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 interface CollapsiblePanelProps {
   side: "left" | "right";
@@ -28,23 +25,6 @@ export default function CollapsiblePanel({
       : "-left-8 md:-left-4 rounded-l-md border-l border-t border-b"
   }`;
 
-  const ChevronIcon = () => {
-    // NOTE: Responsive design! Encourage hiding panel on small screens by making button bigger
-    if (isLeft) {
-      return isCollapsed ? (
-        <ChevronDoubleRightIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
-      ) : (
-        <ChevronDoubleLeftIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
-      );
-    } else {
-      return isCollapsed ? (
-        <ChevronDoubleLeftIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
-      ) : (
-        <ChevronDoubleRightIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
-      );
-    }
-  };
-
   return (
     <div className="relative">
       <button
@@ -52,7 +32,7 @@ export default function CollapsiblePanel({
         className={buttonClasses}
         aria-label={isCollapsed ? "Expand panel" : "Collapse panel"}
       >
-        <ChevronIcon />
+        <ChevronIcon isLeft={isLeft} isCollapsed={isCollapsed} />
       </button>
 
       {/* Panel content */}
@@ -62,3 +42,27 @@ export default function CollapsiblePanel({
     </div>
   );
 }
+
+// Helper component for the chevron icon
+const ChevronIcon = ({
+  isLeft,
+  isCollapsed,
+}: {
+  isLeft: boolean;
+  isCollapsed: boolean;
+}) => {
+  // NOTE: Responsive design! Encourage hiding panel on small screens by making button bigger
+  if (isLeft) {
+    return isCollapsed ? (
+      <ChevronRightIcon className="size-5 md:size-4" />
+    ) : (
+      <ChevronLeftIcon className="size-5 md:size-4" />
+    );
+  } else {
+    return isCollapsed ? (
+      <ChevronLeftIcon className="size-5 md:size-4" />
+    ) : (
+      <ChevronRightIcon className="size-5 md:size-4" />
+    );
+  }
+};

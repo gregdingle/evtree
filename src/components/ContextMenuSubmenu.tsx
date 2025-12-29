@@ -33,6 +33,8 @@ export function ContextMenuSubmenu({
       const submenuHeight = submenuRect.height;
       const hasSpaceAbove = spaceAbove >= submenuHeight;
 
+      // TODO: should we fix this lint warning?
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpenUpwards(wouldGoOffBottom && hasSpaceAbove);
     }
   }, [isHovered]);

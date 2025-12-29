@@ -32,7 +32,9 @@ export default function Home() {
       console.warn(
         "[EVTree] Firebase app is not initialized, skipping App Check",
       );
-      setIsValidClient(true);
+      if (!isValidClient) {
+        setIsValidClient(true);
+      }
       return;
     }
     // See https://stackoverflow.com/questions/77482473/next-js-firebase-appcheck-error-recaptcha-placeholder-element-must-be-an-ele
@@ -50,6 +52,7 @@ export default function Home() {
       console.debug("[EVTree] Client validated by Firebase App Check");
       setIsValidClient(true);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showHistogram = useStore(selectShowHistogram);
