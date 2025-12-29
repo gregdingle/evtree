@@ -1,6 +1,9 @@
 // Background colors
 // NOTE: codes are CSS color values
 
+/**
+ * @deprecated
+ */
 export const BACKGROUNDS = {
   // HACK: use empty string key for nice display of default
   // ... I may regret this later
@@ -16,4 +19,7 @@ export const BACKGROUNDS = {
   },
 } as const;
 
+/*
+ * @deprecated
+ */
 export type BackgroundColorCode = keyof typeof BACKGROUNDS;

@@ -41,11 +41,12 @@ export default function ReactFlowApp() {
   const backgroundColorCode = useStore(selectCurrentBackgroundColor);
 
   // Get system color mode preference
-  // TODO: backgroundColor breaks dark mode!!!
   const colorMode = useDarkMode() ? "dark" : "light";
   const { screenToFlowPosition } = useReactFlow();
 
   // Get the actual background color from the code
+  // TODO: backgroundColor breaks dark mode!!!
+  // TODO: now deprecated! remove if no longer needed
   const backgroundColor = backgroundColorCode
     ? BACKGROUNDS[backgroundColorCode]?.code
     : undefined;

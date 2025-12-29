@@ -21,7 +21,7 @@ import { firebaseApp } from "@/lib/firebase";
 import { selectShowHistogram } from "@/lib/selectors";
 import { downloadSharedTree, extractShareHash } from "@/lib/share";
 
-export default function Home() {
+export default function Editor() {
   // NOTE: Prevents hydration mismatch on server-side rendering caused by
   // Zustand loading from localStorage. See
   // https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only
@@ -81,11 +81,7 @@ export default function Home() {
                 <LeftSidePanel />
               </CollapsiblePanel>
             </div>
-            <div
-              // NOTE: #141414 copied from reactflow default dark mode
-              // NOTE: see also handleExportTree and download.ts
-              className="w-screen bg-amber-50 dark:bg-[#141414]"
-            >
+            <div className="w-screen bg-amber-50 dark:bg-neutral-900">
               {showHistogram ? (
                 <Histogram className="px-16 py-4" />
               ) : (

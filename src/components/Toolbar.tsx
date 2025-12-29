@@ -105,9 +105,9 @@ export default function Toolbar() {
       backgroundColor ??
       tree.backgroundColor ??
       (isDarkMode
-        ? // NOTE: colors copied from reactflow default dark mode... see also page.tsx
-          "#141414"
-        : "#fffbeb");
+        ? // NOTE: #171717 is neutral-900, very close to ReactFlow default dark mode (#141414)... see also page.tsx
+          "#171717"
+        : "#fffbeb"); // amber-50
 
     // If histogram is open, export it instead of the tree
     if (isHistogramOpen) {
@@ -133,9 +133,8 @@ export default function Toolbar() {
     const backgroundColor =
       tree.backgroundColor ??
       (isDarkMode
-        ? // NOTE: colors copied from reactflow default dark mode
-          "#141414"
-        : "#fffbeb");
+        ? "#171717" // neutral-900, see globals.css
+        : "#fffbeb"); // amber-50, same as Reactflow default
 
     exportPDF(values(tree.nodes ?? []), filename, backgroundColor);
   };
