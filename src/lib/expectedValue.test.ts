@@ -36,7 +36,7 @@ describe("computeNodeValues", () => {
     expect(nodes[2]!.data.value).toEqual(30);
   });
 
-  test("should weight values for a simple sequence", () => {
+  test("should weight values for a simple sequence of partial probabilities", () => {
     const nodes: ComputeNode[] = [
       { id: "1", data: { value: null, cost: null, priorCosts: 0 } },
       { id: "2", data: { value: null, cost: null, priorCosts: 0 } },

@@ -174,12 +174,18 @@ function computeNodeValuesRecursive(
     }
 
     const childProbability = childEdge.data?.probability ?? null;
+
+    // Add probability to total regardless of whether child value is null
+    if (childProbability !== null) {
+      totalProbability += childProbability;
+    }
+
+    // Only compute expected value for children with both value and probability
     if (childValue !== null && childProbability !== null) {
       if (expectedValue === null) {
         expectedValue = 0;
       }
       expectedValue += childValue * childProbability;
-      totalProbability += childProbability;
     }
   });
 
@@ -188,17 +194,15 @@ function computeNodeValuesRecursive(
   // Use epsilon comparison for floating point tolerance
   const probabilityIsOne = Math.abs(totalProbability - 1) < EPSILON;
 
-  if (probabilityIsOne) {
-    // Assign the computed value (or leave as null if no non-null children)
-    currentNode.data.value = expectedValue;
-  } else {
+  if (!probabilityIsOne && totalProbability > 0) {
     // eslint-disable-next-line no-console
     console.debug(
-      `[EVTree] Node ${currentNode.id} has children with total probability not equal to 1.0 (got ${totalProbability}).`,
+      `[EVTree] Node ${currentNode.id} has children with total probability not equal to 1.0 (got ${totalProbability}). Computing partial EV.`,
     );
-    // NOTE: a null value should show up in the UI as '???'
-    currentNode.data.value = null;
   }
+
+  // Assign the computed value (partial or complete)
+  currentNode.data.value = expectedValue;
 }
 
 function updateChildEdgeProbability(
