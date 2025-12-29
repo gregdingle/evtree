@@ -23,7 +23,7 @@ export function WarningCircle({
     >
       <ExclamationCircleIcon
         onClick={onClick}
-        className="ml-0.5 -mt-1 inline-block h-4 w-4 fill-red-600"
+        className="-mt-1 ml-0.5 inline-block h-4 w-4 fill-red-600"
       />
     </span>
   );

@@ -113,7 +113,7 @@ export default function CustomEdge({
         }}
       />
       <EdgeLabelRenderer>
-        <div className="nopan text-s leading-tight">
+        <div className="nopan leading-tight">
           <div
             style={{
               transform: transformLabel,
@@ -122,7 +122,7 @@ export default function CustomEdge({
               transition: style?.transition,
               maxWidth: `${labelWidth}px`,
             }}
-            className="absolute -top-0.5 text-center z-10"
+            className="absolute -top-0.5 z-10 text-center"
           >
             <InlineEdit
               value={label}
@@ -141,12 +141,12 @@ export default function CustomEdge({
               // TODO: animation is NOT finished... see getLayoutedElements
               transition: style?.transition,
             }}
-            className="absolute top-4 text-center z-10"
+            className="absolute top-4 z-10 text-center"
           >
             {hasDecisionNodeSource ? (
               showEVs && (
                 <div
-                  className="dark:hover:bg-gray-700 py-0.5 rounded italic"
+                  className="rounded py-0.5 italic dark:hover:bg-gray-700"
                   style={{ width: `${labelWidth}px` }}
                 >
                   {formatProbability(computedProbability, 0, "???", "")}

@@ -102,7 +102,7 @@ export default function VariablesInput({
         <span title={info}>{upperFirst(scope)} Variables</span>
         <span
           // NOTE: see also PropertyInput.tsx for similar styling
-          className="text-xs text-gray-500 pl-2"
+          className="pl-2 text-xs text-gray-500"
         >
           {" "}
           (optional)
@@ -111,9 +111,9 @@ export default function VariablesInput({
           <Tooltip
             text={info}
             position="top"
-            className="inline-block pl-1 cursor-pointer float-right"
+            className="float-right inline-block cursor-pointer pl-1"
           >
-            <InformationCircleIcon className="h-6 w-6 -mb-1 text-gray-500" />
+            <InformationCircleIcon className="-mb-1 h-6 w-6 text-gray-500" />
           </Tooltip>
         )}
       </summary>

@@ -128,7 +128,7 @@ export default function ContextMenu({
         zIndex: 1000,
       }}
       // NOTE: Responsive design! Read-only mode for below medium size screens
-      className="hidden md:block rounded border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
+      className="hidden rounded border border-gray-300 bg-white py-1 shadow-lg md:block dark:border-gray-600 dark:bg-gray-800"
       onContextMenu={(e) => e.preventDefault()}
     >
       {contextNode ? (
@@ -269,7 +269,7 @@ export default function ContextMenu({
             Create Terminal Node
           </ContextMenuButton>
           <ContextMenuButton onClick={() => handleCreateNode("decision")}>
-            <div className="h-3.5 w-3.5 -ml-0.25 mr-0.5 border-1 border-current"></div>
+            <div className="mr-0.5 -ml-0.25 h-3.5 w-3.5 border-1 border-current"></div>
             Create Decision Node
           </ContextMenuButton>
           <hr className="m-2 border-gray-300 dark:border-gray-600" />

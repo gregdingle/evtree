@@ -32,15 +32,15 @@ export default function CollapsiblePanel({
     // NOTE: Responsive design! Encourage hiding panel on small screens by making button bigger
     if (isLeft) {
       return isCollapsed ? (
-        <ChevronDoubleRightIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
+        <ChevronDoubleRightIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
       ) : (
-        <ChevronDoubleLeftIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
+        <ChevronDoubleLeftIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
       );
     } else {
       return isCollapsed ? (
-        <ChevronDoubleLeftIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
+        <ChevronDoubleLeftIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
       ) : (
-        <ChevronDoubleRightIcon className="h-6 w-6 md:h-4 md:w-4 cursor-pointer" />
+        <ChevronDoubleRightIcon className="h-6 w-6 cursor-pointer md:h-4 md:w-4" />
       );
     }
   };

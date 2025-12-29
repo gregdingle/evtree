@@ -28,10 +28,10 @@ export default function Tooltip({
   };
 
   return (
-    <div className={`relative group ${className}`}>
+    <div className={`group relative ${className}`}>
       {children}
       <div
-        className={`absolute ${positionClasses[position]} z-50 whitespace-pre transform px-2 py-1 text-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none`}
+        className={`absolute ${positionClasses[position]} pointer-events-none z-50 transform rounded bg-gray-900 px-2 py-1 text-sm whitespace-pre text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-gray-100 dark:text-gray-900`}
       >
         {text}
       </div>

@@ -134,18 +134,18 @@ export function ToolbarButton({
             <button
               onClick={handleDropdownToggle}
               disabled={disabled}
-              className={`${getButtonClasses()} rounded-r rounded-l-none`}
+              className={`${getButtonClasses()} rounded-l-none rounded-r`}
               aria-expanded={isDropdownOpen}
               aria-haspopup="true"
             >
-              <ChevronDownIcon className="h-4 w-4 -mx-1 stroke-gray-700 dark:stroke-gray-100" />
+              <ChevronDownIcon className="-mx-1 h-4 w-4 stroke-gray-700 dark:stroke-gray-100" />
             </button>
           )}
         </div>
         {isDropdownOpen && (
           <div
             // TODO: consolidate menu styles somewhere. see also ContextMenu.tsx and LeftSidePanel.tsx
-            className="absolute right-0 top-full w-fit mt-1 py-1 dark:bg-gray-800 shadow-lg bg-white z-50"
+            className="absolute top-full right-0 z-50 mt-1 w-fit bg-white py-1 shadow-lg dark:bg-gray-800"
             role="menu"
           >
             {toPairs(dropdownItems).map(([key, label]) => {
@@ -160,12 +160,12 @@ export function ToolbarButton({
                       isActionItem ? label.onClick : undefined,
                     )
                   }
-                  className={`block w-full text-left px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`}
+                  className={`block w-full px-2 py-2 text-left whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-700`}
                   role="menuitem"
                 >
                   {!isActionItem && (
                     <CheckIcon
-                      className={`inline-block ${dropdownKey === key ? "" : "invisible"} align-text-bottom h-5 w-5 stroke-gray-700 dark:stroke-gray-100`}
+                      className={`inline-block ${dropdownKey === key ? "" : "invisible"} h-5 w-5 stroke-gray-700 align-text-bottom dark:stroke-gray-100`}
                     />
                   )}
                   <span className="mx-1 text-gray-700 dark:text-gray-200">

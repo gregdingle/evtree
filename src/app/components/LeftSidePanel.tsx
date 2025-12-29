@@ -63,15 +63,15 @@ export default function LeftSidePanel() {
 
   return (
     /* NOTE: Responsive design! Smaller width below medium size screens */
-    <div className="w-60 md:w-80 p-4">
+    <div className="w-60 p-4 md:w-80">
       {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
-      <div className="hidden md:flex mb-4 justify-between space-x-2">
+      <div className="mb-4 hidden justify-between space-x-2 md:flex">
         <h2 className="text-lg font-semibold">
           Trees
           <Tooltip
             text={`These are your decision trees, \nincluding some free examples. \n\nThese trees are stored locally in \nyour browser. Click \n“Save & Copy Link” to share an \nencrypted copy of your tree.`}
             position="bottomright"
-            className="pl-1 cursor-pointer font-normal inline-block -mb-1.25"
+            className="-mb-1.25 inline-block cursor-pointer pl-1 font-normal"
           >
             <InformationCircleIcon className="h-6 w-6 text-gray-500" />
           </Tooltip>
@@ -116,7 +116,7 @@ export default function LeftSidePanel() {
                     </p>
                   </div>
                   {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
-                  <div className="hidden md:flex space-x-1 ml-2">
+                  <div className="ml-2 hidden space-x-1 md:flex">
                     <div className="relative">
                       <Tooltip text="Act on this tree" position="left">
                         <button
@@ -180,7 +180,7 @@ export default function LeftSidePanel() {
         )}
         <div
           // TODO: beautify and standard warnings like this one
-          className="md:hidden mt-4 p-2 border-2 border-amber-400 rounded-sm italic"
+          className="mt-4 rounded-sm border-2 border-amber-400 p-2 italic md:hidden"
         >
           <b>Read-only mode active.</b> Switch to a larger screen to create and
           edit trees.

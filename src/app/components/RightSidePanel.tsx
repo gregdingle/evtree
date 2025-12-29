@@ -83,7 +83,7 @@ export default function RightSidePanel() {
 
   return (
     // HACK: depends on Toolbar height also
-    <div className="w-80 p-4 h-[calc(100vh-70px)] relative">
+    <div className="relative h-[calc(100vh-70px)] w-80 p-4">
       <h2 className="mb-8 text-lg font-semibold">{titlePrefix} Properties</h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
@@ -142,13 +142,13 @@ export default function RightSidePanel() {
       <footer
         // HACK: only show when at least 800px height to avoid overlapping with other content
         // NOTE: see also message on ReactFlowApp canvas when less than 800px height
-        className="hidden [@media(min-height:800px)]:block absolute bottom-5 right-0 w-80 text-center text-sm"
+        className="absolute right-0 bottom-5 hidden w-80 text-center text-sm [@media(min-height:800px)]:block"
       >
         Feedback or questions?{" "}
         <a
           // TODO: extract contact email to global config
-          href="mailto:gregdingle@gmail.com?subject=TreeDecisions"
-          className="text-blue-700 dark:text-blue-400 hover:underline bold"
+          href="mailto:gregdingle@gmail.com,maaron@just-decisions.com?subject=TreeDecisions"
+          className="font-semibold text-blue-700 hover:underline dark:text-blue-400"
         >
           Email us
         </a>
@@ -297,7 +297,7 @@ function NodeProperties({
               variables={valueVariables}
               node={node}
               exprFor="valueExpr"
-              className="my-1 pl-1 basis-full"
+              className="my-1 basis-full pl-1"
             />
           ) : null}
         </PropertyInput>
@@ -348,7 +348,7 @@ function NodeProperties({
               <VariablesList
                 variables={costVariables}
                 node={node}
-                className="my-1 pl-1 basis-full"
+                className="my-1 basis-full pl-1"
                 exprFor="costExpr"
               />
             ) : null}

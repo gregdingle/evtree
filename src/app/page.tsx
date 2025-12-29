@@ -43,7 +43,7 @@ export default function Home() {
     }
     const firebaseAppCheck = initializeAppCheck(firebaseApp, {
       provider: new ReCaptchaV3Provider(
-        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
+        process.env["NEXT_PUBLIC_RECAPTCHA_SITE_KEY"]!,
       ),
     });
     getToken(firebaseAppCheck).then(() => {
@@ -70,7 +70,7 @@ export default function Home() {
       >
         <div className="flex h-full flex-col">
           {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
-          <div className="hidden md:block border-b">
+          <div className="hidden border-b md:block">
             <Toolbar />
           </div>
           <div className="flex flex-1">
@@ -91,7 +91,7 @@ export default function Home() {
               )}
             </div>
             {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
-            <div className="hidden md:block border-l">
+            <div className="hidden border-l md:block">
               <CollapsiblePanel side="right">
                 <RightSidePanel />
               </CollapsiblePanel>

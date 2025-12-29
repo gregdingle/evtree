@@ -207,7 +207,7 @@ export default function Toolbar() {
         />
         <h2 className="text-lg">TreeDecisions</h2>
       </div>
-      <div className="flex justify-start space-x-2 mx-8">
+      <div className="mx-8 flex justify-start space-x-2">
         <ToolbarButton
           onButtonClick={() => onCopy()}
           tooltip="Ctrl+C"

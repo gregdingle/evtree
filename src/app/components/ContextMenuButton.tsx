@@ -15,7 +15,7 @@ export function ContextMenuButton({
       disabled={disabled}
       className={`${
         disabled ? "opacity-50" : ""
-      } flex whitespace-nowrap items-center gap-2 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700`}
+      } flex items-center gap-2 px-3 py-2 text-left whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-700`}
     >
       {children}
     </button>

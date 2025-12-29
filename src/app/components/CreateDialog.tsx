@@ -211,7 +211,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="min-w-xl relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800"
+            className="relative min-w-xl transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95 dark:bg-gray-800"
           >
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
               <div className="sm:flex sm:items-start">
@@ -293,7 +293,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                           value={newTreeName}
                           onChange={(e) => setNewTreeName(e.target.value)}
                           placeholder="Enter tree name..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset text-base dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           autoFocus
                           required
                         />
@@ -308,7 +308,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                             setNewTreeDescription(e.target.value)
                           }
                           placeholder="Enter tree description..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset text-base dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                         />
                       </div>
                     )}
@@ -323,7 +323,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                           value={newTreeName}
                           onChange={(e) => setNewTreeName(e.target.value)}
                           placeholder="Enter tree name..."
-                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset text-base dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
+                          className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           required
                         />
 
@@ -337,7 +337,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                             value={aiInputText}
                             onChange={(e) => setAiInputText(e.target.value)}
                             placeholder={`Example: I'm representing a party in a legal dispute that has generated years of expensive and acrimonious litigation over alleged defects in railroad cars designed to carry larger quantities of coal than a conventional railroad car. It isundisputed that...`}
-                            className="flex-2/3 rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset text-base dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
+                            className="flex-2/3 rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           />
                           <div className="mt-2 mb-4 flex-1/3 rounded-md border-0 px-3 py-1.5 text-base text-blue-600">
                             {!isExtractingText ? (
@@ -346,7 +346,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                                 onChange={handleFileUploadForAI}
                                 accept=".pdf,.doc,.docx,.txt,.rtf"
                                 // NOTE: text-transparent to hide the "no file chosen" system text
-                                className="text-transparent block w-full text-base file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-base file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                                className="block w-full text-base text-transparent file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-base file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
                               />
                             ) : (
                               <div

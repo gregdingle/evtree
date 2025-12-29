@@ -60,7 +60,7 @@ const BaseNode = ({
 
   return (
     <div
-      className={`nopan group relative text-s  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
+      className={`nopan group relative  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
     >
       {data.costExpr && (
         <div className="absolute -top-6.5 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
@@ -79,13 +79,13 @@ const BaseNode = ({
             left-1/2
             -translate-x-1/2
             transform
+            border-green-500
             text-center
             whitespace-nowrap
             italic
-            border-green-500
-            ${hasParent ? "border-1 -bottom-8" : "border-3 -bottom-9"}
-            px-1
+            ${hasParent ? "-bottom-8 border-1" : "-bottom-9 border-3"}
             rounded
+            px-1
           `}
         >
           {pathValue === null
@@ -111,8 +111,8 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div
         // TODO: what transparency level looks best here?
         className={`
-          p-3.5
           bg-sky-400
+          p-3.5
           ${selected ? "border-3 border-blue-500" : "border-3 border-sky-500"}
         `}
       >
@@ -147,8 +147,8 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       <div
         className={`
           rounded-full
-          p-3.5
-        bg-rose-400
+          bg-rose-400
+        p-3.5
         ${selected ? "border-3 border-blue-500" : "border-3 border-rose-500"}
       `}
       >
@@ -210,7 +210,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   return (
     <div
       // TODO: sholud also "nodrag" when not selected?
-      className={`nopan group relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div className="relative">
         {/* Selection border triangle (outer) */}
@@ -242,9 +242,9 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             border-b-[15px]
             border-l-0
             border-t-transparent
+            border-r-green-400
             border-b-transparent
             border-l-transparent
-            border-r-green-400
           `}
           style={{ left: "2px" }}
         />
@@ -257,7 +257,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         className={`opacity-0 group-hover:opacity-100 ${!hasParent ? "" : "invisible"}`}
       />
       <div
-        className={`absolute left-9 w-fit ${topOffset} whitespace-nowrap z-10 flex items-center gap-1`}
+        className={`absolute left-9 w-fit ${topOffset} z-10 flex items-center gap-1 whitespace-nowrap`}
       >
         <InlineEdit
           value={data.valueExpr}
@@ -308,7 +308,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         </div>
       )*/}
       {showEVs && (
-        <div className={`absolute italic top-4 left-9`}>
+        <div className={`absolute top-4 left-9 italic`}>
           {
             // NOTE: don't show the ??? placeholder for null pathProbability
             formatProbability(pathProbability, 1, "")

@@ -48,11 +48,11 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   return (
     <div
-      className={`nopan group relative text-s ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
         // NOTE: border-dashed should match the strokeDasharray of ArrowEdge
-        className={`w-48 min-h-12 p-2 border-2 border-dashed ${
+        className={`min-h-12 w-48 border-2 border-dashed p-2 ${
           // TODO: when note is selected, the bg is transparent, so the underlying content is visible... it's weird
           selected
             ? "border-blue-500 bg-blue-500/10"
@@ -102,7 +102,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             // NOTE: pb-1 is needed for textarea to not cut off descenders on last row of text
-            className={`h-auto overflow-hidden px-1 pb-1 m-0 text-gray-600 dark:text-gray-400 leading-snug bg-transparent border-none outline-none w-full resize-none ${isEditing ? "nodrag" : ""}`}
+            className={`m-0 h-auto w-full resize-none overflow-hidden border-none bg-transparent px-1 pb-1 leading-snug text-gray-600 outline-none dark:text-gray-400 ${isEditing ? "nodrag" : ""}`}
             placeholder="Enter note content"
             spellCheck={false}
             // NOTE: autoFocus needed when node is not selected
@@ -118,7 +118,7 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           <div
             // TODO: same hover colors as edge labels... but bg is yellow... do better?
             // NOTE: whitespace-pre-wrap is important for manual new lines
-            className="px-1 pb-1 text-gray-600 dark:text-gray-400 leading-snug  hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-pre-wrap"
+            className="cursor-pointer px-1 pb-1 leading-snug whitespace-pre-wrap  text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             onClick={isEditing ? undefined : handleClick}
           >
             {data.description || (
@@ -145,7 +145,7 @@ function resizeTextarea(target: HTMLTextAreaElement) {
 
 export function GhostNode({}: NodeProps<AppNode>) {
   return (
-    <div className="nopan cursor-move w-4 h-4">
+    <div className="nopan h-4 w-4 cursor-move">
       &nbsp;
       <Handle
         type="target"

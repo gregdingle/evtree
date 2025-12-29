@@ -52,7 +52,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
     ref,
   ) => {
     return (
-      <div className={`my-4 flex flex-wrap space-x-2 items-center`}>
+      <div className={`my-4 flex flex-wrap items-center space-x-2`}>
         <label
           htmlFor={label}
           // TODO: try to adjust width to fit all labels without line breaks?
@@ -79,7 +79,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             checked={checked ?? false}
             onChange={(e) => onCheckboxChange?.(e.target.checked)}
             disabled={disabled}
-            className="flex-1/4 h-5 w-5 cursor-pointer"
+            className="h-5 w-5 flex-1/4 cursor-pointer"
             {...props}
           />
         ) : textarea ? (
@@ -90,7 +90,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
               value={value ?? ""}
               onChange={(e) => onChange?.(e.target.value)}
               disabled={disabled}
-              className={`flex-3/4 min-w-0 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
+              className={`min-w-0 flex-3/4 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
               rows={4}
               {...props}
             />
@@ -98,7 +98,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
               <Tooltip
                 text={info}
                 position="left"
-                className="pl-1 cursor-pointer not-italic"
+                className="cursor-pointer pl-1 not-italic"
               >
                 <InformationCircleIcon className="h-6 w-6 text-gray-500" />
               </Tooltip>
@@ -111,7 +111,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`flex-1/4 min-w-0 rounded-md p-1 ${
+            className={`min-w-0 flex-1/4 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"
             }`}
           >
@@ -129,7 +129,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             value={value ?? ""}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className={`min-w-0 rounded-md p-1 flex-1/4 ${
+            className={`min-w-0 flex-1/4 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"
             }`}
             spellCheck={false}
@@ -140,7 +140,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           <Tooltip
             text={info}
             position="left"
-            className="inline-block pl-1 cursor-pointer not-italic"
+            className="inline-block cursor-pointer pl-1 not-italic"
           >
             <InformationCircleIcon className="h-6 w-6 text-gray-500" />
           </Tooltip>
