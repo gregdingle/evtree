@@ -1,3 +1,4 @@
+import { round } from "es-toolkit";
 import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval";
 
@@ -32,6 +33,8 @@ export interface ComputeEdge {
     probability: number | null;
   };
 }
+
+const EPSILON = 1e-10;
 
 /**
  * Computes values recursively for input `nodes`. The value of a
@@ -182,13 +185,16 @@ function computeNodeValuesRecursive(
 
   currentNode.data.priorCosts = cumulativeCost - (currentNode.data.cost ?? 0);
 
-  if (totalProbability == 1) {
+  // Use epsilon comparison for floating point tolerance
+  const probabilityIsOne = Math.abs(totalProbability - 1) < EPSILON;
+
+  if (probabilityIsOne) {
     // Assign the computed value (or leave as null if no non-null children)
     currentNode.data.value = expectedValue;
   } else {
     // eslint-disable-next-line no-console
     console.debug(
-      `[EVTree] Node ${currentNode.id} has children with total probability not equal to 1.0.`,
+      `[EVTree] Node ${currentNode.id} has children with total probability not equal to 1.0 (got ${totalProbability}).`,
     );
     // NOTE: a null value should show up in the UI as '???'
     currentNode.data.value = null;
@@ -202,7 +208,8 @@ function updateChildEdgeProbability(
   childEdge: ComputeEdge,
 ) {
   if (maxChildValue !== null && bestProbability !== null) {
-    if (childValue !== null && childValue === maxChildValue) {
+    // Use epsilon comparison for floating point tolerance
+    if (childValue !== null && Math.abs(childValue - maxChildValue) < EPSILON) {
       childEdge.data!.probability = bestProbability;
     } else {
       childEdge.data!.probability = 0;
@@ -321,19 +328,23 @@ export function normalizeExpression(expression: string | undefined): string {
 }
 
 /**
- * Convert a percentage expression like "25%" to its decimal equivalent, "0.25"
+ * Convert a percentage expression like "25%" to its decimal equivalent, "0.25".
+ * Invalid percentages return the original expression.
  *
  * TODO: would it be better to expect percentages everywhere and not allow
  * decimal probabilities? percentage is the current default for display
  */
-export function convertPercentage(
-  expression: string | undefined,
-): string | undefined {
+export function convertPercentage(expression: string | undefined): string {
   if (expression?.trim().endsWith("%")) {
     const numStr = expression.trim().slice(0, -1).trim();
+    // Empty string before % should return original
+    if (numStr === "") {
+      return expression;
+    }
     const num = Number(numStr);
     if (!isNaN(num)) {
-      return (num / 100).toString();
+      // NOTE: see also EPSILON
+      return round(num / 100, 10).toString();
     }
   }
   return expression ?? "";
