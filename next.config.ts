@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // reactStrictMode: false, // Temporarily disabled to test double-mount issue
+  // cacheComponents: true, TODO: actually add some cached components
   reactCompiler: true,
   turbopack: {
     // See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#webpack-loaders
