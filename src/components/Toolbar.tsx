@@ -103,7 +103,6 @@ export default function Toolbar() {
     const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}`;
     backgroundColor =
       backgroundColor ??
-      tree.backgroundColor ??
       (isDarkMode
         ? // NOTE: #171717 is neutral-900, very close to ReactFlow default dark mode (#141414)... see also page.tsx
           "#171717"
@@ -124,19 +123,19 @@ export default function Toolbar() {
       }
     } else {
       // Export the tree as usual
-      exportPNG(values(tree.nodes ?? []), `${filename}.png`, backgroundColor);
+      exportPNG(
+        values(tree.nodes ?? []),
+        `${filename}.png`,
+        backgroundColor,
+        isDarkMode,
+      );
     }
   };
 
   const handleExportPDF = (tree: DecisionTree) => {
     const filename = `treedecisions-${kebabCase(tree.name ?? "untitled")}.pdf`;
-    const backgroundColor =
-      tree.backgroundColor ??
-      (isDarkMode
-        ? "#171717" // neutral-900, see globals.css
-        : "#fffbeb"); // amber-50, same as Reactflow default
 
-    exportPDF(values(tree.nodes ?? []), filename, backgroundColor);
+    exportPDF(values(tree.nodes ?? []), filename, isDarkMode, tree.name);
   };
 
   const handleArrange = (mode?: string) => {

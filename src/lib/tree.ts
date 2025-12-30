@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
 
-import { BackgroundColorCode } from "./background";
 import { CurrencyCode } from "./currency";
 import { AppEdge } from "./edge";
 import { AppNode } from "./node";
@@ -19,17 +18,10 @@ export interface DecisionTree {
   variables?: Variable[];
   currency?: CurrencyCode;
   rounding?: RoundingCode;
-  /**
-   * @deprecated talk to Marjorie... isn't transparent background on export enough?
-   */
-  backgroundColor?: BackgroundColorCode;
 }
 
 export type DecisionTreeSimpleProperties = Partial<
-  Pick<
-    DecisionTree,
-    "name" | "description" | "currency" | "rounding" | "backgroundColor"
-  >
+  Pick<DecisionTree, "name" | "description" | "currency" | "rounding">
 >;
 
 export function createTree(

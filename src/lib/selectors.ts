@@ -19,7 +19,6 @@ import {
   buildNodeToIncomingEdgeMap,
   buildParentToChildNodeMap,
 } from "../lib/maps";
-import { BackgroundColorCode } from "./background";
 import { CurrencyCode } from "./currency";
 import { RoundingCode } from "./rounding";
 
@@ -64,13 +63,6 @@ export function selectCurrentCurrency(state: StoreState): CurrencyCode {
 export function selectCurrentRounding(state: StoreState): RoundingCode {
   const currentTree = selectCurrentTree(state);
   return currentTree?.rounding ?? "";
-}
-
-export function selectCurrentBackgroundColor(
-  state: StoreState,
-): BackgroundColorCode {
-  const currentTree = selectCurrentTree(state);
-  return currentTree?.backgroundColor ?? "";
 }
 
 /**

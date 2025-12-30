@@ -17,14 +17,9 @@ import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
-import { BACKGROUNDS } from "@/lib/background";
 import { AppEdge } from "@/lib/edge";
 import { buildChildToParentNodeMap } from "@/lib/maps";
-import {
-  selectCurrentBackgroundColor,
-  selectCurrentEdges,
-  selectCurrentNodes,
-} from "@/lib/selectors";
+import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 
 import { ArrowMarker } from "./ArrowMarker";
 import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
@@ -38,18 +33,10 @@ export default function ReactFlowApp() {
 
   const nodes = useStore(selectCurrentNodes);
   const edges = useStore(selectCurrentEdges);
-  const backgroundColorCode = useStore(selectCurrentBackgroundColor);
 
   // Get system color mode preference
   const colorMode = useDarkMode() ? "dark" : "light";
   const { screenToFlowPosition } = useReactFlow();
-
-  // Get the actual background color from the code
-  // TODO: backgroundColor breaks dark mode!!!
-  // TODO: now deprecated! remove if no longer needed
-  const backgroundColor = backgroundColorCode
-    ? BACKGROUNDS[backgroundColorCode]?.code
-    : undefined;
 
   // Context menu hook
   const { menu, ref, onContextMenu, closeMenu } = useContextMenu();
@@ -129,7 +116,6 @@ export default function ReactFlowApp() {
         edgeTypes={edgeTypes}
         selectionMode={SelectionMode.Partial}
         colorMode={colorMode}
-        style={{ backgroundColor }}
         fitView
         onNodesChange={(changes) => {
           onNodesChange(changes);

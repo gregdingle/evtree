@@ -24,6 +24,7 @@ export const exportPNG = async (
   nodes: AppNode[],
   filename: string,
   backgroundColor: string,
+  isDarkMode: boolean,
 ) => {
   // Check if we have nodes to export
   if (nodes.length === 0) {
@@ -81,24 +82,36 @@ export const exportPNG = async (
 
   const { toPng } = await import("html-to-image");
 
-  toPng(viewportElem, {
-    backgroundColor,
-    width: imageWidth,
-    height: imageHeight,
-    style: {
-      transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-    },
-  })
-    .then((dataUrl: string) => {
-      exportImage(dataUrl, filename);
-    })
-    .catch((error: Error) => {
-      console.error("[EVTree] Failed to export PNG:", error);
-    })
-    .finally(() => {
-      // Clean up temporary SVG
-      viewportElem.removeChild(tempSvg);
+  try {
+    const dataUrl = await toPng(viewportElem, {
+      backgroundColor,
+      width: imageWidth,
+      height: imageHeight,
+      style: {
+        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+      },
     });
+
+    // Add watermark to the PNG
+    try {
+      const watermarkedDataUrl = await addWatermarkToPNG(
+        dataUrl,
+        imageWidth,
+        imageHeight,
+        isDarkMode,
+      );
+      exportImage(watermarkedDataUrl, filename);
+    } catch (error) {
+      console.error("[EVTree] Failed to add watermark:", error);
+      // Fallback to original image if watermarking fails
+      exportImage(dataUrl, filename);
+    }
+  } catch (error) {
+    console.error("[EVTree] Failed to export PNG:", error);
+  } finally {
+    // Clean up temporary SVG
+    viewportElem.removeChild(tempSvg);
+  }
 };
 
 export function exportImage(dataUrl: string, filename: string) {
@@ -107,6 +120,76 @@ export function exportImage(dataUrl: string, filename: string) {
   a.setAttribute("download", filename);
   a.setAttribute("href", dataUrl);
   a.click();
+}
+
+/**
+ * Add TreeDecisions watermark with favicon to bottom left of PNG
+ */
+async function addWatermarkToPNG(
+  dataUrl: string,
+  imageWidth: number,
+  imageHeight: number,
+  isDarkMode: boolean,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = imageWidth;
+    canvas.height = imageHeight;
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      reject(new Error("Could not get canvas context"));
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      // Draw the original image
+      ctx.drawImage(img, 0, 0);
+
+      // Load favicon
+      const favicon = new Image();
+      favicon.onload = () => {
+        const padding = 20;
+        const logoSize = 32;
+        const fontSize = 24;
+        const textOffset = 8;
+
+        // Use semi-transparent colors (50% opacity)
+        ctx.fillStyle = isDarkMode
+          ? "rgba(255, 255, 255, 0.5)"
+          : "rgba(0, 0, 0, 0.5)";
+        // TODO: base this on actual Tailwind CSS colors
+
+        // Draw favicon with transparency
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(
+          favicon,
+          padding,
+          imageHeight - padding - logoSize,
+          logoSize,
+          logoSize,
+        );
+
+        // Draw text with transparency
+        // TODO: unify with globals.css
+        ctx.font = `${fontSize}px Geist, sans-serif`;
+        ctx.fillText(
+          "Made with TreeDecisions.app",
+          padding + logoSize + textOffset,
+          imageHeight - padding - logoSize / 2 + fontSize / 3,
+        );
+
+        ctx.globalAlpha = 1.0; // Reset opacity
+
+        resolve(canvas.toDataURL("image/png"));
+      };
+      favicon.onerror = () => reject(new Error("Failed to load favicon"));
+      favicon.src = "/favicon.svg";
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = dataUrl;
+  });
 }
 
 export const cleanTree = (tree: DecisionTree): DecisionTree => {
@@ -206,13 +289,20 @@ function calculateViewport(
 }
 
 /**
- * Export nodes as PDF by converting to PNG first, then embedding in PDF
+ * Export nodes as PDF by converting to PNG first, then embedding in PDF.
+ *
+ * Adds a title to the upper left of the PDF.
  */
 export const exportPDF = async (
   nodes: AppNode[],
   filename: string,
-  backgroundColor: string,
+  isDarkMode: boolean,
+  title: string,
 ) => {
+  const backgroundColor = isDarkMode
+    ? "#171717" // neutral-900, see globals.css
+    : "#fffbeb"; // amber-50, same as Reactflow default
+
   // Check if we have nodes to export
   if (nodes.length === 0) {
     console.error("[EVTree] No nodes to export");
@@ -270,42 +360,76 @@ export const exportPDF = async (
   const { toPng } = await import("html-to-image");
   const { default: jsPDF } = await import("jspdf");
 
-  toPng(viewportElem, {
-    backgroundColor,
-    width: imageWidth,
-    height: imageHeight,
-    style: {
-      transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-    },
-  })
-    .then((dataUrl: string) => {
-      // Create PDF with appropriate dimensions
-      // Convert pixels to mm (assuming 96 DPI: 1 inch = 25.4 mm, 96 px = 25.4 mm)
-      const pxToMm = 25.4 / 96;
-      const pdfWidth = imageWidth * pxToMm;
-      const pdfHeight = imageHeight * pxToMm;
+  try {
+    const dataUrl = await toPng(viewportElem, {
+      backgroundColor,
+      width: imageWidth,
+      height: imageHeight,
+      style: {
+        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+      },
+    });
 
-      // Determine orientation based on aspect ratio
-      const orientation = pdfWidth > pdfHeight ? "landscape" : "portrait";
+    // Add watermark to the PNG first
+    try {
+      const watermarkedDataUrl = await addWatermarkToPNG(
+        dataUrl,
+        imageWidth,
+        imageHeight,
+        isDarkMode,
+      );
 
-      // Create PDF with custom dimensions
+      // Determine orientation from PNG dimensions
+      const orientation = imageWidth > imageHeight ? "landscape" : "portrait";
+
+      // Standard Letter size: 8.5" x 11"
+      // Convert inches to mm: 1 inch = 25.4 mm
+      const letterWidthMm = 8.5 * 25.4; // 215.9 mm
+      const letterHeightMm = 11 * 25.4; // 279.4 mm
+
+      const pdfWidth =
+        orientation === "landscape" ? letterHeightMm : letterWidthMm;
+      const pdfHeight =
+        orientation === "landscape" ? letterWidthMm : letterHeightMm;
+
+      // Create PDF with determined orientation
       const pdf = new jsPDF({
         orientation,
         unit: "mm",
-        format: [pdfWidth, pdfHeight],
+        format: "letter",
       });
 
-      // Add the image to the PDF
-      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // Add the watermarked image to the PDF
+      pdf.addImage(watermarkedDataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      // Add title to upper left if provided
+      if (title) {
+        const fontSize = 16;
+        const padding = 10;
+        pdf.setFontSize(fontSize);
+
+        // Determine if background is dark to use appropriate text/background colors
+        const textColor: [number, number, number] = isDarkMode
+          ? [255, 255, 255]
+          : [0, 0, 0]; // White or black text
+        // TODO: base this on actual Tailwind CSS colors
+
+        pdf.setTextColor(...textColor);
+
+        // Add the title text
+        pdf.text(title, padding, padding);
+      }
 
       // Save the PDF
       pdf.save(filename);
-    })
-    .catch((error: Error) => {
-      console.error("[EVTree] Failed to export PDF:", error);
-    })
-    .finally(() => {
-      // Clean up temporary SVG
-      viewportElem.removeChild(tempSvg);
-    });
+    } catch (error) {
+      console.error("[EVTree] Failed to add watermark for PDF:", error);
+      // Fallback: create PDF without watermark if watermarking fails
+    }
+  } catch (error) {
+    console.error("[EVTree] Failed to export PDF:", error);
+  } finally {
+    // Clean up temporary SVG
+    viewportElem.removeChild(tempSvg);
+  }
 };
