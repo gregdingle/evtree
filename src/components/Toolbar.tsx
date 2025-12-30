@@ -62,7 +62,6 @@ export default function Toolbar() {
   } = useStore.getState();
 
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const [isArrangeDisabled, setIsArrangeDisabled] = useState(false);
 
   const currentTree = useStore(selectCurrentTree);
   const hasSelectedItems = useStore(selectHasSelectedItems);
@@ -141,8 +140,6 @@ export default function Toolbar() {
 
   const handleArrange = (mode?: string) => {
     onArrange(mode === "rightAligned");
-    // HACK: allow reactflow to before disabling
-    setTimeout(() => setIsArrangeDisabled(true), 0);
   };
 
   const handleReset = () => {
@@ -156,9 +153,7 @@ export default function Toolbar() {
     }
   };
 
-  // Re-enable arrange button when nodes change
   useEffect(() => {
-    setIsArrangeDisabled(false);
     setIsLinkCopied(false);
   }, [currentTree?.nodes]);
 
@@ -210,7 +205,7 @@ export default function Toolbar() {
         <ToolbarButton
           onButtonClick={() => onCopy()}
           tooltip="Ctrl+C"
-          disabled={!hasSelectedItems}
+          disabled={!hasSelectedItems || isHistogramOpen}
         >
           <DocumentDuplicateIcon className="h-4 w-4" />
           Copy
@@ -226,7 +221,7 @@ export default function Toolbar() {
         <ToolbarButton
           onButtonClick={deleteSelected}
           tooltip="Ctrl+Delete"
-          disabled={!hasSelectedItems}
+          disabled={!hasSelectedItems || isHistogramOpen}
         >
           <TrashIcon className="h-4 w-4" />
           Delete
@@ -239,7 +234,7 @@ export default function Toolbar() {
         <ToolbarButton
           onButtonClick={handleArrange}
           tooltip="Ctrl+A"
-          disabled={!hasNodes || isArrangeDisabled}
+          disabled={!hasNodes || isHistogramOpen}
           dropdownItems={{
             compact: "Compact",
             rightAligned: "Right-aligned",
@@ -252,7 +247,7 @@ export default function Toolbar() {
         <ToolbarButton
           onButtonClick={() => undo()}
           tooltip="Ctrl+Z"
-          disabled={!canUndo}
+          disabled={!canUndo || isHistogramOpen}
         >
           <ArrowUturnLeftIcon className="h-4 w-4" />
           Undo
@@ -260,7 +255,7 @@ export default function Toolbar() {
         <ToolbarButton
           onButtonClick={() => redo()}
           tooltip="Ctrl+Y"
-          disabled={!canRedo}
+          disabled={!canRedo || isHistogramOpen}
         >
           <ArrowUturnRightIcon className="h-4 w-4" />
           Redo
@@ -273,7 +268,7 @@ export default function Toolbar() {
           }
           // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
           active={areEVsShowing}
-          disabled={!hasTerminalNodes}
+          disabled={!hasTerminalNodes || isHistogramOpen}
           // TODO: finish implementing app logic for dropdown
           dropdownItems={{
             show: "Show path values",
