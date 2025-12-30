@@ -18,6 +18,7 @@ import {
 import { kebabCase } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 import Image from "next/image";
+import Link from "next/link";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { useDarkMode } from "@/hooks/use-dark-mode";
@@ -187,20 +188,22 @@ export default function Toolbar() {
     // HACK: see also RightSidePanel "Email us" feedback link that depends on
     // height of Toolbar, also 'Empty canvas help text'
     <div className="flex h-full items-center space-x-4 p-4">
-      <div
-        // NOTE: w-80 is the same width as the left side panel, so that the
-        // toolbar actions are aligned
-        className="flex w-80 items-center space-x-2"
-      >
-        <Image
-          src="/favicon.svg"
-          alt="TreeDecisions logo"
-          width={24}
-          height={24}
-          className="dark:invert"
-        />
-        <h2 className="text-lg">TreeDecisions</h2>
-      </div>
+      <Link href="/">
+        <div
+          // NOTE: w-80 is the same width as the left side panel, so that the
+          // toolbar actions are aligned
+          className="flex w-80 items-center space-x-2"
+        >
+          <Image
+            src="/favicon.svg"
+            alt="TreeDecisions logo"
+            width={24}
+            height={24}
+            className="dark:invert"
+          />
+          <h2 className="text-lg">TreeDecisions</h2>
+        </div>
+      </Link>
       <div className="mx-8 flex justify-start space-x-2">
         <ToolbarButton
           onButtonClick={() => onCopy()}
