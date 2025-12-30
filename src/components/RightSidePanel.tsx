@@ -84,7 +84,9 @@ export default function RightSidePanel() {
   return (
     // HACK: depends on Toolbar height also
     <div className="relative h-[calc(100vh-70px)] w-80 p-4">
-      <h2 className="mb-8 text-lg font-semibold">{titlePrefix} Properties</h2>
+      <h2 className="mb-8 text-lg font-semibold select-none">
+        {titlePrefix} Properties
+      </h2>
       <div className="">
         {nodes.length === 0 && edges.length === 0 ? (
           <TreeProperties
@@ -94,7 +96,9 @@ export default function RightSidePanel() {
         ) : (
           <div className="">
             {nodes.length > 1 ? (
-              <h3 className="mb-4 font-semibold">Node Properties</h3>
+              <h3 className="mb-4 font-semibold select-none">
+                Node Properties
+              </h3>
             ) : null}
             {nodes.map((node) => {
               const cumulativeCosts =
@@ -142,7 +146,7 @@ export default function RightSidePanel() {
       <footer
         // HACK: only show when at least 800px height to avoid overlapping with other content
         // NOTE: see also message on ReactFlowApp canvas when less than 800px height
-        className="absolute right-0 bottom-5 hidden w-80 text-center text-sm [@media(min-height:800px)]:block"
+        className="absolute right-0 bottom-5 hidden w-80 text-center text-sm select-none [@media(min-height:800px)]:block"
       >
         Feedback or questions?{" "}
         <a

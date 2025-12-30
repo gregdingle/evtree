@@ -42,7 +42,7 @@ export function ContextMenuSubmenu({
   return (
     <div
       ref={triggerRef}
-      className="relative"
+      className="relative select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onContextMenu={(e) => e.preventDefault()}

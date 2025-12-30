@@ -63,7 +63,7 @@ export default function LeftSidePanel() {
 
   return (
     /* NOTE: Responsive design! Smaller width below medium size screens */
-    <div className="w-60 p-4 md:w-80">
+    <div className="w-60 p-4 select-none md:w-80">
       {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
       <div className="mb-4 hidden justify-between space-x-2 md:flex">
         <h2 className="text-lg font-semibold">

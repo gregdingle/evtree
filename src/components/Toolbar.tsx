@@ -192,7 +192,7 @@ export default function Toolbar() {
         <div
           // NOTE: w-80 is the same width as the left side panel, so that the
           // toolbar actions are aligned
-          className="flex w-80 items-center space-x-2"
+          className="flex w-80 items-center space-x-2 select-none"
         >
           <Image
             src="/favicon.svg"
