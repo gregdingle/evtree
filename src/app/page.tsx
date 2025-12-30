@@ -36,7 +36,7 @@ export default function Home() {
         <h1 className="mb-4 text-3xl sm:text-5xl">TreeDecisions</h1>
         <hr className="my-4 w-50 bg-neutral-900" />
         <p className="mx-8 mt-4 mb-2 text-center">
-          Make elegant{" "}
+          Build elegant{" "}
           <a
             target="_blank"
             className="text-blue-700 hover:underline dark:text-blue-400"
@@ -66,7 +66,7 @@ export default function Home() {
           , no account needed.
         </p>
         <hr className="my-4 w-50 bg-neutral-900" />
-        <TocLink href="/editor" className="font-semibold">
+        <TocLink href="/builder" className="font-semibold">
           Start Building
         </TocLink>
         <hr className="my-4 w-50 bg-neutral-900" />

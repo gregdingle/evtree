@@ -21,7 +21,7 @@ import { firebaseApp } from "@/lib/firebase";
 import { selectShowHistogram } from "@/lib/selectors";
 import { downloadSharedTree, extractShareHash } from "@/lib/share";
 
-export default function Editor() {
+export default function Builder() {
   // NOTE: Prevents hydration mismatch on server-side rendering caused by
   // Zustand loading from localStorage. See
   // https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only
