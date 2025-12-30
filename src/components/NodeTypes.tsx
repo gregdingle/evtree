@@ -82,9 +82,11 @@ const BaseNode = ({
             border-green-500
             text-center
             whitespace-nowrap
-            italic
+            text-green-600 italic
+            dark:text-green-400
+            ${hasParent ? "" : "font-semibold"}
             ${hasParent ? "-bottom-8 border-1" : "-bottom-9 border-3"}
-            rounded
+            rounded-md
             px-1
           `}
         >
