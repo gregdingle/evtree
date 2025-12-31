@@ -150,9 +150,9 @@ async function addWatermarkToPNG(
       // Load favicon
       const favicon = new Image();
       favicon.onload = () => {
-        const padding = 20;
-        const logoSize = 32;
-        const fontSize = 24;
+        const padding = 50;
+        const logoSize = 24;
+        const fontSize = 18;
         const textOffset = 8;
 
         // Use semi-transparent colors (50% opacity)
@@ -161,8 +161,14 @@ async function addWatermarkToPNG(
           : "rgba(0, 0, 0, 0.5)";
         // TODO: base this on actual Tailwind CSS colors
 
-        // Draw favicon with transparency
+        // Draw favicon with transparency and invert in dark mode
         ctx.globalAlpha = 0.5;
+
+        // Invert the favicon color in dark mode
+        if (isDarkMode) {
+          ctx.filter = "invert(1)";
+        }
+
         ctx.drawImage(
           favicon,
           padding,
@@ -170,6 +176,9 @@ async function addWatermarkToPNG(
           logoSize,
           logoSize,
         );
+
+        // Reset filter
+        ctx.filter = "none";
 
         // Draw text with transparency
         // TODO: unify with globals.css
@@ -399,8 +408,43 @@ export const exportPDF = async (
         format: "letter",
       });
 
-      // Add the watermarked image to the PDF
-      pdf.addImage(watermarkedDataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // Fill background with same color as PNG
+      const bgColor: [number, number, number] = isDarkMode
+        ? [23, 23, 23] // neutral-900 RGB: #171717
+        : [255, 251, 235]; // amber-50 RGB: #fffbeb
+      pdf.setFillColor(...bgColor);
+      pdf.rect(0, 0, pdfWidth, pdfHeight, "F");
+
+      // Calculate scaled dimensions to fit PDF while maintaining aspect ratio
+      const imageAspectRatio = imageWidth / imageHeight;
+      const pdfAspectRatio = pdfWidth / pdfHeight;
+
+      let scaledWidth: number;
+      let scaledHeight: number;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      if (imageAspectRatio > pdfAspectRatio) {
+        // Image is wider than PDF page - fit to width
+        scaledWidth = pdfWidth;
+        scaledHeight = pdfWidth / imageAspectRatio;
+        offsetY = (pdfHeight - scaledHeight) / 2;
+      } else {
+        // Image is taller than PDF page - fit to height
+        scaledHeight = pdfHeight;
+        scaledWidth = pdfHeight * imageAspectRatio;
+        offsetX = (pdfWidth - scaledWidth) / 2;
+      }
+
+      // Add the watermarked image to the PDF with proper aspect ratio
+      pdf.addImage(
+        watermarkedDataUrl,
+        "PNG",
+        offsetX,
+        offsetY,
+        scaledWidth,
+        scaledHeight,
+      );
 
       // Add title to upper left if provided
       if (title) {
