@@ -371,7 +371,6 @@ export function selectUndoableState(
           treeId,
           {
             ...tree,
-            // TODO: do we really want this to be undefined?
             updatedAt: undefined,
             nodes: fromPairs(
               toPairs(tree.nodes).map(([id, node]) => [

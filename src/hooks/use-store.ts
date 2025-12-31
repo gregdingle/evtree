@@ -16,7 +16,7 @@ import {
 import { cloneDeep, isEqual, keyBy, round, throttle } from "es-toolkit";
 import { keys, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
-import { temporal } from "zundo";
+import { ZundoOptions, temporal } from "zundo";
 import { StateCreator } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -111,33 +111,52 @@ export interface StoreState {
   onShowHistogram: () => void;
 }
 
+// TODO: should we clear undo stack when switching trees? or better to be safe?
+const temporalOptions: ZundoOptions<
+  StoreState,
+  ReturnType<typeof selectUndoableState>
+> = {
+  // NOTE: throttling is needed for actions like dragging nodes across the canvas
+  handleSet: (handleSet) =>
+    throttle((...args: unknown[]) => {
+      // @ts-expect-error - handleSet expects specific args but we just pass all through
+      handleSet(...args);
+      // TODO: how to optimize timeout?
+    }, 400),
+  partialize: selectUndoableState,
+  // NOTE: deep isEqual instead of shallow. this is needed to prevent
+  // spurious undo states. see createWithEqualityFn in contrast.
+  // TODO: figure out if this is a perf problem, figure out how to
+  // minimize store updates. see partialize already developed to reduce
+  // undo.
+  equality: isEqual,
+  // Auto-update timestamp whenever state is saved to history
+  onSave: (pastState, currentState) => {
+    // Only update when a change to a tree
+    // NOTE: this does not seem to play nice with node measured even though that
+    // is filtered in selectUndoableState
+    if (pastState.trees === currentState.trees) {
+      return;
+    }
+
+    withCurrentTree(currentState, (tree) => {
+      tree.updatedAt = new Date().toISOString();
+    });
+  },
+};
+
 const middlewares = (
   // NOTE: see https://github.com/pmndrs/zustand/issues/1013 for complex typing
   f: StateCreator<StoreState, [["zustand/devtools", unknown]]>,
 ) =>
   persist(
     // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
-    temporal(immer(devtools(f)), {
-      // NOTE: throttling is needed for actions like dragging nodes across the canvas
-      handleSet: (handleSet) =>
-        throttle<typeof handleSet>((state) => {
-          handleSet(state);
-          // TODO: how to optimize timeout?
-        }, 400),
-      partialize: selectUndoableState,
-      // NOTE: deep isEqual instead of shallow. this is needed to prevent
-      // spurious undo states. see createWithEqualityFn in contrast.
-      // TODO: figure out if this is a perf problem, figure out how to
-      // minimize store updates. see partialize already developed to reduce
-      // undo.
-      equality: isEqual,
-    }),
+    temporal(immer(devtools(f)), temporalOptions),
     {
       // TODO: develop migration and invalidation protocol...
       // maybe using `merge` function of `persist`...
       // but for now just increment v number
       name: "evtree-storage-v6",
-      // TODO: localStorage or sessionStorage?
       storage: createJSONStorage(() => window.localStorage),
     },
   );
@@ -209,8 +228,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       return treeId;
     },
 
-    // TODO: how to prevent this from updatedAt being set via onNodesChange or
-    // something like that?
     setCurrentTree: (treeId: string) => {
       set(
         (state) => {
@@ -276,7 +293,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (treeData.rounding !== undefined) {
               tree.rounding = treeData.rounding;
             }
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "updateTreeData", updates: treeData },
@@ -308,7 +324,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.variables = (tree.variables ?? [])
               .filter((v) => v.scope !== scope)
               .concat(filteredVariables);
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "replaceVariables", variables: filteredVariables },
@@ -354,8 +369,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               values(tree.edges),
             );
             tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
-
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "edgesChange", changesCount: changes.length },
@@ -371,7 +384,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const newEdge = createEdge(fromNodeId, nodeId);
             const updatedEdgesArray = addEdge(newEdge, values(tree.edges));
             tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         {
@@ -389,7 +401,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const node = tree.nodes[id];
             if (node) {
               node.data = { ...node.data, ...nodeData };
-              tree.updatedAt = new Date().toISOString();
             } else {
               warnItemNotFound("Node", id, "data update");
             }
@@ -409,7 +420,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 ...edge.data,
                 ...edgeData,
               };
-              tree.updatedAt = new Date().toISOString();
             } else {
               warnItemNotFound("Edge", id, "data update");
             }
@@ -429,7 +439,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const node = tree.nodes[id];
             if (node) {
               Object.assign(node, properties);
-              tree.updatedAt = new Date().toISOString();
             } else {
               warnItemNotFound("Node", id, "note properties update");
             }
@@ -473,7 +482,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const edge = tree.edges[id];
             if (edge && edge.data) {
               edge.data.probabilityExpr = balancedProbability.toString();
-              tree.updatedAt = new Date().toISOString();
             } else {
               warnItemNotFound("Edge", id, "data update");
             }
@@ -669,8 +677,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 }
               });
             }
-
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "onPaste" },
@@ -702,7 +708,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             clearSelections(tree);
             const newNode = createNode(position, nodeType);
             tree.nodes[newNode.id] = newNode;
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "createNodeAt", nodeType, position },
@@ -722,7 +727,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.nodes[newNode.id] = newNode;
             tree.edges[newEdge.id] = newEdge;
             // TODO: use dayjs?
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "createNodeAt", position, fromNodeId, nodeType },
@@ -756,7 +760,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
             tree.nodes[ghostNode.id] = ghostNode;
             tree.edges[arrowEdge.id] = arrowEdge;
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "createGhostNodeWithArrow", fromNodeId, position },
@@ -826,7 +829,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             };
 
             toggleDescendants(nodeId);
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "toggleNodeCollapse", nodeId },
@@ -850,7 +852,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             };
 
             tree.nodes[nodeId] = updatedNode;
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "onConvertNode", nodeId, newNodeType },
@@ -906,7 +907,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
     // TODO: there is a quirk of using the reactflow built-in "delete" key
     // handler: it results in two undo steps. by contrast, clicking the delete
-    // button results in one.
+    // button results in one. use beforeDelete API of reactflow?
     deleteSelected: () => {
       set(
         (state) =>
@@ -928,8 +929,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               applyEdgeChanges(edgeChanges, values(tree.edges)),
               (edge) => edge.id,
             );
-
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         {
@@ -971,7 +970,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const newEdge = createEdge(nearestNode.id, selectedNode.id);
 
             tree.edges[newEdge.id] = newEdge;
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "connectToNearestNode", nodeId },
@@ -1014,11 +1012,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
   })),
   // TODO: is this best as shallow or deep isEqual? any mutation to a node
-  // results in a call back to onNodesChange with updated `measured`
+  // seems to result in a call back to onNodesChange with updated `measured`
   shallow,
 );
 
-// TODO: consider more 3rd party libs like shared-zustand
+// TODO: consider more 3rd party libs like shared-zustand for sharing across tabs
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
@@ -1073,8 +1071,6 @@ function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
   nodeIdsToDelete.forEach((nodeId) => {
     delete tree.nodes[nodeId];
   });
-
-  tree.updatedAt = new Date().toISOString();
 }
 
 function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
@@ -1094,7 +1090,7 @@ function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
   return subTreeNodes;
 }
 
-// TODO: move somewhere better?
+// TODO: move this function somewhere better?
 function arrangeSubtreeHelper(
   tree: DecisionTree,
   rootNodeId: string,
@@ -1135,6 +1131,4 @@ function arrangeSubtreeHelper(
       y: layoutedNode.position.y + offsetY,
     };
   });
-
-  tree.updatedAt = new Date().toISOString();
 }
