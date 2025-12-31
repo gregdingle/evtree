@@ -4,7 +4,7 @@ export default function StaticPage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen w-full items-start justify-center">
+    <div className="min-h-screen w-full">
       <div
         className="
     mx-auto
