@@ -87,7 +87,7 @@
       "id": "note1",
       "type": "note",
       "data": {
-        "description": "This is a decision node, representing a decision you might makes, from which consequences will flow.",
+        "description": "This is a decision node, representing a decision you might make, from which consequences will flow.",
         "valueExpr": "250"
       },
       "position": {
