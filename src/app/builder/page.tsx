@@ -104,6 +104,7 @@ export default function Builder() {
 /**
  * NOTE: This will replace an existing tree that has the same ID.
  * TODO: should we warn the user when the current tree updatedAt is more recent?
+ * NOTE: earlier versions used root / path; now we use /builder/
  */
 function ShareLinkLoader() {
   const { fitView } = useReactFlow();

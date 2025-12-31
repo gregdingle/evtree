@@ -118,7 +118,7 @@ describe("share.ts encryption utilities", () => {
       const url = buildShareUrl("394ff0e908376c69", "BQ1moYESmTEXgtA1KozyVw");
 
       expect(url).toBe(
-        "http://localhost:3000/#share=394ff0e908376c69&key=BQ1moYESmTEXgtA1KozyVw",
+        "http://localhost:3000/builder/#share=394ff0e908376c69&key=BQ1moYESmTEXgtA1KozyVw",
       );
     });
 
@@ -128,7 +128,7 @@ describe("share.ts encryption utilities", () => {
       const url = buildShareUrl("abc123def4567890", "XyZ789AbC123_-Def");
 
       expect(url).toBe(
-        "https://evtree.ai/#share=abc123def4567890&key=XyZ789AbC123_-Def",
+        "https://evtree.ai/builder/#share=abc123def4567890&key=XyZ789AbC123_-Def",
       );
     });
 

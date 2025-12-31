@@ -32,7 +32,8 @@ export function extractShareHash(): { hash: string; key: string } | null {
  */
 export function buildShareUrl(contentHash: string, keyBase64: string) {
   const baseUrl = window.location.origin;
-  return `${baseUrl}/#share=${contentHash}&key=${keyBase64}`;
+  // NOTE: earlier versions used root / path; now we use /builder/
+  return `${baseUrl}/builder/#share=${contentHash}&key=${keyBase64}`;
 }
 
 export async function uploadTreeForSharing(
