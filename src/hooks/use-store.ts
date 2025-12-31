@@ -73,6 +73,10 @@ export interface StoreState {
   onConnect: OnConnect;
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
   onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
+  onNotePropertiesUpdate: (
+    id: string,
+    properties: Pick<AppNode, "width" | "height">,
+  ) => void;
   balanceEdgeProbability: (id: string) => void;
   // TODO: rename all onX methods to simply X
   onCopy: (stripValues?: boolean) => void;
@@ -412,6 +416,26 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "updateEdgeData", edgeId: id, updates: edgeData },
+      );
+    },
+
+    onNotePropertiesUpdate: (
+      id: string,
+      properties: Pick<AppNode, "width" | "height">,
+    ) => {
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            const node = tree.nodes[id];
+            if (node) {
+              Object.assign(node, properties);
+              tree.updatedAt = new Date().toISOString();
+            } else {
+              warnItemNotFound("Node", id, "note properties update");
+            }
+          }),
+        undefined,
+        { type: "onNotePropertiesUpdate", id, properties },
       );
     },
 
@@ -880,6 +904,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
+    // TODO: there is a quirk of using the reactflow built-in "delete" key
+    // handler: it results in two undo steps. by contrast, clicking the delete
+    // button results in one.
     deleteSelected: () => {
       set(
         (state) =>

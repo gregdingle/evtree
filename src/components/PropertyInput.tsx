@@ -26,6 +26,7 @@ interface PropertyInputProps {
   placeholder?: string;
   type?: string;
   disabled?: boolean;
+  step?: number; // for type "number"
   children?: React.ReactNode;
 }
 
@@ -77,7 +78,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             id={label}
             type="checkbox"
             checked={checked ?? false}
-            onChange={(e) => onCheckboxChange?.(e.target.checked)}
+            onInput={(e) => onCheckboxChange?.(e.currentTarget.checked)}
             disabled={disabled}
             className="h-5 w-5 flex-1/4 cursor-pointer"
             {...props}
@@ -88,7 +89,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
               ref={ref as React.Ref<HTMLTextAreaElement>}
               id={label}
               value={value ?? ""}
-              onChange={(e) => onChange?.(e.target.value)}
+              onInput={(e) => onChange?.(e.currentTarget.value)}
               disabled={disabled}
               className={`min-w-0 flex-3/4 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
               rows={4}
@@ -109,7 +110,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
             ref={ref as React.Ref<HTMLSelectElement>}
             id={label}
             value={value ?? ""}
-            onChange={(e) => onChange?.(e.target.value)}
+            onInput={(e) => onChange?.(e.currentTarget.value)}
             disabled={disabled}
             className={`min-w-0 flex-1/4 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"
@@ -125,9 +126,9 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
           <input
             ref={ref}
             id={label}
-            type="text"
+            type={props.type || "text"}
             value={value ?? ""}
-            onChange={(e) => onChange?.(e.target.value)}
+            onInput={(e) => onChange?.(e.currentTarget.value)}
             disabled={disabled}
             className={`min-w-0 flex-1/4 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"

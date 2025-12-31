@@ -30,6 +30,7 @@ export default function RightSidePanel() {
     onNodeDataUpdate,
     onEdgeDataUpdate,
     onTreeDataUpdate,
+    onNotePropertiesUpdate,
     balanceEdgeProbability,
   } = useStore.getState();
 
@@ -113,6 +114,7 @@ export default function RightSidePanel() {
                   key={node.id}
                   node={node}
                   onNodeDataUpdate={onNodeDataUpdate}
+                  onNotePropertiesUpdate={onNotePropertiesUpdate}
                   valueVariables={valueVariables}
                   costVariables={costVariables}
                   cumulativeCosts={cumulativeCosts}
@@ -252,6 +254,7 @@ function EdgeProperties({
 function NodeProperties({
   node,
   onNodeDataUpdate,
+  onNotePropertiesUpdate,
   valueVariables,
   costVariables,
   cumulativeCosts,
@@ -262,6 +265,10 @@ function NodeProperties({
 }: {
   node: AppNode;
   onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
+  onNotePropertiesUpdate: (
+    id: string,
+    properties: Pick<AppNode, "width" | "height">,
+  ) => void;
   valueVariables: Variable[];
   costVariables: Variable[];
   cumulativeCosts: number | null | undefined;
@@ -308,15 +315,35 @@ function NodeProperties({
         </PropertyInput>
       ) : null}
       {node.type === "note" ? (
-        <PropertyInput
-          label="Description"
-          value={node.data.description}
-          onChange={(value) =>
-            onNodeDataUpdate(node.id, { description: value })
-          }
-          placeholder="Enter note content"
-          textarea={true}
-        />
+        <>
+          <PropertyInput
+            label="Description"
+            value={node.data.description}
+            onChange={(value) =>
+              onNodeDataUpdate(node.id, { description: value })
+            }
+            placeholder="Enter note content"
+            textarea={true}
+          />
+          <PropertyInput
+            label="Width"
+            value={node.width?.toString() || ""}
+            onChange={(value) => {
+              if (!value) {
+                onNotePropertiesUpdate(node.id, { width: undefined });
+                return;
+              }
+              const width = Number(value);
+              if (Number.isFinite(width)) {
+                onNotePropertiesUpdate(node.id, { width });
+                return;
+              }
+            }}
+            placeholder={node.measured?.width?.toString() || "Enter width"}
+            type="number" // just for stepper
+            step={10}
+          />
+        </>
       ) : (
         /* TODO: deprecated... remove if not needed
     <PropertyInput

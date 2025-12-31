@@ -15,10 +15,6 @@ export type AppNode = Node<
   {
     valueExpr?: string;
     costExpr?: string;
-    /**
-     * NOTE: not used right now
-     */
-    label?: string;
     description?: string;
   },
   NodeType
@@ -35,7 +31,7 @@ export function createNode(
     id: nodeId,
     type,
     position,
-    data: { label: "", description: "", ...data },
+    data: { description: "", ...data },
     origin: [0.5, 0.0] as [number, number],
     selected, // Mark as selected by default
   };

@@ -5,7 +5,7 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 import { useStore } from "@/hooks/use-store";
 import { AppNode } from "@/lib/node";
 
-export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
+export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
   // Local state for inline editing
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -46,13 +46,17 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     resizeTextarea(target);
   };
 
+  // NOTE: width is optional prop, if not provided, use default width of 192px, w-48
+  // NOTE: node.width comes from node.measured after first render, or input value
+  const noteWidth = width ? `w-[${width}px]` : "w-[192px]";
+
   return (
     <div
       className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
         // NOTE: border-dashed should match the strokeDasharray of ArrowEdge
-        className={`min-h-12 w-48 border-2 border-dashed p-2 ${
+        className={`min-h-12 ${noteWidth} border-2 border-dashed p-2 ${
           // TODO: when note is selected, the bg is transparent, so the underlying content is visible... it's weird
           selected
             ? "border-blue-500 bg-blue-500/10"
@@ -98,7 +102,8 @@ export const NoteNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           <textarea
             ref={inputRef}
             defaultValue={data.description || ""}
-            onChange={handleChange}
+            // NOTE: see https://stackoverflow.com/questions/38256332/in-react-whats-the-difference-between-onchange-and-oninput
+            onInput={handleChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             // NOTE: pb-1 is needed for textarea to not cut off descenders on last row of text

@@ -174,7 +174,6 @@ export function convertAIStructureToDecisionTree(
 
     // Create the node
     const appNode = createNode(dummyPosition, nodeType, false, {
-      label: "",
       description: "",
       // NOTE: convert to string which will be converted back to number internally
       valueExpr: node.value?.toString() || undefined,
