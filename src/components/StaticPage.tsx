@@ -1,12 +1,17 @@
+import Link from "next/link";
+
 export default function StaticPage({
+  linkToHome,
   children,
 }: {
+  linkToHome: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className="min-h-screen w-full">
       <div
         className="
+    relative
     mx-auto
     flex
     w-xl
@@ -22,8 +27,16 @@ export default function StaticPage({
     sm:py-16
     dark:bg-neutral-900"
         // NOTE: neutral-900 is #171717, very close to ReactFlow default dark mode (#141414)
-        // NOTE: see also logo in Toolbar.tsx
       >
+        {linkToHome && (
+          <Link
+            href="/"
+            className="bluelink absolute top-4 left-4 sm:top-8 sm:left-8"
+          >
+            ◁ Home
+          </Link>
+        )}
+
         {children}
       </div>
     </div>

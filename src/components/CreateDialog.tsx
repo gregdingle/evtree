@@ -134,7 +134,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
   const handleFileUploadForAI = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = e.target.files?.[0];
+    const file = e.currentTarget.files?.[0];
     if (!file) {
       return;
     }
@@ -228,7 +228,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                     <div className="grid grid-cols-1 sm:hidden">
                       <select
                         value={currentTab}
-                        onChange={(e) => setCurrentTab(e.target.value)}
+                        onInput={(e) => setCurrentTab(e.currentTarget.value)}
                         aria-label="Select a tab"
                         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 dark:bg-gray-700 dark:text-white dark:outline-gray-600"
                       >
@@ -291,7 +291,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                         <input
                           type="text"
                           value={newTreeName}
-                          onChange={(e) => setNewTreeName(e.target.value)}
+                          onInput={(e) => setNewTreeName(e.currentTarget.value)}
                           placeholder="Enter tree name..."
                           className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           autoFocus
@@ -304,8 +304,8 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                         <textarea
                           rows={3}
                           value={newTreeDescription}
-                          onChange={(e) =>
-                            setNewTreeDescription(e.target.value)
+                          onInput={(e) =>
+                            setNewTreeDescription(e.currentTarget.value)
                           }
                           placeholder="Enter tree description..."
                           className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
@@ -321,7 +321,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                         <input
                           type="text"
                           value={newTreeName}
-                          onChange={(e) => setNewTreeName(e.target.value)}
+                          onInput={(e) => setNewTreeName(e.currentTarget.value)}
                           placeholder="Enter tree name..."
                           className="mb-3 block w-full rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           required
@@ -335,7 +335,9 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                           <textarea
                             rows={7}
                             value={aiInputText}
-                            onChange={(e) => setAiInputText(e.target.value)}
+                            onInput={(e) =>
+                              setAiInputText(e.currentTarget.value)
+                            }
                             placeholder={`Example: I'm representing a party in a legal dispute that has generated years of expensive and acrimonious litigation over alleged defects in railroad cars designed to carry larger quantities of coal than a conventional railroad car. It isundisputed that...`}
                             className="flex-2/3 rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           />
@@ -343,7 +345,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                             {!isExtractingText ? (
                               <input
                                 type="file"
-                                onChange={handleFileUploadForAI}
+                                onInput={handleFileUploadForAI}
                                 accept=".pdf,.doc,.docx,.txt,.rtf"
                                 // NOTE: text-transparent to hide the "no file chosen" system text
                                 className="block w-full text-base text-transparent file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-base file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
@@ -369,8 +371,8 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                         <input
                           type="file"
                           accept=".json"
-                          onChange={(e) =>
-                            setSelectedFile(e.target.files?.[0] || null)
+                          onInput={(e) =>
+                            setSelectedFile(e.currentTarget.files?.[0] || null)
                           }
                           className="my-1.5 text-base text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-base file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
                         />

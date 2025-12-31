@@ -155,7 +155,7 @@ export default function RightSidePanel() {
           // TODO: extract contact email to global config
           href="mailto:gregdingle@gmail.com,maaron@just-decisions.com?subject=TreeDecisions"
           // TODO: extract this as shared link style
-          className="font-semibold text-blue-700 hover:underline dark:text-blue-400"
+          className="bluelink font-semibold"
         >
           Email us
         </a>

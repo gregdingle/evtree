@@ -35,6 +35,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Common link style used throughout the app */
+.bluelink {
+  color: var(--color-blue-700);
+  &:hover {
+    text-decoration: underline;
+  }
+  @media (prefers-color-scheme: dark) {
+    color: var(--color-blue-400);
+  }
+}
+
 /* Make handles bigger as in https://reactflow.dev/examples/interaction/touch-device */
 .evtree .react-flow__handle {
   width: 12px;

@@ -7,9 +7,10 @@ import StaticPage from "@/components/StaticPage";
 
 export default function Home() {
   return (
-    <StaticPage>
+    <StaticPage linkToHome={false}>
       <h2 className="text-2xl">Welcome to</h2>
       <Image
+        // NOTE: see also logo in Toolbar.tsx
         src="/favicon.svg"
         alt="TreeDecisions logo"
         width={128}
@@ -22,7 +23,7 @@ export default function Home() {
         Build elegant{" "}
         <a
           target="_blank"
-          className="text-blue-700 hover:underline dark:text-blue-400"
+          className="bluelink"
           href="https://en.wikipedia.org/wiki/Decision_tree"
         >
           decision trees
@@ -33,7 +34,7 @@ export default function Home() {
       <p className="mx-8 mt-2 mb-4 text-center">
         <a
           target="_blank"
-          className="text-blue-700 hover:underline dark:text-blue-400"
+          className="bluelink"
           href="https://en.wikipedia.org/wiki/End-to-end_encryption"
         >
           Private data
@@ -57,29 +58,20 @@ export default function Home() {
       <hr className="my-4 w-50 bg-neutral-900" />
       <footer className="my-6">
         <a
-          // TODO: extract contact email to global config
           href="mailto:gregdingle@gmail.com,maaron@just-decisions.com?subject=TreeDecisions"
-          // TODO: extract this as shared link style
-          className="text-blue-700 hover:underline dark:text-blue-400"
+          className="bluelink"
         >
           Contact
         </a>
         &nbsp;&middot;&nbsp;
         <a
-          // TODO: extract contact email to global config
           href="https://github.com/gregdingle/evtree/?tab=readme-ov-file#license"
-          // TODO: extract this as shared link style
-          className="text-blue-700 hover:underline dark:text-blue-400"
+          className="bluelink"
         >
           License
         </a>
         &nbsp;&middot;&nbsp;
-        <a
-          // TODO: extract contact email to global config
-          href="https://github.com/gregdingle/evtree/"
-          // TODO: extract this as shared link style
-          className="text-blue-700 hover:underline dark:text-blue-400"
-        >
+        <a href="https://github.com/gregdingle/evtree/" className="bluelink">
           Source
         </a>
       </footer>
@@ -98,10 +90,7 @@ function TocLink({
 }) {
   return (
     <h2 className={`my-4 text-2xl ${className}`}>
-      <Link
-        href={href} // TODO: extract this as shared link style
-        className="text-blue-700 hover:underline dark:text-blue-400"
-      >
+      <Link href={href} className="bluelink">
         {children}
       </Link>
     </h2>
