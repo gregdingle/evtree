@@ -3,7 +3,6 @@ import {
   EdgeLabelRenderer,
   EdgeProps,
   Position,
-  getSmoothStepPath,
   getStraightPath,
 } from "@xyflow/react";
 
@@ -16,6 +15,7 @@ import {
   selectShouldShowProbabilityWarning,
   selectShowEVs,
 } from "@/lib/selectors";
+import { getSmoothStepPathWithAbsoluteStep } from "@/lib/smoothStepPath";
 import { formatProbability } from "@/utils/format";
 
 import { InlineEdit } from "./InlineEdit";
@@ -56,19 +56,18 @@ export default function CustomEdge({
   const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
 
   // NOTE: assumes the edge is always left to right
-  const stepPosition = 0.25;
-  const [edgePath, labelX, labelY, , offsetY] = getSmoothStepPath({
-    sourceX,
-    sourceY,
-    sourcePosition: Position.Right,
-    targetX,
-    targetY,
-    targetPosition: Position.Left,
-    // NOTE: need to make space for potential terminal node label of previous
-    // level in tree
-    stepPosition,
-    borderRadius: 20, // increase from default of 5
-  });
+  const stepPositionPx = 60; // Absolute pixel distance from source
+  const [edgePath, labelX, labelY, , offsetY] =
+    getSmoothStepPathWithAbsoluteStep({
+      sourceX,
+      sourceY,
+      sourcePosition: Position.Right,
+      targetX,
+      targetY,
+      targetPosition: Position.Left,
+      stepPositionPx,
+      borderRadius: 20, // increase from default of 5
+    });
   // HACK: Adjust the default label position when at stepPosition > 0 from the
   // vertical segment to the horizontal. When the edge is not left-to-right,
   // which should never happen, simply revert.
@@ -76,24 +75,17 @@ export default function CustomEdge({
   const isLeftToRight = sourceX < targetX;
   const midPointX = (targetX - sourceX) / 2;
   const adjY = isLeftToRight ? (labelY > sourceY ? offsetY : -offsetY) : 0;
-  // Adjust X position based on step position to keep labels on horizontal segment
-  // HACK: Min 18px of margin from vertical segment looks good enough
-  const adjX = isLeftToRight ? Math.min(midPointX, 18) : 0;
-  // TODO: Special-case when there is no bend, only a single horizontal segment, no siblings?
+  // Adjust X position to keep labels on horizontal segment
+  // With absolute step positioning, we can use stepPositionPx directly
+  const adjX = isLeftToRight ? Math.min(midPointX, stepPositionPx / 2) : 0;
   const translateX = labelX + adjX;
-  const transformProb = `translate(-${(stepPosition / 2) * 100}%, -50%) translate(${translateX}px, ${
-    labelY + adjY
-  }px)`;
-  const transformLabel = `translate(-${(stepPosition / 2) * 100}%, -100%) translate(${translateX}px, ${
-    labelY + adjY
-  }px)`;
+
+  // Simplified transforms now that we use absolute positioning
+  const transformProb = `translate(-50%, -50%) translate(${translateX}px, ${labelY + adjY}px)`;
+  const transformLabel = `translate(-50%, -100%) translate(${translateX}px, ${labelY + adjY}px)`;
 
   // HACK: width by empirical testing... 30px min to fit "???" placeholder
   const labelWidth = Math.max(30, (targetX - sourceX) / 1.5);
-
-  // TODO: The above code positions and sizes the label container pretty good,
-  // but not perfect. We need to start over from first principles of the
-  // getSmoothStepPath function and CSS transform to make it perfect.
 
   return (
     <>
