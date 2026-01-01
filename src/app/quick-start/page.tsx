@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import StaticPage from "@/components/StaticPage";
 
-// TODO: supplement with screenshots?
 export default function QuickStart() {
   return (
     <StaticPage linkToHome={true} nextLabel="User Guide" nextHref="/user-guide">

@@ -20,9 +20,9 @@ export default function About() {
 
         <p className="my-4">
           <a
-            href="https://www.linkedin.com/in/gregdingle/"
+            href="https://www.linkedin.com/in/marjorie-corman-aaron-49a77a48/"
             target="_blank"
-            className="bluelink"
+            className="float-left mr-4 mb-2 rounded border-2 border-neutral-300"
           >
             <Image
               src="/about/marjorie-aaron.jpg"
@@ -53,7 +53,7 @@ export default function About() {
           <a
             href="https://www.linkedin.com/in/gregdingle/"
             target="_blank"
-            className="bluelink"
+            className="float-left mr-4 mb-2 rounded border-2 border-neutral-300"
           >
             <Image
               src="/about/greg-dingle.jpg"
