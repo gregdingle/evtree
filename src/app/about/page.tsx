@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import StaticPage from "@/components/StaticPage";
@@ -13,11 +14,23 @@ export default function About() {
       <div className="mx-8">
         <h2 className="my-4 text-2xl">About Us</h2>
 
-        {/* TODO: put in thumbnail image with links to LinkedIn
+        {/* TODO: finish thumbnail image with links to LinkedIn
         TODO: consider off-white background as in tailwind... but then builder bg?
         */}
 
         <p className="my-4">
+          <a
+            href="https://www.linkedin.com/in/gregdingle/"
+            target="_blank"
+            className="bluelink"
+          >
+            <Image
+              src="/about/marjorie-aaron.jpg"
+              alt="Marjorie Corman Aaron"
+              width={100}
+              height={100}
+            />
+          </a>
           <strong>Marjorie Corman Aaron</strong> is Professor of Practice
           Emerita at the University of Cincinnati College of Law, where she
           taught negotiation, mediation, mediation advocacy, decision analysis,
@@ -37,6 +50,18 @@ export default function About() {
           https://docs.google.com/document/d/1ECZAESsJkHNiMeGabG-fa50SR9IbWE-TloHO7sWKBCk/edit?tab=t.0 */}
         </p>
         <p className="my-4">
+          <a
+            href="https://www.linkedin.com/in/gregdingle/"
+            target="_blank"
+            className="bluelink"
+          >
+            <Image
+              src="/about/greg-dingle.jpg"
+              alt="Greg Dingle"
+              width={100}
+              height={100}
+            />
+          </a>
           <strong>Greg Dingle</strong> is a software engineer with experience in
           high-stakes mediation as a member of the Creditor Committee of the{" "}
           <a
