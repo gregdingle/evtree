@@ -4,7 +4,11 @@ import StaticPage from "@/components/StaticPage";
 
 export default function About() {
   return (
-    <StaticPage linkToHome={true}>
+    <StaticPage
+      linkToHome={true}
+      nextLabel="Quick Start"
+      nextHref="/quick-start"
+    >
       <h1 className="mb-4 text-3xl sm:text-5xl">About</h1>
       <div className="mx-8">
         <h2 className="my-4 text-2xl">About Us</h2>

@@ -2,10 +2,14 @@ import Link from "next/link";
 
 export default function StaticPage({
   linkToHome,
+  nextLabel,
+  nextHref,
   children,
 }: {
   linkToHome: boolean;
   children: React.ReactNode;
+  nextHref?: string;
+  nextLabel?: string;
 }) {
   return (
     <div className="min-h-screen w-full">
@@ -36,8 +40,56 @@ export default function StaticPage({
             ◁ Home
           </Link>
         )}
+        {nextLabel && nextHref && (
+          <Link
+            href={nextHref}
+            className="bluelink absolute top-4 right-4 sm:top-8 sm:right-8"
+          >
+            {nextLabel}{" "}
+            <span
+              // HACK: see https://stackoverflow.com/questions/17995873/black-left-right-pointing-triangles-not-the-same-size
+              style={{
+                transform: "rotate(180deg)",
+                display: "inline-block",
+                verticalAlign: "baseline",
+                paddingTop: "1px",
+              }}
+            >
+              ◁
+            </span>
+          </Link>
+        )}
 
         {children}
+
+        {nextLabel && nextHref && (
+          <div className="mt-8">
+            <Link
+              href="/"
+              className="bluelink bottom-4 left-4 px-2 sm:bottom-8 sm:left-8"
+            >
+              ◁ Home
+            </Link>
+            &nbsp;&nbsp;
+            <Link
+              href={nextHref}
+              className="bluelink bottom-4 left-4 px-2 sm:bottom-8 sm:left-8"
+            >
+              {nextLabel}{" "}
+              <span
+                // HACK: see https://stackoverflow.com/questions/17995873/black-left-right-pointing-triangles-not-the-same-size
+                style={{
+                  transform: "rotate(180deg)",
+                  display: "inline-block",
+                  verticalAlign: "baseline",
+                  paddingTop: "1px",
+                }}
+              >
+                ◁
+              </span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
