@@ -102,6 +102,13 @@ export default function ReactFlowApp() {
     // produce this effect by adding more and more variables to a tree.
     // NOTE: see also message on RightSidePanel when more than 800px height
     <div ref={ref} className="relative h-full w-full">
+      {/* Empty canvas help text - absolutely positioned over canvas */}
+      {nodes.length === 0 && !menu && (
+        <CanvasCenteredHelpMessage
+          absolute
+          text={`Right-click or \ncontrol+click to start`}
+        />
+      )}
       <div className="block [@media(min-height:600px)]:hidden">
         <CanvasCenteredHelpMessage
           text={`Window too small. \nTry maximizing your window, \nzooming out, or using \na bigger screen.`}
@@ -151,12 +158,6 @@ export default function ReactFlowApp() {
           NOTE: see downloadPNG in download.ts for how this must be specially handled in export.
         */}
         {ArrowMarker()}
-        {/* Empty canvas help text */}
-        {nodes.length === 0 && !menu && (
-          <CanvasCenteredHelpMessage
-            text={`Right-click or \ncontrol+click to start`}
-          />
-        )}
       </ReactFlow>
       <Controls
         position="bottom-right"
