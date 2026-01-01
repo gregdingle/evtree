@@ -107,15 +107,15 @@ export function InlineEdit({
   };
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setEditingValue(event.target.value);
+    setEditingValue(event.currentTarget.value);
     if (
       multiline &&
       handleTextareaResize &&
-      event.target instanceof HTMLTextAreaElement
+      event.currentTarget instanceof HTMLTextAreaElement
     ) {
-      handleTextareaResize(event.target);
+      handleTextareaResize(event.currentTarget);
     }
   };
 
@@ -125,7 +125,7 @@ export function InlineEdit({
         <textarea
           ref={textareaRef}
           value={editingValue}
-          onChange={handleChange}
+          onInput={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           spellCheck={false}
@@ -140,7 +140,7 @@ export function InlineEdit({
         ref={inputRef}
         type="text"
         value={editingValue}
-        onChange={handleChange}
+        onInput={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         spellCheck={false}

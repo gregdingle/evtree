@@ -45,9 +45,9 @@ export function VariablesList({
                 id={`variable-${key}-${id}-${exprFor}`}
                 className="mr-1"
                 checked={isVariableInExpr(currentExpr, key)}
-                onChange={(e) => {
+                onInput={(e) => {
                   const newExpr = getNewExpr(
-                    e.target.checked,
+                    e.currentTarget.checked,
                     currentExpr,
                     key,
                   );

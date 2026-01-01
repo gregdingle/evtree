@@ -103,6 +103,8 @@ export default function ContextMenu({
     createNodeAt(newPosition, contextNode.id, nodeType);
     // HACK: Delay the arrangement to ensure the new node is rendered and
     // positioned by ReactFlow first
+    // TODO: how to avoid double undo stack? this is a bug currently. why isn't
+    // handleSet throttle working to avoid this?
     setTimeout(() => arrangeSubtree(contextNode.id), 0);
     onClose?.();
   };

@@ -19,7 +19,7 @@ export default function Home() {
       />
       <h1 className="mb-4 text-3xl sm:text-5xl">TreeDecisions</h1>
       <hr className="my-4 w-50 bg-neutral-900" />
-      <p className="mx-8 mt-4 mb-2 text-center">
+      <p className="mx-8 mt-4 mb-2 text-center text-lg">
         Build elegant{" "}
         <a
           target="_blank"
@@ -30,8 +30,10 @@ export default function Home() {
         </a>{" "}
         quickly.
       </p>
-      <p className="mx-8 my-2 text-center">Create, edit, export, and share.</p>
-      <p className="mx-8 mt-2 mb-4 text-center">
+      <p className="mx-8 my-2 text-center text-lg">
+        Create, edit, export, and share.
+      </p>
+      <p className="mx-8 mt-2 mb-4 text-center text-lg">
         <a
           target="_blank"
           className="bluelink"

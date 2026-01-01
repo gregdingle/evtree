@@ -126,7 +126,7 @@ export default function VariablesInput({
             <input
               type="text"
               value={variable.name}
-              onChange={(e) => handleNameChange(index, e.target.value)}
+              onInput={(e) => handleNameChange(index, e.currentTarget.value)}
               placeholder={`${scope.slice(0, 4)}var${index + 1}`}
               className="min-w-0 rounded-md border-2 p-1 text-sm"
               spellCheck={false}
@@ -135,7 +135,7 @@ export default function VariablesInput({
             <input
               type="number"
               value={variable.value}
-              onChange={(e) => handleValueChange(index, e.target.value)}
+              onInput={(e) => handleValueChange(index, e.currentTarget.value)}
               placeholder={
                 scope === "probability" ? `0.${index + 1}` : `${index + 1}000`
               }
