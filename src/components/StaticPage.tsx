@@ -43,7 +43,7 @@ export default function StaticPage({
         {nextLabel && nextHref && (
           <Link
             href={nextHref}
-            className="bluelink absolute top-4 right-4 sm:top-8 sm:right-8"
+            className="bluelink absolute top-4 left-4 sm:top-8 sm:left-8"
           >
             {nextLabel}{" "}
             <span
@@ -90,6 +90,9 @@ export default function StaticPage({
             </Link>
           </div>
         )}
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-center text-xs text-gray-500">
+          © 2025–{new Date().getFullYear()} Greg Dingle & Marjorie Aaron
+        </div>
       </div>
     </div>
   );

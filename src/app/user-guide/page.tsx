@@ -8,6 +8,7 @@ export default function UserGuide() {
       nextHref="/builder"
     >
       <h1 className="mb-4 text-3xl sm:text-5xl">User Guide</h1>{" "}
+      <p className="text-lg">Coming soon!</p>
     </StaticPage>
   );
 }
