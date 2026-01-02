@@ -57,6 +57,7 @@ export default function Home() {
       <TocLink href="/about">About</TocLink>
       <TocLink href="/quick-start">Quick Start</TocLink>
       <TocLink href="/user-guide">User Guide</TocLink>
+      {/* TODO: maybe a page on data security? or make sure it is in the User Guide */}
       <hr className="my-4 w-50 bg-neutral-900" />
       <footer className="my-6">
         <a
@@ -74,7 +75,7 @@ export default function Home() {
         </a>
         &nbsp;&middot;&nbsp;
         <a href="https://github.com/gregdingle/evtree/" className="bluelink">
-          Source
+          Source Code
         </a>
       </footer>
     </StaticPage>
