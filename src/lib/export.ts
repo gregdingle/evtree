@@ -39,6 +39,7 @@ export const exportPNG = async (
 
   // Make width and height dynamic to fit small and large trees
   const padding = 100; // Extra padding around the content
+  const rightPaddingExtra = 20; // Extra padding for terminal node labels
   const minImageSize = 400; // Minimum image dimensions
   const maxImageSize = 4096; // Maximum image dimensions for performance
 
@@ -54,7 +55,12 @@ export const exportPNG = async (
   );
 
   // Calculate viewport transform
-  const viewport = calculateViewport(bounds, imageWidth, imageHeight);
+  const viewport = calculateViewport(
+    bounds,
+    imageWidth,
+    imageHeight,
+    rightPaddingExtra,
+  );
 
   const viewportElem = window.document.querySelector(".react-flow__viewport");
   if (!viewportElem || !(viewportElem instanceof HTMLElement)) {
@@ -150,7 +156,7 @@ async function addWatermarkToPNG(
       // Load favicon
       const favicon = new Image();
       favicon.onload = () => {
-        const padding = 50;
+        const padding = 10;
         const logoSize = 24;
         const fontSize = 18;
         const textOffset = 8;
@@ -238,12 +244,14 @@ interface Bounds {
  */
 function calculateNodesBounds(nodes: AppNode[]): Bounds {
   if (nodes.length === 0) {
+    // TODO: throw error?
     return { x: 0, y: 0, width: 100, height: 100 };
   }
 
   // Default node dimensions if not measured
-  const defaultNodeWidth = 100;
-  const defaultNodeHeight = 50;
+  // See also layout.ts
+  const defaultNodeWidth = 150;
+  const defaultNodeHeight = 72;
 
   let minX = Infinity;
   let minY = Infinity;
@@ -278,20 +286,23 @@ function calculateViewport(
   bounds: Bounds,
   imageWidth: number,
   imageHeight: number,
+  rightPaddingExtra: number = 0,
 ): { x: number; y: number; zoom: number } {
   // Add padding around the content
   const padding = 50;
 
-  // Calculate zoom to fit content with padding
-  const zoomX = (imageWidth - 2 * padding) / bounds.width;
+  // Calculate zoom to fit content with padding (accounting for asymmetric right padding)
+  const zoomX =
+    (imageWidth - padding - padding - rightPaddingExtra) / bounds.width;
   const zoomY = (imageHeight - 2 * padding) / bounds.height;
   const zoom = Math.min(zoomX, zoomY, 2); // Max zoom of 2x
 
-  // Center the content
+  // Center the content horizontally accounting for extra right padding
   const scaledWidth = bounds.width * zoom;
   const scaledHeight = bounds.height * zoom;
 
-  const x = (imageWidth - scaledWidth) / 2 - bounds.x * zoom;
+  const x =
+    (imageWidth - scaledWidth - rightPaddingExtra) / 2 - bounds.x * zoom;
   const y = (imageHeight - scaledHeight) / 2 - bounds.y * zoom;
 
   return { x, y, zoom };
