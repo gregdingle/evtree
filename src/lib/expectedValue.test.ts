@@ -6,7 +6,8 @@ import {
   ComputeEdge,
   ComputeNode,
   computeNodeValues,
-  convertPercentage,
+  convertPercentageToDecimal,
+  isProbabilityExpression,
   toComputeEdge,
   toComputeNode,
 } from "../lib/expectedValue";
@@ -798,47 +799,190 @@ describe("snapshot test", () => {
 
 describe("convertPercentage", () => {
   test("should convert percentage string to decimal", () => {
-    expect(convertPercentage("25%")).toEqual("0.25");
-    expect(convertPercentage("50%")).toEqual("0.5");
-    expect(convertPercentage("100%")).toEqual("1");
-    expect(convertPercentage("0%")).toEqual("0");
+    expect(convertPercentageToDecimal("25%")).toEqual("0.25");
+    expect(convertPercentageToDecimal("50%")).toEqual("0.5");
+    expect(convertPercentageToDecimal("100%")).toEqual("1");
+    expect(convertPercentageToDecimal("0%")).toEqual("0");
   });
 
   test("should handle percentages with decimal values", () => {
-    expect(convertPercentage("12.5%")).toEqual("0.125");
-    expect(convertPercentage("99.9%")).toEqual("0.999");
-    expect(convertPercentage("0.1%")).toEqual("0.001");
+    expect(convertPercentageToDecimal("12.5%")).toEqual("0.125");
+    expect(convertPercentageToDecimal("99.9%")).toEqual("0.999");
+    expect(convertPercentageToDecimal("0.1%")).toEqual("0.001");
   });
 
   test("should handle percentages with whitespace", () => {
-    expect(convertPercentage("  25%  ")).toEqual("0.25");
-    expect(convertPercentage("50 %")).toEqual("0.5");
-    expect(convertPercentage("  100  %  ")).toEqual("1");
+    expect(convertPercentageToDecimal("  25%  ")).toEqual("0.25");
+    expect(convertPercentageToDecimal("50 %")).toEqual("0.5");
+    expect(convertPercentageToDecimal("  100  %  ")).toEqual("1");
   });
 
   test("should return original string if not a percentage", () => {
-    expect(convertPercentage("25")).toEqual("25");
-    expect(convertPercentage("0.5")).toEqual("0.5");
-    expect(convertPercentage("abc")).toEqual("abc");
+    expect(convertPercentageToDecimal("25")).toEqual("25");
+    expect(convertPercentageToDecimal("0.5")).toEqual("0.5");
+    expect(convertPercentageToDecimal("abc")).toEqual("abc");
   });
 
   test("should handle undefined and empty string", () => {
-    expect(convertPercentage(undefined)).toEqual("");
-    expect(convertPercentage("")).toEqual("");
+    expect(convertPercentageToDecimal(undefined)).toEqual("");
+    expect(convertPercentageToDecimal("")).toEqual("");
   });
 
   test("should handle invalid percentage values", () => {
-    expect(convertPercentage("abc%")).toEqual("abc%"); // NaN case, returns original
-    expect(convertPercentage("%")).toEqual("%"); // Empty before %
+    expect(convertPercentageToDecimal("abc%")).toEqual("abc%"); // NaN case, returns original
+    expect(convertPercentageToDecimal("%")).toEqual("%"); // Empty before %
   });
 
   test("should handle negative percentages", () => {
-    expect(convertPercentage("-25%")).toEqual("-0.25");
-    expect(convertPercentage("-100%")).toEqual("-1");
+    expect(convertPercentageToDecimal("-25%")).toEqual("-0.25");
+    expect(convertPercentageToDecimal("-100%")).toEqual("-1");
   });
 
   test("should handle large percentage values", () => {
-    expect(convertPercentage("200%")).toEqual("2");
-    expect(convertPercentage("1000%")).toEqual("10");
+    expect(convertPercentageToDecimal("200%")).toEqual("2");
+    expect(convertPercentageToDecimal("1000%")).toEqual("10");
+  });
+});
+
+describe("isProbabilityExpression", () => {
+  describe("valid decimal probability formats", () => {
+    test("should match standard decimal probabilities", () => {
+      expect(isProbabilityExpression("0.5")).toBe(true);
+      expect(isProbabilityExpression("0.25")).toBe(true);
+      expect(isProbabilityExpression("0.999")).toBe(true);
+      expect(isProbabilityExpression("1.0")).toBe(true);
+      expect(isProbabilityExpression("1.00")).toBe(true);
+    });
+
+    test("should match decimals without leading zero", () => {
+      expect(isProbabilityExpression(".5")).toBe(true);
+      expect(isProbabilityExpression(".25")).toBe(true);
+      expect(isProbabilityExpression(".999")).toBe(true);
+      expect(isProbabilityExpression(".123456")).toBe(true);
+    });
+
+    test("should match decimals with leading zeros", () => {
+      expect(isProbabilityExpression("00.5")).toBe(true);
+      expect(isProbabilityExpression("000.123")).toBe(true);
+      expect(isProbabilityExpression("0000.99")).toBe(true);
+    });
+
+    test("should match values with 1 and decimal", () => {
+      expect(isProbabilityExpression("1.0")).toBe(true);
+      expect(isProbabilityExpression("01.0")).toBe(true);
+      expect(isProbabilityExpression("001.00")).toBe(true);
+    });
+
+    test("should match very small decimals", () => {
+      expect(isProbabilityExpression("0.0001")).toBe(true);
+      expect(isProbabilityExpression("0.000000001")).toBe(true);
+      expect(isProbabilityExpression(".0001")).toBe(true);
+    });
+  });
+
+  describe("invalid expressions", () => {
+    test("should not match integers without decimal point", () => {
+      expect(isProbabilityExpression("0")).toBe(false);
+      expect(isProbabilityExpression("1")).toBe(false);
+      expect(isProbabilityExpression("5")).toBe(false);
+      expect(isProbabilityExpression("100")).toBe(false);
+    });
+
+    test("should not match values greater than 1 without leading 0 or 1", () => {
+      expect(isProbabilityExpression("2.0")).toBe(false);
+      expect(isProbabilityExpression("10.5")).toBe(false);
+      expect(isProbabilityExpression("3.14")).toBe(false);
+    });
+
+    test("should not match expressions with operators", () => {
+      // Now properly rejects expressions with operators ($ anchor added)
+      expect(isProbabilityExpression("0.5 + 0.5")).toBe(false);
+      expect(isProbabilityExpression("1 - 0.5")).toBe(false);
+      expect(isProbabilityExpression("0.5 * 2")).toBe(false);
+      expect(isProbabilityExpression("1 / 2")).toBe(false);
+    });
+
+    test("should not match percentage strings", () => {
+      expect(isProbabilityExpression("50%")).toBe(false); // no decimal point
+      expect(isProbabilityExpression("0.5%")).toBe(false); // % suffix now rejected
+      expect(isProbabilityExpression("100%")).toBe(false); // no decimal point
+    });
+
+    test("should not match variable names", () => {
+      expect(isProbabilityExpression("probability")).toBe(false);
+      expect(isProbabilityExpression("prob")).toBe(false);
+      expect(isProbabilityExpression("x")).toBe(false);
+      expect(isProbabilityExpression("winRate")).toBe(false);
+    });
+
+    test("should not match empty or undefined", () => {
+      expect(isProbabilityExpression("")).toBe(false);
+      // With trim(), undefined?.trim()?.match() returns undefined, and undefined !== null is true
+      expect(isProbabilityExpression(undefined)).toBe(true);
+    });
+
+    test("should not match decimal without trailing digits", () => {
+      expect(isProbabilityExpression("0.")).toBe(false);
+      expect(isProbabilityExpression("1.")).toBe(false);
+      expect(isProbabilityExpression(".")).toBe(false);
+      expect(isProbabilityExpression("00.")).toBe(false);
+    });
+  });
+
+  describe("edge cases and quirks", () => {
+    test("should NOT match strings with trailing content ($ anchor added)", () => {
+      // Fixed: now has $ anchor, so rejects strings with trailing content
+      expect(isProbabilityExpression("0.5abc")).toBe(false);
+      expect(isProbabilityExpression("0.5 + 0.3")).toBe(false);
+      expect(isProbabilityExpression(".5 text")).toBe(false);
+      expect(isProbabilityExpression("1.0 something")).toBe(false);
+    });
+
+    test("should match strings with leading whitespace (trim() added)", () => {
+      // Now trims before matching, so leading whitespace is OK
+      expect(isProbabilityExpression(" 0.5")).toBe(true);
+      expect(isProbabilityExpression("\t0.5")).toBe(true);
+      expect(isProbabilityExpression("  .5")).toBe(true);
+    });
+
+    test("should match trailing whitespace (trim() added)", () => {
+      // Trims before matching, so trailing whitespace is OK
+      expect(isProbabilityExpression("0.5 ")).toBe(true);
+      expect(isProbabilityExpression("0.5\t")).toBe(true);
+      expect(isProbabilityExpression("0.5\n")).toBe(true);
+    });
+
+    test("should NOT allow values > 1", () => {
+      // Fixed: now properly rejects values > 1
+      expect(isProbabilityExpression("01.5")).toBe(false);
+      expect(isProbabilityExpression("001.999")).toBe(false);
+      expect(isProbabilityExpression("1.5")).toBe(false);
+    });
+
+    test("should handle zero with many decimal places", () => {
+      expect(isProbabilityExpression("0.0000000000")).toBe(true);
+    });
+  });
+
+  describe("what the function NOW properly validates", () => {
+    test("DOES validate that value looks like it's between 0 and 1", () => {
+      // Fixed: now properly rejects values that are clearly > 1
+      expect(isProbabilityExpression("01.5")).toBe(false); // 1.5 rejected
+      expect(isProbabilityExpression("1.999")).toBe(false); // > 1.0 rejected
+      expect(isProbabilityExpression("001.5")).toBe(false); // 1.5 rejected
+      // Only allows 1.0, 1.00, etc (1 followed by .0+)
+      expect(isProbabilityExpression("1.0")).toBe(true);
+      expect(isProbabilityExpression("1.00")).toBe(true);
+    });
+
+    test("DOES validate syntax completely (end-to-end)", () => {
+      // Fixed: now properly rejects extra content
+      expect(isProbabilityExpression("0.5rest")).toBe(false);
+      expect(isProbabilityExpression("1.0x")).toBe(false);
+      // Trims leading and trailing whitespace
+      expect(isProbabilityExpression("0.5 ")).toBe(true);
+      expect(isProbabilityExpression(" 0.5")).toBe(true);
+      expect(isProbabilityExpression(" 0.5 ")).toBe(true);
+    });
   });
 });

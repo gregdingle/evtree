@@ -297,7 +297,7 @@ export function safeEvalExpr<T extends number | null>(
   defaultValue: number | T,
 ): number | T {
   // Trim leading whitespace and any currency symbol, convert percentage
-  expression = convertPercentage(normalizeExpression(expression));
+  expression = convertPercentageToDecimal(normalizeExpression(expression));
   if (!expression) {
     return defaultValue;
   }
@@ -337,8 +337,11 @@ export function normalizeExpression(expression: string | undefined): string {
  *
  * TODO: would it be better to expect percentages everywhere and not allow
  * decimal probabilities? percentage is the current default for display
+ * @see isProbabilityExpression also
  */
-export function convertPercentage(expression: string | undefined): string {
+export function convertPercentageToDecimal(
+  expression: string | undefined,
+): string {
   if (expression?.trim().endsWith("%")) {
     const numStr = expression.trim().slice(0, -1).trim();
     // Empty string before % should return original
@@ -352,4 +355,16 @@ export function convertPercentage(expression: string | undefined): string {
     }
   }
   return expression ?? "";
+}
+
+/**
+ * Matches decimal numbers that look like probabilities (0.x or 1.0)
+ */
+export function isProbabilityExpression(
+  expression: string | undefined,
+): boolean {
+  return (
+    expression?.trim()?.match(/^0*\.\d+$/) !== null ||
+    expression?.trim()?.match(/^0*1\.0+$/) !== null
+  );
 }

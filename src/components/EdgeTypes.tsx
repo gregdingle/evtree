@@ -10,6 +10,10 @@ import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import {
+  convertPercentageToDecimal,
+  isProbabilityExpression,
+} from "@/lib/expectedValue";
+import {
   selectComputedProbability,
   selectHasDecisionNodeSource,
   selectShouldShowProbabilityWarning,
@@ -148,9 +152,17 @@ export default function CustomEdge({
               <div className="py-0.5" style={{ width: `${labelWidth}px` }}>
                 <InlineEdit
                   value={data?.probabilityExpr}
-                  onCommit={(value) =>
-                    onEdgeDataUpdate(id, { probabilityExpr: value })
-                  }
+                  onCommit={(value) => {
+                    // NOTE: for user-friendliness, allow entering percentages
+                    // in the inline input, with or without %. They are
+                    // converted to decimal internally.
+                    if (!isProbabilityExpression(value)) {
+                      value = convertPercentageToDecimal(
+                        value?.endsWith("%") ? value : value + "%",
+                      );
+                    }
+                    onEdgeDataUpdate(id, { probabilityExpr: value });
+                  }}
                   displayFormatter={() =>
                     formatProbability(computedProbability, 0, "??%", "")
                   }
