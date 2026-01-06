@@ -337,7 +337,7 @@ export function normalizeExpression(expression: string | undefined): string {
  *
  * TODO: would it be better to expect percentages everywhere and not allow
  * decimal probabilities? percentage is the current default for display
- * @see isProbabilityExpression also
+ * @see isDecimalProbability also
  */
 export function convertPercentageToDecimal(
   expression: string | undefined,
@@ -355,16 +355,4 @@ export function convertPercentageToDecimal(
     }
   }
   return expression ?? "";
-}
-
-/**
- * Matches decimal numbers that look like probabilities (0.x or 1.0)
- */
-export function isProbabilityExpression(
-  expression: string | undefined,
-): boolean {
-  return (
-    expression?.trim()?.match(/^0*\.\d+$/) !== null ||
-    expression?.trim()?.match(/^0*1\.0+$/) !== null
-  );
 }

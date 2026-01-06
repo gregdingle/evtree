@@ -9,10 +9,7 @@ import {
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
-import {
-  convertPercentageToDecimal,
-  isProbabilityExpression,
-} from "@/lib/expectedValue";
+import { convertPercentageToDecimal } from "@/lib/expectedValue";
 import {
   selectComputedProbability,
   selectHasDecisionNodeSource,
@@ -156,10 +153,15 @@ export default function CustomEdge({
                     // NOTE: for user-friendliness, allow entering percentages
                     // in the inline input, with or without %. They are
                     // converted to decimal internally.
-                    if (!isProbabilityExpression(value)) {
-                      value = convertPercentageToDecimal(
-                        value?.endsWith("%") ? value : value + "%",
-                      );
+                    // TODO: should we store percentages internally instead?
+                    // TODO: should the right-side input work the same way?
+                    if (value?.trim().endsWith("%")) {
+                      value = convertPercentageToDecimal(value);
+                    } else if (
+                      Number.isInteger(Number(value)) &&
+                      Number(value) !== 1 // NOTE: to allow 1.0 as valid decimal
+                    ) {
+                      value = convertPercentageToDecimal(value + "%");
                     }
                     onEdgeDataUpdate(id, { probabilityExpr: value });
                   }}
