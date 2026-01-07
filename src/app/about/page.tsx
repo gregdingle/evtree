@@ -13,11 +13,6 @@ export default function About() {
       <h1 className="mb-4 text-3xl sm:text-5xl">About</h1>
       <div className="mx-8">
         <h2 className="my-4 text-2xl">About Us</h2>
-
-        {/* TODO: finish thumbnail image with links to LinkedIn
-        TODO: consider off-white background as in tailwind... but then builder bg?
-        */}
-
         <p className="my-4">
           <a
             href="https://www.linkedin.com/in/marjorie-corman-aaron-49a77a48/"
@@ -46,8 +41,6 @@ export default function About() {
           : A Lawyer&apos;s Guide to Assessing Cases and Advising Clients (DRI
           Press 2019) . She now practices as arbitrator, mediator and decision
           tree builder.
-          {/* TODO: add footnote somehow from
-          https://docs.google.com/document/d/1ECZAESsJkHNiMeGabG-fa50SR9IbWE-TloHO7sWKBCk/edit?tab=t.0 */}
         </p>
         <p className="my-4">
           <a

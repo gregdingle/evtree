@@ -13,7 +13,18 @@ const DEFAULT_NODE_HEIGHT = 72;
 export const MINIMUM_DISTANCE = 10; // Minimum distance between subtree and surrounding nodes
 
 /**
- * Calculates offset to maintain root position after auto arranging
+ * Calculates offset to maintain root position after auto arranging.
+ *
+ * Collision avoidance: If the arranged subtree would overlap with surrounding nodes,
+ * the entire subtree (including root) is shifted vertically to find the nearest
+ * non-conflicting position. This means the root node position may move on the y-axis.
+ *
+ * The algorithm:
+ * 1. Calculates initial offset to maintain root at its current position
+ * 2. Checks for vertical overlaps with surrounding nodes (excluding notes and ghosts)
+ * 3. Generates candidate positions above/below each surrounding node
+ * 4. Selects the position with minimal adjustment that has no conflicts
+ * 5. Applies the adjustment to offsetY, which affects the entire subtree
  */
 export function computeLayoutedNodeOffsets(
   layoutedNodes: AppNode[],

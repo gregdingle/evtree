@@ -14,8 +14,8 @@ export default function GlobalError(
     reset: () => void;
   },
 ) {
-  // TODO: something fancier
-  // TODO: make sure errors are being logged somewhere... vercel?
+  // TODO: some fancier message... see Tailwind UI block of error page
+  // TODO: make sure errors are being logged somewhere... vercel?... sentry?
   return (
     <html>
       <body>

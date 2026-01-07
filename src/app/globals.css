@@ -104,7 +104,7 @@ body {
   padding: 2px 4px;
   border-radius: 1px;
   font-size: 10px;
-  /* TODO: dark mode */
+  /* TODO: on canvas tooltip dark mode */
   background: black;
   color: white;
   white-space: nowrap;
