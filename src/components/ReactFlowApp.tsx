@@ -18,7 +18,7 @@ import { useContextMenu } from "@/hooks/use-context-menu";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
-import { buildChildToParentNodeMap } from "@/lib/maps";
+import { getChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 
 import { ArrowMarker } from "./ArrowMarker";
@@ -98,7 +98,7 @@ export default function ReactFlowApp() {
 
   return (
     // TODO: how to fix height to fill to bottom of viewport only so that if
-    // left or right panel overflows, the canvas doesn't also overflow. you can
+    // left or right panel overflows, the canvas doesn't also overflow? you can
     // produce this effect by adding more and more variables to a tree.
     // NOTE: see also message on RightSidePanel when more than 800px height
     <div ref={ref} className="relative h-full w-full">
@@ -170,7 +170,7 @@ export default function ReactFlowApp() {
 
 // TODO: move to some utils file and write unit tests
 function isValidConnection(edges: AppEdge[], connection: AppEdge | Connection) {
-  const childToParentMap = buildChildToParentNodeMap(edges);
+  const childToParentMap = getChildToParentNodeMap(edges);
 
   // Check if the target node is an ancestor of the source node
   let currentNodeId: string | undefined = connection.source;

@@ -30,10 +30,7 @@ import {
   computeLayoutedNodeOffsets,
   getLayoutedElementsD3,
 } from "@/lib/layout";
-import {
-  buildNodeToIncomingEdgeMap,
-  buildParentToChildNodeMap,
-} from "@/lib/maps";
+import { getNodeToIncomingEdgeMap, getParentToChildNodeMap } from "@/lib/maps";
 import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
@@ -557,8 +554,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
               // Get the position and incoming edge info BEFORE deletion
               const replacementPosition = nodeToReplace.position;
-              const parentToChildMap = buildParentToChildNodeMap(tree.edges);
-              const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(
+              const parentToChildMap = getParentToChildNodeMap(tree.edges);
+              const nodeToIncomingEdgeMap = getNodeToIncomingEdgeMap(
                 tree.edges,
               );
               const incomingEdgeId = nodeToIncomingEdgeMap[nodeToReplace.id];
@@ -806,10 +803,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
-            const parentToChildMap = buildParentToChildNodeMap(tree.edges);
-            const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(
-              tree.edges,
-            );
+            const parentToChildMap = getParentToChildNodeMap(tree.edges);
+            const nodeToIncomingEdgeMap = getNodeToIncomingEdgeMap(tree.edges);
 
             // Check if any children exist to determine if we should collapse or expand
             const children = parentToChildMap[nodeId] ?? [];
@@ -870,10 +865,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
             clearSelections(tree);
 
-            const parentToChildMap = buildParentToChildNodeMap(tree.edges);
-            const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(
-              tree.edges,
-            );
+            const parentToChildMap = getParentToChildNodeMap(tree.edges);
+            const nodeToIncomingEdgeMap = getNodeToIncomingEdgeMap(tree.edges);
 
             const selectDescendants = (currentNodeId: string) => {
               const children = parentToChildMap[currentNodeId] ?? [];
@@ -947,9 +940,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               return;
             }
 
-            const nodeToIncomingEdgeMap = buildNodeToIncomingEdgeMap(
-              tree.edges,
-            );
+            const nodeToIncomingEdgeMap = getNodeToIncomingEdgeMap(tree.edges);
             // Node already has an incoming edge, cannot connect
             if (nodeToIncomingEdgeMap[selectedNode.id]) {
               console.warn("[EVTree] Node already has an incoming connection");
@@ -1074,7 +1065,7 @@ function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
 }
 
 function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
-  const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+  const parentToChildMap = getParentToChildNodeMap(tree.edges);
 
   // Collect all nodes in the subtree first
   const subTreeNodes = new Set<string>();

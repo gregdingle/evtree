@@ -35,7 +35,7 @@ export default function LeftSidePanel() {
 
   const handleSetCurrentTree = (treeId: string) => {
     setCurrentTree(treeId);
-    // HACK: optimized for fitting in the terminal labels of Hello World Tree
+    // NOTE: optimized for fitting in the terminal labels of Hello World Tree
     fitView({ padding: 0.3 });
   };
 

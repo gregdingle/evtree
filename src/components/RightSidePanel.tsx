@@ -154,7 +154,6 @@ export default function RightSidePanel() {
         <a
           // TODO: extract contact email to global config
           href="mailto:gregdingle@gmail.com,maaron@just-decisions.com?subject=TreeDecisions"
-          // TODO: extract this as shared link style
           className="bluelink font-semibold"
         >
           Email us
@@ -345,15 +344,6 @@ function NodeProperties({
           />
         </>
       ) : (
-        /* TODO: deprecated... remove if not needed
-    <PropertyInput
-      label="Label"
-      value={node.data.label}
-      onChange={(value) =>
-        onNodeDataUpdate(node.id, { label: value })
-      }
-      placeholder="Enter node label"
-    /> */
         <>
           <PropertyInput
             label="Cost"
@@ -505,7 +495,7 @@ function TreeProperties({
           label: `${data.symbol} ${data.code} - ${data.name}`,
         }))}
       />
-      {/* TODO: have a 'probabilities' setting for formating as decimal or percentage */}
+      {/* TODO: have a 'probabilities' setting for formating as decimal or percentage? */}
       <PropertyInput
         label="Rounding"
         info={`Determines how amounts will be \nrounded for display on the tree`}
@@ -519,27 +509,10 @@ function TreeProperties({
           label: `${data.name} ${data.scale ? " → " + keys(data.scale).join(", ") : ""}`,
         }))}
       />
-      {/* TODO: talk to Marjorie... isn't transparent background on export enough?
-      <PropertyInput
-        // TODO: backgroundColor breaks dark mode!!!
-        // TODO: word "background" is too long... but how to break?
-        label="Background Color"
-        info={`Determines the background \ncolor of the tree. The \n"transparent" option affects \n export to image.`}
-        select
-        value={currentTree.backgroundColor ?? BACKGROUNDS[""].code}
-        onChange={(value) =>
-          onTreeDataUpdate({ backgroundColor: value as BackgroundColorCode })
-        }
-        options={toPairs(BACKGROUNDS).map(([code, data]) => ({
-          value: code,
-          label: data.name,
-        }))}
-      />
-       */}
       <hr className="my-6 border-gray-500" />
       <VariablesInput
         scope="value"
-        // TODO: add 'See docs for more info on forumlas' when docs are done
+        // TODO: add 'See docs for more info on forumlas' when docs are done?
         info={`Creates variables that may be \nused in formulas for outcome values`}
       />
       <VariablesInput

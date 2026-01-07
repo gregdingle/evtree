@@ -16,7 +16,7 @@ import {
 import { useReactFlow } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
-import { buildChildToParentNodeMap } from "@/lib/maps";
+import { getChildToParentNodeMap } from "@/lib/maps";
 import { AppNode, NodeType } from "@/lib/node";
 import {
   selectCollapsible,
@@ -111,7 +111,7 @@ export default function ContextMenu({
 
   // TODO: refactor to use more accurate findNearestUpstreamNode
   // as in connectToNearestNode
-  const childToParentMap = buildChildToParentNodeMap(edges);
+  const childToParentMap = getChildToParentNodeMap(edges);
 
   const handlePaste = (clientX: number, clientY: number) => {
     const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });

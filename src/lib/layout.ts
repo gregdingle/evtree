@@ -2,7 +2,7 @@ import { hierarchy, tree } from "d3-hierarchy";
 import { values } from "es-toolkit/compat";
 
 import { AppEdge } from "./edge";
-import { buildParentToChildNodeMap } from "./maps";
+import { getParentToChildNodeMap } from "./maps";
 import { AppNode } from "./node";
 
 // Default node dimensions for layout when measured dimensions aren't available
@@ -159,7 +159,7 @@ export const getLayoutedElementsD3 = (
   separate = { siblings: 0.5, parents: 2 },
   rightAligned = false,
 ): { nodes: AppNode[]; edges: AppEdge[] } => {
-  const childrenMap = buildParentToChildNodeMap(edges);
+  const childrenMap = getParentToChildNodeMap(edges);
 
   // Build hierarchy data structure
   interface HierarchyNode {
@@ -308,7 +308,7 @@ function applyRightAlignedLayout(
   hierarchyData: { id: string; children?: unknown[] },
   nodeSpacing: { horizontal: number; vertical: number },
 ): void {
-  const childrenMap = buildParentToChildNodeMap(edges);
+  const childrenMap = getParentToChildNodeMap(edges);
   type HierarchyNodeType = ReturnType<typeof hierarchy<{ id: string }>>;
 
   // Find all terminal nodes (leaf nodes with no children)

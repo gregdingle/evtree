@@ -1,7 +1,7 @@
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
-import { Variable } from "@/lib/variable";
+import { Variable, getNewExpr, isVariableInExpr } from "@/lib/variable";
 
 interface VariablesListProps extends React.HTMLAttributes<HTMLDetailsElement> {
   variables: Variable[];
@@ -87,36 +87,3 @@ export function VariablesList({
     </details>
   );
 }
-
-// TODO: move to utils and add unit tests
-const getNewExpr = (checked: boolean, currentExpr: string, key: string) => {
-  let newExpr = currentExpr;
-
-  if (checked) {
-    // Add variable to expression
-    if (newExpr.trim() === "") {
-      newExpr = key;
-    } else {
-      newExpr = `${newExpr} + ${key}`;
-    }
-  } else {
-    // TODO: use expr-eval for proper parsing and removal... maybe set key to zero (or 1) then simplify?
-    // Remove variable from expression
-    // Handle various patterns: "key", " + key", "key + ", " + key + "
-    const ops = "[+-/\\*]"; // Operators to consider
-    newExpr = newExpr
-      .replace(new RegExp(`\\s*${ops}\\s*${key}\\b`, "g"), "")
-      .replace(new RegExp(`\\b${key}\\s*${ops}\\s*`, "g"), "")
-      .replace(new RegExp(`^${key}$`, "g"), "")
-      .trim();
-
-    // Clean up any leading/trailing operators
-    newExpr = newExpr.replace(/^\+\s*/, "").replace(/\s*\+$/, "");
-  }
-
-  return newExpr;
-};
-
-// TODO: move to utils and add unit tests
-const isVariableInExpr = (currentExpr: string, key: string) =>
-  currentExpr.search(new RegExp(`\\b${key}\\b`)) !== -1;

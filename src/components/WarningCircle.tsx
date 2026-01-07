@@ -15,12 +15,7 @@ export function WarningCircle({
   onClick,
 }: WarningCircleProps): ReactNode {
   return (
-    <span
-      className="tooltip"
-      // TODO: it doesn't always fix... if the sum of other
-      // probabilities is >1, clicking this only sets it to 0%
-      data-tooltip={tooltip}
-    >
+    <span className="tooltip" data-tooltip={tooltip}>
       <ExclamationCircleIcon
         onClick={onClick}
         className="-mt-1 ml-0.5 inline-block h-4 w-4 fill-red-600"

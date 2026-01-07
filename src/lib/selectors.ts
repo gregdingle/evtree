@@ -14,10 +14,10 @@ import {
   toComputeNode,
 } from "../lib/expectedValue";
 import {
-  buildChildToParentEdgeMap,
-  buildChildToParentNodeMap,
-  buildNodeToIncomingEdgeMap,
-  buildParentToChildNodeMap,
+  getChildToParentEdgeMap,
+  getChildToParentNodeMap,
+  getNodeToIncomingEdgeMap,
+  getParentToChildNodeMap,
 } from "../lib/maps";
 import { CurrencyCode } from "./currency";
 import { RoundingCode } from "./rounding";
@@ -188,8 +188,8 @@ export function selectPathProbability(
   }
 
   // Build maps for efficient traversal
-  const nodeToIncomingEdge = buildNodeToIncomingEdgeMap(currentTree.edges);
-  const childToParentEdgeMap = buildChildToParentEdgeMap(currentTree.edges);
+  const nodeToIncomingEdge = getNodeToIncomingEdgeMap(currentTree.edges);
+  const childToParentEdgeMap = getChildToParentEdgeMap(currentTree.edges);
 
   // Find the edge that leads to this node
   const incomingEdgeId = nodeToIncomingEdge[nodeId];
@@ -263,7 +263,7 @@ export function selectCollapsible(
     return { hasChildren: false, isCollapsed: false };
   }
 
-  const parentToChildMap = buildParentToChildNodeMap(tree.edges);
+  const parentToChildMap = getParentToChildNodeMap(tree.edges);
   const children = parentToChildMap[nodeId];
   const hasChildren = children ? children.length > 0 : false;
 
@@ -283,7 +283,7 @@ function selectParentNode(
     return undefined;
   }
 
-  const childToParentMap = buildChildToParentNodeMap(tree.edges);
+  const childToParentMap = getChildToParentNodeMap(tree.edges);
   return childToParentMap[nodeId];
 }
 

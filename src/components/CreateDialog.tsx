@@ -112,7 +112,8 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       }
 
       loadTree(decisionTree, true);
-      // TODO: optimize auto arrange, figure out what's going on with timing
+      // TODO: optimize auto arrange, figure out what's going on with timing,
+      // avoid spurious undo stack entries
       setTimeout(() => {
         onArrange();
         fitView();
@@ -124,7 +125,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       onClose();
     } catch (error) {
       console.error(error);
-      // TODO: better than alert
+      // TODO: better than window.alert
       window.alert("Failed to generate tree with AI. Please try again.");
     } finally {
       setIsGenerating(false);
@@ -149,7 +150,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
       setAiInputText(extractedText);
     } catch (error) {
       console.error(error);
-      // TODO: better than alert
+      // TODO: better than window.alert
       window.alert(
         "Failed to extract text from file. Please check the console for details or try entering text manually.",
       );
@@ -378,7 +379,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                         />
                         <p
                           className="my-1.5 text-sm text-gray-500 dark:text-gray-400"
-                          // TODO: sync terminology with download button
+                          // NOTE: sync terminology with download button
                         >
                           Select a previously downloaded JSON file
                         </p>
@@ -407,7 +408,7 @@ export default function CreateDialog({ open, onClose }: CreateDialogProps) {
                   className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
                   {isGenerating ? (
-                    // TODO: spinner
+                    // TODO: use a spinner?
                     <>Generating...</>
                   ) : (
                     "Generate"

@@ -111,7 +111,6 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       hasParent={hasParent}
     >
       <div
-        // TODO: what transparency level looks best here?
         className={`
           bg-sky-400
           p-3.5
@@ -211,7 +210,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const topOffset = showEVs ? "-top-2.5" : "top-0.5";
   return (
     <div
-      // TODO: sholud also "nodrag" when not selected?
+      // TODO: should also "nodrag" when not selected?
       className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div className="relative">
@@ -288,27 +287,6 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           )}
         </InlineEdit>
       </div>
-      {/*
-      TODO: deprecated... decided to show expected net value on canvas only...
-        remove me if no longer needed
-      data.costExpr && (
-        <div
-          className={`absolute ${topOffset}`}
-          style={{
-            left: `${Math.max(3, (data.valueExpr?.length ?? 0) + 4)}ch`,
-          }}
-        >
-          <InlineEdit
-            value={data.costExpr}
-            onCommit={(value) => onNodeDataUpdate(id, { costExpr: value })}
-            displayFormatter={formatCost}
-            inputClassName="px-0.5 py-0 mt-0.5"
-            displayStyle={{
-              width: `${Math.max(3, (data.costExpr?.length ?? 0) + 4)}ch`,
-            }}
-          />
-        </div>
-      )*/}
       {showEVs && (
         <div className={`absolute top-4 left-9 italic`}>
           {

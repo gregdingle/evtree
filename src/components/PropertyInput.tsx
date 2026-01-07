@@ -1,12 +1,11 @@
 // TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
-// TODO: should PropertyInputProps inherit from
 import React from "react";
 
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 import Tooltip from "./Tooltip";
 
-// React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
+// TODO: should PropertyInputProps inherit from React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
   label: string;
   value?: string;
@@ -56,7 +55,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
       <div className={`my-4 flex flex-wrap items-center space-x-2`}>
         <label
           htmlFor={label}
-          // TODO: try to adjust width to fit all labels without line breaks?
+          // NOTE: adjusted width to fit all known labels without line breaks
           className={`w-20 select-none ${disabled ? "" : "cursor-pointer"}`}
         >
           <span

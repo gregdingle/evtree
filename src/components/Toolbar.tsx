@@ -229,7 +229,8 @@ export default function Toolbar() {
           Delete
         </ToolbarButton>
         {/*
-        TODO: disabled for users, see hotkey
+        NOTE: disabled for users, see hotkey
+        TODO: surface Reset somehow to users?
         <ToolbarButton onClick={onReset} tooltip="Ctrl+Shift+R">
           Reset
         </ToolbarButton> */}
@@ -268,10 +269,8 @@ export default function Toolbar() {
           tooltip={
             areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
           }
-          // TODO: less strong active blue color? maybe just border? or use proper toggle switch?
           active={areEVsShowing}
           disabled={!hasTerminalNodes || isHistogramOpen}
-          // TODO: finish implementing app logic for dropdown
           dropdownItems={{
             show: "Show path values",
             hide: "Hide path values",

@@ -10,7 +10,7 @@ import { AppEdge, filterTreeEdges } from "./edge";
  *
  * TODO: extract to new utils file along with buildAdjacencyList?
  */
-export const buildChildToParentNodeMap = memoize(function (
+export const getChildToParentNodeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
@@ -21,7 +21,7 @@ export const buildChildToParentNodeMap = memoize(function (
   return childToParentMap;
 });
 
-export const buildNodeToIncomingEdgeMap = memoize(function (
+export const getNodeToIncomingEdgeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const nodeToIncomingEdge: Record<string, string> = {};
@@ -32,7 +32,7 @@ export const buildNodeToIncomingEdgeMap = memoize(function (
   return nodeToIncomingEdge;
 });
 
-export const buildChildToParentEdgeMap = memoize(function (
+export const getChildToParentEdgeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
@@ -57,7 +57,7 @@ export const buildChildToParentEdgeMap = memoize(function (
   return childToParentMap;
 });
 
-export const buildParentToChildNodeMap = memoize(function (
+export const getParentToChildNodeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string[]> {
   const parentToChildMap: Record<string, string[]> = {};
