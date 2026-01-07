@@ -11,7 +11,11 @@ export function ContextMenuButton({
 }: ContextMenuButtonProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={(event) => {
+        // NOTE: important for preventing handlers on elements underneath context menu
+        event.stopPropagation();
+        onClick();
+      }}
       disabled={disabled}
       className={`${
         disabled ? "opacity-50" : ""
