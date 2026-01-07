@@ -118,7 +118,7 @@ const temporalOptions: ZundoOptions<
     throttle((...args: unknown[]) => {
       // @ts-expect-error - handleSet expects specific args but we just pass all through
       handleSet(...args);
-      // TODO: how to optimize timeout?
+      // TODO: how to optimize throttle window for undo?
     }, 400),
   partialize: selectUndoableState,
   // NOTE: deep isEqual instead of shallow. this is needed to prevent
@@ -132,12 +132,14 @@ const temporalOptions: ZundoOptions<
     // Only update when a change to a tree
     // NOTE: this does not seem to play nice with node measured even though that
     // is filtered in selectUndoableState
-    if (pastState.trees === currentState.trees) {
-      return;
-    }
 
     withCurrentTree(currentState, (tree) => {
-      tree.updatedAt = new Date().toISOString();
+      const pastTreeState = pastState.trees[tree.id];
+      if (pastTreeState !== tree) {
+        // TODO: use dayjs for timestamps?
+        tree.updatedAt = new Date().toISOString();
+        return;
+      }
     });
   },
 };
@@ -209,10 +211,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       const treeId = replace ? treeData.id : nanoid(12);
       set(
         (state) => {
+          // TODO: should do something about duplicate tree names?
           const loadedTree: DecisionTree = {
             ...treeData,
             id: treeId,
-            // TODO: should do something about duplicate names?
+            // TODO: is it conventional to update these dates on load?
             updatedAt: new Date().toISOString(),
           };
           state.trees[treeId] = loadedTree;
@@ -259,6 +262,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               ...sourceTree,
               id: newTreeId,
               name: newName,
+              // TODO: is it conventional to update these dates on duplicate?
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             };
@@ -336,7 +340,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               values(tree.nodes),
             );
             tree.nodes = keyBy(updatedNodesArray, (node) => node.id);
-            tree.updatedAt = new Date().toISOString();
           }),
         undefined,
         { type: "onNodesChange", changesCount: changes.length },
@@ -711,9 +714,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // TODO: should this be in the store at all or should we just rely on onNodesChange?
-    // And review all other store methods!
-    // TODO: why are newEdge and newNode not selected after create on canvas?!!!
+    // TODO: why are newEdge and newNode not always selected after create on canvas?!!!
     createNodeAt: (position, fromNodeId, nodeType = "chance") => {
       set(
         (state) =>
@@ -723,7 +724,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const newEdge = createEdge(fromNodeId, newNode.id);
             tree.nodes[newNode.id] = newNode;
             tree.edges[newEdge.id] = newEdge;
-            // TODO: use dayjs?
           }),
         undefined,
         { type: "createNodeAt", position, fromNodeId, nodeType },

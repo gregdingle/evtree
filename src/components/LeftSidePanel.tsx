@@ -110,7 +110,7 @@ export default function LeftSidePanel() {
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate">{tree.name}</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-500">
-                      {tree.updatedAt !== tree.createdAt
+                      {tree.updatedAt && tree.updatedAt !== tree.createdAt
                         ? `Updated ${formatDate(tree.updatedAt)}`
                         : `Created ${formatDate(tree.createdAt)}`}
                     </p>
