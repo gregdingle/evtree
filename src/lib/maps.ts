@@ -2,6 +2,9 @@ import { memoize } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 import { AppEdge, filterTreeEdges } from "./edge";
+import { DecisionTree } from "./tree";
+
+// TODO: add basic unit tests for all functions in this file to define expected behavior
 
 /**
  * NOTE: assumes a single incoming edge per node
@@ -70,3 +73,23 @@ export const getParentToChildNodeMap = memoize(function (
   });
   return parentToChildMap;
 });
+
+export function collectSubtreeNodeIds(
+  tree: DecisionTree,
+  nodeId: string,
+): Set<string> {
+  const parentToChildMap = getParentToChildNodeMap(tree.edges);
+
+  // Collect all nodes in the subtree first
+  const subTreeNodes = new Set<string>();
+  const collectDescendants = (currentNodeId: string) => {
+    subTreeNodes.add(currentNodeId);
+    const children = parentToChildMap[currentNodeId] ?? [];
+    children.forEach((childNodeId) => {
+      collectDescendants(childNodeId);
+    });
+  };
+  collectDescendants(nodeId);
+
+  return subTreeNodes;
+}

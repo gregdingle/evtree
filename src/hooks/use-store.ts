@@ -26,11 +26,12 @@ import { shallow } from "zustand/vanilla/shallow";
 import initialTrees from "@/data/initialTrees";
 import { AppEdge, cloneEdge, createEdge } from "@/lib/edge";
 import { toComputeEdge } from "@/lib/expectedValue";
+import { arrangeSubtreeHelper } from "@/lib/layout";
 import {
-  computeLayoutedNodeOffsets,
-  getLayoutedElementsD3,
-} from "@/lib/layout";
-import { getNodeToIncomingEdgeMap, getParentToChildNodeMap } from "@/lib/maps";
+  collectSubtreeNodeIds,
+  getNodeToIncomingEdgeMap,
+  getParentToChildNodeMap,
+} from "@/lib/maps";
 import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
@@ -1061,65 +1062,5 @@ function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
   // Delete all nodes in the subtree
   nodeIdsToDelete.forEach((nodeId) => {
     delete tree.nodes[nodeId];
-  });
-}
-
-function collectSubtreeNodeIds(tree: DecisionTree, nodeId: string) {
-  const parentToChildMap = getParentToChildNodeMap(tree.edges);
-
-  // Collect all nodes in the subtree first
-  const subTreeNodes = new Set<string>();
-  const collectDescendants = (currentNodeId: string) => {
-    subTreeNodes.add(currentNodeId);
-    const children = parentToChildMap[currentNodeId] ?? [];
-    children.forEach((childNodeId) => {
-      collectDescendants(childNodeId);
-    });
-  };
-  collectDescendants(nodeId);
-
-  return subTreeNodes;
-}
-
-// TODO: move this function somewhere better?
-function arrangeSubtreeHelper(
-  tree: DecisionTree,
-  rootNodeId: string,
-  rightAligned = false,
-) {
-  // Collect all nodes in the subtree
-  const subtreeNodeIds = collectSubtreeNodeIds(tree, rootNodeId);
-
-  // Extract subtree nodes and edges
-  const subtreeNodes = Array.from(subtreeNodeIds).map((id) => tree.nodes[id]!);
-  const subtreeEdges = values(tree.edges).filter(
-    (edge) =>
-      subtreeNodeIds.has(edge.source) && subtreeNodeIds.has(edge.target),
-  );
-
-  // Apply layout to the subtree
-  const { nodes: layoutedNodes } = getLayoutedElementsD3(
-    rootNodeId,
-    subtreeNodes,
-    subtreeEdges,
-    { horizontal: 250, vertical: 100 },
-    false,
-    { siblings: 0.25, parents: 1.5 },
-    rightAligned,
-  );
-
-  const { offsetX, offsetY } = computeLayoutedNodeOffsets(
-    layoutedNodes,
-    rootNodeId,
-    tree.nodes,
-    subtreeNodeIds,
-  );
-
-  // Update positions of nodes in the subtree with final offset
-  layoutedNodes.forEach((layoutedNode) => {
-    tree.nodes[layoutedNode.id]!.position = {
-      x: layoutedNode.position.x + offsetX,
-      y: layoutedNode.position.y + offsetY,
-    };
   });
 }

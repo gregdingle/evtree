@@ -2,8 +2,10 @@ import { hierarchy, tree } from "d3-hierarchy";
 import { values } from "es-toolkit/compat";
 
 import { AppEdge } from "./edge";
+import { collectSubtreeNodeIds } from "./maps";
 import { getParentToChildNodeMap } from "./maps";
 import { AppNode } from "./node";
+import { DecisionTree } from "./tree";
 
 // Default node dimensions for layout when measured dimensions aren't available
 // These serve as fallbacks for newly created nodes that haven't been rendered yet
@@ -348,4 +350,46 @@ function applyRightAlignedLayout(
     terminal.x = currentPosition;
     currentPosition += spacing;
   }
+}
+
+export function arrangeSubtreeHelper(
+  tree: DecisionTree,
+  rootNodeId: string,
+  rightAligned = false,
+) {
+  // Collect all nodes in the subtree
+  const subtreeNodeIds = collectSubtreeNodeIds(tree, rootNodeId);
+
+  // Extract subtree nodes and edges
+  const subtreeNodes = Array.from(subtreeNodeIds).map((id) => tree.nodes[id]!);
+  const subtreeEdges = values(tree.edges).filter(
+    (edge) =>
+      subtreeNodeIds.has(edge.source) && subtreeNodeIds.has(edge.target),
+  );
+
+  // Apply layout to the subtree
+  const { nodes: layoutedNodes } = getLayoutedElementsD3(
+    rootNodeId,
+    subtreeNodes,
+    subtreeEdges,
+    { horizontal: 250, vertical: 100 },
+    false,
+    { siblings: 0.25, parents: 1.5 },
+    rightAligned,
+  );
+
+  const { offsetX, offsetY } = computeLayoutedNodeOffsets(
+    layoutedNodes,
+    rootNodeId,
+    tree.nodes,
+    subtreeNodeIds,
+  );
+
+  // Update positions of nodes in the subtree with final offset
+  layoutedNodes.forEach((layoutedNode) => {
+    tree.nodes[layoutedNode.id]!.position = {
+      x: layoutedNode.position.x + offsetX,
+      y: layoutedNode.position.y + offsetY,
+    };
+  });
 }
