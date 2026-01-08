@@ -92,6 +92,7 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
               disabled={disabled}
               className={`min-w-0 flex-3/4 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
               rows={4}
+              spellCheck={false}
               {...props}
             />
             {info && (

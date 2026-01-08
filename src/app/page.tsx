@@ -76,6 +76,13 @@ export default function Home() {
         <a href="https://github.com/gregdingle/evtree/" className="bluelink">
           Source Code
         </a>
+        &nbsp;&middot;&nbsp;
+        <a
+          href="https://open.mitchellhamline.edu/dri_press/9/"
+          className="bluelink"
+        >
+          Book
+        </a>
       </footer>
     </StaticPage>
   );
