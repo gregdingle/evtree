@@ -115,3 +115,32 @@ body {
 .evtree .tooltip:hover::after {
   opacity: 1;
 }
+
+/* Arrange animation: temporary class toggled by animate.ts
+   - Nodes animate because React Flow positions nodes via transform
+   - Edges cannot reliably interpolate SVG path `d`, so we fade them briefly
+*/
+.evtree.evtree--arranging .react-flow__node {
+  transition: transform var(--evtree-arrange-move-ms) ease;
+  will-change: transform;
+}
+
+/*
+  Before arranging, fade out tree branches. After arranging, fade them back in.
+  NOTE: animation controlled by animate.ts
+*/
+.evtree .react-flow__edge-path,
+.evtree .react-flow__edge-textwrapper,
+.evtree .react-flow__edgelabel-renderer {
+  transition: opacity var(--evtree-arrange-fade-ms) ease-in-out;
+}
+
+/*
+  During arranging, hide tree branches
+  NOTE: animation controlled by animate.ts
+*/
+.evtree.evtree--arranging .react-flow__edge-path,
+.evtree.evtree--arranging .react-flow__edge-textwrapper,
+.evtree.evtree--arranging .react-flow__edgelabel-renderer {
+  opacity: 0;
+}

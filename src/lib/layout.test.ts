@@ -479,7 +479,6 @@ describe("getLayoutedElementsD3 with right-aligned", () => {
       nodes,
       edges,
       { horizontal: 200, vertical: 100 },
-      false,
       { siblings: 0.5, parents: 2 },
       true, // rightAligned
     );
@@ -544,7 +543,6 @@ describe("getLayoutedElementsD3 with right-aligned", () => {
       nodes,
       edges,
       { horizontal: 200, vertical: 100 },
-      false,
       { siblings: 0.5, parents: 2 },
       false, // rightAligned = false (compact)
     );
@@ -610,7 +608,6 @@ describe("getLayoutedElementsD3 with right-aligned", () => {
       nodes,
       edges,
       nodeSpacing,
-      false,
       { siblings: 0.5, parents: 2 },
       true,
     );
@@ -699,7 +696,6 @@ describe("getLayoutedElementsD3 with right-aligned", () => {
       nodes,
       edges,
       { horizontal: 200, vertical: 100 },
-      false,
       { siblings: 0.5, parents: 2 },
       true,
     );

@@ -98,11 +98,6 @@ export default function CustomEdge({
         style={{
           strokeLinecap: "round",
           strokeWidth: 3,
-          // TODO: animation is NOT finished... see getLayoutedElements
-          transition: style?.transition
-            ? // HACK: make animation work with SVG path
-              style.transition.replace("transform", "d")
-            : undefined,
         }}
       />
       <EdgeLabelRenderer>
@@ -111,8 +106,6 @@ export default function CustomEdge({
             style={{
               transform: transformLabel,
               pointerEvents: "all",
-              // TODO: animation is NOT finished... see getLayoutedElements
-              transition: style?.transition,
               maxWidth: `${labelWidth}px`,
             }}
             className="absolute -top-0.5 z-10 text-center"
@@ -131,8 +124,6 @@ export default function CustomEdge({
             style={{
               transform: transformProb,
               pointerEvents: "all",
-              // TODO: animation is NOT finished... see getLayoutedElements
-              transition: style?.transition,
             }}
             className="absolute top-4 z-10 text-center"
           >

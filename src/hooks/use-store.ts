@@ -43,6 +43,8 @@ import {
 import { Variable } from "@/lib/variable";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
+import { withArrangeAnimation } from "../lib/animate";
+
 export interface StoreState {
   trees: Record<string, DecisionTree>;
   currentTreeId: string | null;
@@ -765,38 +767,42 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     onArrange: (rightAligned = false) => {
-      set(
-        (state) =>
-          withCurrentTree(state, (tree) => {
-            // TODO: extract to global findRootNodes function?
-            const edgesArray = values(tree.edges);
-            values(tree.nodes)
-              .filter((node) => {
-                // A root node has no incoming edges
-                return (
-                  !edgesArray.some((edge) => edge.target === node.id) &&
-                  node.type !== "note" &&
-                  node.type !== "ghost"
-                );
-              })
-              .forEach((node) => {
-                arrangeSubtreeHelper(tree, node.id, rightAligned);
-              });
-          }),
-        undefined,
-        { type: "arrangeNodes", rightAligned },
+      withArrangeAnimation(() =>
+        set(
+          (state) =>
+            withCurrentTree(state, (tree) => {
+              // TODO: extract to global findRootNodes function?
+              const edgesArray = values(tree.edges);
+              values(tree.nodes)
+                .filter((node) => {
+                  // A root node has no incoming edges
+                  return (
+                    !edgesArray.some((edge) => edge.target === node.id) &&
+                    node.type !== "note" &&
+                    node.type !== "ghost"
+                  );
+                })
+                .forEach((node) => {
+                  arrangeSubtreeHelper(tree, node.id, rightAligned);
+                });
+            }),
+          undefined,
+          { type: "arrangeNodes", rightAligned },
+        ),
       );
     },
 
     // TODO: this would be even nicer with an animation!
     arrangeSubtree: (nodeId: string, rightAligned = false) => {
-      set(
-        (state) =>
-          withCurrentTree(state, (tree) =>
-            arrangeSubtreeHelper(tree, nodeId, rightAligned),
-          ),
-        undefined,
-        { type: "arrangeSubtree", nodeId, rightAligned },
+      withArrangeAnimation(() =>
+        set(
+          (state) =>
+            withCurrentTree(state, (tree) =>
+              arrangeSubtreeHelper(tree, nodeId, rightAligned),
+            ),
+          undefined,
+          { type: "arrangeSubtree", nodeId, rightAligned },
+        ),
       );
     },
 

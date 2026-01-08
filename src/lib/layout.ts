@@ -2,8 +2,7 @@ import { hierarchy, tree } from "d3-hierarchy";
 import { values } from "es-toolkit/compat";
 
 import { AppEdge } from "./edge";
-import { collectSubtreeNodeIds } from "./maps";
-import { getParentToChildNodeMap } from "./maps";
+import { collectSubtreeNodeIds, getParentToChildNodeMap } from "./maps";
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
 
@@ -144,7 +143,6 @@ export function computeLayoutedNodeOffsets(
  * @param nodes - Array of nodes to layout
  * @param edges - Array of edges
  * @param nodeSpacing - Spacing between nodes { horizontal, vertical }
- * @param animate - Whether to add transition animations
  * @param rightAligned - Whether to right-align all terminal nodes
  *
  * @see https://reactflow.dev/examples/layout/auto-layout
@@ -157,7 +155,6 @@ export const getLayoutedElementsD3 = (
   edges: AppEdge[],
   // TODO: node spacing dynamically by longest labels or terminal values?
   nodeSpacing = { horizontal: 200, vertical: 150 },
-  animate = false,
   separate = { siblings: 0.5, parents: 2 },
   rightAligned = false,
 ): { nodes: AppNode[]; edges: AppEdge[] } => {
@@ -252,26 +249,10 @@ export const getLayoutedElementsD3 = (
       position,
     };
 
-    if (animate) {
-      newNode.style = {
-        transition: "transform 1000ms ease",
-      };
-    }
-
     return newNode;
   });
 
-  // Add animation to edges if requested
-  const newEdges = animate
-    ? edges.map((edge) => ({
-        ...edge,
-        style: {
-          transition: "transform 1000ms ease",
-        },
-      }))
-    : edges;
-
-  return { nodes: newNodes, edges: newEdges };
+  return { nodes: newNodes, edges };
 };
 
 /**
@@ -373,7 +354,6 @@ export function arrangeSubtreeHelper(
     subtreeNodes,
     subtreeEdges,
     { horizontal: 250, vertical: 100 },
-    false,
     { siblings: 0.25, parents: 1.5 },
     rightAligned,
   );
