@@ -33,7 +33,6 @@ export default function CustomEdge({
   targetY,
   data,
   selected,
-  style,
 }: EdgeProps<AppEdge>) {
   const { label } = data ?? {};
 
@@ -44,8 +43,10 @@ export default function CustomEdge({
     selectComputedProbability(state, id),
   );
 
+  // TODO: best significant digits for users? precision vs usability tradeoff?
+  const significantDigits = 6;
   const shouldWarn = useStore((state) =>
-    selectShouldShowProbabilityWarning(state, id),
+    selectShouldShowProbabilityWarning(state, id, significantDigits),
   );
 
   const hasDecisionNodeSource = useStore((state) =>
@@ -171,7 +172,7 @@ export default function CustomEdge({
                       tooltip="Incomplete probabilities. Click to fix."
                       onClick={(event) => {
                         event.stopPropagation();
-                        balanceEdgeProbability(id);
+                        balanceEdgeProbability(id, significantDigits);
                       }}
                     />
                   ) : null}

@@ -123,6 +123,7 @@ export function selectComputedProbability(
 export function selectShouldShowProbabilityWarning(
   state: StoreState,
   edgeId: string,
+  significantDigits: number,
 ): boolean {
   const { currentTreeId } = state;
   if (!currentTreeId) {
@@ -159,8 +160,8 @@ export function selectShouldShowProbabilityWarning(
     // NOTE: only show sum warning if there is at least some probability
     // assigned in a group of branches
     (probabilitySum > 0 &&
-      // NOTE: Allow small floating-point tolerance
-      Math.abs(probabilitySum - 1) > 1e-6)
+      // NOTE: Should always allow small floating-point tolerance
+      Math.abs(probabilitySum - 1) > 10 ** -significantDigits)
   );
 }
 

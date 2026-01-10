@@ -77,7 +77,7 @@ export interface StoreState {
     id: string,
     properties: Pick<AppNode, "width" | "height">,
   ) => void;
-  balanceEdgeProbability: (id: string) => void;
+  balanceEdgeProbability: (id: string, significantDigits?: number) => void;
   // TODO: rename all onX methods to simply X
   onCopy: (stripValues?: boolean) => void;
   onPaste: (
@@ -451,7 +451,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    balanceEdgeProbability(id) {
+    balanceEdgeProbability(id, significantDigits = 6) {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -479,7 +479,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const balancedProbability = Math.max(
               0,
               // TODO: could this lead to total prob less than 1?
-              round(1.0 - existingProbabilitySum, 2),
+              round(1.0 - existingProbabilitySum, significantDigits),
             );
 
             const edge = tree.edges[id];
