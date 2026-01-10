@@ -187,11 +187,11 @@ export default function Toolbar() {
     // HACK: see also RightSidePanel "Email us" feedback link that depends on
     // height of Toolbar, also 'Empty canvas help text'
     <div className="flex h-full items-center space-x-4 p-4">
-      <Link href="/">
+      <Link className="w-80 flex-1" href="/">
         <div
           // NOTE: w-80 is the same width as the left side panel, so that the
           // toolbar actions are aligned
-          className="flex w-80 items-center space-x-2 select-none"
+          className="flex items-center space-x-2 select-none"
         >
           <Image
             src="/favicon.svg"
@@ -203,7 +203,7 @@ export default function Toolbar() {
           <h2 className="text-lg">TreeDecisions</h2>
         </div>
       </Link>
-      <div className="mx-8 flex justify-start space-x-2">
+      <div className="mx-8 flex flex-wrap justify-start xl:space-x-2">
         <ToolbarButton
           onButtonClick={() => onCopy()}
           tooltip="Ctrl+C"

@@ -3,6 +3,13 @@
 let arrangeFadeTimeoutId: number | null = null;
 let arrangeAnimationTimeoutId: number | null = null;
 
+/**
+ * NOTE: Why imperative control of animation instead of React? This animation is
+ * a cross-cutting, UI-only side effect that needs tight timing relative to a
+ * big layout mutation (lots of nodes/edges changing). Keeping it imperative
+ * reduces coupling, avoids undo/redo implications, and makes “start animation
+ * immediately” more robust.
+ */
 export function withArrangeAnimation(run: () => void) {
   if (typeof window === "undefined") {
     console.warn("[EVTree] Cannot run animation outside of browser");
