@@ -302,7 +302,13 @@ export default function Toolbar() {
               disabled={!hasNodes || isLinkCopied}
             >
               <LinkIcon className="h-4 w-4" />
-              {isLinkCopied ? "Link Copied" : "Save & Copy Link"}
+              {isLinkCopied ? (
+                "Link Copied"
+              ) : (
+                <>
+                  <span className="hidden xl:inline">Save & </span>Copy Link
+                </>
+              )}
             </ToolbarButton>
           )
         }
@@ -334,7 +340,7 @@ export default function Toolbar() {
           }}
         >
           <PhotoIcon className="h-4 w-4" />
-          Export to File
+          Export <span className="hidden xl:inline">to File</span>
         </ToolbarButton>
       </div>
     </div>
@@ -343,10 +349,10 @@ export default function Toolbar() {
 
 function VerticalDivider() {
   return (
-    <>
+    <div className="hidden xl:block">
       <div className="pl-2" />
       <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
       <div className="pr-2" />
-    </>
+    </div>
   );
 }

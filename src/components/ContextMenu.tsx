@@ -154,6 +154,7 @@ export default function ContextMenu({
             </ContextMenuButton>
           </ContextMenuSubmenu>{" "}
           <ContextMenuSubmenu
+            // TODO: why does converting to terminal from chance make the node change position slightly then the branch moves
             title="Convert to..."
             icon={<ArrowPathIcon className="h-4 w-4" />}
             disabled={false}
