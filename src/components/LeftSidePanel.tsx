@@ -61,6 +61,9 @@ export default function LeftSidePanel() {
     }
   };
 
+  // TODO: consider adding a help banner box for first-time users when they only
+  // have the default trees
+
   return (
     /* NOTE: Responsive design! Smaller width below medium size screens */
     <div className="w-60 p-4 select-none md:w-80">
