@@ -4,6 +4,118 @@ import { fromPairs, toPairs } from "es-toolkit/compat";
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
 
+//
+// TODO: remove debug code when bug is fixed, or can repro on my machine
+//
+const EXPORT_DEBUG_LOCALSTORAGE_KEY = "evtreeExportDebug";
+const EXPORT_MAX_BACKING_PX = 8192;
+const EXPORT_MAX_PIXEL_RATIO = 2;
+
+function isExportDebugEnabled(): boolean {
+  try {
+    if (window.localStorage.getItem(EXPORT_DEBUG_LOCALSTORAGE_KEY) === "1") {
+      return true;
+    }
+    // Handy for one-off debugging without persisting state
+    return new URLSearchParams(window.location.search).has("exportDebug");
+  } catch {
+    return false;
+  }
+}
+
+function exportDebugLog(message: string, details?: unknown) {
+  if (!isExportDebugEnabled()) return;
+
+  if (details === undefined) {
+    // eslint-disable-next-line no-console
+    console.debug(`[EVTree] ${message}`);
+  } else {
+    // eslint-disable-next-line no-console
+    console.debug(`[EVTree] ${message}`, details);
+  }
+}
+
+function clampPixelRatio(
+  imageWidth: number,
+  imageHeight: number,
+  requestedPixelRatio: number,
+): number {
+  const maxDimension = Math.max(imageWidth, imageHeight);
+  // Keep backing canvas below a safe-ish limit to avoid GPU/foreignObject quirks.
+  const maxRatioForBacking = EXPORT_MAX_BACKING_PX / Math.max(1, maxDimension);
+  const pixelRatio = Math.min(
+    requestedPixelRatio,
+    EXPORT_MAX_PIXEL_RATIO,
+    maxRatioForBacking,
+  );
+  // Avoid <1 ratios; some libs behave oddly.
+  return Math.max(1, pixelRatio);
+}
+
+function findReactFlowViewportElement(): {
+  viewportElem: HTMLElement | null;
+  reactFlowRoot: HTMLElement | null;
+} {
+  const flowRoots = Array.from(
+    window.document.querySelectorAll<HTMLElement>(".react-flow"),
+  );
+
+  // Prefer the largest visible React Flow instance (helps if there are hidden
+  // duplicates during transitions or dev tooling).
+  const bestRoot = flowRoots
+    .map((el) => {
+      const rect = el.getBoundingClientRect();
+      const style = window.getComputedStyle(el);
+      const visible =
+        rect.width > 0 &&
+        rect.height > 0 &&
+        style.display !== "none" &&
+        style.visibility !== "hidden";
+      return { el, area: rect.width * rect.height, visible };
+    })
+    .filter((x) => x.visible)
+    .sort((a, b) => b.area - a.area)[0]?.el;
+
+  const reactFlowRoot = bestRoot ?? null;
+  const scopedViewport = reactFlowRoot?.querySelector<HTMLElement>(
+    ".react-flow__viewport",
+  );
+
+  return {
+    viewportElem:
+      scopedViewport ??
+      (window.document.querySelector(
+        ".react-flow__viewport",
+      ) as HTMLElement | null),
+    reactFlowRoot,
+  };
+}
+
+async function getImageNaturalSize(
+  dataUrl: string,
+): Promise<{ width: number; height: number } | null> {
+  return await new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () =>
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+
+function getWebglMaxTextureSize(): number | null {
+  try {
+    const canvas = window.document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!gl) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (gl as any).getParameter((gl as any).MAX_TEXTURE_SIZE) as number;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Export an HTML element as PNG
  */
@@ -62,24 +174,67 @@ export const exportPNG = async (
     rightPaddingExtra,
   );
 
-  const viewportElem = window.document.querySelector(".react-flow__viewport");
+  const { viewportElem, reactFlowRoot } = findReactFlowViewportElement();
   if (!viewportElem || !(viewportElem instanceof HTMLElement)) {
     console.error("[EVTree] Viewport element not found");
     return;
   }
 
+  const requestedPixelRatio = window.devicePixelRatio ?? 1;
+  const pixelRatio = clampPixelRatio(
+    imageWidth,
+    imageHeight,
+    requestedPixelRatio,
+  );
+
+  if (isExportDebugEnabled()) {
+    const rect = viewportElem.getBoundingClientRect();
+    const style = window.getComputedStyle(viewportElem);
+    exportDebugLog("Export PNG debug context", {
+      filename,
+      requested: { imageWidth, imageHeight },
+      backing: {
+        pixelRatio,
+        effectiveWidth: Math.round(imageWidth * pixelRatio),
+        effectiveHeight: Math.round(imageHeight * pixelRatio),
+        requestedPixelRatio,
+        webglMaxTextureSize: getWebglMaxTextureSize(),
+      },
+      viewportTransform: viewport,
+      bounds,
+      viewportElemRect: {
+        width: rect.width,
+        height: rect.height,
+        top: rect.top,
+        left: rect.left,
+      },
+      viewportComputedStyle: {
+        overflow: style.overflow,
+        overflowX: style.overflowX,
+        overflowY: style.overflowY,
+        transformOrigin: style.transformOrigin,
+      },
+    });
+  }
+
   // Clone arrow marker definitions into viewport to ensure they're captured
-  const markerDefs = window.document.querySelectorAll(
+  const markerDefs = (reactFlowRoot ?? window.document).querySelectorAll(
     'svg marker[id^="arrow"]',
   );
-  const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const tempSvg = window.document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg",
+  );
   tempSvg.setAttribute("width", "0");
   tempSvg.setAttribute("height", "0");
   tempSvg.style.position = "absolute";
   tempSvg.style.top = "0";
   tempSvg.style.left = "0";
 
-  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const defs = window.document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "defs",
+  );
   markerDefs.forEach((marker) => {
     defs.appendChild(marker.cloneNode(true));
   });
@@ -91,12 +246,24 @@ export const exportPNG = async (
   try {
     const dataUrl = await toPng(viewportElem, {
       backgroundColor,
+      pixelRatio,
       width: imageWidth,
       height: imageHeight,
       style: {
         transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+        transformOrigin: "0 0",
+        width: `${imageWidth}px`,
+        height: `${imageHeight}px`,
       },
     });
+
+    if (isExportDebugEnabled()) {
+      const natural = await getImageNaturalSize(dataUrl);
+      exportDebugLog("Export PNG result dimensions", {
+        requested: { imageWidth, imageHeight },
+        natural,
+      });
+    }
 
     // Add watermark to the PNG
     try {
@@ -190,6 +357,7 @@ async function addWatermarkToPNG(
         // TODO: unify with globals.css
         ctx.font = `${fontSize}px Geist, sans-serif`;
         ctx.fillText(
+          // TODO: when PDF export, put this in true bottom left of PDF somehow, or make optional?
           "Made with TreeDecisions.app",
           padding + logoSize + textOffset,
           imageHeight - padding - logoSize / 2 + fontSize / 3,
@@ -353,24 +521,68 @@ export const exportPDF = async (
   // Calculate viewport transform
   const viewport = calculateViewport(bounds, imageWidth, imageHeight);
 
-  const viewportElem = window.document.querySelector(".react-flow__viewport");
+  const { viewportElem, reactFlowRoot } = findReactFlowViewportElement();
   if (!viewportElem || !(viewportElem instanceof HTMLElement)) {
     console.error("[EVTree] Viewport element not found");
     return;
   }
 
+  const requestedPixelRatio = window.devicePixelRatio ?? 1;
+  const pixelRatio = clampPixelRatio(
+    imageWidth,
+    imageHeight,
+    requestedPixelRatio,
+  );
+
+  if (isExportDebugEnabled()) {
+    const rect = viewportElem.getBoundingClientRect();
+    const style = window.getComputedStyle(viewportElem);
+    exportDebugLog("Export PDF debug context", {
+      filename,
+      title,
+      requested: { imageWidth, imageHeight },
+      backing: {
+        pixelRatio,
+        effectiveWidth: Math.round(imageWidth * pixelRatio),
+        effectiveHeight: Math.round(imageHeight * pixelRatio),
+        requestedPixelRatio,
+        webglMaxTextureSize: getWebglMaxTextureSize(),
+      },
+      viewportTransform: viewport,
+      bounds,
+      viewportElemRect: {
+        width: rect.width,
+        height: rect.height,
+        top: rect.top,
+        left: rect.left,
+      },
+      viewportComputedStyle: {
+        overflow: style.overflow,
+        overflowX: style.overflowX,
+        overflowY: style.overflowY,
+        transformOrigin: style.transformOrigin,
+      },
+    });
+  }
+
   // Clone arrow marker definitions into viewport
-  const markerDefs = window.document.querySelectorAll(
+  const markerDefs = (reactFlowRoot ?? window.document).querySelectorAll(
     'svg marker[id^="arrow"]',
   );
-  const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const tempSvg = window.document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg",
+  );
   tempSvg.setAttribute("width", "0");
   tempSvg.setAttribute("height", "0");
   tempSvg.style.position = "absolute";
   tempSvg.style.top = "0";
   tempSvg.style.left = "0";
 
-  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const defs = window.document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "defs",
+  );
   markerDefs.forEach((marker) => {
     defs.appendChild(marker.cloneNode(true));
   });
@@ -383,12 +595,24 @@ export const exportPDF = async (
   try {
     const dataUrl = await toPng(viewportElem, {
       backgroundColor,
+      pixelRatio,
       width: imageWidth,
       height: imageHeight,
       style: {
         transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+        transformOrigin: "0 0",
+        width: `${imageWidth}px`,
+        height: `${imageHeight}px`,
       },
     });
+
+    if (isExportDebugEnabled()) {
+      const natural = await getImageNaturalSize(dataUrl);
+      exportDebugLog("Export PDF intermediate PNG dimensions", {
+        requested: { imageWidth, imageHeight },
+        natural,
+      });
+    }
 
     // Add watermark to the PNG first
     try {
