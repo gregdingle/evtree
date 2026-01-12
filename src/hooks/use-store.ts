@@ -297,6 +297,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             if (treeData.rounding !== undefined) {
               tree.rounding = treeData.rounding;
             }
+            if (treeData.terminalValueDisplay !== undefined) {
+              tree.terminalValueDisplay = treeData.terminalValueDisplay;
+            }
           }),
         undefined,
         { type: "updateTreeData", updates: treeData },

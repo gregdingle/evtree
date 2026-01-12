@@ -18,10 +18,14 @@ export interface DecisionTree {
   variables?: Variable[];
   currency?: CurrencyCode;
   rounding?: RoundingCode;
+  terminalValueDisplay?: "outcome" | "net";
 }
 
 export type DecisionTreeSimpleProperties = Partial<
-  Pick<DecisionTree, "name" | "description" | "currency" | "rounding">
+  Pick<
+    DecisionTree,
+    "name" | "description" | "currency" | "rounding" | "terminalValueDisplay"
+  >
 >;
 
 export function createTree(

@@ -65,6 +65,13 @@ export function selectCurrentRounding(state: StoreState): RoundingCode {
   return currentTree?.rounding ?? "";
 }
 
+export function selectCurrentTerminalValueDisplay(
+  state: StoreState,
+): "outcome" | "net" {
+  const currentTree = selectCurrentTree(state);
+  return currentTree?.terminalValueDisplay ?? "net";
+}
+
 /**
  * Returns computed values for all nodes in the current tree, performing
  * the expected value calculation on-demand during React component rendering.

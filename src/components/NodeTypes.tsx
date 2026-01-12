@@ -4,12 +4,13 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
-import { normalizeExpression, safeEvalExpr } from "@/lib/expectedValue";
+import { safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
   selectCurrentCurrency,
   selectCurrentRounding,
+  selectCurrentTerminalValueDisplay,
   selectCurrentVariables,
   selectHasParentNode,
   selectNetExpectedValue,
@@ -182,8 +183,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     (useStore(selectShowEVs) || !isMediumScreenSizeOrLarger) &&
     pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
+
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
+  const terminalValueDisplay = useStore(selectCurrentTerminalValueDisplay);
+
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
 
   const [isParseable, setIsParseable] = useState(true);
@@ -265,7 +269,9 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
           displayFormatter={() =>
             isParseable && pathValue !== null
-              ? formatValue(pathValue, currency, rounding)
+              ? terminalValueDisplay === "net"
+                ? formatValue(pathValue, currency, rounding)
+                : data.valueExpr!
               : "???"
           }
           inputClassName="px-0.5 py-0 mt-0.5"
@@ -274,7 +280,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             (isParseable &&
             pathValue !== null &&
             // TODO: used parsed value here?
-            pathValue !== Number(normalizeExpression(data.valueExpr))
+            terminalValueDisplay === "net"
               ? "italic "
               : "") +
             // HACK: copied from InlineEdit defaultDisplayClassName

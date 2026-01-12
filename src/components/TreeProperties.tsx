@@ -58,6 +58,21 @@ export function TreeProperties({
           label: `${data.name} ${data.scale ? " → " + keys(data.scale).join(", ") : ""}`,
         }))}
       />
+      {/* TODO: instead of a tree setting, consider switching this display on "calculate".
+        see proof-of-concept in git stash  */}
+      <PropertyInput
+        label="Terminal Display"
+        info={`Determines what number will be \ndisplayed next to each terminal node`}
+        select
+        value={currentTree.terminalValueDisplay ?? "net"}
+        onChange={(value) =>
+          onTreeDataUpdate({ terminalValueDisplay: value as "outcome" | "net" })
+        }
+        options={[
+          { value: "net", label: "Net Value" },
+          { value: "outcome", label: "Outcome Value" },
+        ]}
+      />
       <hr className="my-6 border-gray-500" />
       <VariablesInput
         scope="value"
