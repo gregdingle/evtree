@@ -38,7 +38,7 @@ interface CreateDialogProps {
  * TODO: make styles more consistent with rest of app, like text size and inputs
  * TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
  */
-export default function CreateDialog({ open, onClose }: CreateDialogProps) {
+export function CreateDialog({ open, onClose }: CreateDialogProps) {
   const { fitView, zoomTo } = useReactFlow();
 
   const { createTree, loadTree, onArrange } = useStore.getState();

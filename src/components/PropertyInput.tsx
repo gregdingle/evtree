@@ -3,7 +3,7 @@ import React from "react";
 
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
-import Tooltip from "./Tooltip";
+import { Tooltip } from "./Tooltip";
 
 // TODO: should PropertyInputProps inherit from React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
@@ -31,7 +31,10 @@ interface PropertyInputProps {
 
 // TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
 // TODO: we also want to support more kinds of numeric input like 1.0M
-const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
+export const PropertyInput = React.forwardRef<
+  HTMLInputElement,
+  PropertyInputProps
+>(
   (
     {
       label,
@@ -153,5 +156,3 @@ const PropertyInput = React.forwardRef<HTMLInputElement, PropertyInputProps>(
 );
 
 PropertyInput.displayName = "PropertyInput";
-
-export default PropertyInput;

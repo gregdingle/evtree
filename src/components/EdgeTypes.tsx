@@ -25,7 +25,7 @@ import { WarningCircle } from "./WarningCircle";
 /**
  * @see https://reactflow.dev/learn/customization/edge-labels
  */
-export default function CustomEdge({
+export function CustomEdge({
   id,
   sourceX,
   sourceY,

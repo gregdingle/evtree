@@ -9,10 +9,7 @@ interface CollapsiblePanelProps {
   children: React.ReactNode;
 }
 
-export default function CollapsiblePanel({
-  side,
-  children,
-}: CollapsiblePanelProps) {
+export function CollapsiblePanel({ side, children }: CollapsiblePanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const isLeft = side === "left";

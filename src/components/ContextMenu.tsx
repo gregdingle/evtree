@@ -43,7 +43,7 @@ export interface ContextMenuProps {
  * NOTE: need to adjust the height in useContextMenu to match the height of this
  * component! Currently set to 280px in useContextMenu.
  */
-export default function ContextMenu({
+export function ContextMenu({
   top,
   left,
   right,

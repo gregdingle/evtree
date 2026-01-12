@@ -6,13 +6,13 @@ import { range, upperFirst } from "es-toolkit";
 import { useStore } from "@/hooks/use-store";
 import { selectCurrentTree } from "@/lib/selectors";
 
-import Tooltip from "./Tooltip";
+import { Tooltip } from "./Tooltip";
 
 /**
  * See VariablesList for the complementing component that allows selecting
  * variables for an expression.
  */
-export default function VariablesInput({
+export function VariablesInput({
   scope,
   info,
 }: {

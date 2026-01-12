@@ -45,7 +45,7 @@ import { DecisionTree } from "@/lib/tree";
 
 import { ToolbarButton } from "./ToolbarButton";
 
-export default function Toolbar() {
+export function Toolbar() {
   const { undo, redo } = useStore.temporal.getState();
   const { canUndo, canRedo } = useTemporalStore((state) => ({
     canUndo: state.pastStates.length > 0,

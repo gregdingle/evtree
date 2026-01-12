@@ -6,7 +6,7 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { keys, toPairs, values } from "es-toolkit/compat";
 
-import Tooltip from "./Tooltip";
+import { Tooltip } from "./Tooltip";
 
 export interface ToolbarButtonProps {
   onButtonClick: (dropdownKey?: string) => void;

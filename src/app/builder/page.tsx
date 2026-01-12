@@ -10,12 +10,12 @@ import {
   initializeAppCheck,
 } from "firebase/app-check";
 
-import CollapsiblePanel from "@/components/CollapsiblePanel";
+import { CollapsiblePanel } from "@/components/CollapsiblePanel";
 import { Histogram } from "@/components/Histogram";
-import LeftSidePanel from "@/components/LeftSidePanel";
-import ReactFlowApp from "@/components/ReactFlowApp";
-import RightSidePanel from "@/components/RightSidePanel";
-import Toolbar from "@/components/Toolbar";
+import { LeftSidePanel } from "@/components/LeftSidePanel";
+import { ReactFlowApp } from "@/components/ReactFlowApp";
+import { RightSidePanel } from "@/components/RightSidePanel";
+import { Toolbar } from "@/components/Toolbar";
 import { useStore } from "@/hooks/use-store";
 import { firebaseApp } from "@/lib/firebase";
 import { selectShowHistogram } from "@/lib/selectors";

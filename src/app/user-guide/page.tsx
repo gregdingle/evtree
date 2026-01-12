@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import StaticPage from "@/components/StaticPage";
+import { StaticPage } from "@/components/StaticPage";
 
 export default function UserGuide() {
   return (

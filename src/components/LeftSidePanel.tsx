@@ -16,11 +16,11 @@ import { useStore } from "@/hooks/use-store";
 import { formatDate } from "@/utils/format";
 
 import { ContextMenuButton } from "./ContextMenuButton";
-import CreateDialog from "./CreateDialog";
-import Tooltip from "./Tooltip";
+import { CreateDialog } from "./CreateDialog";
+import { Tooltip } from "./Tooltip";
 
 // TODO: allow delete last tree? or support zero trees? revert to initial tree or what?
-export default function LeftSidePanel() {
+export function LeftSidePanel() {
   const [showMoreMenu, setShowMoreMenu] = useState<string | null>(null);
   const [isDialogOpen, setOpenDialog] = useState(false);
 

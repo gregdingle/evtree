@@ -23,11 +23,11 @@ import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 
 import { ArrowMarker } from "./ArrowMarker";
 import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
-import ContextMenu from "./ContextMenu";
+import { ContextMenu } from "./ContextMenu";
 import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
 
-export default function ReactFlowApp() {
+export function ReactFlowApp() {
   const { onNodesChange, onEdgesChange, onConnect, createNodeAt } =
     useStore.getState();
 

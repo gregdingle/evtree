@@ -8,7 +8,7 @@ interface TooltipProps {
 /**
  * See also .tooltip class in globals.css.
  */
-export default function Tooltip({
+export function Tooltip({
   text,
   position = "bottom",
   children,
