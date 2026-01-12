@@ -59,7 +59,7 @@ export async function uploadTreeForSharing(
   // NOTE: Metadata is not encrypted, but doesn't contain sensitive tree content
   const customMetadata = {
     id: tree.id,
-    name: tree.name,
+    // name: tree.name, // NOTE: omit name to enhance privacy.
     createdAt: tree.createdAt,
     updatedAt: tree.updatedAt ?? "",
     nodes: keys(tree.nodes).length.toString(),
