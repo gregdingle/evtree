@@ -8,7 +8,7 @@ import { DecisionTree } from "./tree";
 // TODO: remove debug code when bug is fixed, or can repro on my machine
 //
 const EXPORT_DEBUG_LOCALSTORAGE_KEY = "evtreeExportDebug";
-const EXPORT_MAX_BACKING_PX = 8192;
+const EXPORT_MAX_BACKING_PX = 4096;
 const EXPORT_MAX_PIXEL_RATIO = 2;
 
 function isExportDebugEnabled(): boolean {
@@ -114,6 +114,124 @@ function getWebglMaxTextureSize(): number | null {
   } catch {
     return null;
   }
+}
+
+type HtmlToImageModule = typeof import("html-to-image");
+type ToPng = HtmlToImageModule["toPng"];
+
+interface ViewportTransform {
+  x: number;
+  y: number;
+  zoom: number;
+}
+
+interface RenderViewportOptions {
+  toPng: ToPng;
+  viewportElem: HTMLElement;
+  backgroundColor: string;
+  imageWidth: number;
+  imageHeight: number;
+  viewport: ViewportTransform;
+  pixelRatio: number;
+}
+
+interface RenderViewportResult {
+  dataUrl: string;
+  naturalSize: { width: number; height: number } | null;
+  pixelRatio: number;
+}
+
+function isRenderedSizeAcceptable(
+  naturalSize: { width: number; height: number } | null,
+  requestedWidth: number,
+  requestedHeight: number,
+): boolean {
+  if (!naturalSize) return true;
+  const widthRatio = naturalSize.width / requestedWidth;
+  const heightRatio = naturalSize.height / requestedHeight;
+  return widthRatio >= 0.95 && heightRatio >= 0.95;
+}
+
+async function renderViewportToPng({
+  toPng,
+  viewportElem,
+  backgroundColor,
+  imageWidth,
+  imageHeight,
+  viewport,
+  pixelRatio,
+}: RenderViewportOptions): Promise<RenderViewportResult> {
+  const dataUrl = await toPng(viewportElem, {
+    backgroundColor,
+    pixelRatio,
+    width: imageWidth,
+    height: imageHeight,
+    style: {
+      transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+      transformOrigin: "0 0",
+      width: `${imageWidth}px`,
+      height: `${imageHeight}px`,
+      overflow: "visible",
+    },
+  });
+
+  const naturalSize = await getImageNaturalSize(dataUrl);
+
+  return { dataUrl, naturalSize, pixelRatio };
+}
+
+async function renderViewportWithFallback(
+  options: Omit<RenderViewportOptions, "pixelRatio"> & {
+    initialPixelRatio: number;
+  },
+): Promise<RenderViewportResult> {
+  const attemptRatios = [
+    options.initialPixelRatio,
+    Math.min(options.initialPixelRatio, 1.5),
+    1,
+  ];
+
+  const tried = new Set<number>();
+  let lastResult: RenderViewportResult | null = null;
+
+  for (const ratio of attemptRatios) {
+    if (tried.has(ratio)) continue;
+    tried.add(ratio);
+
+    const result = await renderViewportToPng({
+      ...options,
+      pixelRatio: ratio,
+    });
+    lastResult = result;
+
+    const acceptable = isRenderedSizeAcceptable(
+      result.naturalSize,
+      options.imageWidth,
+      options.imageHeight,
+    );
+
+    exportDebugLog("PNG render attempt", {
+      requested: { width: options.imageWidth, height: options.imageHeight },
+      pixelRatio: ratio,
+      naturalSize: result.naturalSize,
+      acceptable,
+    });
+
+    if (acceptable) {
+      return result;
+    }
+  }
+
+  if (lastResult) {
+    exportDebugLog("PNG render fallback returning last attempt", {
+      requested: { width: options.imageWidth, height: options.imageHeight },
+      pixelRatio: lastResult.pixelRatio,
+      naturalSize: lastResult.naturalSize,
+    });
+    return lastResult;
+  }
+
+  throw new Error("Failed to render PNG");
 }
 
 /**
@@ -244,41 +362,48 @@ export const exportPNG = async (
   const { toPng } = await import("html-to-image");
 
   try {
-    const dataUrl = await toPng(viewportElem, {
+    const renderResult = await renderViewportWithFallback({
+      toPng,
+      viewportElem,
       backgroundColor,
-      pixelRatio,
-      width: imageWidth,
-      height: imageHeight,
-      style: {
-        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-        transformOrigin: "0 0",
-        width: `${imageWidth}px`,
-        height: `${imageHeight}px`,
-      },
+      imageWidth,
+      imageHeight,
+      viewport,
+      initialPixelRatio: pixelRatio,
     });
 
+    const finalImageWidth = renderResult.naturalSize?.width ?? imageWidth;
+    const finalImageHeight = renderResult.naturalSize?.height ?? imageHeight;
+
     if (isExportDebugEnabled()) {
-      const natural = await getImageNaturalSize(dataUrl);
-      exportDebugLog("Export PNG result dimensions", {
+      exportDebugLog("Export PNG final dimensions", {
         requested: { imageWidth, imageHeight },
-        natural,
+        final: { imageWidth: finalImageWidth, imageHeight: finalImageHeight },
+        pixelRatioUsed: renderResult.pixelRatio,
       });
+    } else if (
+      finalImageWidth < imageWidth * 0.95 ||
+      finalImageHeight < imageHeight * 0.95
+    ) {
+      console.warn(
+        "[EVTree] Exported PNG size was reduced to accommodate browser limits.",
+      );
     }
 
-    // Add watermark to the PNG
+    let outputDataUrl = renderResult.dataUrl;
+
     try {
-      const watermarkedDataUrl = await addWatermarkToPNG(
-        dataUrl,
-        imageWidth,
-        imageHeight,
+      outputDataUrl = await addWatermarkToPNG(
+        renderResult.dataUrl,
+        finalImageWidth,
+        finalImageHeight,
         isDarkMode,
       );
-      exportImage(watermarkedDataUrl, filename);
     } catch (error) {
       console.error("[EVTree] Failed to add watermark:", error);
-      // Fallback to original image if watermarking fails
-      exportImage(dataUrl, filename);
     }
+
+    exportImage(outputDataUrl, filename);
   } catch (error) {
     console.error("[EVTree] Failed to export PNG:", error);
   } finally {
@@ -455,7 +580,7 @@ function calculateViewport(
   imageWidth: number,
   imageHeight: number,
   rightPaddingExtra: number = 0,
-): { x: number; y: number; zoom: number } {
+): ViewportTransform {
   // Add padding around the content
   const padding = 50;
 
@@ -593,118 +718,119 @@ export const exportPDF = async (
   const { default: jsPDF } = await import("jspdf");
 
   try {
-    const dataUrl = await toPng(viewportElem, {
+    const renderResult = await renderViewportWithFallback({
+      toPng,
+      viewportElem,
       backgroundColor,
-      pixelRatio,
-      width: imageWidth,
-      height: imageHeight,
-      style: {
-        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-        transformOrigin: "0 0",
-        width: `${imageWidth}px`,
-        height: `${imageHeight}px`,
-      },
+      imageWidth,
+      imageHeight,
+      viewport,
+      initialPixelRatio: pixelRatio,
     });
 
+    const finalImageWidth = renderResult.naturalSize?.width ?? imageWidth;
+    const finalImageHeight = renderResult.naturalSize?.height ?? imageHeight;
+
     if (isExportDebugEnabled()) {
-      const natural = await getImageNaturalSize(dataUrl);
-      exportDebugLog("Export PDF intermediate PNG dimensions", {
+      exportDebugLog("Export PDF final dimensions", {
         requested: { imageWidth, imageHeight },
-        natural,
+        final: { imageWidth: finalImageWidth, imageHeight: finalImageHeight },
+        pixelRatioUsed: renderResult.pixelRatio,
       });
+    } else if (
+      finalImageWidth < imageWidth * 0.95 ||
+      finalImageHeight < imageHeight * 0.95
+    ) {
+      console.warn(
+        "[EVTree] Exported PNG size was reduced before embedding in PDF due to browser limits.",
+      );
     }
 
-    // Add watermark to the PNG first
+    let pngForPdf = renderResult.dataUrl;
+
     try {
-      const watermarkedDataUrl = await addWatermarkToPNG(
-        dataUrl,
-        imageWidth,
-        imageHeight,
+      pngForPdf = await addWatermarkToPNG(
+        renderResult.dataUrl,
+        finalImageWidth,
+        finalImageHeight,
         isDarkMode,
       );
-
-      // Determine orientation from PNG dimensions
-      const orientation = imageWidth > imageHeight ? "landscape" : "portrait";
-
-      // Standard Letter size: 8.5" x 11"
-      // Convert inches to mm: 1 inch = 25.4 mm
-      const letterWidthMm = 8.5 * 25.4; // 215.9 mm
-      const letterHeightMm = 11 * 25.4; // 279.4 mm
-
-      const pdfWidth =
-        orientation === "landscape" ? letterHeightMm : letterWidthMm;
-      const pdfHeight =
-        orientation === "landscape" ? letterWidthMm : letterHeightMm;
-
-      // Create PDF with determined orientation
-      const pdf = new jsPDF({
-        orientation,
-        unit: "mm",
-        format: "letter",
-      });
-
-      // Fill background with same color as PNG
-      const bgColor: [number, number, number] = isDarkMode
-        ? [23, 23, 23] // neutral-900 RGB: #171717
-        : [255, 251, 235]; // amber-50 RGB: #fffbeb
-      pdf.setFillColor(...bgColor);
-      pdf.rect(0, 0, pdfWidth, pdfHeight, "F");
-
-      // Calculate scaled dimensions to fit PDF while maintaining aspect ratio
-      const imageAspectRatio = imageWidth / imageHeight;
-      const pdfAspectRatio = pdfWidth / pdfHeight;
-
-      let scaledWidth: number;
-      let scaledHeight: number;
-      let offsetX = 0;
-      let offsetY = 0;
-
-      if (imageAspectRatio > pdfAspectRatio) {
-        // Image is wider than PDF page - fit to width
-        scaledWidth = pdfWidth;
-        scaledHeight = pdfWidth / imageAspectRatio;
-        offsetY = (pdfHeight - scaledHeight) / 2;
-      } else {
-        // Image is taller than PDF page - fit to height
-        scaledHeight = pdfHeight;
-        scaledWidth = pdfHeight * imageAspectRatio;
-        offsetX = (pdfWidth - scaledWidth) / 2;
-      }
-
-      // Add the watermarked image to the PDF with proper aspect ratio
-      pdf.addImage(
-        watermarkedDataUrl,
-        "PNG",
-        offsetX,
-        offsetY,
-        scaledWidth,
-        scaledHeight,
-      );
-
-      // Add title to upper left if provided
-      if (title) {
-        const fontSize = 16;
-        const padding = 10;
-        pdf.setFontSize(fontSize);
-
-        // Determine if background is dark to use appropriate text/background colors
-        const textColor: [number, number, number] = isDarkMode
-          ? [255, 255, 255]
-          : [0, 0, 0]; // White or black text
-        // TODO: base this on actual Tailwind CSS colors
-
-        pdf.setTextColor(...textColor);
-
-        // Add the title text
-        pdf.text(title, padding, padding);
-      }
-
-      // Save the PDF
-      pdf.save(filename);
     } catch (error) {
       console.error("[EVTree] Failed to add watermark for PDF:", error);
-      // Fallback: create PDF without watermark if watermarking fails
     }
+
+    // Determine orientation from PNG dimensions
+    const orientation =
+      finalImageWidth > finalImageHeight ? "landscape" : "portrait";
+
+    // Standard Letter size: 8.5" x 11"
+    // Convert inches to mm: 1 inch = 25.4 mm
+    const letterWidthMm = 8.5 * 25.4; // 215.9 mm
+    const letterHeightMm = 11 * 25.4; // 279.4 mm
+
+    const pdfWidth =
+      orientation === "landscape" ? letterHeightMm : letterWidthMm;
+    const pdfHeight =
+      orientation === "landscape" ? letterWidthMm : letterHeightMm;
+
+    // Create PDF with determined orientation
+    const pdf = new jsPDF({
+      orientation,
+      unit: "mm",
+      format: "letter",
+    });
+
+    // Fill background with same color as PNG
+    const bgColor: [number, number, number] = isDarkMode
+      ? [23, 23, 23] // neutral-900 RGB: #171717
+      : [255, 251, 235]; // amber-50 RGB: #fffbeb
+    pdf.setFillColor(...bgColor);
+    pdf.rect(0, 0, pdfWidth, pdfHeight, "F");
+
+    // Calculate scaled dimensions to fit PDF while maintaining aspect ratio
+    const imageAspectRatio = finalImageWidth / finalImageHeight;
+    const pdfAspectRatio = pdfWidth / pdfHeight;
+
+    let scaledWidth: number;
+    let scaledHeight: number;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    if (imageAspectRatio > pdfAspectRatio) {
+      // Image is wider than PDF page - fit to width
+      scaledWidth = pdfWidth;
+      scaledHeight = pdfWidth / imageAspectRatio;
+      offsetY = (pdfHeight - scaledHeight) / 2;
+    } else {
+      // Image is taller than PDF page - fit to height
+      scaledHeight = pdfHeight;
+      scaledWidth = pdfHeight * imageAspectRatio;
+      offsetX = (pdfWidth - scaledWidth) / 2;
+    }
+
+    // Add the watermarked image to the PDF with proper aspect ratio
+    pdf.addImage(pngForPdf, "PNG", offsetX, offsetY, scaledWidth, scaledHeight);
+
+    // Add title to upper left if provided
+    if (title) {
+      const fontSize = 16;
+      const padding = 10;
+      pdf.setFontSize(fontSize);
+
+      // Determine if background is dark to use appropriate text/background colors
+      const textColor: [number, number, number] = isDarkMode
+        ? [255, 255, 255]
+        : [0, 0, 0]; // White or black text
+      // TODO: base this on actual Tailwind CSS colors
+
+      pdf.setTextColor(...textColor);
+
+      // Add the title text
+      pdf.text(title, padding, padding);
+    }
+
+    // Save the PDF
+    pdf.save(filename);
   } catch (error) {
     console.error("[EVTree] Failed to export PDF:", error);
   } finally {
