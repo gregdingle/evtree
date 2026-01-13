@@ -58,6 +58,8 @@ gsutil cors set cors.json gs://evtree-1.firebasestorage.app
 
 Likewise, you will need to add your domains to the [App Check domains](https://www.google.com/recaptcha/admin) if using App Check (recommended).
 
+Finally, for local development, you will need to add a special token to AppCheck in the[Firebase console](https://console.firebase.google.com/). See [instructions](https://firebase.google.com/docs/app-check/web/debug-provider).
+
 # License
 
 EVTree is licensed under the Business Source License 1.1. This means:
