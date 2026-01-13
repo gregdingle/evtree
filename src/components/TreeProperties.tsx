@@ -61,8 +61,8 @@ export function TreeProperties({
       {/* TODO: instead of a tree setting, consider switching this display on "calculate".
         see proof-of-concept in git stash  */}
       <PropertyInput
-        label="Terminal Display"
-        info={`Determines what number will be \ndisplayed next to each terminal node`}
+        label="Display at Terminal"
+        info={`Determines if outcome or net value will \nshow next to each terminal node`}
         select
         value={currentTree.terminalValueDisplay ?? "net"}
         onChange={(value) =>

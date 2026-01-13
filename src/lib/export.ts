@@ -4,36 +4,8 @@ import { fromPairs, toPairs } from "es-toolkit/compat";
 import { AppNode } from "./node";
 import { DecisionTree } from "./tree";
 
-//
-// TODO: remove debug code when bug is fixed, or can repro on my machine
-//
-const EXPORT_DEBUG_LOCALSTORAGE_KEY = "evtreeExportDebug";
 const EXPORT_MAX_BACKING_PX = 4096;
 const EXPORT_MAX_PIXEL_RATIO = 2;
-
-function isExportDebugEnabled(): boolean {
-  try {
-    if (window.localStorage.getItem(EXPORT_DEBUG_LOCALSTORAGE_KEY) === "1") {
-      return true;
-    }
-    // Handy for one-off debugging without persisting state
-    return new URLSearchParams(window.location.search).has("exportDebug");
-  } catch {
-    return false;
-  }
-}
-
-function exportDebugLog(message: string, details?: unknown) {
-  if (!isExportDebugEnabled()) return;
-
-  if (details === undefined) {
-    // eslint-disable-next-line no-console
-    console.debug(`[EVTree] ${message}`);
-  } else {
-    // eslint-disable-next-line no-console
-    console.debug(`[EVTree] ${message}`, details);
-  }
-}
 
 function clampPixelRatio(
   imageWidth: number,
@@ -210,24 +182,12 @@ async function renderViewportWithFallback(
       options.imageHeight,
     );
 
-    exportDebugLog("PNG render attempt", {
-      requested: { width: options.imageWidth, height: options.imageHeight },
-      pixelRatio: ratio,
-      naturalSize: result.naturalSize,
-      acceptable,
-    });
-
     if (acceptable) {
       return result;
     }
   }
 
   if (lastResult) {
-    exportDebugLog("PNG render fallback returning last attempt", {
-      requested: { width: options.imageWidth, height: options.imageHeight },
-      pixelRatio: lastResult.pixelRatio,
-      naturalSize: lastResult.naturalSize,
-    });
     return lastResult;
   }
 
@@ -305,36 +265,6 @@ export const exportPNG = async (
     requestedPixelRatio,
   );
 
-  if (isExportDebugEnabled()) {
-    const rect = viewportElem.getBoundingClientRect();
-    const style = window.getComputedStyle(viewportElem);
-    exportDebugLog("Export PNG debug context", {
-      filename,
-      requested: { imageWidth, imageHeight },
-      backing: {
-        pixelRatio,
-        effectiveWidth: Math.round(imageWidth * pixelRatio),
-        effectiveHeight: Math.round(imageHeight * pixelRatio),
-        requestedPixelRatio,
-        webglMaxTextureSize: getWebglMaxTextureSize(),
-      },
-      viewportTransform: viewport,
-      bounds,
-      viewportElemRect: {
-        width: rect.width,
-        height: rect.height,
-        top: rect.top,
-        left: rect.left,
-      },
-      viewportComputedStyle: {
-        overflow: style.overflow,
-        overflowX: style.overflowX,
-        overflowY: style.overflowY,
-        transformOrigin: style.transformOrigin,
-      },
-    });
-  }
-
   // Clone arrow marker definitions into viewport to ensure they're captured
   const markerDefs = (reactFlowRoot ?? window.document).querySelectorAll(
     'svg marker[id^="arrow"]',
@@ -375,13 +305,7 @@ export const exportPNG = async (
     const finalImageWidth = renderResult.naturalSize?.width ?? imageWidth;
     const finalImageHeight = renderResult.naturalSize?.height ?? imageHeight;
 
-    if (isExportDebugEnabled()) {
-      exportDebugLog("Export PNG final dimensions", {
-        requested: { imageWidth, imageHeight },
-        final: { imageWidth: finalImageWidth, imageHeight: finalImageHeight },
-        pixelRatioUsed: renderResult.pixelRatio,
-      });
-    } else if (
+    if (
       finalImageWidth < imageWidth * 0.95 ||
       finalImageHeight < imageHeight * 0.95
     ) {
@@ -659,37 +583,6 @@ export const exportPDF = async (
     requestedPixelRatio,
   );
 
-  if (isExportDebugEnabled()) {
-    const rect = viewportElem.getBoundingClientRect();
-    const style = window.getComputedStyle(viewportElem);
-    exportDebugLog("Export PDF debug context", {
-      filename,
-      title,
-      requested: { imageWidth, imageHeight },
-      backing: {
-        pixelRatio,
-        effectiveWidth: Math.round(imageWidth * pixelRatio),
-        effectiveHeight: Math.round(imageHeight * pixelRatio),
-        requestedPixelRatio,
-        webglMaxTextureSize: getWebglMaxTextureSize(),
-      },
-      viewportTransform: viewport,
-      bounds,
-      viewportElemRect: {
-        width: rect.width,
-        height: rect.height,
-        top: rect.top,
-        left: rect.left,
-      },
-      viewportComputedStyle: {
-        overflow: style.overflow,
-        overflowX: style.overflowX,
-        overflowY: style.overflowY,
-        transformOrigin: style.transformOrigin,
-      },
-    });
-  }
-
   // Clone arrow marker definitions into viewport
   const markerDefs = (reactFlowRoot ?? window.document).querySelectorAll(
     'svg marker[id^="arrow"]',
@@ -731,13 +624,7 @@ export const exportPDF = async (
     const finalImageWidth = renderResult.naturalSize?.width ?? imageWidth;
     const finalImageHeight = renderResult.naturalSize?.height ?? imageHeight;
 
-    if (isExportDebugEnabled()) {
-      exportDebugLog("Export PDF final dimensions", {
-        requested: { imageWidth, imageHeight },
-        final: { imageWidth: finalImageWidth, imageHeight: finalImageHeight },
-        pixelRatioUsed: renderResult.pixelRatio,
-      });
-    } else if (
+    if (
       finalImageWidth < imageWidth * 0.95 ||
       finalImageHeight < imageHeight * 0.95
     ) {
