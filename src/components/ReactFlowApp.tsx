@@ -138,8 +138,12 @@ export function ReactFlowApp() {
         onConnectEnd={onConnectEnd}
         onPaneContextMenu={(event) => onContextMenu(event)}
         onNodeContextMenu={(event, node) => onContextMenu(event, node)}
-        // TODO: is this best way to close context menu?
-        onClick={closeMenu}
+        // NOTE: for closing context menu on click outside of it
+        onClick={(event) =>
+          // NOTE: Safari fires both click event and contextmenu event on
+          // ctrl+click, so only close menu if ctrl key not held
+          !event.ctrlKey && closeMenu()
+        }
         maxZoom={4}
         minZoom={0.1}
         isValidConnection={(connection) => isValidConnection(edges, connection)}
