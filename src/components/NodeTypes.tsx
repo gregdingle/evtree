@@ -190,13 +190,16 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
 
+  // TODO: consolidate isParseable and parsedValue logic?
   const [isParseable, setIsParseable] = useState(true);
+  const [parsedValue, setParsedValue] = useState<number | null>(null);
 
   useEffect(() => {
     const valueExpr = data.valueExpr;
     // NOTE: if value is unset, consider it parseable
     if (valueExpr === undefined) {
       setIsParseable(true);
+      setParsedValue(null);
     } else {
       const parsed = safeEvalExpr(
         valueExpr,
@@ -205,8 +208,10 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       );
       if (parsed === null) {
         setIsParseable(false);
+        setParsedValue(null);
       } else {
         setIsParseable(true);
+        setParsedValue(parsed);
       }
     }
   }, [variables, data.valueExpr]);
@@ -269,9 +274,12 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
           displayFormatter={() =>
             isParseable && pathValue !== null
-              ? terminalValueDisplay === "net"
-                ? formatValue(pathValue, currency, rounding)
-                : data.valueExpr!
+              ? formatValue(
+                  // TODO: also support terminalValueDisplay === 'formula' for displaying data.valueExpr?
+                  terminalValueDisplay === "net" ? pathValue : parsedValue,
+                  currency,
+                  rounding,
+                )
               : "???"
           }
           inputClassName="px-0.5 py-0 mt-0.5"
