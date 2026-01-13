@@ -110,7 +110,7 @@ export function VariablesInput({
         {info && (
           <Tooltip
             text={info}
-            position="top"
+            position="left"
             className="float-right inline-block cursor-pointer pl-1"
           >
             <InformationCircleIcon className="-mb-1 h-6 w-6 text-gray-500" />
