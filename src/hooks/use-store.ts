@@ -14,7 +14,7 @@ import {
   createSelectorFunctions,
 } from "auto-zustand-selectors-hook";
 import { cloneDeep, isEqual, keyBy, round, throttle } from "es-toolkit";
-import { keys, values } from "es-toolkit/compat";
+import { keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { ZundoOptions, temporal } from "zundo";
 import { StateCreator } from "zustand";
@@ -37,7 +37,7 @@ import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
 import { selectUndoableState } from "@/lib/selectors";
 import {
   DecisionTree,
-  DecisionTreeSimpleProperties,
+  DecisionTreeUpdatableProperties,
   createTree,
 } from "@/lib/tree";
 import { Variable } from "@/lib/variable";
@@ -61,7 +61,7 @@ export interface StoreState {
   setCurrentTree: (treeId: string) => void;
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree, replace: boolean) => string;
-  onTreeDataUpdate: (treeData: DecisionTreeSimpleProperties) => void;
+  onTreeDataUpdate: (treeData: DecisionTreeUpdatableProperties) => void;
   replaceVariables: (
     variables: Array<Omit<Variable, "value"> & { value: string }>,
     scope: Variable["scope"],
@@ -283,23 +283,12 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
-            // TODO: make more dynamic and derive possible keys from
-            // DecisionTreeSimpleProperties somehow
-            if (treeData.name !== undefined) {
-              tree.name = treeData.name;
-            }
-            if (treeData.description !== undefined) {
-              tree.description = treeData.description;
-            }
-            if (treeData.currency !== undefined) {
-              tree.currency = treeData.currency;
-            }
-            if (treeData.rounding !== undefined) {
-              tree.rounding = treeData.rounding;
-            }
-            if (treeData.terminalValueDisplay !== undefined) {
-              tree.terminalValueDisplay = treeData.terminalValueDisplay;
-            }
+            toPairs(treeData).forEach(([key, value]) => {
+              if (value !== undefined) {
+                // @ts-expect-error - Dynamic assignment is safe here since keys are from DecisionTreeUpdatableProperties
+                tree[key] = value;
+              }
+            });
           }),
         undefined,
         { type: "updateTreeData", updates: treeData },

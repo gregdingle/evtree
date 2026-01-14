@@ -21,7 +21,7 @@ export interface DecisionTree {
   terminalValueDisplay?: "outcome" | "net";
 }
 
-export type DecisionTreeSimpleProperties = Partial<
+export type DecisionTreeUpdatableProperties = Partial<
   Pick<
     DecisionTree,
     "name" | "description" | "currency" | "rounding" | "terminalValueDisplay"

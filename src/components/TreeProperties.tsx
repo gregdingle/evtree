@@ -2,7 +2,7 @@ import { keys, toPairs } from "es-toolkit/compat";
 
 import { CURRENCIES, CurrencyCode } from "@/lib/currency";
 import { ROUNDING, RoundingCode } from "@/lib/rounding";
-import { DecisionTree, DecisionTreeSimpleProperties } from "@/lib/tree";
+import { DecisionTree, DecisionTreeUpdatableProperties } from "@/lib/tree";
 
 import { PropertyInput } from "./PropertyInput";
 import { VariablesInput } from "./VariablesInput";
@@ -12,7 +12,7 @@ export function TreeProperties({
   onTreeDataUpdate,
 }: {
   currentTree: DecisionTree | undefined;
-  onTreeDataUpdate: (treeData: DecisionTreeSimpleProperties) => void;
+  onTreeDataUpdate: (treeData: DecisionTreeUpdatableProperties) => void;
 }) {
   return currentTree ? (
     <div className="mb-8">
