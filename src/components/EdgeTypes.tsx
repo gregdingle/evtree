@@ -36,7 +36,7 @@ export function CustomEdge({
 }: EdgeProps<AppEdge>) {
   const { label } = data ?? {};
 
-  const { onEdgeDataUpdate, balanceEdgeProbability } = useStore.getState();
+  const { updateEdgeData, balanceEdgeProbability } = useStore.getState();
 
   // Use computed probability instead of stored probability
   const computedProbability = useStore((state) =>
@@ -113,7 +113,7 @@ export function CustomEdge({
           >
             <InlineEdit
               value={label}
-              onCommit={(value) => onEdgeDataUpdate(id, { label: value })}
+              onCommit={(value) => updateEdgeData(id, { label: value })}
               displayFormatter={() => label || "???"}
               placeholder="???"
               multiline={true}
@@ -155,7 +155,7 @@ export function CustomEdge({
                     ) {
                       value = convertPercentageToDecimal(value + "%");
                     }
-                    onEdgeDataUpdate(id, { probabilityExpr: value });
+                    updateEdgeData(id, { probabilityExpr: value });
                   }}
                   displayFormatter={() =>
                     formatProbability(computedProbability, 0, "??%", "")

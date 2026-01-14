@@ -53,13 +53,13 @@ export function Toolbar() {
   }));
 
   const {
-    onCopy,
-    onPaste,
-    onReset,
-    onArrange,
+    copy,
+    paste,
+    reset,
+    arrange,
     deleteSelected,
-    onShowEVs,
-    onShowHistogram,
+    showEVs,
+    showHistogram,
   } = useStore.getState();
 
   const [isLinkCopied, setIsLinkCopied] = useState(false);
@@ -139,7 +139,7 @@ export function Toolbar() {
   };
 
   const handleArrange = (mode?: string) => {
-    onArrange(mode === "rightAligned");
+    arrange(mode === "rightAligned");
   };
 
   const handleReset = () => {
@@ -149,7 +149,7 @@ export function Toolbar() {
         "Are you sure you want to reset all trees? This will delete all your work.",
       )
     ) {
-      onReset();
+      reset();
     }
   };
 
@@ -164,13 +164,13 @@ export function Toolbar() {
   // TODO: make hotkey usage also flash corresponding button
   useHotkeys("ctrl+z", () => undo(), { enableOnFormTags: true });
   useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
-  useHotkeys("ctrl+c", () => onCopy(), { enableOnFormTags: true });
-  useHotkeys("ctrl+v", () => onPaste(), { enableOnFormTags: true });
+  useHotkeys("ctrl+c", () => copy(), { enableOnFormTags: true });
+  useHotkeys("ctrl+v", () => paste(), { enableOnFormTags: true });
   // NOTE: reset only available as a hotkey as a hidden feature
   useHotkeys("ctrl+shift+r", handleReset, { enableOnFormTags: true });
-  useHotkeys("ctrl+a", () => onArrange(), { enableOnFormTags: false });
-  useHotkeys("ctrl+h", onShowHistogram, { enableOnFormTags: false });
-  useHotkeys("ctrl+e", () => onShowEVs(), { enableOnFormTags: false });
+  useHotkeys("ctrl+a", () => arrange(), { enableOnFormTags: false });
+  useHotkeys("ctrl+h", showHistogram, { enableOnFormTags: false });
+  useHotkeys("ctrl+e", () => showEVs(), { enableOnFormTags: false });
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
   useHotkeys("ctrl+s", () => currentTree && handleShareLink(currentTree), {
     enableOnFormTags: true,
@@ -205,7 +205,7 @@ export function Toolbar() {
       </Link>
       <div className="mx-8 flex flex-wrap justify-start 2xl:space-x-2">
         <ToolbarButton
-          onButtonClick={() => onCopy()}
+          onButtonClick={() => copy()}
           tooltip="Ctrl+C"
           disabled={!hasSelectedItems || isHistogramOpen}
         >
@@ -213,7 +213,7 @@ export function Toolbar() {
           Copy
         </ToolbarButton>
         <ToolbarButton
-          onButtonClick={() => onPaste()}
+          onButtonClick={() => paste()}
           tooltip="Ctrl+V"
           disabled={!hasClipboardContent}
         >
@@ -265,7 +265,7 @@ export function Toolbar() {
         </ToolbarButton>
         <VerticalDivider />
         <ToolbarButton
-          onButtonClick={(key) => onShowEVs(key === "show")}
+          onButtonClick={(key) => showEVs(key === "show")}
           tooltip={
             areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
           }
@@ -280,7 +280,7 @@ export function Toolbar() {
           Calculate
         </ToolbarButton>
         <ToolbarButton
-          onButtonClick={onShowHistogram}
+          onButtonClick={showHistogram}
           tooltip={
             isHistogramOpen
               ? `Hide Histogram \n(Ctrl+H)`

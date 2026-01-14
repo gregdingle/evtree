@@ -10,7 +10,7 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { onNodeDataUpdate } = useStore.getState();
+  const { updateNodeData } = useStore.getState();
 
   // Auto-resize textarea on content change
   useEffect(() => {
@@ -42,7 +42,7 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const target = event.target;
     const value = target.value;
-    onNodeDataUpdate(id, { description: value === "" ? undefined : value });
+    updateNodeData(id, { description: value === "" ? undefined : value });
     resizeTextarea(target);
   };
 

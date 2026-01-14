@@ -61,7 +61,7 @@ export interface StoreState {
   setCurrentTree: (treeId: string) => void;
   duplicateTree: (treeId: string, newName: string) => string;
   loadTree: (treeData: DecisionTree, replace: boolean) => string;
-  onTreeDataUpdate: (treeData: DecisionTreeUpdatableProperties) => void;
+  updateTreeData: (treeData: DecisionTreeUpdatableProperties) => void;
   replaceVariables: (
     variables: Array<Omit<Variable, "value"> & { value: string }>,
     scope: Variable["scope"],
@@ -71,25 +71,21 @@ export interface StoreState {
   onNodesChange: OnNodesChange<AppNode>;
   onEdgesChange: OnEdgesChange<AppEdge>;
   onConnect: OnConnect;
-  onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
-  onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
-  onNotePropertiesUpdate: (
+  updateNodeData: (id: string, nodeData: Partial<AppNode["data"]>) => void;
+  updateEdgeData: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
+  updateNoteProperties: (
     id: string,
     properties: Pick<AppNode, "width" | "height">,
   ) => void;
   balanceEdgeProbability: (id: string, significantDigits?: number) => void;
-  // TODO: rename all onX methods to simply X
-  onCopy: (stripValues?: boolean) => void;
-  onPaste: (
-    position?: { x: number; y: number },
-    replaceNodeId?: string,
-  ) => void;
-  onReset: () => void;
-  onCreateNodeAt: (
+  copy: (stripValues?: boolean) => void;
+  paste: (position?: { x: number; y: number }, replaceNodeId?: string) => void;
+  reset: () => void;
+  createNodeAt: (
     position: { x: number; y: number },
     nodeType: NodeType,
   ) => void;
-  createNodeAt: (
+  createNodeAtFrom: (
     position: { x: number; y: number },
     fromNodeId: string,
     nodeType?: NodeType,
@@ -99,16 +95,16 @@ export interface StoreState {
     position: { x: number; y: number },
     sourceHandle?: string | null,
   ) => void;
-  onArrange: (rightAligned?: boolean) => void;
+  arrange: (rightAligned?: boolean) => void;
   arrangeSubtree: (nodeId: string, rightAligned?: boolean) => void;
   toggleNodeCollapse: (nodeId: string) => void;
-  onConvertNode: (nodeId: string, newNodeType: NodeType) => void;
+  convertNode: (nodeId: string, newNodeType: NodeType) => void;
   selectSubtree: (nodeId: string) => void;
   deleteSubTree: (nodeId: string) => void;
   deleteSelected: () => void;
   connectToNearestNode: (nodeId: string) => void;
-  onShowEVs: (showPathEVs?: boolean) => void;
-  onShowHistogram: () => void;
+  showEVs: (showPathEVs?: boolean) => void;
+  showHistogram: () => void;
 }
 
 // TODO: should we clear undo stack when switching trees? or better to be safe?
@@ -279,7 +275,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       return newTreeId;
     },
 
-    onTreeDataUpdate: (treeData) => {
+    updateTreeData: (treeData: DecisionTreeUpdatableProperties) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -366,7 +362,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.edges = keyBy(updatedEdgesArray, (edge) => edge.id);
           }),
         undefined,
-        { type: "edgesChange", changesCount: changes.length },
+        { type: "onEdgesChange", changesCount: changes.length },
       );
     },
 
@@ -389,7 +385,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onNodeDataUpdate: (id, nodeData) => {
+    updateNodeData: (id, nodeData) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -401,11 +397,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
           }),
         undefined,
-        { type: "onNodeDataUpdate", id, nodeData },
+        { type: "updateNodeData", id, nodeData },
       );
     },
 
-    onEdgeDataUpdate: (id, edgeData) => {
+    updateEdgeData: (id, edgeData) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -424,7 +420,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onNotePropertiesUpdate: (
+    updateNoteProperties: (
       id: string,
       properties: Pick<AppNode, "width" | "height">,
     ) => {
@@ -439,7 +435,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
           }),
         undefined,
-        { type: "onNotePropertiesUpdate", id, properties },
+        { type: "updateNoteProperties", id, properties },
       );
     },
 
@@ -486,7 +482,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onCopy: (stripData = false) => {
+    copy: (stripData = false) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -516,11 +512,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             };
           }),
         undefined,
-        { type: "onCopy", stripData },
+        { type: "copy", stripData },
       );
     },
 
-    onPaste: (position?: { x: number; y: number }, replaceNodeId?: string) => {
+    paste: (position?: { x: number; y: number }, replaceNodeId?: string) => {
       const { clipboard } = get();
       if (!clipboard) return;
 
@@ -674,11 +670,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             }
           }),
         undefined,
-        { type: "onPaste" },
+        { type: "paste" },
       );
     },
 
-    onReset: () => {
+    reset: () => {
       const { currentTreeId } = get();
       if (!currentTreeId) {
         warnNoCurrentTree("reset");
@@ -692,11 +688,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           clipboard: { nodes: [], edges: [] },
         }),
         undefined,
-        { type: "onReset" },
+        { type: "reset" },
       );
     },
 
-    onCreateNodeAt: (position, nodeType) => {
+    createNodeAt: (position, nodeType) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -710,7 +706,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     // TODO: why are newEdge and newNode not always selected after create on canvas?!!!
-    createNodeAt: (position, fromNodeId, nodeType = "chance") => {
+    createNodeAtFrom: (position, fromNodeId, nodeType = "chance") => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -721,7 +717,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.edges[newEdge.id] = newEdge;
           }),
         undefined,
-        { type: "createNodeAt", position, fromNodeId, nodeType },
+        { type: "createNodeAtFrom", position, fromNodeId, nodeType },
       );
     },
 
@@ -758,7 +754,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onArrange: (rightAligned = false) => {
+    arrange: (rightAligned = false) => {
       withArrangeAnimation(() =>
         set(
           (state) =>
@@ -779,12 +775,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 });
             }),
           undefined,
-          { type: "arrangeNodes", rightAligned },
+          { type: "arrange", rightAligned },
         ),
       );
     },
 
-    // TODO: this would be even nicer with an animation!
     arrangeSubtree: (nodeId: string, rightAligned = false) => {
       withArrangeAnimation(() =>
         set(
@@ -829,7 +824,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onConvertNode: (nodeId: string, newNodeType: NodeType) => {
+    convertNode: (nodeId: string, newNodeType: NodeType) => {
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
@@ -848,7 +843,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             tree.nodes[nodeId] = updatedNode;
           }),
         undefined,
-        { type: "onConvertNode", nodeId, newNodeType },
+        { type: "convertNode", nodeId, newNodeType },
       );
     },
 
@@ -966,7 +961,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    onShowEVs: (showPathEVs?: boolean) => {
+    showEVs: (showPathEVs?: boolean) => {
       set(
         (state) => {
           // NOTE: see ToolbarButton for available combinations
@@ -986,18 +981,18 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           return state;
         },
         undefined,
-        { type: "onShowEVs", showPathEVs },
+        { type: "showEVs", showPathEVs },
       );
     },
 
-    onShowHistogram: () => {
+    showHistogram: () => {
       set(
         (state) => {
           state.display.showHistogram = !state.display.showHistogram;
           return state;
         },
         undefined,
-        { type: "onShowHistogram" },
+        { type: "showHistogram" },
       );
     },
   })),

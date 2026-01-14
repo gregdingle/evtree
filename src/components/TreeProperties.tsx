@@ -9,17 +9,17 @@ import { VariablesInput } from "./VariablesInput";
 
 export function TreeProperties({
   currentTree,
-  onTreeDataUpdate,
+  updateTreeData,
 }: {
   currentTree: DecisionTree | undefined;
-  onTreeDataUpdate: (treeData: DecisionTreeUpdatableProperties) => void;
+  updateTreeData: (treeData: DecisionTreeUpdatableProperties) => void;
 }) {
   return currentTree ? (
     <div className="mb-8">
       <PropertyInput
         label="Name"
         value={currentTree.name}
-        onChange={(value) => onTreeDataUpdate({ name: value })}
+        onChange={(value) => updateTreeData({ name: value })}
         placeholder="Enter tree name"
       />
       <PropertyInput
@@ -27,7 +27,7 @@ export function TreeProperties({
         optional
         textarea
         value={currentTree.description}
-        onChange={(value) => onTreeDataUpdate({ description: value })}
+        onChange={(value) => updateTreeData({ description: value })}
         placeholder="Enter tree description"
       />
       <hr className="my-6 border-gray-500" />
@@ -37,7 +37,7 @@ export function TreeProperties({
         select
         value={currentTree.currency ?? CURRENCIES[""].code}
         onChange={(value) =>
-          onTreeDataUpdate({ currency: value as CurrencyCode })
+          updateTreeData({ currency: value as CurrencyCode })
         }
         options={toPairs(CURRENCIES).map(([code, data]) => ({
           value: code,
@@ -51,7 +51,7 @@ export function TreeProperties({
         select
         value={currentTree.rounding ?? ROUNDING[""].code}
         onChange={(value) =>
-          onTreeDataUpdate({ rounding: value as RoundingCode })
+          updateTreeData({ rounding: value as RoundingCode })
         }
         options={toPairs(ROUNDING).map(([code, data]) => ({
           value: code,
@@ -66,7 +66,7 @@ export function TreeProperties({
         select
         value={currentTree.terminalValueDisplay ?? "net"}
         onChange={(value) =>
-          onTreeDataUpdate({ terminalValueDisplay: value as "outcome" | "net" })
+          updateTreeData({ terminalValueDisplay: value as "outcome" | "net" })
         }
         options={[
           { value: "net", label: "Net Value" },

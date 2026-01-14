@@ -24,10 +24,10 @@ import { VariablesList } from "./VariablesList";
 
 export function RightSidePanel() {
   const {
-    onNodeDataUpdate,
-    onEdgeDataUpdate,
-    onTreeDataUpdate,
-    onNotePropertiesUpdate,
+    updateNodeData,
+    updateEdgeData,
+    updateTreeData,
+    updateNoteProperties,
     balanceEdgeProbability,
   } = useStore.getState();
 
@@ -89,7 +89,7 @@ export function RightSidePanel() {
         {nodes.length === 0 && edges.length === 0 ? (
           <TreeProperties
             currentTree={currentTree}
-            onTreeDataUpdate={onTreeDataUpdate}
+            updateTreeData={updateTreeData}
           />
         ) : (
           <div className="">
@@ -110,8 +110,8 @@ export function RightSidePanel() {
                 <NodeProperties
                   key={node.id}
                   node={node}
-                  onNodeDataUpdate={onNodeDataUpdate}
-                  onNotePropertiesUpdate={onNotePropertiesUpdate}
+                  updateNodeData={updateNodeData}
+                  updateNoteProperties={updateNoteProperties}
                   valueVariables={valueVariables}
                   costVariables={costVariables}
                   cumulativeCosts={cumulativeCosts}
@@ -132,7 +132,7 @@ export function RightSidePanel() {
                 <EdgeProperties
                   key={edge.id}
                   edge={edge}
-                  onEdgeDataUpdate={onEdgeDataUpdate}
+                  updateEdgeData={updateEdgeData}
                   hasDecisionNodeParent={hasDecisionNodeParent}
                   probabilityVariables={probabilityVariables}
                   balanceEdgeProbability={balanceEdgeProbability}
@@ -162,13 +162,13 @@ export function RightSidePanel() {
 
 function EdgeProperties({
   edge,
-  onEdgeDataUpdate,
+  updateEdgeData,
   hasDecisionNodeParent,
   probabilityVariables,
   balanceEdgeProbability,
 }: {
   edge: AppEdge;
-  onEdgeDataUpdate: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
+  updateEdgeData: (id: string, edgeData: Partial<AppEdge["data"]>) => void;
   hasDecisionNodeParent: boolean;
   probabilityVariables: Variable[];
   balanceEdgeProbability: (id: string) => void;
@@ -178,7 +178,7 @@ function EdgeProperties({
       <PropertyInput
         label="Label"
         value={edge.data?.label}
-        onChange={(value) => onEdgeDataUpdate(edge.id, { label: value })}
+        onChange={(value) => updateEdgeData(edge.id, { label: value })}
         placeholder="Enter branch label"
       />
       {hasDecisionNodeParent ? (
@@ -200,7 +200,7 @@ function EdgeProperties({
           value={edge.data?.probabilityExpr ?? ""}
           onChange={(value) => {
             const probabilityExpr = value === "" ? undefined : value;
-            onEdgeDataUpdate(edge.id, { probabilityExpr });
+            updateEdgeData(edge.id, { probabilityExpr });
           }}
           placeholder={
             // TODO: also make the prob input a textarea if there are many prob vars?
@@ -240,7 +240,7 @@ function EdgeProperties({
         optional
         textarea
         value={edge.data?.description}
-        onChange={(value) => onEdgeDataUpdate(edge.id, { description: value })}
+        onChange={(value) => updateEdgeData(edge.id, { description: value })}
         placeholder="Enter branch description"
       />
     </div>
@@ -249,8 +249,8 @@ function EdgeProperties({
 
 function NodeProperties({
   node,
-  onNodeDataUpdate,
-  onNotePropertiesUpdate,
+  updateNodeData,
+  updateNoteProperties,
   valueVariables,
   costVariables,
   cumulativeCosts,
@@ -260,8 +260,8 @@ function NodeProperties({
   isRootNode,
 }: {
   node: AppNode;
-  onNodeDataUpdate: (id: string, nodeData: Partial<AppNode["data"]>) => void;
-  onNotePropertiesUpdate: (
+  updateNodeData: (id: string, nodeData: Partial<AppNode["data"]>) => void;
+  updateNoteProperties: (
     id: string,
     properties: Pick<AppNode, "width" | "height">,
   ) => void;
@@ -290,9 +290,9 @@ function NodeProperties({
           info={`The award, payoff, or payment \nobligation at this end point`}
           onChange={(value) => {
             if (value === "") {
-              onNodeDataUpdate(node.id, { valueExpr: undefined });
+              updateNodeData(node.id, { valueExpr: undefined });
             } else {
-              onNodeDataUpdate(node.id, { valueExpr: value });
+              updateNodeData(node.id, { valueExpr: value });
             }
           }}
           placeholder={
@@ -316,7 +316,7 @@ function NodeProperties({
             label="Description"
             value={node.data.description}
             onChange={(value) =>
-              onNodeDataUpdate(node.id, { description: value })
+              updateNodeData(node.id, { description: value })
             }
             placeholder="Enter note content"
             textarea={true}
@@ -326,12 +326,12 @@ function NodeProperties({
             value={node.width?.toString() || ""}
             onChange={(value) => {
               if (!value) {
-                onNotePropertiesUpdate(node.id, { width: undefined });
+                updateNoteProperties(node.id, { width: undefined });
                 return;
               }
               const width = Number(value);
               if (Number.isFinite(width)) {
-                onNotePropertiesUpdate(node.id, { width });
+                updateNoteProperties(node.id, { width });
                 return;
               }
             }}
@@ -353,9 +353,9 @@ function NodeProperties({
             value={node.data.costExpr}
             onChange={(value) => {
               if (value === "") {
-                onNodeDataUpdate(node.id, { costExpr: undefined });
+                updateNodeData(node.id, { costExpr: undefined });
               } else {
-                onNodeDataUpdate(node.id, { costExpr: value });
+                updateNodeData(node.id, { costExpr: value });
               }
             }}
             placeholder={
@@ -444,7 +444,7 @@ function NodeProperties({
             optional
             value={node.data.description}
             onChange={(value) =>
-              onNodeDataUpdate(node.id, { description: value })
+              updateNodeData(node.id, { description: value })
             }
             placeholder="Enter description"
             textarea={true}

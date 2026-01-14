@@ -53,16 +53,16 @@ export function ContextMenu({
   contextNode,
 }: ContextMenuProps) {
   const {
-    onCreateNodeAt,
-    onConvertNode,
+    createNodeAt,
+    convertNode,
     toggleNodeCollapse,
     selectSubtree,
     arrangeSubtree,
     deleteSubTree,
-    onCopy,
+    copy,
     connectToNearestNode,
-    createNodeAt,
-    onPaste,
+    createNodeAtFrom,
+    paste,
   } = useStore.getState();
 
   const { hasChildren, isCollapsed } = useStore((state) =>
@@ -79,14 +79,14 @@ export function ContextMenu({
 
     // Convert the relative position to ReactFlow coordinates
     const flowPosition = screenToFlowPosition(contextPosition);
-    onCreateNodeAt(flowPosition, nodeType);
+    createNodeAt(flowPosition, nodeType);
     onClose?.();
   };
 
   const handleConvertNode = (nodeType: NodeType) => {
     if (!contextNode) return;
 
-    onConvertNode(contextNode.id, nodeType);
+    convertNode(contextNode.id, nodeType);
     onClose?.();
   };
 
@@ -100,7 +100,7 @@ export function ContextMenu({
       y: contextNode.position.y,
     };
 
-    createNodeAt(newPosition, contextNode.id, nodeType);
+    createNodeAtFrom(newPosition, contextNode.id, nodeType);
     // HACK: Delay the arrangement to ensure the new node is rendered and
     // positioned by ReactFlow first
     // TODO: how to avoid double undo stack? this is a bug currently. why isn't
@@ -115,7 +115,7 @@ export function ContextMenu({
 
   const handlePaste = (clientX: number, clientY: number) => {
     const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
-    onPaste(flowPosition);
+    paste(flowPosition);
     onClose?.();
   };
 
@@ -207,7 +207,7 @@ export function ContextMenu({
               onClick={() => {
                 if (contextNode) {
                   selectSubtree(contextNode.id);
-                  onCopy();
+                  copy();
                 }
               }}
             >
@@ -220,7 +220,7 @@ export function ContextMenu({
                   onClick={() => {
                     if (contextNode) {
                       selectSubtree(contextNode.id);
-                      onCopy(true);
+                      copy(true);
                     }
                   }}
                 >
@@ -249,7 +249,7 @@ export function ContextMenu({
               </>
             )}
             <ContextMenuButton
-              onClick={() => onPaste(undefined, contextNode.id)}
+              onClick={() => paste(undefined, contextNode.id)}
               disabled={!hasClipboardContent}
             >
               <ClipboardDocumentIcon className="h-4 w-4" />

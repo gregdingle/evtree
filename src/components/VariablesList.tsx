@@ -20,7 +20,7 @@ export function VariablesList({
   exprFor,
   ...props
 }: VariablesListProps) {
-  const { onNodeDataUpdate, onEdgeDataUpdate } = useStore.getState();
+  const { updateNodeData, updateEdgeData } = useStore.getState();
 
   if (!node && !edge) {
     throw new Error("VariablesList requires either node or edge prop");
@@ -53,21 +53,21 @@ export function VariablesList({
                   );
                   if (node) {
                     if (newExpr === "") {
-                      onNodeDataUpdate(node.id, {
+                      updateNodeData(node.id, {
                         [exprFor]: undefined,
                       });
                     } else {
-                      onNodeDataUpdate(node.id, {
+                      updateNodeData(node.id, {
                         [exprFor]: newExpr,
                       });
                     }
                   } else if (edge) {
                     if (newExpr === "") {
-                      onEdgeDataUpdate(edge.id, {
+                      updateEdgeData(edge.id, {
                         [exprFor]: undefined,
                       });
                     } else {
-                      onEdgeDataUpdate(edge.id, {
+                      updateEdgeData(edge.id, {
                         [exprFor]: newExpr,
                       });
                     }

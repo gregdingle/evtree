@@ -57,7 +57,7 @@ const BaseNode = ({
   const rounding = useStore(selectCurrentRounding);
 
   const shouldShowPathEV = showEVs && (showPathEVs || !hasParent);
-  const { onNodeDataUpdate } = useStore.getState();
+  const { updateNodeData } = useStore.getState();
 
   return (
     <div
@@ -67,7 +67,7 @@ const BaseNode = ({
         <div className="absolute -top-6.5 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
           <InlineEdit
             value={data.costExpr}
-            onCommit={(value) => onNodeDataUpdate(id, { costExpr: value })}
+            onCommit={(value) => updateNodeData(id, { costExpr: value })}
             displayFormatter={(cost) => formatCost(cost, currency, rounding)}
           />
         </div>
@@ -173,7 +173,7 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  const { onNodeDataUpdate } = useStore.getState();
+  const { updateNodeData } = useStore.getState();
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
   const hasParent = useStore((state) => selectHasParentNode(state, id));
@@ -271,7 +271,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       >
         <InlineEdit
           value={data.valueExpr}
-          onCommit={(value) => onNodeDataUpdate(id, { valueExpr: value })}
+          onCommit={(value) => updateNodeData(id, { valueExpr: value })}
           displayFormatter={() =>
             isParseable && pathValue !== null
               ? formatValue(
