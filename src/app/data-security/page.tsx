@@ -35,7 +35,7 @@ export default function DataSecurity() {
               information to use TreeDecisions.
             </li>
             <li className="py-2">
-              If you clear your browser data, or your have configured your
+              If you clear your browser data, or you have configured your
               browser to do so automatically, your data may be lost.
             </li>
             <li className="py-2">
