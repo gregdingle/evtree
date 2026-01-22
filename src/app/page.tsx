@@ -34,13 +34,9 @@ export default function Home() {
         Create, edit, export, and share.
       </p>
       <p className="mx-8 mt-2 mb-4 text-center text-lg">
-        <a
-          target="_blank"
-          className="bluelink"
-          href="https://en.wikipedia.org/wiki/End-to-end_encryption"
-        >
+        <Link className="bluelink" href="/data-security">
           Private data
-        </a>
+        </Link>
         {/*
     TODO: better reference? see also more academic
     https://martin.kleppmann.com/papers/local-first.pdf
@@ -57,6 +53,7 @@ export default function Home() {
       <TocLink href="/about">About</TocLink>
       <TocLink href="/quick-start">Quick Start</TocLink>
       <TocLink href="/user-guide">User Guide</TocLink>
+      <TocLink href="/data-security">Data Security</TocLink>
       <hr className="my-4 w-50 bg-neutral-900" />
       <footer className="my-6">
         <a
