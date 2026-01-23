@@ -18,7 +18,6 @@ export function StaticPage({
     relative
     mx-auto
     flex
-    w-xl
     flex-col
     items-center
     justify-center
@@ -26,16 +25,18 @@ export function StaticPage({
     border
     bg-amber-50
     py-8
-    sm:my-16
-    sm:w-2xl
-    sm:py-16
+    sm:w-lg
+    md:my-16
+    md:w-xl
+    md:py-16
+    lg:w-2xl
     dark:bg-neutral-900"
         // NOTE: neutral-900 is #171717, very close to ReactFlow default dark mode (#141414)
       >
         {linkToHome && (
           <Link
             href="/"
-            className="bluelink absolute top-4 left-4 sm:top-8 sm:left-8"
+            className="bluelink absolute top-4 left-4 md:top-8 md:left-8"
           >
             ◁ Home
           </Link>
@@ -43,7 +44,7 @@ export function StaticPage({
         {nextLabel && nextHref && (
           <Link
             href={nextHref}
-            className="bluelink absolute top-4 right-4 sm:top-8 sm:right-8"
+            className="bluelink absolute top-4 right-4 md:top-8 md:right-8"
           >
             {nextLabel}{" "}
             <span
@@ -66,14 +67,14 @@ export function StaticPage({
           <div className="mt-8">
             <Link
               href="/"
-              className="bluelink bottom-4 left-4 px-2 sm:bottom-8 sm:left-8"
+              className="bluelink bottom-4 left-4 px-2 md:bottom-8 md:left-8"
             >
               ◁ Home
             </Link>
             &nbsp;&nbsp;
             <Link
               href={nextHref}
-              className="bluelink bottom-4 left-4 px-2 sm:bottom-8 sm:left-8"
+              className="bluelink bottom-4 left-4 px-2 md:bottom-8 md:left-8"
             >
               {nextLabel}{" "}
               <span
