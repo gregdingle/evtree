@@ -154,13 +154,17 @@ const middlewares = (
   // NOTE: see https://github.com/pmndrs/zustand/issues/1013 for complex typing
   f: StateCreator<StoreState, [["zustand/devtools", unknown]]>,
 ) =>
-  persist(temporal(immer(devtools(f)), temporalOptions), {
-    // TODO: develop migration and invalidation protocol...
-    // maybe using `merge` function of `persist`...
-    // but for now just increment v number
-    name: "evtree-storage-v6",
-    storage: createJSONStorage(() => window.localStorage),
-  });
+  persist(
+    // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
+    temporal(immer(devtools(f)), temporalOptions),
+    {
+      // TODO: develop migration and invalidation protocol...
+      // maybe using `merge` function of `persist`...
+      // but for now just increment v number
+      name: "evtree-storage-v6",
+      storage: createJSONStorage(() => window.localStorage),
+    },
+  );
 
 // NOTE: default selector changed to shallow for less re-renders
 const useStoreBase = createWithEqualityFn<StoreState>()(
@@ -1176,6 +1180,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
 export const useStore = createSelectorFunctions(
+  // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
   useStoreBase,
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
 
