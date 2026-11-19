@@ -74,6 +74,8 @@ export function Toolbar() {
   const isHistogramOpen = useStore(selectShowHistogram);
 
   const isDarkMode = useDarkMode();
+  // The builder mounts the toolbar only after client validation.
+  const isMac = window.navigator.userAgent.includes("Mac");
 
   const handleDownloadTree = (treeToDownload: DecisionTree) => {
     exportJson(
@@ -160,12 +162,27 @@ export function Toolbar() {
   // TODO: dark mode toggle button
 
   // NOTE: see https://github.com/JohannesKlauss/react-hotkeys-hook
-  // TODO: consider best hotkeys
+  // Keep Ctrl shortcuts and add Cmd alternatives for familiar actions individually.
+  // Undo, redo, copy, and paste leave text editing to the browser. Cmd+S shares
+  // the tree even from form fields and prevents browser save when available.
   // TODO: make hotkey usage also flash corresponding button
-  useHotkeys("ctrl+z", () => undo(), { enableOnFormTags: true });
-  useHotkeys("ctrl+y", () => redo(), { enableOnFormTags: true });
-  useHotkeys("ctrl+c", () => copy(), { enableOnFormTags: true });
-  useHotkeys("ctrl+v", () => paste(), { enableOnFormTags: true });
+  useHotkeys("ctrl+z", () => undo());
+  useHotkeys("meta+z", () => undo(), { enabled: canUndo, preventDefault: true });
+  useHotkeys("ctrl+y", () => redo());
+  useHotkeys("meta+y, meta+shift+z", () => redo(), {
+    enabled: canRedo,
+    preventDefault: true,
+  });
+  useHotkeys("ctrl+c", () => copy());
+  useHotkeys("meta+c", () => copy(), {
+    enabled: hasSelectedItems,
+    preventDefault: true,
+  });
+  useHotkeys("ctrl+v", () => paste());
+  useHotkeys("meta+v", () => paste(), {
+    enabled: hasClipboardContent,
+    preventDefault: true,
+  });
   // NOTE: reset only available as a hotkey as a hidden feature
   useHotkeys("ctrl+shift+r", handleReset, { enableOnFormTags: true });
   useHotkeys("ctrl+a", () => arrange(), { enableOnFormTags: false });
@@ -174,6 +191,11 @@ export function Toolbar() {
   useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
   useHotkeys("ctrl+s", () => currentTree && handleShareLink(currentTree), {
     enableOnFormTags: true,
+  });
+  useHotkeys("meta+s", () => currentTree && handleShareLink(currentTree), {
+    enabled: Boolean(firebaseApp && currentTree),
+    enableOnFormTags: true,
+    preventDefault: true,
   });
   useHotkeys(
     "ctrl+shift+s",
@@ -206,7 +228,7 @@ export function Toolbar() {
       <div className="mx-8 flex flex-wrap justify-start 2xl:space-x-2">
         <ToolbarButton
           onButtonClick={() => copy()}
-          tooltip="Ctrl+C"
+          tooltip={isMac ? "Cmd+C" : "Ctrl+C"}
           disabled={!hasSelectedItems || isHistogramOpen}
         >
           <DocumentDuplicateIcon className="h-4 w-4" />
@@ -214,7 +236,7 @@ export function Toolbar() {
         </ToolbarButton>
         <ToolbarButton
           onButtonClick={() => paste()}
-          tooltip="Ctrl+V"
+          tooltip={isMac ? "Cmd+V" : "Ctrl+V"}
           disabled={!hasClipboardContent}
         >
           <ClipboardDocumentIcon className="h-4 w-4" />
@@ -249,7 +271,7 @@ export function Toolbar() {
         {/* NOTE: by request, moved undo-redo next to arrange */}
         <ToolbarButton
           onButtonClick={() => undo()}
-          tooltip="Ctrl+Z"
+          tooltip={isMac ? "Cmd+Z" : "Ctrl+Z"}
           disabled={!canUndo || isHistogramOpen}
         >
           <ArrowUturnLeftIcon className="h-4 w-4" />
@@ -257,7 +279,7 @@ export function Toolbar() {
         </ToolbarButton>
         <ToolbarButton
           onButtonClick={() => redo()}
-          tooltip="Ctrl+Y"
+          tooltip={isMac ? "Cmd+Shift+Z" : "Ctrl+Y"}
           disabled={!canRedo || isHistogramOpen}
         >
           <ArrowUturnRightIcon className="h-4 w-4" />
@@ -298,7 +320,7 @@ export function Toolbar() {
           firebaseApp && (
             <ToolbarButton
               onButtonClick={() => currentTree && handleShareLink(currentTree)}
-              tooltip="Upload tree and copy URL for sharing"
+              tooltip={`Upload tree and copy URL for sharing (${isMac ? "Cmd+S" : "Ctrl+S"})`}
               disabled={!hasNodes || isLinkCopied}
             >
               <LinkIcon className="h-4 w-4" />
