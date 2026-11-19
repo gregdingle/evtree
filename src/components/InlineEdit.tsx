@@ -81,7 +81,11 @@ export function InlineEdit({
     if (!isMediumScreenSizeOrLarger) {
       return;
     }
-    setEditingValue(value ?? "");
+    const displayed = displayFormatter
+      ? displayFormatter(value)
+      : (value ?? placeholder);
+    const shouldClearInput = displayed === placeholder;
+    setEditingValue(shouldClearInput ? "" : (value ?? ""));
     setIsEditing(true);
   };
 
