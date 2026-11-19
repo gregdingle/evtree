@@ -55,8 +55,8 @@ const BaseNode = ({
   const showPathEVs = useStore(selectShowPathEVs);
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
-  const isZeroProbability = useStore((state) =>
-    selectPathProbability(state, id) === 0,
+  const isZeroProbability = useStore(
+    (state) => selectPathProbability(state, id) === 0,
   );
 
   const shouldShowPathEV = showEVs && (showPathEVs || !hasParent);
@@ -130,7 +130,11 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         <Handle
           type="source"
           position={Position.Right}
-          className={`opacity-0 group-hover:opacity-100 ${isCollapsed ? "collapsed" : ""}`}
+          className={
+            isCollapsed
+              ? "collapsed opacity-100" // NOTE: always show handle when collapsed, because that is the collapsed indicator
+              : "opacity-0 group-hover:opacity-100"
+          }
           isConnectable={isCollapsed ? false : true}
         />
       </div>
@@ -167,7 +171,11 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         <Handle
           type="source"
           position={Position.Right}
-          className={`opacity-0 group-hover:opacity-100 ${isCollapsed ? "collapsed" : ""}`}
+          className={
+            isCollapsed
+              ? "collapsed opacity-100"
+              : "opacity-0 group-hover:opacity-100"
+          }
           isConnectable={isCollapsed ? false : true}
         />
       </div>
