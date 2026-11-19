@@ -155,7 +155,9 @@ const middlewares = (
   f: StateCreator<StoreState, [["zustand/devtools", unknown]]>,
 ) =>
   persist(
-    // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
+    // NOTE: ts-ignore not ts-expect-error because TS 5 (build) errors here but TS 7 (VS Code native preview) does not
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - Complex middleware type chain issue with immer/devtools/temporal
     temporal(immer(devtools(f)), temporalOptions),
     {
       // TODO: develop migration and invalidation protocol...
@@ -1180,7 +1182,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
 export const useStore = createSelectorFunctions(
-  // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - see note in middlewares above
   useStoreBase,
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
 
