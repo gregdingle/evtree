@@ -21,6 +21,7 @@ interface PropertyInputProps {
   checkbox?: boolean; // Optional prop to indicate if this is a checkbox
   options?: Array<{ value: string; label: string }>; // Options for select
   onChange?: (value: string) => void;
+  onBlur?: () => void;
   onCheckboxChange?: (checked: boolean) => void;
   placeholder?: string;
   type?: string;
@@ -43,6 +44,7 @@ export const PropertyInput = React.forwardRef<
       info,
       optional,
       onChange,
+      onBlur,
       onCheckboxChange,
       textarea,
       select,
@@ -92,6 +94,7 @@ export const PropertyInput = React.forwardRef<
               id={label}
               value={value ?? ""}
               onInput={(e) => onChange?.(e.currentTarget.value)}
+              onBlur={onBlur}
               disabled={disabled}
               className={`min-w-0 flex-3/4 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
               rows={4}
@@ -132,6 +135,7 @@ export const PropertyInput = React.forwardRef<
             type={props.type || "text"}
             value={value ?? ""}
             onInput={(e) => onChange?.(e.currentTarget.value)}
+            onBlur={onBlur}
             disabled={disabled}
             className={`min-w-0 flex-1/4 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"

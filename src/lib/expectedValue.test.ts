@@ -7,6 +7,7 @@ import {
   ComputeNode,
   computeNodeValues,
   convertPercentageToDecimal,
+  normalizeTerminalValue,
   toComputeEdge,
   toComputeNode,
 } from "../lib/expectedValue";
@@ -453,6 +454,22 @@ describe("computeNodeValues", () => {
 
     // Decision node should get the value of the only viable child
     expect(nodesByKey["decision"]!.data.value).toEqual(100);
+  });
+});
+
+describe("normalizeTerminalValue", () => {
+  test("converts standalone values using the selected scale", () => {
+    expect(normalizeTerminalValue("200K", "US")).toBe("200000");
+    expect(normalizeTerminalValue("-1.5M", "US")).toBe("-1500000");
+    expect(normalizeTerminalValue("2.5bn", "UK")).toBe("2500000000");
+    expect(normalizeTerminalValue("$1,200k", "UK")).toBe("1200000");
+  });
+
+  test("leaves formulas, unsupported suffixes, and unscaled values unchanged", () => {
+    expect(normalizeTerminalValue("200K + bonus", "US")).toBe("200K + bonus");
+    expect(normalizeTerminalValue("200K", "UK")).toBe("200K");
+    expect(normalizeTerminalValue("200K", "")).toBe("200K");
+    expect(normalizeTerminalValue("200000", "UK")).toBe("200000");
   });
 });
 

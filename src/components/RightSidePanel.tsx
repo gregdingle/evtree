@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
+
 import { upperFirst } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
-import { safeEvalExpr } from "@/lib/expectedValue";
+import { normalizeTerminalValue, safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
+import { RoundingCode } from "@/lib/rounding";
 import {
   selectCurrentTree,
   selectNetExpectedValues,
@@ -119,6 +122,7 @@ export function RightSidePanel() {
                   netExpectedValue={netExpectedValue}
                   pathProbability={pathProbability}
                   isRootNode={isRootNode}
+                  rounding={currentTree?.rounding ?? ""}
                 />
               );
             })}
@@ -258,6 +262,7 @@ function NodeProperties({
   netExpectedValue,
   pathProbability,
   isRootNode,
+  rounding,
 }: {
   node: AppNode;
   updateNodeData: (id: string, nodeData: Partial<AppNode["data"]>) => void;
@@ -272,7 +277,9 @@ function NodeProperties({
   netExpectedValue: number | null | undefined;
   pathProbability: number | null | undefined;
   isRootNode: boolean;
+  rounding: RoundingCode;
 }) {
+  const [editingOutcome, setEditingOutcome] = useState<string | null>(null);
   const totalCosts =
     (cumulativeCosts ?? 0) +
     safeEvalExpr(
@@ -286,15 +293,19 @@ function NodeProperties({
         <PropertyInput
           // TODO: should we prefix the input with the currency symbol here? or is it better implied?
           label="Outcome Value"
-          value={node.data.valueExpr}
-          info={`The award, payoff, or payment \nobligation at this end point`}
+          value={editingOutcome ?? node.data.valueExpr}
+          info={`The award, payoff, or payment \nobligation at this end point. \nStandalone values can use the \nselected rounding suffixes.`}
           onChange={(value) => {
+            setEditingOutcome(value);
             if (value === "") {
               updateNodeData(node.id, { valueExpr: undefined });
             } else {
-              updateNodeData(node.id, { valueExpr: value });
+              updateNodeData(node.id, {
+                valueExpr: normalizeTerminalValue(value, rounding),
+              });
             }
           }}
+          onBlur={() => setEditingOutcome(null)}
           placeholder={
             valueVariables.length ? "Enter value or formula" : "Enter value"
           }

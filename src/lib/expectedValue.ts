@@ -4,6 +4,7 @@ import { Parser } from "expr-eval";
 
 import { AppEdge } from "./edge";
 import { AppNode, NodeType } from "./node";
+import { ROUNDING, RoundingCode } from "./rounding";
 import { Variable, variablesToRecord } from "./variable";
 
 type AdjacencyList = Record<
@@ -287,9 +288,6 @@ export function toComputeEdge(
   };
 }
 
-// TODO: dehumanize as in 1.0M to 1000000
-// const customScale = new humanFormat.Scale(rounding.scale);
-// customScale.parse('900K')
 // NOTE: see handleNameChange in VariablesInput.tsx for variable name sanitization
 export function safeEvalExpr<T extends number | null>(
   expression: string | undefined,
@@ -329,6 +327,25 @@ export function safeEvalExpr<T extends number | null>(
  */
 export function normalizeExpression(expression: string | undefined): string {
   return expression?.trim().replace(/[, $€]/g, "") ?? "";
+}
+
+export function normalizeTerminalValue(
+  expression: string,
+  roundingCode: RoundingCode,
+): string {
+  const scale = ROUNDING[roundingCode].scale;
+  if (!scale) return expression;
+
+  const match = normalizeExpression(expression).match(
+    /^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)([a-zA-Z]+)$/,
+  );
+  if (!match) return expression;
+
+  const multiplier = scale[match[2]!];
+  if (multiplier === undefined) return expression;
+
+  const value = Number(match[1]) * multiplier;
+  return Number.isFinite(value) ? String(value) : expression;
 }
 
 /**

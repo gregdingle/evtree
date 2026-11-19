@@ -4,7 +4,7 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
-import { safeEvalExpr } from "@/lib/expectedValue";
+import { normalizeTerminalValue, safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
   selectCollapsible,
@@ -282,7 +282,14 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
       >
         <InlineEdit
           value={data.valueExpr}
-          onCommit={(value) => updateNodeData(id, { valueExpr: value })}
+          onCommit={(value) =>
+            updateNodeData(id, {
+              valueExpr:
+                value === undefined
+                  ? undefined
+                  : normalizeTerminalValue(value, rounding),
+            })
+          }
           displayFormatter={() =>
             isParseable && pathValue !== null
               ? formatValue(
