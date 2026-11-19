@@ -55,13 +55,16 @@ const BaseNode = ({
   const showPathEVs = useStore(selectShowPathEVs);
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
+  const isZeroProbability = useStore((state) =>
+    selectPathProbability(state, id) === 0,
+  );
 
   const shouldShowPathEV = showEVs && (showPathEVs || !hasParent);
   const { updateNodeData } = useStore.getState();
 
   return (
     <div
-      className={`nopan group relative  ${selected ? "cursor-move" : "cursor-pointer"} z-10`}
+      className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"} ${showEVs && isZeroProbability ? "opacity-50" : ""} z-10`}
     >
       {data.costExpr && (
         <div className="absolute -top-6.5 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
@@ -176,12 +179,12 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const { updateNodeData } = useStore.getState();
 
   const pathProbability = useStore((state) => selectPathProbability(state, id));
+  const isZeroProbability = pathProbability === 0;
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const isMediumScreenSizeOrLarger = useBreakpoint("md");
-  const showEVs =
-    (useStore(selectShowEVs) || !isMediumScreenSizeOrLarger) &&
-    pathProbability !== null;
+  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
+  const showPathProbability = showEVs && pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
 
   const currency = useStore(selectCurrentCurrency);
@@ -216,11 +219,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     }
   }, [variables, data.valueExpr]);
 
-  const topOffset = showEVs ? "-top-2.5" : "top-0.5";
+  const topOffset = showPathProbability ? "-top-2.5" : "top-0.5";
   return (
     <div
       // TODO: should also "nodrag" when not selected?
-      className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"}`}
+      className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"} ${showEVs && isZeroProbability ? "opacity-50" : ""}`}
     >
       <div className="relative">
         {/* Selection border triangle (outer) */}
@@ -301,7 +304,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           )}
         </InlineEdit>
       </div>
-      {showEVs && (
+      {showPathProbability && (
         <div className={`absolute top-4 left-9 italic`}>
           {
             // NOTE: don't show the ??? placeholder for null pathProbability

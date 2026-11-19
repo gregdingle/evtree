@@ -13,6 +13,7 @@ import { convertPercentageToDecimal } from "@/lib/expectedValue";
 import {
   selectComputedProbability,
   selectHasDecisionNodeSource,
+  selectPathProbability,
   selectShouldShowProbabilityWarning,
   selectShowEVs,
 } from "@/lib/selectors";
@@ -27,6 +28,7 @@ import { WarningCircle } from "./WarningCircle";
  */
 export function CustomEdge({
   id,
+  target,
   sourceX,
   sourceY,
   targetX,
@@ -41,6 +43,9 @@ export function CustomEdge({
   // Use computed probability instead of stored probability
   const computedProbability = useStore((state) =>
     selectComputedProbability(state, id),
+  );
+  const isZeroProbability = useStore((state) =>
+    selectPathProbability(state, target) === 0,
   );
 
   // TODO: best significant digits for users? precision vs usability tradeoff?
@@ -95,7 +100,7 @@ export function CustomEdge({
         id={id}
         path={edgePath}
         // NOTE Tailwind: use ! to override inline/preceding stroke
-        className={`${selected ? "!stroke-blue-500" : "!stroke-slate-400"}`}
+        className={`${selected ? "!stroke-blue-500" : "!stroke-slate-400"} ${showEVs && isZeroProbability ? "opacity-50" : ""}`}
         style={{
           strokeLinecap: "round",
           strokeWidth: 3,
@@ -109,7 +114,7 @@ export function CustomEdge({
               pointerEvents: "all",
               maxWidth: `${labelWidth}px`,
             }}
-            className="absolute -top-0.5 z-10 text-center"
+            className={`absolute -top-0.5 z-10 text-center ${showEVs && isZeroProbability ? "opacity-50" : ""}`}
           >
             <InlineEdit
               value={label}
@@ -126,7 +131,7 @@ export function CustomEdge({
               transform: transformProb,
               pointerEvents: "all",
             }}
-            className="absolute top-4 z-10 text-center"
+            className={`absolute top-4 z-10 text-center ${showEVs && isZeroProbability ? "opacity-50" : ""}`}
           >
             {hasDecisionNodeSource ? (
               showEVs && (

@@ -180,6 +180,7 @@ export function selectShouldShowProbabilityWarning(
  * value!
  *
  * TODO: unit tests
+ * TODO: some kind of caching to avoid O(n^2) worst case
  */
 export function selectPathProbability(
   state: StoreState,
