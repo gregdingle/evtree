@@ -62,6 +62,7 @@ export function ContextMenu({
     copy,
     connectToNearestNode,
     createNodeAtFrom,
+    insertNodeBefore,
     paste,
   } = useStore.getState();
 
@@ -106,6 +107,13 @@ export function ContextMenu({
     // TODO: how to avoid double undo stack? this is a bug currently. why isn't
     // handleSet throttle working to avoid this?
     setTimeout(() => arrangeSubtree(contextNode.id), 0);
+    onClose?.();
+  };
+
+  const handleInsertNode = (nodeType: "chance" | "decision") => {
+    if (!contextNode) return;
+
+    insertNodeBefore(contextNode.id, nodeType);
     onClose?.();
   };
 
@@ -155,7 +163,20 @@ export function ContextMenu({
               <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
               Decision Node
             </ContextMenuButton>
-          </ContextMenuSubmenu>{" "}
+          </ContextMenuSubmenu>
+          <ContextMenuSubmenu
+            title="Insert Node Before..."
+            icon={<PlusIcon className="h-4 w-4" />}
+          >
+            <ContextMenuButton onClick={() => handleInsertNode("chance")}>
+              <div className="h-4 w-4 rounded-full border-1 border-current"></div>
+              Chance Node
+            </ContextMenuButton>
+            <ContextMenuButton onClick={() => handleInsertNode("decision")}>
+              <div className="mr-0.25 h-3.5 w-3.5 border-1 border-current"></div>
+              Decision Node
+            </ContextMenuButton>
+          </ContextMenuSubmenu>
           <ContextMenuSubmenu
             // TODO: why does converting to terminal from chance make the node change position slightly then the branch moves
             title="Convert to..."

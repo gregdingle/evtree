@@ -31,6 +31,7 @@ import {
   collectSubtreeNodeIds,
   getNodeToIncomingEdgeMap,
   getParentToChildNodeMap,
+  getRootNodeId,
 } from "@/lib/maps";
 import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
@@ -91,6 +92,10 @@ export interface StoreState {
     position: { x: number; y: number },
     fromNodeId: string,
     nodeType?: NodeType,
+  ) => void;
+  insertNodeBefore: (
+    nodeId: string,
+    nodeType: Extract<NodeType, "chance" | "decision">,
   ) => void;
   createGhostNodeWithArrow: (
     fromNodeId: string,
@@ -824,6 +829,65 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "createNodeAtFrom", position, fromNodeId, nodeType },
+      );
+    },
+
+    insertNodeBefore: (nodeId, nodeType) => {
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            const node = tree.nodes[nodeId];
+            if (!node) {
+              warnItemNotFound("Node", nodeId, "insert node");
+              return;
+            }
+
+            const incomingEdgeMap = getNodeToIncomingEdgeMap(tree.edges);
+            const incomingEdgeId = incomingEdgeMap[nodeId];
+            const incomingEdge = incomingEdgeId
+              ? tree.edges[incomingEdgeId]
+              : undefined;
+            let rootId = getRootNodeId(tree, nodeId);
+            if (!tree.nodes[rootId]) {
+              warnItemNotFound("Node", rootId, "insert node");
+              return;
+            }
+
+            clearSelections(tree);
+            const newNode = createNode(
+              {
+                x: node.position.x - 250,
+                y: node.position.y,
+              },
+              nodeType,
+            );
+            tree.nodes[newNode.id] = newNode;
+
+            if (incomingEdge) {
+              const rewiredEdge = cloneEdge(
+                incomingEdge,
+                incomingEdge.source,
+                newNode.id,
+              );
+              rewiredEdge.selected = false;
+              delete tree.edges[incomingEdge.id];
+              tree.edges[rewiredEdge.id] = rewiredEdge;
+              if (
+                state.display.lastEditedProbability?.treeId === tree.id &&
+                state.display.lastEditedProbability.edgeId === incomingEdge.id
+              ) {
+                state.display.lastEditedProbability.edgeId = rewiredEdge.id;
+              }
+            } else {
+              rootId = newNode.id;
+            }
+
+            const newEdge = createEdge(newNode.id, nodeId, false);
+            tree.edges[newEdge.id] = newEdge;
+            arrangeSubtreeHelper(tree, rootId);
+          }),
+        undefined,
+        { type: "insertNodeBefore", nodeId, nodeType },
       );
     },
 

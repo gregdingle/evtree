@@ -24,6 +24,15 @@ export const getChildToParentNodeMap = memoize(function (
   return childToParentMap;
 });
 
+export function getRootNodeId(tree: DecisionTree, nodeId: string): string {
+  const parentMap = getChildToParentNodeMap(tree.edges);
+  let rootId = nodeId;
+  while (parentMap[rootId]) {
+    rootId = parentMap[rootId]!;
+  }
+  return rootId;
+}
+
 export const getNodeToIncomingEdgeMap = memoize(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
