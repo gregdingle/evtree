@@ -53,6 +53,8 @@ export interface StoreState {
     showEVs?: boolean;
     showPathEVs?: boolean;
     showHistogram?: boolean;
+    // NOTE: for suppressing the not-sum-to-one warning on the last edited edge
+    lastEditedProbability?: { treeId: string; edgeId: string } | null;
   };
 
   // Tree management
@@ -215,6 +217,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           };
           state.trees[treeId] = loadedTree;
           state.currentTreeId = treeId;
+          state.display.lastEditedProbability = null;
           return state;
         },
         undefined,
@@ -403,6 +406,16 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           withCurrentTree(state, (tree) => {
             const edge = tree.edges[id];
             if (edge) {
+              if (
+                edgeData &&
+                "probabilityExpr" in edgeData &&
+                edgeData.probabilityExpr !== edge.data?.probabilityExpr
+              ) {
+                state.display.lastEditedProbability = {
+                  treeId: tree.id,
+                  edgeId: id,
+                };
+              }
               edge.data = {
                 ...edge.data,
                 ...edgeData,
@@ -778,6 +791,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           ...state,
           trees: initialTrees,
           clipboard: { nodes: [], edges: [] },
+          display: { ...state.display, lastEditedProbability: null },
         }),
         undefined,
         { type: "reset" },

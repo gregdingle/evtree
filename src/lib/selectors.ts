@@ -161,12 +161,18 @@ export function selectShouldShowProbabilityWarning(
     }, 0);
 
   const targetEdgeProbability = edgeProbabilities[edgeId] ?? 0;
+  const lastEdited = state.display.lastEditedProbability;
+  const isLastEdited =
+    lastEdited?.treeId === tree.id && lastEdited.edgeId === edgeId;
   return (
     targetEdgeProbability < 0 ||
     targetEdgeProbability > 1 ||
     // NOTE: only show sum warning if there is at least some probability
     // assigned in a group of branches
-    (probabilitySum > 0 &&
+    // NOTE: suppress warning on the last edited edge, because we assume the
+    // user intended it and will only want to change other edges if necessary
+    (!isLastEdited &&
+      probabilitySum > 0 &&
       // NOTE: Should always allow small floating-point tolerance
       Math.abs(probabilitySum - 1) > 10 ** -significantDigits)
   );
