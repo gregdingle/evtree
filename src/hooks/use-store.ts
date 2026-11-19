@@ -147,17 +147,13 @@ const middlewares = (
   // NOTE: see https://github.com/pmndrs/zustand/issues/1013 for complex typing
   f: StateCreator<StoreState, [["zustand/devtools", unknown]]>,
 ) =>
-  persist(
-    // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
-    temporal(immer(devtools(f)), temporalOptions),
-    {
-      // TODO: develop migration and invalidation protocol...
-      // maybe using `merge` function of `persist`...
-      // but for now just increment v number
-      name: "evtree-storage-v6",
-      storage: createJSONStorage(() => window.localStorage),
-    },
-  );
+  persist(temporal(immer(devtools(f)), temporalOptions), {
+    // TODO: develop migration and invalidation protocol...
+    // maybe using `merge` function of `persist`...
+    // but for now just increment v number
+    name: "evtree-storage-v6",
+    storage: createJSONStorage(() => window.localStorage),
+  });
 
 // NOTE: default selector changed to shallow for less re-renders
 const useStoreBase = createWithEqualityFn<StoreState>()(
@@ -530,21 +526,117 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             const selectedNodes = values(tree.nodes).filter(
               (node) => node.selected,
             );
-            const isReplacingNode =
-              (replaceNodeId && replaceNodeId in tree.nodes) ||
-              selectedNodes.length === 1;
+            const targetNode = replaceNodeId
+              ? tree.nodes[replaceNodeId]
+              : selectedNodes.length === 1
+                ? selectedNodes[0]
+                : undefined;
+            if (replaceNodeId && !targetNode) {
+              warnItemNotFound("Node", replaceNodeId, "paste");
+              return;
+            }
+            if (targetNode && clipboard.nodes.length === 0) {
+              // An empty node selection must not replace the target.
+              console.warn(
+                "[EVTree] Copy at least one node to paste onto a node.",
+              );
+              return;
+            }
+
+            const copiedNodeIds = new Set(
+              clipboard.nodes.map((node) => node.id),
+            );
+            const incomingBranches = clipboard.edges.filter(
+              (edge) =>
+                edge.type !== "arrow" &&
+                !copiedNodeIds.has(edge.source) &&
+                copiedNodeIds.has(edge.target),
+            );
+            const isAttachingBranches =
+              !!targetNode && incomingBranches.length > 0;
+            if (
+              isAttachingBranches &&
+              targetNode.type !== "chance" &&
+              targetNode.type !== "decision"
+            ) {
+              // Terminal nodes cannot have children.
+              console.warn(
+                "[EVTree] Branches can only be pasted onto a chance or decision node.",
+              );
+              return;
+            }
 
             // Clear selections
             clearSelections(tree);
 
-            if (isReplacingNode) {
-              // TODO: extend from the selected node if the copied subtree
-              // "starts with" a branch? current replace behavior is unintuitive
-              // in this case
+            if (isAttachingBranches && targetNode) {
+              const anchor = clipboard.nodes.find(
+                (node) => node.id === incomingBranches[0]!.target,
+              )!;
+              const incomingBranchIds = new Set(
+                incomingBranches.map((edge) => edge.id),
+              );
+              const isCollapsed = values(tree.edges).some(
+                (edge) =>
+                  edge.type !== "arrow" &&
+                  edge.source === targetNode.id &&
+                  tree.nodes[edge.target]?.hidden,
+              );
+              const descendants = collectSubtreeNodeIds(tree, targetNode.id);
+              let pasteY = targetNode.position.y;
+              if (descendants.size > 1) {
+                for (const id of descendants) {
+                  const node = tree.nodes[id];
+                  if (id !== targetNode.id && node && !node.hidden) {
+                    pasteY = Math.max(pasteY, node.position.y + 150);
+                  }
+                }
+              }
+              const minCopiedY = clipboard.nodes.reduce(
+                (minY, node) => Math.min(minY, node.position.y),
+                anchor.position.y,
+              );
 
-              const nodeToReplace = replaceNodeId
-                ? tree.nodes[replaceNodeId]!
-                : selectedNodes[0]!;
+              clipboard.nodes.forEach((clipboardNode) => {
+                const newNode = cloneNode(clipboardNode, {
+                  x:
+                    targetNode.position.x +
+                    216 +
+                    clipboardNode.position.x -
+                    anchor.position.x,
+                  y: pasteY + clipboardNode.position.y - minCopiedY,
+                });
+                if (isCollapsed) {
+                  newNode.hidden = true;
+                  newNode.selected = false;
+                }
+                tree.nodes[newNode.id] = newNode;
+                nodeIdMap.set(clipboardNode.id, newNode.id);
+              });
+
+              clipboard.edges.forEach((clipboardEdge) => {
+                const newTargetId = nodeIdMap.get(clipboardEdge.target);
+                const newSourceId =
+                  nodeIdMap.get(clipboardEdge.source) ??
+                  (incomingBranchIds.has(clipboardEdge.id)
+                    ? targetNode.id
+                    : undefined);
+                if (!newTargetId) return;
+                if (newSourceId) {
+                  const newEdge = cloneEdge(
+                    clipboardEdge,
+                    newSourceId,
+                    newTargetId,
+                  );
+                  if (isCollapsed) {
+                    newEdge.hidden = true;
+                    newEdge.selected = false;
+                  }
+                  tree.edges[newEdge.id] = newEdge;
+                }
+              });
+            } else if (targetNode) {
+              const nodeToReplace = targetNode;
 
               // Get the position and incoming edge info BEFORE deletion
               const replacementPosition = nodeToReplace.position;
@@ -1006,7 +1098,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
 export const useStore = createSelectorFunctions(
-  // @ts-expect-error - Complex middleware type chain issue with immer/devtools/temporal
   useStoreBase,
 ) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
 
