@@ -10,6 +10,7 @@ import { DecisionTree, createTree } from "./tree";
 /**
  * Converts the AI-generated flat list of nodes to DecisionTree format. Each
  * AI node becomes a node, and an edge from its parent if it has one.
+ * The tree takes the currency that the AI inferred, and rounding to match.
  */
 export function convertAIStructureToDecisionTree(
   aiTree: AITree,
@@ -76,5 +77,11 @@ export function convertAIStructureToDecisionTree(
     edges[edge.id] = edge;
   });
 
-  return createTree(name, description, nodes, edges);
+  return {
+    ...createTree(name, description, nodes, edges),
+    currency: aiTree.currency ?? undefined,
+    // NOTE: rounding is a convention of the country more than of the case, so
+    // it follows from the currency: "bn" for pounds, and "B" otherwise
+    rounding: aiTree.currency === "GBP" ? "UK" : "US",
+  };
 }

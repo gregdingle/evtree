@@ -1,7 +1,7 @@
 import { values } from "es-toolkit/compat";
 
 import { convertAIStructureToDecisionTree } from "./ai-convert";
-import { AINode } from "./ai-schemas";
+import { AINode, AITree } from "./ai-schemas";
 
 jest.mock("nanoid", () => {
   let nextId = 0;
@@ -47,9 +47,9 @@ const nodes: AINode[] = [
   },
 ];
 
-function convert(aiNodes: AINode[]) {
+function convert(aiNodes: AINode[], currency: AITree["currency"] = "USD") {
   const tree = convertAIStructureToDecisionTree(
-    { issues: ["Issue?"], nodes: aiNodes },
+    { currency, issues: ["Issue?"], nodes: aiNodes },
     "Name",
     "Description",
   );
@@ -109,6 +109,20 @@ describe("convertAIStructureToDecisionTree", () => {
     expect(tree.nodes[barred.target]!.type).toBe("terminal");
     expect(tree.nodes[award.source]!.type).toBe("decision");
     expect(tree.nodes[award.target]!.type).toBe("terminal");
+  });
+
+  test("should set the currency, and rounding to match", () => {
+    expect(convert(nodes).tree).toMatchObject({
+      currency: "USD",
+      rounding: "US",
+    });
+    expect(convert(nodes, "GBP").tree).toMatchObject({
+      currency: "GBP",
+      rounding: "UK",
+    });
+    const { tree } = convert(nodes, null);
+    expect(tree.currency).toBeUndefined();
+    expect(tree.rounding).toBe("US");
   });
 
   test("should not depend on the order of the AI nodes", () => {

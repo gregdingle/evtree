@@ -12,7 +12,7 @@ Avoid including branches that have less than a 5% chance of happening by your es
 
 Avoid including branches that have a 100% chance of happening by your estimation. Just skip over them.
 
-If a dollar value of a claim is not provided, use a value of $1.
+If the description gives no amount for a claim, use 1 for the full claim and fractions of it for its other outcomes, and say so in the `reason`.
 
 <!-- TODO: better solution to unknown value problem... prompt the user? -->
 

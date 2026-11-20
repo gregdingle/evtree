@@ -1,6 +1,7 @@
 import { omit } from "es-toolkit";
 import z from "zod";
 
+import { CURRENCIES, CurrencyCode } from "./currency";
 import { PROBABILITY_SUM_TOLERANCE } from "./expectedValue";
 
 // NOTE: The AI returns a tree as a flat list of nodes, each naming its parent.
@@ -50,21 +51,35 @@ const AINodeSchema = z.object({
     .number()
     .nullable()
     .describe(
-      "The terminal value of a node in dollars. Only a terminal node that has no child nodes should have a value. This represents the reward or loss at the conclusion of a case.",
+      "The terminal value of a node, as an amount in the currency of the case. Only a terminal node that has no child nodes should have a value. This represents the reward or loss at the conclusion of a case.",
     ),
   cost: z
     .number()
     .min(0, "must be positive")
     .nullable()
     .describe(
-      "The expected cost in dollars that is incurred once this node is reached, whatever happens after it. For example: lawyer's fees or court fees. The root node can have a cost, for a cost that is incurred on every path. Leave as null if unknown or negligible. Do not include money already spent on the case.",
+      "The expected cost, as an amount in the currency of the case, that is incurred once this node is reached, whatever happens after it. For example: lawyer's fees or court fees. The root node can have a cost, for a cost that is incurred on every path. Leave as null if unknown or negligible. Do not include money already spent on the case.",
     ),
 });
 
 export type AINode = z.infer<typeof AINodeSchema>;
 
+// NOTE: without the empty code for no currency, which is null for the AI
+const AI_CURRENCY_CODES = Object.keys(CURRENCIES).filter(
+  (code) => code !== "",
+) as Exclude<CurrencyCode, "">[];
+
 export const AITreeSchema = z
   .object({
+    // NOTE: the AI infers the currency, where matching symbols in the
+    // description could not tell apart the currencies that share "$" or "¥",
+    // or find a currency that is only named in words
+    currency: z
+      .enum(AI_CURRENCY_CODES)
+      .nullable()
+      .describe(
+        "The currency of the amounts in the description. Where a symbol is shared by several currencies, choose by the country of the dispute. Null if the description has no amounts or does not indicate a currency.",
+      ),
     // NOTE: issues come before nodes so that the AI writes out its plan before
     // it builds the tree, in place of planning in thinking tokens, which is
     // slow. The issues are not used in the tree itself.

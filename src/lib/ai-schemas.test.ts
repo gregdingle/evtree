@@ -32,7 +32,11 @@ function child(
 }
 
 function getMessages(nodes: AINode[]): string[] {
-  const result = AITreeSchema.safeParse({ issues: ["Issue?"], nodes });
+  const result = AITreeSchema.safeParse({
+    currency: "USD",
+    issues: ["Issue?"],
+    nodes,
+  });
   return result.success ? [] : result.error.issues.map((i) => i.message);
 }
 
@@ -44,6 +48,7 @@ describe("aiTreeJsonSchema", () => {
   test("should put the issues before the nodes", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(Object.keys((aiTreeJsonSchema as any).properties)).toEqual([
+      "currency",
       "issues",
       "nodes",
     ]);
@@ -67,6 +72,19 @@ describe("aiTreeJsonSchema", () => {
 });
 
 describe("AITreeSchema", () => {
+  test("should accept a known currency or none", () => {
+    const parse = (currency: unknown) =>
+      AITreeSchema.safeParse({
+        currency,
+        issues: [],
+        nodes: [root({ value: 1 })],
+      }).success;
+    expect(parse("EUR")).toBe(true);
+    expect(parse(null)).toBe(true);
+    expect(parse("")).toBe(false);
+    expect(parse("XYZ")).toBe(false);
+  });
+
   test("should accept a tree deeper than a nested schema allows", () => {
     const nodes = [root({ cost: 1000 })];
     for (let depth = 2; depth <= 9; depth++) {
