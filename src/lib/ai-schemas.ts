@@ -47,6 +47,12 @@ const AINodeSchema = z.object({
     .describe(
       "Probability estimate of the branch from the parent to this node occurring, between 0 and 1. Null for the root node only.",
     ),
+  question: z
+    .string()
+    .nullable()
+    .describe(
+      'The issue that is decided at this node, as a short question, such as "Will the judge grant summary judgment?". The branches to the child nodes are its possible outcomes. Null for a terminal node.',
+    ),
   value: z
     .number()
     .nullable()

@@ -47,7 +47,8 @@ export function convertAIStructureToDecisionTree(
     }
 
     const appNode = createNode(dummyPosition, nodeType, false, {
-      description: "",
+      // NOTE: the description of a node is the question that it decides
+      description: aiNode.question ?? "",
       // NOTE: convert to string which will be converted back to number internally
       // TODO: when the description mentions an amount but doesn't give it, have
       // the AI infer a named variable instead of guessing a number or leaving it

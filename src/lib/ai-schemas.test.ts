@@ -7,6 +7,7 @@ function root(overrides: Partial<AINode> = {}): AINode {
     label: null,
     reason: null,
     probability: null,
+    question: "Question?",
     value: null,
     cost: null,
     ...overrides,
@@ -25,6 +26,7 @@ function child(
     label: `Label ${id}`,
     reason: `Reason ${id}`,
     probability,
+    question: null,
     value: 100,
     cost: null,
     ...overrides,
@@ -63,6 +65,7 @@ describe("aiTreeJsonSchema", () => {
       "label",
       "reason",
       "probability",
+      "question",
       "value",
       "cost",
     ]);

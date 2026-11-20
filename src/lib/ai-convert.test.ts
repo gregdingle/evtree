@@ -15,6 +15,7 @@ const nodes: AINode[] = [
     label: null,
     reason: null,
     probability: null,
+    question: "Does the settlement bar the claims?",
     value: null,
     cost: 100000,
   },
@@ -24,6 +25,7 @@ const nodes: AINode[] = [
     label: "Claims barred",
     reason: "Because of the settlement",
     probability: 0.25,
+    question: null,
     value: 0,
     cost: null,
   },
@@ -33,6 +35,7 @@ const nodes: AINode[] = [
     label: "Claims survive",
     reason: "Because the settlement is narrow",
     probability: 0.75,
+    question: null,
     value: null,
     cost: 200000,
   },
@@ -42,6 +45,7 @@ const nodes: AINode[] = [
     label: "Award",
     reason: "Because it is the only outcome",
     probability: 1,
+    question: null,
     value: -5000000,
     cost: null,
   },
@@ -99,6 +103,15 @@ describe("convertAIStructureToDecisionTree", () => {
     const award = getEdge("Award");
     expect(tree.nodes[award.target]!.data.valueExpr).toBe("-5000000");
     expect(tree.nodes[award.source]!.data.costExpr).toBe("200000");
+  });
+
+  test("should keep the question of a node as its description", () => {
+    const { tree, getEdge } = convert(nodes);
+    const barred = getEdge("Claims barred");
+    expect(tree.nodes[barred.source]!.data.description).toBe(
+      "Does the settlement bar the claims?",
+    );
+    expect(tree.nodes[barred.target]!.data.description).toBe("");
   });
 
   test("should set node types from the number of child nodes", () => {
