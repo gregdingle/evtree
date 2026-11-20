@@ -32,6 +32,7 @@ import {
   getNodeToIncomingEdgeMap,
   getParentToChildNodeMap,
   getRootNodeId,
+  getRootNodeIds,
 } from "@/lib/maps";
 import { findNearestUpstreamNode } from "@/lib/nearest";
 import { AppNode, NodeType, cloneNode, createNode } from "@/lib/node";
@@ -935,20 +936,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
         set(
           (state) =>
             withCurrentTree(state, (tree) => {
-              // TODO: extract to global findRootNodes function?
-              const edgesArray = values(tree.edges);
-              values(tree.nodes)
-                .filter((node) => {
-                  // A root node has no incoming edges
-                  return (
-                    !edgesArray.some((edge) => edge.target === node.id) &&
-                    node.type !== "note" &&
-                    node.type !== "ghost"
-                  );
-                })
-                .forEach((node) => {
-                  arrangeSubtreeHelper(tree, node.id, rightAligned);
-                });
+              getRootNodeIds(tree.nodes, tree.edges).forEach((rootId) => {
+                arrangeSubtreeHelper(tree, rootId, rightAligned);
+              });
             }),
           undefined,
           { type: "arrange", rightAligned },

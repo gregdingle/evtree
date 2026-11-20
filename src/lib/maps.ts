@@ -3,7 +3,12 @@ import { values } from "es-toolkit/compat";
 import { memoizeWeak } from "@/utils/memoize";
 
 import { AppEdge, filterTreeEdges } from "./edge";
+import { NodeType } from "./node";
 import { DecisionTree } from "./tree";
+
+// NOTE: minimal shapes so these also work for ComputeNode and ComputeEdge
+type NodeLike = { id: string; type?: NodeType };
+type EdgeLike = { source: string; target: string; type?: string };
 
 // TODO: add basic unit tests for all functions in this file to define expected behavior
 
@@ -15,7 +20,7 @@ import { DecisionTree } from "./tree";
  * TODO: extract to new utils file along with buildAdjacencyList?
  */
 export const getChildToParentNodeMap = memoizeWeak(function (
-  edges: Record<string, AppEdge> | AppEdge[],
+  edges: Record<string, EdgeLike> | EdgeLike[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
   const treeEdges = filterTreeEdges(values(edges));
@@ -25,6 +30,31 @@ export const getChildToParentNodeMap = memoizeWeak(function (
   return childToParentMap;
 });
 
+/**
+ * Returns the IDs of all root nodes. A root node has no incoming tree edge.
+ * Notes and ghost nodes are annotations outside of trees, so never roots.
+ *
+ * @see getRootNodeId for the root of a given node
+ */
+export function getRootNodeIds(
+  nodes: Record<string, NodeLike>,
+  edges: Record<string, EdgeLike> | EdgeLike[],
+): string[] {
+  const parentMap = getChildToParentNodeMap(edges);
+  return values(nodes)
+    .filter(
+      (node) =>
+        !parentMap[node.id] && node.type !== "note" && node.type !== "ghost",
+    )
+    .map((node) => node.id);
+}
+
+/**
+ * Returns the ID of the root node of the tree containing `nodeId`, by walking
+ * up incoming tree edges.
+ *
+ * @see getRootNodeIds for all root nodes
+ */
 export function getRootNodeId(tree: DecisionTree, nodeId: string): string {
   const parentMap = getChildToParentNodeMap(tree.edges);
   let rootId = nodeId;

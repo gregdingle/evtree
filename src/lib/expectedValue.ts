@@ -4,6 +4,7 @@ import { isNaN, max, values } from "es-toolkit/compat";
 import { Parser } from "expr-eval-fork";
 
 import { AppEdge } from "./edge";
+import { getRootNodeIds } from "./maps";
 import { AppNode, NodeType } from "./node";
 import { convertPercentageToDecimal } from "./percentage";
 import { ROUNDING, RoundingCode } from "./rounding";
@@ -69,15 +70,7 @@ export function computeNodeValues(
   edges: Record<string, ComputeEdge>,
 ): { nodes: Record<string, ComputeNode>; edges: Record<string, ComputeEdge> } {
   const edgesArray = values(edges);
-  const rootNodes = values(nodes).filter((node) => {
-    // A root node has no incoming edges
-    // TODO: extract to global findRootNodes function?
-    return (
-      !edgesArray.some((edge) => edge.target === node.id) &&
-      node.type !== "note" &&
-      node.type !== "ghost"
-    );
-  });
+  const rootNodes = getRootNodeIds(nodes, edges).map((id) => nodes[id]!);
   if (rootNodes.length === 0) {
     console.warn("[EVTree] No root nodes found, cannot compute values.");
     return { nodes, edges };

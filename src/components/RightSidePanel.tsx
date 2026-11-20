@@ -9,6 +9,7 @@ import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import { normalizeTerminalValue, safeEvalExpr } from "@/lib/expectedValue";
+import { getRootNodeIds } from "@/lib/maps";
 import { AppNode } from "@/lib/node";
 import { RoundingCode } from "@/lib/rounding";
 import {
@@ -48,15 +49,7 @@ export function RightSidePanel() {
     // HACK: filter out arrow edges because they have no properties to edit
     (edge) => edge.selected && edge.type !== "arrow",
   );
-  const rootNodes = values(allNodes).filter((node) => {
-    // A root node has no incoming edges
-    // TODO: extract to global findRootNodes function?
-    return (
-      !allEdges.some((edge) => edge.target === node.id) &&
-      node.type !== "note" &&
-      node.type !== "ghost"
-    );
-  });
+  const rootNodeIds = getRootNodeIds(allNodes, currentTree?.edges ?? {});
 
   const netExpectedValues = useStore(selectNetExpectedValues);
   const pathProbabilities = useStore((state) =>
@@ -106,9 +99,7 @@ export function RightSidePanel() {
                 netExpectedValues.nodeCumulativeCosts?.[node.id];
               const netExpectedValue = netExpectedValues.nodeValues?.[node.id];
               const pathProbability = pathProbabilities[node.id];
-              const isRootNode = Boolean(
-                rootNodes.find((root) => root.id == node.id),
-              );
+              const isRootNode = rootNodeIds.includes(node.id);
               return (
                 <NodeProperties
                   key={node.id}

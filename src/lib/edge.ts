@@ -50,6 +50,6 @@ export function cloneEdge(
 /**
  * Filters out arrow edges that don't participate in tree logic.
  */
-export function filterTreeEdges(edges: AppEdge[]): AppEdge[] {
+export function filterTreeEdges<E extends { type?: string }>(edges: E[]): E[] {
   return edges.filter((edge) => edge.type !== "arrow");
 }
