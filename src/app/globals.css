@@ -116,6 +116,16 @@ body {
   opacity: 1;
 }
 
+/*
+  Keep notes on top of other nodes, edges and edge labels. Edge labels are z-10
+  and selected nodes are elevated to z-index 1000 by React Flow, which sets
+  z-index inline on the node wrapper, so !important is needed.
+  NOTE: see src/components/NoteNode.tsx for opaque background
+*/
+.evtree .react-flow__node-note {
+  z-index: 2000 !important;
+}
+
 /* Arrange animation: temporary class toggled by animate.ts
    - Nodes animate because React Flow positions nodes via transform
    - Edges cannot reliably interpolate SVG path `d`, so we fade them briefly

@@ -25,7 +25,6 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
   };
 
   const handleBlur = () => {
-    // TODO: onBlur, the text jumps a few pixels as it switches from textarea... not sure why
     setIsEditing(false);
   };
 
@@ -52,15 +51,15 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
 
   return (
     <div
-      className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"}`}
+      // NOTE: opaque canvas-colored base so the translucent note colors don't
+      // show underlying nodes, edges and labels. Notes are on top of those.
+      // NOTE: see .react-flow__node-note in src/app/globals.css
+      className={`nopan group relative bg-amber-50 dark:bg-neutral-900 ${selected ? "cursor-move" : "cursor-pointer"}`}
     >
       <div
         // NOTE: border-dashed should match the strokeDasharray of ArrowEdge
-        className={`min-h-12 ${noteWidth} border-2 border-dashed p-2 ${
-          // TODO: when note is selected, the bg is transparent, so the underlying content is visible... it's weird
-          selected
-            ? "border-blue-500 bg-blue-500/10"
-            : "border-gray-400 bg-yellow-100 dark:bg-yellow-900/20"
+        className={`min-h-12 ${noteWidth} border-2 border-dashed bg-yellow-100 p-2 dark:bg-yellow-900/20 ${
+          selected ? "border-blue-500" : "border-gray-400"
         }`}
       >
         {/* Handles for creating arrow edges */}
