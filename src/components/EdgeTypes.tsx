@@ -63,7 +63,9 @@ export function CustomEdge({
   const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
 
   // NOTE: assumes the edge is always left to right
-  const stepPositionPx = 60; // Absolute pixel distance from source
+  // NOTE: empirically determined to provide enough space for a terminal node
+  // label not to overlap with the elbow sibiling subtree
+  const stepPositionPx = 80; // Absolute pixel distance from source
   const [edgePath, labelX, labelY, , offsetY] =
     getSmoothStepPathWithAbsoluteStep({
       sourceX,
