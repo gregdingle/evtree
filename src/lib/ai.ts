@@ -1,6 +1,6 @@
 import { isPlainObject, memoize } from "es-toolkit";
 import { isEmpty } from "es-toolkit/compat";
-import { VertexAIBackend, getAI, getGenerativeModel } from "firebase/ai";
+import { AgentPlatformBackend, getAI, getGenerativeModel } from "firebase/ai";
 
 import { createEdge } from "@/lib/edge";
 import { createNode } from "@/lib/node";
@@ -23,15 +23,18 @@ function getAIModel() {
     throw new Error("[EVTree] Firebase app is not initialized");
   }
   return getGenerativeModel(
-    getAI(firebaseApp, { backend: new VertexAIBackend() }),
+    // NOTE: AgentPlatformBackend is the renamed VertexAIBackend in firebase 13.
+    // It defaults to the "global" location, recommended by Firebase, where the
+    // old VertexAIBackend defaulted to "us-central1".
+    getAI(firebaseApp, { backend: new AgentPlatformBackend() }),
     {
-      // QUESTION: is this the best model?
-      // NOTE: see https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions
-      // model: "gemini-2.5-pro", // way too slow, but good looking results, maybe too big
-      // model: "gemini-2.5-flash", // slower than gemini-2.0, some useless results
-      model: "gemini-2.0-flash", // follows example much better than gemini-2.5
-      // model: "gemini-2.5-flash-lite", // newest model, seems ok, but not as good as 2.0
-      // model: "gemini-3-pro-preview",
+      // NOTE: gemini-2.0 models were shut down June 1, 2026 and gemini-2.5
+      // models October 20, 2026. gemini-3.8-flash is Firebase's recommended
+      // stable model with no shutdown date, see
+      // https://firebase.google.com/docs/ai-logic/models
+      // TODO: compare results with the prompt, which was tuned for
+      // gemini-2.0-flash ("follows example much better than gemini-2.5")
+      model: "gemini-3.8-flash",
     },
   );
 }
@@ -55,10 +58,12 @@ Ignore footnotes.
     // Generate content with the file data
     const result = await getAIModel().generateContent([
       {
+        type: "text",
         text: prompt,
       },
       {
         // QUESTION: use FileDataPart instead?
+        type: "inlineData",
         inlineData: {
           mimeType: file.type,
           data: base64,
