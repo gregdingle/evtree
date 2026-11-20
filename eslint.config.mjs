@@ -9,23 +9,38 @@ const eslintConfig = defineConfig([
   },
   ...nextCoreWebVitals,
   ...nextTypescript,
-  ...tailwind.configs["flat/recommended"],
+  tailwind.configs.recommended,
   {
     // NOTE: added by gregdingle
     rules: {
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
+  },
+  {
+    // NOTE: same files as the tailwind plugin, which isn't loaded for others
+    // like .mjs, so its rules can't be configured there
+    files: tailwind.configs.recommended.files,
+    rules: {
+      "tailwindcss/no-custom-classname": [
+        "warn",
+        {
+          whitelist: [
+            // ReactFlow classes
+            "nopan",
+            "nodrag",
+            // EVTree classes, see globals.css
+            "evtree",
+            "bluelink",
+            "collapsed",
+            "tooltip",
+          ],
+        },
+      ],
+    },
     settings: {
       tailwindcss: {
-        // Disable config file requirement for Tailwind v4
-        config: false,
-        whitelist: [
-          // ReactFlow classes
-          "nopan",
-          "nodrag",
-          // EVTree classes
-          "evtree",
-        ],
+        // NOTE: required by eslint-plugin-tailwindcss for Tailwind v4
+        cssConfigPath: "./src/app/globals.css",
       },
     },
   },

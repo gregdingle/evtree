@@ -38,8 +38,8 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const target = event.target;
+  const handleChange = (event: React.InputEvent<HTMLTextAreaElement>) => {
+    const target = event.currentTarget;
     const value = target.value;
     updateNodeData(id, { description: value === "" ? undefined : value });
     resizeTextarea(target);

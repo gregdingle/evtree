@@ -133,7 +133,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
   };
 
   const handleFileUploadForAI = async (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.InputEvent<HTMLInputElement>,
   ) => {
     const file = e.currentTarget.files?.[0];
     if (!file) {
