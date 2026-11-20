@@ -30,23 +30,10 @@ global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 // Uint8Array<ArrayBufferLike>, which TS 7 rejects as a BufferSource
 const encode = (text: string) => new Uint8Array(new TextEncoder().encode(text));
 
-// Mock window.location.hash for tests
+// NOTE: jsdom doesn't allow redefining window.location, but allows setting
+// the hash. For origin, see the baseUrl parameter of buildShareUrl.
 const mockHash = (hash: string) => {
-  Object.defineProperty(window, "location", {
-    value: { hash },
-    writable: true,
-  });
-};
-
-// Mock window.location.origin for buildShareUrl tests
-const mockOrigin = (origin: string) => {
-  Object.defineProperty(window, "location", {
-    value: {
-      ...window.location,
-      origin,
-    },
-    writable: true,
-  });
+  window.location.hash = hash;
 };
 
 describe("share.ts encryption utilities", () => {
@@ -117,9 +104,11 @@ describe("share.ts encryption utilities", () => {
 
   describe("buildShareUrl", () => {
     it("should build valid share URL with localhost origin", () => {
-      mockOrigin("http://localhost:3000");
-
-      const url = buildShareUrl("394ff0e908376c69", "BQ1moYESmTEXgtA1KozyVw");
+      const url = buildShareUrl(
+        "394ff0e908376c69",
+        "BQ1moYESmTEXgtA1KozyVw",
+        "http://localhost:3000",
+      );
 
       expect(url).toBe(
         "http://localhost:3000/builder/#share=394ff0e908376c69&key=BQ1moYESmTEXgtA1KozyVw",
@@ -127,9 +116,11 @@ describe("share.ts encryption utilities", () => {
     });
 
     it("should build valid share URL with production domain", () => {
-      mockOrigin("https://evtree.ai");
-
-      const url = buildShareUrl("abc123def4567890", "XyZ789AbC123_-Def");
+      const url = buildShareUrl(
+        "abc123def4567890",
+        "XyZ789AbC123_-Def",
+        "https://evtree.ai",
+      );
 
       expect(url).toBe(
         "https://evtree.ai/builder/#share=abc123def4567890&key=XyZ789AbC123_-Def",
@@ -137,12 +128,10 @@ describe("share.ts encryption utilities", () => {
     });
 
     it("should create URL that extractShareHash can parse", () => {
-      mockOrigin("https://evtree.ai");
-
       const contentHash = "a1b2c3d4e5f67890";
       const keyBase64 = "SomeBase64Key_-";
 
-      const url = buildShareUrl(contentHash, keyBase64);
+      const url = buildShareUrl(contentHash, keyBase64, "https://evtree.ai");
 
       // Mock the URL hash as if user navigated to it
       const urlObj = new URL(url);
@@ -157,10 +146,12 @@ describe("share.ts encryption utilities", () => {
     });
 
     it("should preserve special base64url characters in key", () => {
-      mockOrigin("https://evtree.ai");
-
       const keyWithSpecialChars = "ABC-_xyz123";
-      const url = buildShareUrl("1234567890abcdef", keyWithSpecialChars);
+      const url = buildShareUrl(
+        "1234567890abcdef",
+        keyWithSpecialChars,
+        "https://evtree.ai",
+      );
 
       expect(url).toContain(`&key=${keyWithSpecialChars}`);
       expect(url).not.toContain("&key=ABC%2D"); // Should not URL-encode
@@ -314,8 +305,11 @@ describe("share.ts encryption utilities", () => {
       const contentHash = await generateContentHash(encrypted);
 
       // Simulate sharing via URL
-      mockOrigin("https://evtree.ai");
-      const shareURL = buildShareUrl(contentHash, keyBase64);
+      const shareURL = buildShareUrl(
+        contentHash,
+        keyBase64,
+        "https://evtree.ai",
+      );
       expect(shareURL).toContain("#share=");
       expect(shareURL).toContain("&key=");
 

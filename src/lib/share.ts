@@ -30,8 +30,12 @@ export function extractShareHash(): { hash: string; key: string } | null {
  * @see generateContentHash
  * @see exportKeyToBase64
  */
-export function buildShareUrl(contentHash: string, keyBase64: string) {
-  const baseUrl = window.location.origin;
+export function buildShareUrl(
+  contentHash: string,
+  keyBase64: string,
+  // NOTE: parameter for tests, because jsdom doesn't allow changing origin
+  baseUrl: string = window.location.origin,
+) {
   // NOTE: earlier versions used root / path; now we use /builder/
   return `${baseUrl}/builder/#share=${contentHash}&key=${keyBase64}`;
 }
