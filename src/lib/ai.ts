@@ -89,16 +89,9 @@ Ignore footnotes.
   }
 }
 
-/**
- * Creates a decision tree from a text description using AI.
- *
- * NOTE: memoize to avoid spamming service
- * QUESTION: maybe throttle would be better?
- *
- * @param text - The case description to convert into a decision tree
- * @returns Promise<Decision> - The generated decision tree structure
- */
-export const generateDecisionTree = memoize(async function (
+// NOTE: memoize to avoid spamming service
+// QUESTION: maybe throttle would be better?
+const generateDecisionTreeMemoized = memoize(async function (
   text: string,
 ): Promise<NodeShape> {
   try {
@@ -145,6 +138,22 @@ export const generateDecisionTree = memoize(async function (
     throw error;
   }
 });
+
+/**
+ * Creates a decision tree from a text description using AI.
+ *
+ * @param text - The case description to convert into a decision tree
+ * @returns Promise<Decision> - The generated decision tree structure
+ */
+export async function generateDecisionTree(text: string): Promise<NodeShape> {
+  try {
+    return await generateDecisionTreeMemoized(text);
+  } catch (error) {
+    // NOTE: don't cache failures, so that the user can retry
+    generateDecisionTreeMemoized.cache.delete(text);
+    throw error;
+  }
+}
 
 /**
  * Converts AI-generated hierarchical NodeShape structure to flat DecisionTree format

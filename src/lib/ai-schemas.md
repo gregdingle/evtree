@@ -29,7 +29,7 @@ export interface NodeShape {
   value: number | null;
 
   /**
-   * The expected cost in dollars of progressing to a node from the incoming branch. For example: lawyer's fees or court fees. Leave as null if unknown or negligible. This represents a sunk cost of a case.
+   * The expected cost in dollars of progressing to a node from the incoming branch. For example: lawyer's fees or court fees. Leave as null if unknown or negligible. The cost is incurred once the node is reached, whatever happens after it. Do not include money already spent on the case.
    */
   cost: number | null;
 
