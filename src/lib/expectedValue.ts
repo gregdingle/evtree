@@ -1,6 +1,8 @@
 import { round } from "es-toolkit";
 import { isNaN, max, values } from "es-toolkit/compat";
-import { Parser } from "expr-eval";
+// TODO: consider expr-eval-nextgen in a future upgrade once it has a track
+// record and outside review. It also disables toJSFunction (CVE-2026-12866).
+import { Parser } from "expr-eval-fork";
 
 import { AppEdge } from "./edge";
 import { AppNode, NodeType } from "./node";
