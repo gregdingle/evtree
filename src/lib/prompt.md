@@ -32,12 +32,9 @@ Some guidelines:
 
 ## Zod schemas
 
+<!-- prettier-ignore -->
 ```ts
-{
-  {
-    ZOD_SCHEMAS;
-  }
-}
+{{ZOD_SCHEMAS}}
 ```
 
 <!-- TODO: optimize example -->
