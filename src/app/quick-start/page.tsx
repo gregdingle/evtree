@@ -75,8 +75,7 @@ export default function QuickStart() {
           <li className="py-2">
             Click on the <em>???</em> on the new branch and replace it with a
             label like &quot;Success&quot; or &quot;Failure&quot;. Then click on
-            the <em>??%</em> and replace it with a probability like 0.5. Ignore
-            the red warning for now.
+            the <em>??%</em> and replace it with a probability like 0.5.
             <Screenshot
               src="/quick-start/evtree-quick-start-6.png"
               alt="screenshot"
