@@ -22,6 +22,9 @@ import { DecisionTree } from "./tree";
 
 // HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
 // file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
+// NOTE: The schema text is sent in the prompt as well as responseJsonSchema.
+// Removing it from the prompt made the generated trees much smaller, even with
+// the field descriptions moved into the JSON schema.
 
 /**
  * JSON Schema for structured output of the AI, generated from NodeSchema.

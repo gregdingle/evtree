@@ -7,14 +7,14 @@ export interface BranchShape {
   label: string;
 
   /**
-   * Probability estimate of this branch occurring, between 0 and 1.
-   */
-  probability: number;
-
-  /**
    * The reason for a probability estimate.
    */
   reason: string;
+
+  /**
+   * Probability estimate of this branch occurring, between 0 and 1.
+   */
+  probability: number;
 
   /**
    * The next node following this branch in the tree.
@@ -46,11 +46,13 @@ const BranchSchema: z.ZodType<BranchShape> = z.lazy(() =>
       .string()
       .min(1, "Label must be at least 1 character long")
       .max(100, "Label must be 100 characters or less"),
+    // NOTE: reason comes before probability because structured output follows
+    // the order of the schema, so the AI justifies before it estimates
+    reason: z.string().min(1, "Reason is required"),
     probability: z
       .number()
       .min(0, "Probability must be between 0 and 1")
       .max(1, "Probability must be between 0 and 1"),
-    reason: z.string().min(1, "Reason is required"),
     nextNode: NodeSchema,
   }),
 );
