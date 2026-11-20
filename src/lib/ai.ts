@@ -187,6 +187,9 @@ export function convertAIStructureToDecisionTree(
     parentId?: string,
   ): void {
     // Determine node type based on whether it has branches
+    // TODO: consider adding decision nodes to the prompt and AI schemas, for
+    // choices that a party makes itself, such as filing a motion. The prompt
+    // currently only asks for chance and terminal nodes.
     // TODO: we shouldn't really define decision nodes this way... either
     // exclude decision node, or else modify the prompt and AI schemas to return
     // decision nodes
