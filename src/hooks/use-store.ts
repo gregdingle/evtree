@@ -487,7 +487,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
             // Set the remaining probability for the target edge
             const balancedProbability = Math.max(
               0,
-              // TODO: could this lead to total prob less than 1?
+              // NOTE: rounding can leave the total off from 1 by up to
+              // 0.5 * 10^-significantDigits, like 0.9999997 or 1.0000003 when
+              // a sibling is 1/3. That's within the warning tolerance of
+              // selectShouldShowProbabilityWarning, and negligible for EVs.
               round(1.0 - existingProbabilitySum, significantDigits),
             );
 
@@ -665,7 +668,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 
               // Get the position and incoming edge info BEFORE deletion
               const replacementPosition = nodeToReplace.position;
-              const parentToChildMap = getParentToChildNodeMap(tree.edges);
               const nodeToIncomingEdgeMap = getNodeToIncomingEdgeMap(
                 tree.edges,
               );
@@ -674,18 +676,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 ? tree.edges[incomingEdgeId]
                 : null;
 
-              // Delete the selected node's subtree (but preserve incoming edge info)
-              // TODO: use deleteSubTreeHelper? what about preserve incoming edge?
-              const deleteDescendants = (currentNodeId: string) => {
-                const children = parentToChildMap[currentNodeId] ?? [];
-                children.forEach((childNodeId) => {
-                  deleteDescendants(childNodeId);
-                });
-                delete tree.nodes[currentNodeId];
-                delete tree.edges[nodeToIncomingEdgeMap[currentNodeId]!];
-              };
-
-              deleteDescendants(nodeToReplace.id);
+              // NOTE: the incoming edge is deleted with the subtree, then
+              // recreated below from the saved incomingEdge to connect the
+              // first pasted node
+              deleteSubTreeHelper(tree, nodeToReplace.id);
 
               // Paste nodes at the replacement position
               clipboard.nodes.forEach((clipboardNode, index) => {
