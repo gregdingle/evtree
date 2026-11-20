@@ -1,78 +1,135 @@
-import {
-  MAX_AI_TREE_DEPTH,
-  NodeSchema,
-  NodeShape,
-  buildNodeJsonSchema,
-} from "./ai-schemas";
+import { AINode, AITreeSchema, aiTreeJsonSchema } from "./ai-schemas";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnySchema = any;
-
-function nextNode(node: AnySchema): AnySchema {
-  return node.properties.branches.items.properties?.nextNode;
+function root(overrides: Partial<AINode> = {}): AINode {
+  return {
+    id: "n1",
+    parentId: null,
+    label: null,
+    reason: null,
+    probability: null,
+    value: null,
+    cost: null,
+    ...overrides,
+  };
 }
 
-describe("buildNodeJsonSchema", () => {
-  test("should unroll the recursion with no $ref left", () => {
-    expect(JSON.stringify(buildNodeJsonSchema())).not.toContain("$ref");
+function child(
+  id: string,
+  parentId: string,
+  probability: number,
+  overrides: Partial<AINode> = {},
+): AINode {
+  return {
+    id,
+    parentId,
+    label: `Label ${id}`,
+    reason: `Reason ${id}`,
+    probability,
+    value: 100,
+    cost: null,
+    ...overrides,
+  };
+}
+
+function getMessages(nodes: AINode[]): string[] {
+  const result = AITreeSchema.safeParse({ nodes });
+  return result.success ? [] : result.error.issues.map((i) => i.message);
+}
+
+describe("aiTreeJsonSchema", () => {
+  test("should have no references, so that nothing limits the depth", () => {
+    expect(JSON.stringify(aiTreeJsonSchema)).not.toContain("$ref");
   });
 
-  test("should allow branches down to the maximum depth only", () => {
-    let node = buildNodeJsonSchema() as AnySchema;
-    for (let depth = 0; depth < MAX_AI_TREE_DEPTH; depth++) {
-      expect(node.properties.branches.maxItems).toBeUndefined();
-      expect(Object.keys(node.properties)).toEqual([
-        "value",
-        "cost",
-        "branches",
-      ]);
-      expect(Object.keys(node.properties.branches.items.properties)).toEqual([
-        "label",
-        "reason",
-        "probability",
-        "nextNode",
-      ]);
-      node = nextNode(node);
-    }
-    expect(node.properties.branches.maxItems).toBe(0);
-    expect(node.properties.branches.items).toEqual({ type: "object" });
-    expect(nextNode(node)).toBeUndefined();
-  });
-
-  test("should describe the fields at the root only", () => {
-    const root = buildNodeJsonSchema() as AnySchema;
-    expect(root.properties.cost.description).toMatch(/cost/);
-    expect(
-      root.properties.branches.items.properties.reason.description,
-    ).toMatch(/reason/);
-    expect(JSON.stringify(nextNode(root))).not.toContain("description");
+  test("should put the reason before the probability", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const node = (aiTreeJsonSchema as any).properties.nodes.items;
+    expect(Object.keys(node.properties)).toEqual([
+      "id",
+      "parentId",
+      "label",
+      "reason",
+      "probability",
+      "value",
+      "cost",
+    ]);
+    expect(node.required).toEqual(Object.keys(node.properties));
+    expect(node.properties.cost.description).toMatch(/root node can have/);
   });
 });
 
-describe("NodeSchema", () => {
-  const leaf: NodeShape = { value: 1, cost: null, branches: [] };
-  const branch = (probability: number) => ({
-    label: "a",
-    reason: "r",
-    probability,
-    nextNode: leaf,
+describe("AITreeSchema", () => {
+  test("should accept a tree deeper than a nested schema allows", () => {
+    const nodes = [root({ cost: 1000 })];
+    for (let depth = 2; depth <= 9; depth++) {
+      nodes.push(
+        child(`n${depth}`, `n${depth - 1}`, 0.4, { value: null }),
+        child(`t${depth}`, `n${depth - 1}`, 0.6),
+      );
+    }
+    nodes.at(-2)!.value = 0;
+    expect(getMessages(nodes)).toEqual([]);
   });
 
-  test("should accept probabilities that sum to 1", () => {
-    const node = {
-      value: null,
-      cost: null,
-      branches: [branch(0.4), branch(0.6)],
-    };
-    expect(NodeSchema.safeParse(node).success).toBe(true);
+  test("should accept children listed before their parent", () => {
+    expect(
+      getMessages([child("a", "n1", 0.5), child("b", "n1", 0.5), root()]),
+    ).toEqual([]);
+  });
+
+  test("should reject a duplicate id", () => {
+    expect(
+      getMessages([root(), child("a", "n1", 0.5), child("a", "n1", 0.5)]),
+    ).toContain("Node id a is used more than once");
+  });
+
+  test("should reject no root or more than one root", () => {
+    expect(getMessages([])).toContain(
+      "The tree must have exactly one root node, found 0",
+    );
+    expect(
+      getMessages([root({ value: 1 }), root({ id: "n2", value: 1 })]),
+    ).toContain("The tree must have exactly one root node, found 2");
+  });
+
+  test("should reject an unknown parent", () => {
+    expect(getMessages([root({ value: 1 }), child("a", "x", 1)])).toContain(
+      "Node a has an unknown parent x",
+    );
+  });
+
+  test("should reject a cycle", () => {
+    expect(
+      getMessages([root({ value: 1 }), child("a", "b", 1), child("b", "a", 1)]),
+    ).toEqual([
+      "Node a is not connected to the root node",
+      "Node b is not connected to the root node",
+    ]);
+  });
+
+  test("should reject a branch with no probability", () => {
+    expect(
+      getMessages([root(), child("a", "n1", 1, { probability: null })]),
+    ).toContain("Node a must have a label, reason and probability");
+  });
+
+  test("should reject a terminal node with no value", () => {
+    expect(
+      getMessages([root(), child("a", "n1", 1, { value: null })]),
+    ).toContain("Terminal node a must have a value");
   });
 
   test("should reject probabilities that do not sum to 1", () => {
-    const node = {
-      value: null,
-      cost: null,
-      branches: [branch(0.5), branch(0.6)],
-    };
-    expect(NodeSchema.safeParse(node).success).toBe(false);
+    expect(
+      getMessages([root(), child("a", "n1", 0.5), child("b", "n1", 0.6)]),
+    ).toContain("Probabilities of the branches from node n1 must sum to 1");
+    expect(
+      getMessages([
+        root(),
+        child("a", "n1", 0.1),
+        child("b", "n1", 0.2),
+        child("c", "n1", 0.7),
+      ]),
+    ).toEqual([]);
   });
 });

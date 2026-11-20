@@ -22,6 +22,7 @@ Some guidelines:
 - Try to make labels 32 characters long or less
 - When a node is a leaf node in the tree, it is considered a terminal node, and it MUST have a value
 - The probabilities in a group of branches MUST sum to 1
+- The output is a flat list of nodes. Each node except the root carries the `label`, `reason` and `probability` of the branch that leads to it from its parent
 - The tree always starts with a single root node
 - Values are from the perspective of the party that the description is written for, or the plaintiff if that is unclear
 - Values should be negative if they represent a loss

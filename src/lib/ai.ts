@@ -1,5 +1,4 @@
-import { isPlainObject, memoize } from "es-toolkit";
-import { isEmpty } from "es-toolkit/compat";
+import { memoize } from "es-toolkit";
 import {
   AIError,
   AgentPlatformBackend,
@@ -10,23 +9,9 @@ import {
   getGenerativeModel,
 } from "firebase/ai";
 
-import { createEdge } from "@/lib/edge";
-import { createNode } from "@/lib/node";
-import { createTree } from "@/lib/tree";
-
-import {
-  BranchShape,
-  NodeSchema,
-  NodeShape,
-  buildNodeJsonSchema,
-} from "./ai-schemas";
-import { AppEdge } from "./edge";
+import { AITree, AITreeSchema, aiTreeJsonSchema } from "./ai-schemas";
 import { firebaseApp } from "./firebase";
-import { AppNode } from "./node";
 import promptMarkdown from "./prompt.md";
-import { DecisionTree } from "./tree";
-
-const nodeJsonSchema = buildNodeJsonSchema();
 
 // NOTE: strip HTML comments, which are notes to developers and not to the AI
 const treePrompt = promptMarkdown.replace(/<!--[\s\S]*?-->\n*/g, "");
@@ -169,14 +154,16 @@ const generateDecisionTreeMemoized = memoize(
     text,
     onProgress,
     signal,
-  }: GenerateDecisionTreeArgs): Promise<NodeShape> {
+  }: GenerateDecisionTreeArgs): Promise<AITree> {
     const startTime = performance.now();
     let phase: AIGenerationPhase = "waiting";
     let usage: UsageMetadata | undefined;
+    let thoughts = "";
+    let generatedText = "";
     onProgress?.({ phase });
 
     try {
-      // Generate the decision tree using AI, as JSON matching NodeSchema
+      // Generate the decision tree using AI, as JSON matching AITreeSchema
       // NOTE: the prompt is the system instruction and the user's description is
       // the content, so the description is less likely to override the
       // instructions, and no template substitution is needed. Tags mark where the
@@ -184,7 +171,7 @@ const generateDecisionTreeMemoized = memoize(
       const result = await getAIModel(
         {
           responseMimeType: "application/json",
-          responseJsonSchema: nodeJsonSchema,
+          responseJsonSchema: aiTreeJsonSchema,
           thinkingConfig: {
             // NOTE: with the default thinking level, the AI builds the smallest tree
             // that satisfies the prompt and leaves out issues from the description
@@ -202,8 +189,6 @@ const generateDecisionTreeMemoized = memoize(
         { timeout: 300_000, signal },
       );
 
-      let thoughts = "";
-      let generatedText = "";
       for await (const chunk of result.stream) {
         usage = chunk.usageMetadata ?? usage;
         const thought = chunk.thoughtSummary();
@@ -216,10 +201,10 @@ const generateDecisionTreeMemoized = memoize(
         if (chunkText) {
           generatedText += chunkText;
           phase = "writing";
-          // NOTE: every node has a branches key, even a terminal node
+          // NOTE: every node has an id key, which "parentId" doesn't match
           onProgress?.({
             phase,
-            nodes: generatedText.match(/"branches"/g)?.length ?? 0,
+            nodes: generatedText.match(/"id"/g)?.length ?? 0,
           });
         }
       }
@@ -236,16 +221,11 @@ const generateDecisionTreeMemoized = memoize(
       // Parse the JSON response
       phase = "parsing";
       onProgress?.({ phase });
-      const decisionTree: DecisionTree = JSON.parse(generatedText);
-
-      // Sanity check that we have a structure
-      if (!isPlainObject(decisionTree) || isEmpty(decisionTree)) {
-        throw new Error("Invalid decision tree structure returned by AI");
-      }
+      const aiTree: unknown = JSON.parse(generatedText);
 
       phase = "validating";
       onProgress?.({ phase });
-      return NodeSchema.parse(decisionTree);
+      return AITreeSchema.parse(aiTree);
     } catch (error) {
       // NOTE: an abort by the user is not a failure
       if (signal?.aborted) {
@@ -261,6 +241,13 @@ const generateDecisionTreeMemoized = memoize(
         `[EVTree] AI decision tree generation ${generationError.message}. Tokens so far: ${usage?.thoughtsTokenCount ?? "unknown"} thinking, ${usage?.candidatesTokenCount ?? "unknown"} output.`,
         error,
       );
+      // NOTE: to see how far the AI got, and whether what it wrote was sound
+      // eslint-disable-next-line no-console
+      console.debug(
+        `[EVTree] AI output before the failure: ${generatedText.match(/"id"/g)?.length ?? 0} nodes, ${generatedText.length} characters, ending:\n\n${generatedText.slice(-600)}`,
+      );
+      // eslint-disable-next-line no-console
+      console.debug(`[EVTree] AI thought summaries:\n\n${thoughts}`);
       // QUESTION: should we retry schema parse failures? maybe with a different model or settings?
       throw generationError;
     }
@@ -281,7 +268,7 @@ export async function generateDecisionTree(
   text: string,
   onProgress?: (progress: AIGenerationProgress) => void,
   signal?: AbortSignal,
-): Promise<NodeShape> {
+): Promise<AITree> {
   try {
     return await generateDecisionTreeMemoized({ text, onProgress, signal });
   } catch (error) {
@@ -291,69 +278,4 @@ export async function generateDecisionTree(
   }
 }
 
-/**
- * Converts AI-generated hierarchical NodeShape structure to flat DecisionTree format
- */
-export function convertAIStructureToDecisionTree(
-  rootNode: NodeShape,
-  name: string,
-  description: string,
-): DecisionTree {
-  // NOTE: ignore positions because auto-arrange after
-  const dummyPosition = { x: 0, y: 0 };
-
-  const nodes: Record<string, AppNode> = {};
-  const edges: Record<string, AppEdge> = {};
-  function processNodeAndBranch(
-    node: NodeShape,
-    branch?: BranchShape,
-    parentId?: string,
-  ): void {
-    // Determine node type based on whether it has branches
-    // TODO: consider adding decision nodes to the prompt and AI schemas, for
-    // choices that a party makes itself, such as filing a motion. The prompt
-    // currently only asks for chance and terminal nodes.
-    // TODO: we shouldn't really define decision nodes this way... either
-    // exclude decision node, or else modify the prompt and AI schemas to return
-    // decision nodes
-    let nodeType: "decision" | "chance" | "terminal";
-    if (node.branches.length === 0) {
-      nodeType = "terminal";
-    } else if (node.branches.length === 1) {
-      nodeType = "decision";
-    } else {
-      nodeType = "chance";
-    }
-
-    // Create the node
-    const appNode = createNode(dummyPosition, nodeType, false, {
-      description: "",
-      // NOTE: convert to string which will be converted back to number internally
-      valueExpr: node.value?.toString() || undefined,
-      costExpr: node.cost?.toString() || undefined,
-    });
-
-    nodes[appNode.id] = appNode;
-
-    // Create edge from parent if there is one
-    if (parentId) {
-      const edge = createEdge(parentId, appNode.id, false, {
-        label: branch?.label || "",
-        // NOTE: convert to string which will be converted back to number internally
-        probabilityExpr: branch?.probability?.toString() || undefined,
-        description: branch?.reason || "",
-      });
-      edges[edge.id] = edge;
-    }
-
-    // Process child branches
-    node.branches.forEach((branch) => {
-      processNodeAndBranch(branch.nextNode, branch, appNode.id);
-    });
-  }
-
-  // Process all nodes
-  processNodeAndBranch(rootNode);
-
-  return createTree(name, description, nodes, edges);
-}
+export { convertAIStructureToDecisionTree } from "./ai-convert";
