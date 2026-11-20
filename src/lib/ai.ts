@@ -17,7 +17,7 @@ import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
 import { AppEdge } from "./edge";
 import { firebaseApp } from "./firebase";
 import { AppNode } from "./node";
-import prompt from "./prompt.md";
+import promptMarkdown from "./prompt.md";
 import { DecisionTree } from "./tree";
 
 /**
@@ -30,6 +30,9 @@ import { DecisionTree } from "./tree";
  * Gemini uses.
  */
 const nodeJsonSchema = omit(z.toJSONSchema(NodeSchema), ["$schema"]);
+
+// NOTE: strip HTML comments, which are notes to developers and not to the AI
+const treePrompt = promptMarkdown.replace(/<!--[\s\S]*?-->\n*/g, "");
 
 function getAIModel(
   generationConfig?: GenerationConfig,
@@ -49,8 +52,6 @@ function getAIModel(
       // models October 20, 2026. gemini-3.8-flash is Firebase's recommended
       // stable model with no shutdown date, see
       // https://firebase.google.com/docs/ai-logic/models
-      // TODO: compare results with the prompt, which was tuned for
-      // gemini-2.0-flash ("follows example much better than gemini-2.5")
       model: "gemini-3.8-flash",
       generationConfig,
       systemInstruction,
@@ -116,8 +117,9 @@ const generateDecisionTreeMemoized = memoize(async function (
   try {
     // Generate the decision tree using AI, as JSON matching NodeSchema
     // NOTE: the prompt is the system instruction and the user's description is
-    // the content, so the description can't override the instructions, and no
-    // template substitution is needed. Tags mark where the description ends.
+    // the content, so the description is less likely to override the
+    // instructions, and no template substitution is needed. Tags mark where the
+    // description ends.
     const startTime = performance.now();
     const result = await getAIModel(
       {
@@ -127,7 +129,7 @@ const generateDecisionTreeMemoized = memoize(async function (
         // that satisfies the prompt and leaves out issues from the description
         thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
       },
-      prompt,
+      treePrompt,
     ).generateContent(
       `## Lawsuit description\n\n<lawsuit>\n${text}\n</lawsuit>`,
     );
