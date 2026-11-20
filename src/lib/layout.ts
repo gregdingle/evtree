@@ -358,7 +358,9 @@ export function arrangeSubtreeHelper(
     rootNodeId,
     subtreeNodes,
     subtreeEdges,
-    { horizontal: 250, vertical: 100 },
+    // NOTE: empirically determined to provide enough space for a terminal node
+    // label not to overlap with the elbow sibiling subtree
+    { horizontal: 280, vertical: 120 },
     { siblings: 0.25, parents: 1.5 },
     rightAligned,
   );

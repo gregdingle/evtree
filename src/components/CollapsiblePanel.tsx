@@ -23,7 +23,8 @@ export function CollapsiblePanel({ side, children }: CollapsiblePanelProps) {
   }`;
 
   return (
-    <div className="relative">
+    // NOTE: h-full so the panel content can scroll when it overflows
+    <div className="relative h-full">
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={buttonClasses}
@@ -33,7 +34,9 @@ export function CollapsiblePanel({ side, children }: CollapsiblePanelProps) {
       </button>
 
       {/* Panel content */}
-      <div className={`${isCollapsed ? "w-0" : "w-full"} overflow-hidden`}>
+      <div
+        className={`${isCollapsed ? "w-0" : "w-full"} h-full overflow-hidden`}
+      >
         {!isCollapsed && children}
       </div>
     </div>

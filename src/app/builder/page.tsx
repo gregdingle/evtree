@@ -77,7 +77,8 @@ export default function Builder() {
           <div className="hidden border-b md:block">
             <Toolbar />
           </div>
-          <div className="flex flex-1">
+          {/* NOTE: min-h-0 so the side panels fit the viewport and can scroll */}
+          <div className="flex min-h-0 flex-1">
             <div className="border-r">
               <CollapsiblePanel side="left">
                 <LeftSidePanel />

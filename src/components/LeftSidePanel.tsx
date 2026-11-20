@@ -79,7 +79,7 @@ export function LeftSidePanel() {
 
   return (
     /* NOTE: Responsive design! Smaller width below medium size screens */
-    <div className="w-60 p-4 select-none md:w-80">
+    <div className="flex h-full w-60 flex-col p-4 select-none md:w-80">
       {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
       <div className="mb-4 hidden justify-between space-x-2 md:flex">
         <h2 className="text-lg font-semibold">
@@ -106,8 +106,8 @@ export function LeftSidePanel() {
         />
       </div>
 
-      {/* Tree list */}
-      <div className="">
+      {/* Tree list, scrolls vertically when it overflows */}
+      <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
         {trees.length === 0 ? (
           <p className="text-gray-500">No trees available</p>
         ) : (
