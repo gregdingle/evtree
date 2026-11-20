@@ -102,9 +102,11 @@ export function ContextMenu({
     };
 
     createNodeAtFrom(newPosition, contextNode.id, nodeType);
-    // HACK: Delay the arrangement to ensure the new node is rendered and
-    // positioned by ReactFlow first
-    setTimeout(() => arrangeSubtree(contextNode.id), 0);
+    // HACK: arrange as a separate store update, so two undo steps. It works
+    // because withArrangeAnimation delays the arrange until after React Flow
+    // has rendered and measured the new node. Arranging in the same update
+    // would use DEFAULT_NODE_HEIGHT (72) instead of the real height (30-34).
+    arrangeSubtree(contextNode.id);
     onClose?.();
   };
 

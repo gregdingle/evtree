@@ -8,7 +8,12 @@ import { DecisionTree } from "./tree";
 
 // Default node dimensions for layout when measured dimensions aren't available
 // These serve as fallbacks for newly created nodes that haven't been rendered yet
-// QUESTION: are these numbers actually similar to `measured`?
+// NOTE: not similar to `measured`. In the demo trees, decision and chance nodes
+// measure 34 and terminal nodes 30, so 72 is more than double. Arranging before
+// React Flow measures a new node would misplace it, see the HACK in
+// handleAddBranch in ContextMenu.tsx.
+// TODO: use per-node-type defaults so new nodes can be arranged in the same
+// store update that creates them, for one undo step
 const DEFAULT_NODE_HEIGHT = 72;
 
 export const MINIMUM_DISTANCE = 10; // Minimum distance between subtree and surrounding nodes
