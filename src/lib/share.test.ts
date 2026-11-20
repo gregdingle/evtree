@@ -23,8 +23,12 @@ Object.defineProperty(global, "crypto", {
 });
 
 // Polyfill TextEncoder/TextDecoder
-global.TextEncoder = TextEncoder;
+global.TextEncoder = TextEncoder as typeof global.TextEncoder;
 global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+
+// NOTE: copy into a new Uint8Array because the node:util TextEncoder returns
+// Uint8Array<ArrayBufferLike>, which TS 7 rejects as a BufferSource
+const encode = (text: string) => new Uint8Array(new TextEncoder().encode(text));
 
 // Mock window.location.hash for tests
 const mockHash = (hash: string) => {
@@ -247,7 +251,7 @@ describe("share.ts encryption utilities", () => {
 
   describe("generateContentHash", () => {
     it("should generate consistent hash for same content", async () => {
-      const content = new TextEncoder().encode("test content");
+      const content = encode("test content");
 
       const hash1 = await generateContentHash(content);
       const hash2 = await generateContentHash(content);
@@ -258,8 +262,8 @@ describe("share.ts encryption utilities", () => {
     });
 
     it("should generate different hashes for different content", async () => {
-      const content1 = new TextEncoder().encode("content 1");
-      const content2 = new TextEncoder().encode("content 2");
+      const content1 = encode("content 1");
+      const content2 = encode("content 2");
 
       const hash1 = await generateContentHash(content1);
       const hash2 = await generateContentHash(content2);

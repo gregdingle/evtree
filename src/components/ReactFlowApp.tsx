@@ -11,6 +11,9 @@ import {
   SelectionMode,
   useReactFlow,
 } from "@xyflow/react";
+// NOTE: ts-ignore not ts-expect-error because TS 7 (VS Code native preview) errors here but TS 5 (build) does not
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore — Next.js processes this global stylesheet import.
 import "@xyflow/react/dist/style.css";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
