@@ -3,7 +3,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-// @ts-expect-error — Next.js processes this global stylesheet import.
+// NOTE: ts-ignore not ts-expect-error because TS 7 (VS Code native preview) errors here but TS 5 (build) does not
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore — Next.js processes this global stylesheet import.
 import "./globals.css";
 
 export const metadata: Metadata = {
