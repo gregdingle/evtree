@@ -41,12 +41,12 @@ export function RightSidePanel() {
   const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
   const allNodes = currentTree?.nodes ?? {};
   const nodes = values(allNodes).filter(
-    // HACK: filter out ghost nodes because they have no properties to edit
+    // NOTE: filter out ghost nodes because they have no properties to edit
     (node) => node.selected && node.type !== "ghost",
   );
   const allEdges = values(currentTree?.edges);
   const edges = allEdges.filter(
-    // HACK: filter out arrow edges because they have no properties to edit
+    // NOTE: filter out arrow edges because they have no properties to edit
     (edge) => edge.selected && edge.type !== "arrow",
   );
   const rootNodeIds = getRootNodeIds(allNodes, currentTree?.edges ?? {});

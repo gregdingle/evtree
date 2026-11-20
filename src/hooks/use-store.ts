@@ -729,15 +729,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                     incomingEdge.data,
                   );
                   tree.edges[reconnectionEdge.id] = reconnectionEdge;
-
                   // QUESTION: Also arrange the new subtree?
-                  // NOTE: we need to do this here instead of in event handler like handleAddBranch
-                  // because we need to the new firstPastedNodeId
-                  // HACK: Delay the arrangement to ensure the new node is rendered and
-                  // positioned by ReactFlow first... but this causes double undo stack
-                  // setTimeout(() => {
-                  //   useStore.getState().arrangeSubtree(firstPastedNodeId);
-                  // }, 0);
                 }
               }
             } else {
