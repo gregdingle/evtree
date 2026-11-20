@@ -13,15 +13,11 @@ import { createNode } from "@/lib/node";
 import { createTree } from "@/lib/tree";
 
 import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
-import aiSchemasText from "./ai-schemas.md";
 import { AppEdge } from "./edge";
 import { firebaseApp } from "./firebase";
 import { AppNode } from "./node";
 import promptTemplate from "./prompt.md";
 import { DecisionTree } from "./tree";
-
-// HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
-// file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
 
 /**
  * JSON Schema for structured output of the AI, generated from NodeSchema.
@@ -114,9 +110,7 @@ const generateDecisionTreeMemoized = memoize(async function (
 ): Promise<NodeShape> {
   try {
     // Get the prompt template from markdown file and replace the placeholder
-    const prompt = promptTemplate
-      .replace("{{CASE_DESCRIPTION}}", text)
-      .replace("{{ZOD_SCHEMAS}}", aiSchemasText);
+    const prompt = promptTemplate.replace("{{CASE_DESCRIPTION}}", text);
 
     // Generate the decision tree using AI, as JSON matching NodeSchema
     const result = await getAIModel({
