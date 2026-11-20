@@ -64,6 +64,28 @@ export function getRootNodeId(tree: DecisionTree, nodeId: string): string {
   return rootId;
 }
 
+/**
+ * Returns the root node of copied nodes and edges, like the clipboard: the
+ * first copied node without a copied parent. Falls back to the first node.
+ *
+ * NOTE: not simply the first node, because copy keeps tree order, where a
+ * parent can come after its children, like after insertNodeBefore.
+ *
+ * NOTE: not getRootNodeId or getRootNodeIds, because copied edges can include
+ * an incoming edge from a node that wasn't copied, which paste uses to attach
+ * branches. Only edges between copied nodes count here.
+ */
+export function getPasteRootNode<N extends { id: string }>(
+  nodes: N[],
+  edges: EdgeLike[],
+): N | undefined {
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  const childIds = new Set(
+    edges.filter((edge) => nodeIds.has(edge.source)).map((edge) => edge.target),
+  );
+  return nodes.find((node) => !childIds.has(node.id)) ?? nodes[0];
+}
+
 export const getNodeToIncomingEdgeMap = memoizeWeak(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {

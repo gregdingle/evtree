@@ -177,6 +177,69 @@ describe("paste", () => {
     warning.mockRestore();
   });
 
+  test("does nothing when pasting a copy of a node onto itself", () => {
+    useStore.getState().selectSubtree("first");
+    useStore.getState().copy();
+    const before = useStore.getState().trees["tree"];
+    useStore.getState().paste(undefined, "first");
+    expect(useStore.getState().trees["tree"]).toEqual(before);
+
+    // Also with the copied node still selected and no explicit target
+    useStore.getState().selectSubtree("second");
+    useStore.getState().copy();
+    const beforeSelected = useStore.getState().trees["tree"];
+    useStore.getState().paste();
+    expect(useStore.getState().trees["tree"]).toEqual(beforeSelected);
+  });
+
+  test("uses the real root of the paste when it was copied after its children", () => {
+    // insertNodeBefore adds the new parent after its children in tree order
+    useStore.getState().insertNodeBefore("first", "decision");
+    const inserted = values(useStore.getState().trees["tree"]!.nodes).find(
+      (item) => item.type === "decision" && item.id !== "target",
+    )!;
+    useStore.getState().selectSubtree(inserted.id);
+    useStore.getState().copy();
+    expect(useStore.getState().clipboard!.nodes.at(-1)!.id).toBe(inserted.id);
+
+    // Pasting onto the real root is a no-op
+    const before = useStore.getState().trees["tree"];
+    useStore.getState().paste(undefined, inserted.id);
+    expect(useStore.getState().trees["tree"]).toEqual(before);
+
+    // Replacing a node connects its incoming edge to the copy of the root
+    useStore.getState().paste(undefined, "target");
+    const tree = useStore.getState().trees["tree"]!;
+    const fromParent = values(tree.edges).filter(
+      (edge) => edge.source === "parent",
+    );
+    expect(fromParent).toHaveLength(1);
+    const pastedRoot = tree.nodes[fromParent[0]!.target]!;
+    expect(pastedRoot.type).toBe("decision");
+    expect(pastedRoot.id).not.toBe(inserted.id);
+    // No node has more than one incoming edge
+    const incomingCounts = new Map<string, number>();
+    values(tree.edges).forEach((edge) =>
+      incomingCounts.set(
+        edge.target,
+        (incomingCounts.get(edge.target) ?? 0) + 1,
+      ),
+    );
+    expect(Math.max(...incomingCounts.values())).toBe(1);
+  });
+
+  test("still pastes onto a non-root node of the copied subtree", () => {
+    useStore.getState().selectSubtree("first");
+    useStore.getState().copy();
+    useStore.getState().paste(undefined, "child");
+
+    const tree = useStore.getState().trees["tree"]!;
+    expect(tree.nodes["child"]).toBeUndefined();
+    expect(
+      values(tree.nodes).filter((item) => item.data.description === "first"),
+    ).toHaveLength(2);
+  });
+
   test("still replaces a target when the copied subtree has no incoming branch", () => {
     useStore.getState().selectSubtree("first");
     useStore.getState().copy();

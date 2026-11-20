@@ -31,6 +31,7 @@ import {
   collectSubtreeNodeIds,
   getNodeToIncomingEdgeMap,
   getParentToChildNodeMap,
+  getPasteRootNode,
   getRootNodeId,
   getRootNodeIds,
 } from "@/lib/maps";
@@ -575,10 +576,19 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               );
               return;
             }
-
             const copiedNodeIds = new Set(
               clipboard.nodes.map((node) => node.id),
             );
+            const pasteRoot = getPasteRootNode(
+              clipboard.nodes,
+              clipboard.edges,
+            );
+
+            // NOTE: pasting a copy of a node onto itself is a no-op, like
+            // right after copying a node, which stays selected
+            if (targetNode && targetNode.id === pasteRoot?.id) {
+              return;
+            }
             const incomingBranches = clipboard.edges.filter(
               (edge) =>
                 edge.type !== "arrow" &&
@@ -687,21 +697,17 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               deleteSubTreeHelper(tree, nodeToReplace.id);
 
               // Paste nodes at the replacement position
-              clipboard.nodes.forEach((clipboardNode, index) => {
-                const position =
-                  index === 0
-                    ? replacementPosition // First node goes to the exact replacement position
-                    : {
-                        // Maintain relative position to the first node
-                        x:
-                          replacementPosition.x +
-                          (clipboardNode.position.x -
-                            clipboard.nodes[0]!.position.x),
-                        y:
-                          replacementPosition.y +
-                          (clipboardNode.position.y -
-                            clipboard.nodes[0]!.position.y),
-                      };
+              clipboard.nodes.forEach((clipboardNode) => {
+                // Root goes to the exact replacement position, others keep
+                // their position relative to the root
+                const position = {
+                  x:
+                    replacementPosition.x +
+                    (clipboardNode.position.x - pasteRoot!.position.x),
+                  y:
+                    replacementPosition.y +
+                    (clipboardNode.position.y - pasteRoot!.position.y),
+                };
                 const newNode = cloneNode(clipboardNode, position);
                 tree.nodes[newNode.id] = newNode;
                 nodeIdMap.set(clipboardNode.id, newNode.id);
@@ -722,9 +728,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                 }
               });
 
-              // Connect the first pasted node to the incoming edge if it existed
-              if (incomingEdge && clipboard.nodes.length > 0) {
-                const firstPastedNodeId = nodeIdMap.get(clipboard.nodes[0]!.id);
+              // Connect the pasted root to the incoming edge if it existed
+              if (incomingEdge && pasteRoot) {
+                const firstPastedNodeId = nodeIdMap.get(pasteRoot.id);
                 if (firstPastedNodeId) {
                   clearSelections(tree);
                   const reconnectionEdge = createEdge(
@@ -743,11 +749,10 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               let pasteOffsetX = PASTE_OFFSET;
               let pasteOffsetY = PASTE_OFFSET;
 
-              if (position && clipboard.nodes.length > 0) {
-                // If position is provided, calculate offset to place first node at that position
-                const firstClipboardNode = clipboard.nodes[0]!;
-                pasteOffsetX = position.x - firstClipboardNode.position.x;
-                pasteOffsetY = position.y - firstClipboardNode.position.y;
+              if (position && pasteRoot) {
+                // If position is provided, calculate offset to place the root at that position
+                pasteOffsetX = position.x - pasteRoot.position.x;
+                pasteOffsetY = position.y - pasteRoot.position.y;
               }
 
               // First pass: create nodes with offset positions and build ID mapping

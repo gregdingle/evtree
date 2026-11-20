@@ -1,4 +1,4 @@
-import { getRootNodeId, getRootNodeIds } from "./maps";
+import { getPasteRootNode, getRootNodeId, getRootNodeIds } from "./maps";
 import { DecisionTree } from "./tree";
 
 // A decision tree a -> b -> c, a second tree d, and a note with an arrow to a
@@ -42,5 +42,34 @@ describe("getRootNodeId", () => {
 
   test("should not walk up arrow edges", () => {
     expect(getRootNodeId(tree, "ghost")).toEqual("ghost");
+  });
+});
+
+describe("getPasteRootNode", () => {
+  const a = { id: "a" };
+  const b = { id: "b" };
+  const c = { id: "c" };
+  const ab = { source: "a", target: "b" };
+  const bc = { source: "b", target: "c" };
+
+  test("should return the copied node without a copied parent", () => {
+    expect(getPasteRootNode([a, b, c], [ab, bc])).toBe(a);
+  });
+
+  test("should find the root even when it comes after its children", () => {
+    expect(getPasteRootNode([b, c, a], [ab, bc])).toBe(a);
+  });
+
+  test("should ignore incoming edges from nodes that weren't copied", () => {
+    const fromOutside = { source: "outside", target: "a" };
+    expect(getPasteRootNode([b, a], [fromOutside, ab])).toBe(a);
+  });
+
+  test("should return the first of several unconnected nodes", () => {
+    expect(getPasteRootNode([b, a], [])).toBe(b);
+  });
+
+  test("should return undefined for no nodes", () => {
+    expect(getPasteRootNode([], [])).toBeUndefined();
   });
 });
