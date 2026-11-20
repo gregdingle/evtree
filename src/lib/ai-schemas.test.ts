@@ -32,13 +32,21 @@ function child(
 }
 
 function getMessages(nodes: AINode[]): string[] {
-  const result = AITreeSchema.safeParse({ nodes });
+  const result = AITreeSchema.safeParse({ issues: ["Issue?"], nodes });
   return result.success ? [] : result.error.issues.map((i) => i.message);
 }
 
 describe("aiTreeJsonSchema", () => {
   test("should have no references, so that nothing limits the depth", () => {
     expect(JSON.stringify(aiTreeJsonSchema)).not.toContain("$ref");
+  });
+
+  test("should put the issues before the nodes", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(Object.keys((aiTreeJsonSchema as any).properties)).toEqual([
+      "issues",
+      "nodes",
+    ]);
   });
 
   test("should put the reason before the probability", () => {

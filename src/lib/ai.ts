@@ -173,9 +173,11 @@ const generateDecisionTreeMemoized = memoize(
           responseMimeType: "application/json",
           responseJsonSchema: aiTreeJsonSchema,
           thinkingConfig: {
-            // NOTE: with the default thinking level, the AI builds the smallest tree
-            // that satisfies the prompt and leaves out issues from the description
-            thinkingLevel: ThinkingLevel.HIGH,
+            // NOTE: at MEDIUM the AI takes about 15 seconds, and builds close to
+            // the same tree as at HIGH, which takes about 2.5 minutes of thinking.
+            // That relies on the AI writing out the issues first, see
+            // AITreeSchema. Without them, MEDIUM merges issues into fewer levels.
+            thinkingLevel: ThinkingLevel.MEDIUM,
             // NOTE: thought summaries are streamed as status messages
             includeThoughts: true,
           },
@@ -225,7 +227,13 @@ const generateDecisionTreeMemoized = memoize(
 
       phase = "validating";
       onProgress?.({ phase });
-      return AITreeSchema.parse(aiTree);
+      const validTree = AITreeSchema.parse(aiTree);
+      // NOTE: to compare the issues that the AI listed with the tree it wrote
+      // eslint-disable-next-line no-console
+      console.debug(
+        `[EVTree] AI issues:\n\n${validTree.issues.map((issue, i) => `${i + 1}. ${issue}`).join("\n")}`,
+      );
+      return validTree;
     } catch (error) {
       // NOTE: an abort by the user is not a failure
       if (signal?.aborted) {

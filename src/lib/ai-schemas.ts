@@ -65,10 +65,18 @@ export type AINode = z.infer<typeof AINodeSchema>;
 
 export const AITreeSchema = z
   .object({
+    // NOTE: issues come before nodes so that the AI writes out its plan before
+    // it builds the tree, in place of planning in thinking tokens, which is
+    // slow. The issues are not used in the tree itself.
+    issues: z
+      .array(z.string())
+      .describe(
+        "Every uncertain issue that a judge or jury will decide, in the order that they will be decided. State each issue as a question followed by its possible outcomes.",
+      ),
     nodes: z
       .array(AINodeSchema)
       .describe(
-        "All the nodes of the tree, as a flat list. List each node after its parent.",
+        "All the nodes of the tree, as a flat list. List each node after its parent. Every issue is a node, on every path where it is decided.",
       ),
   })
   // NOTE: each message names the node, so that it could be sent back to the AI

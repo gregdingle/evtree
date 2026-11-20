@@ -49,7 +49,7 @@ const nodes: AINode[] = [
 
 function convert(aiNodes: AINode[]) {
   const tree = convertAIStructureToDecisionTree(
-    { nodes: aiNodes },
+    { issues: ["Issue?"], nodes: aiNodes },
     "Name",
     "Description",
   );
