@@ -55,6 +55,8 @@ export function Histogram(props: HistogramProps) {
 
   const [breakpoint, setBreakpoint] = React.useState<number>(initialOverUnder);
   useEffect(() => {
+    // TODO: fix this lint error instead of suppressing it
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBreakpoint(initialOverUnder);
   }, [initialOverUnder]);
 

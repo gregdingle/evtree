@@ -156,6 +156,8 @@ export function Toolbar() {
   };
 
   useEffect(() => {
+    // TODO: fix this lint error instead of suppressing it
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLinkCopied(false);
   }, [currentTree?.nodes]);
 

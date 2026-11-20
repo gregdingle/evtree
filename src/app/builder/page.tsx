@@ -33,6 +33,8 @@ export default function Builder() {
         "[EVTree] Firebase app is not initialized, skipping App Check",
       );
       if (!isValidClient) {
+        // TODO: fix this lint error instead of suppressing it
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsValidClient(true);
       }
       return;

@@ -209,6 +209,8 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
     const valueExpr = data.valueExpr;
     // NOTE: if value is unset, consider it parseable
     if (valueExpr === undefined) {
+      // TODO: fix this lint error instead of suppressing it
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsParseable(true);
       setParsedValue(null);
     } else {

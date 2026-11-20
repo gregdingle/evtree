@@ -5,7 +5,7 @@ function useMediaQuery(query: string): boolean {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
-    // QUESTION: should we fix this lint warning?
+    // TODO: fix this lint error instead of suppressing it
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMatches(mediaQuery.matches);
 

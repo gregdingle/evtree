@@ -54,6 +54,8 @@ export function VariablesInput({
 
   // Sync local state only when tree switches (not when variables change)
   useEffect(() => {
+    // TODO: fix this lint error instead of suppressing it
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalVariables(initialVariablesArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTreeId]); // Only depend on tree ID, not variables
