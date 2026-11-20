@@ -1068,10 +1068,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // TODO: there is a quirk of using the reactflow built-in "delete" key
-    // handler: it results in two undo steps, one for nodes, one for edges. by
-    // contrast, clicking the delete button results in one. use beforeDelete API
-    // of reactflow?
+    // NOTE: the React Flow built-in delete key is routed here via
+    // onBeforeDelete in ReactFlowApp.tsx, for one undo step
     deleteSelected: () => {
       set(
         (state) =>

@@ -28,8 +28,13 @@ import { edgeTypes } from "./EdgeTypes";
 import { nodeTypes } from "./NodeTypes";
 
 export function ReactFlowApp() {
-  const { onNodesChange, onEdgesChange, onConnect, createNodeAtFrom } =
-    useStore.getState();
+  const {
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    createNodeAtFrom,
+    deleteSelected,
+  } = useStore.getState();
 
   const nodes = useStore(selectCurrentNodes);
   const edges = useStore(selectCurrentEdges);
@@ -132,6 +137,15 @@ export function ReactFlowApp() {
         onEdgesChange={(changes) => {
           onEdgesChange(changes);
           closeMenu();
+        }}
+        // NOTE: route the built-in delete key through deleteSelected for one
+        // undo step and subtree deletion. Otherwise React Flow removes edges
+        // and nodes in two separate changes, so two undo steps, and leaves
+        // orphaned subtrees. Returning false cancels React Flow's own delete.
+        onBeforeDelete={async () => {
+          deleteSelected();
+          closeMenu();
+          return false;
         }}
         onConnect={onConnect}
         onConnectStart={onConnectStart}
