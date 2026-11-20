@@ -817,7 +817,6 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    // TODO: why are newEdge and newNode not always selected after create on canvas?!!!
     createNodeAtFrom: (position, fromNodeId, nodeType = "chance") => {
       set(
         (state) =>
@@ -1027,8 +1026,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               children.forEach((childNodeId) => {
                 selectDescendants(childNodeId);
               });
-              // NOTE: don't select incoming edge to the root itself
-              // TODO: or should we???
+              // NOTE: don't select incoming edge to the root itself. A copied
+              // incoming edge makes paste attach the subtree as a new branch
+              // instead of replacing the target node, which would change
+              // "Copy Subtree" in ContextMenu. To copy a branch with its
+              // probability, shift-click the incoming edge too.
               if (currentNodeId !== nodeId) {
                 tree.edges[nodeToIncomingEdgeMap[currentNodeId]!]!.selected =
                   true;
