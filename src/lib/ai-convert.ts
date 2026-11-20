@@ -49,6 +49,14 @@ export function convertAIStructureToDecisionTree(
     const appNode = createNode(dummyPosition, nodeType, false, {
       description: "",
       // NOTE: convert to string which will be converted back to number internally
+      // TODO: when the description mentions an amount but doesn't give it, have
+      // the AI infer a named variable instead of guessing a number or leaving it
+      // null, both for outcome values and for costs. Variables should come only
+      // from mentions in the text, like "trial fees" or "lost profits": no
+      // mention, no variable needed. For example "lostProfits * 0.5" or
+      // "trialFees", with the variables added to the tree's variables so the
+      // user can fill them in. Needs the AI schema, prompt and this
+      // conversion to support expressions.
       valueExpr: aiNode.value?.toString() || undefined,
       costExpr: aiNode.cost?.toString() || undefined,
     });

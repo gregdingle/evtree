@@ -37,6 +37,10 @@ function getAIModel(
     // NOTE: AgentPlatformBackend is the renamed VertexAIBackend in firebase 13.
     // It defaults to the "global" location, recommended by Firebase, where the
     // old VertexAIBackend defaulted to "us-central1".
+    // TODO: pass useLimitedUseAppCheckTokens: true, deploy, and then turn on
+    // replay protection for Firebase AI Logic in the App Check console, so that
+    // a captured App Check token can't be used again. Turning it on in the
+    // console first would probably fail requests from the live app.
     getAI(firebaseApp, { backend: new AgentPlatformBackend() }),
     {
       // NOTE: gemini-2.0 models were shut down June 1, 2026 and gemini-2.5
