@@ -9,7 +9,7 @@ import {
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
-import { convertPercentageToDecimal } from "@/lib/expectedValue";
+import { convertProbabilityInputToDecimal } from "@/lib/percentage";
 import {
   selectComputedProbability,
   selectHasDecisionNodeSource,
@@ -44,8 +44,8 @@ export function CustomEdge({
   const computedProbability = useStore((state) =>
     selectComputedProbability(state, id),
   );
-  const isZeroProbability = useStore((state) =>
-    selectPathProbability(state, target) === 0,
+  const isZeroProbability = useStore(
+    (state) => selectPathProbability(state, target) === 0,
   );
 
   // TODO: best significant digits for users? precision vs usability tradeoff?
@@ -147,20 +147,10 @@ export function CustomEdge({
                 <InlineEdit
                   value={data?.probabilityExpr}
                   onCommit={(value) => {
-                    // NOTE: for user-friendliness, allow entering percentages
-                    // in the inline input, with or without %. They are
-                    // converted to decimal internally.
-                    // TODO: should we store percentages internally instead?
                     // TODO: should the right-side input work the same way?
-                    if (value?.trim().endsWith("%")) {
-                      value = convertPercentageToDecimal(value);
-                    } else if (
-                      Number.isInteger(Number(value)) &&
-                      Number(value) !== 1 // NOTE: to allow 1.0 as valid decimal
-                    ) {
-                      value = convertPercentageToDecimal(value + "%");
-                    }
-                    updateEdgeData(id, { probabilityExpr: value });
+                    updateEdgeData(id, {
+                      probabilityExpr: convertProbabilityInputToDecimal(value),
+                    });
                   }}
                   displayFormatter={() =>
                     formatProbability(computedProbability, 0, "??%", "")

@@ -6,7 +6,6 @@ import {
   ComputeEdge,
   ComputeNode,
   computeNodeValues,
-  convertPercentageToDecimal,
   normalizeTerminalValue,
   toComputeEdge,
   toComputeNode,
@@ -810,52 +809,5 @@ describe("snapshot test", () => {
     // Just verify that computation doesn't crash and produces some results
     expect(Object.keys(nodes).length).toBeGreaterThan(0);
     expect(Object.keys(edges).length).toBeGreaterThan(0);
-  });
-});
-
-describe("convertPercentage", () => {
-  test("should convert percentage string to decimal", () => {
-    expect(convertPercentageToDecimal("25%")).toEqual("0.25");
-    expect(convertPercentageToDecimal("50%")).toEqual("0.5");
-    expect(convertPercentageToDecimal("100%")).toEqual("1");
-    expect(convertPercentageToDecimal("0%")).toEqual("0");
-  });
-
-  test("should handle percentages with decimal values", () => {
-    expect(convertPercentageToDecimal("12.5%")).toEqual("0.125");
-    expect(convertPercentageToDecimal("99.9%")).toEqual("0.999");
-    expect(convertPercentageToDecimal("0.1%")).toEqual("0.001");
-  });
-
-  test("should handle percentages with whitespace", () => {
-    expect(convertPercentageToDecimal("  25%  ")).toEqual("0.25");
-    expect(convertPercentageToDecimal("50 %")).toEqual("0.5");
-    expect(convertPercentageToDecimal("  100  %  ")).toEqual("1");
-  });
-
-  test("should return original string if not a percentage", () => {
-    expect(convertPercentageToDecimal("25")).toEqual("25");
-    expect(convertPercentageToDecimal("0.5")).toEqual("0.5");
-    expect(convertPercentageToDecimal("abc")).toEqual("abc");
-  });
-
-  test("should handle undefined and empty string", () => {
-    expect(convertPercentageToDecimal(undefined)).toEqual("");
-    expect(convertPercentageToDecimal("")).toEqual("");
-  });
-
-  test("should handle invalid percentage values", () => {
-    expect(convertPercentageToDecimal("abc%")).toEqual("abc%"); // NaN case, returns original
-    expect(convertPercentageToDecimal("%")).toEqual("%"); // Empty before %
-  });
-
-  test("should handle negative percentages", () => {
-    expect(convertPercentageToDecimal("-25%")).toEqual("-0.25");
-    expect(convertPercentageToDecimal("-100%")).toEqual("-1");
-  });
-
-  test("should handle large percentage values", () => {
-    expect(convertPercentageToDecimal("200%")).toEqual("2");
-    expect(convertPercentageToDecimal("1000%")).toEqual("10");
   });
 });

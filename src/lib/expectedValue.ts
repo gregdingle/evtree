@@ -1,4 +1,3 @@
-import { round } from "es-toolkit";
 import { isNaN, max, values } from "es-toolkit/compat";
 // TODO: consider expr-eval-nextgen in a future upgrade once it has a track
 // record and outside review. It also disables toJSFunction (CVE-2026-12866).
@@ -6,6 +5,7 @@ import { Parser } from "expr-eval-fork";
 
 import { AppEdge } from "./edge";
 import { AppNode, NodeType } from "./node";
+import { convertPercentageToDecimal } from "./percentage";
 import { ROUNDING, RoundingCode } from "./rounding";
 import { Variable, variablesToRecord } from "./variable";
 
@@ -348,30 +348,4 @@ export function normalizeTerminalValue(
 
   const value = Number(match[1]) * multiplier;
   return Number.isFinite(value) ? String(value) : expression;
-}
-
-/**
- * Convert a percentage expression like "25%" to its decimal equivalent, "0.25".
- * Invalid percentages return the original expression.
- *
- * TODO: would it be better to expect percentages everywhere and not allow
- * decimal probabilities? percentage is the current default for display
- * @see isDecimalProbability also
- */
-export function convertPercentageToDecimal(
-  expression: string | undefined,
-): string {
-  if (expression?.trim().endsWith("%")) {
-    const numStr = expression.trim().slice(0, -1).trim();
-    // Empty string before % should return original
-    if (numStr === "") {
-      return expression;
-    }
-    const num = Number(numStr);
-    if (!isNaN(num)) {
-      // NOTE: see also EPSILON
-      return round(num / 100, 10).toString();
-    }
-  }
-  return expression ?? "";
 }
