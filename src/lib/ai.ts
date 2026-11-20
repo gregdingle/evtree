@@ -3,6 +3,7 @@ import { isEmpty } from "es-toolkit/compat";
 import {
   AgentPlatformBackend,
   GenerationConfig,
+  ThinkingLevel,
   getAI,
   getGenerativeModel,
 } from "firebase/ai";
@@ -122,11 +123,22 @@ const generateDecisionTreeMemoized = memoize(async function (
       .replace("{{ZOD_SCHEMAS}}", aiSchemasText);
 
     // Generate the decision tree using AI, as JSON matching NodeSchema
+    const startTime = performance.now();
     const result = await getAIModel({
       responseMimeType: "application/json",
       responseJsonSchema: nodeJsonSchema,
+      // NOTE: with the default thinking level, the AI builds the smallest tree
+      // that satisfies the prompt and leaves out issues from the description
+      thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
     }).generateContent(prompt);
     const generatedText = result.response.text();
+
+    // NOTE: to see where generation time goes: thinking or output tokens
+    const usage = result.response.usageMetadata;
+    // eslint-disable-next-line no-console
+    console.debug(
+      `[EVTree] AI decision tree generated in ${((performance.now() - startTime) / 1000).toFixed(1)}s. Tokens: ${usage?.thoughtsTokenCount ?? 0} thinking, ${usage?.candidatesTokenCount ?? 0} output, ${usage?.promptTokenCount ?? 0} prompt.`,
+    );
 
     // Parse the JSON response
     let decisionTree: DecisionTree;
