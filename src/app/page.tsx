@@ -38,7 +38,7 @@ export default function Home() {
           Private data
         </Link>
         {/*
-    TODO: better reference? see also more academic
+    QUESTION: better reference? see also more academic
     https://martin.kleppmann.com/papers/local-first.pdf
     https://volodymyrpavlyshyn.medium.com/benefits-of-localfirst-for-the-good-of-all-e611e3ea823f
 

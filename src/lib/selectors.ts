@@ -107,7 +107,7 @@ const computeNetExpectedValues = memoizeWeak(
  * Returns computed values for all nodes in the current tree, performing
  * the expected value calculation on-demand during React component rendering.
  *
- * TODO: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
+ * QUESTION: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
  */
 export function selectNetExpectedValues(state: StoreState): NetExpectedValues {
   const { currentTreeId } = state;
@@ -382,7 +382,7 @@ export function selectShowHistogram(state: StoreState): boolean {
 export function selectUndoableState(
   state: StoreState,
 ): Omit<StoreState, "clipboard" | "display"> {
-  // TODO: is going thru all the users trees necessary? why not just the current tree?
+  // QUESTION: is going thru all the users trees necessary? why not just the current tree?
   return omit(
     {
       ...state,

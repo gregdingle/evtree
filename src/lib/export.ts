@@ -406,7 +406,7 @@ async function addWatermarkToPNG(
         // TODO: unify with globals.css
         ctx.font = `${fontSize}px Geist, sans-serif`;
         ctx.fillText(
-          // TODO: when PDF export, put this in true bottom left of PDF somehow, or make optional?
+          // QUESTION: when PDF export, put this in true bottom left of PDF somehow, or make optional?
           "Made with TreeDecisions.app",
           padding + logoSize + textOffset,
           imageHeight - padding - logoSize / 2 + fontSize / 3,
@@ -461,7 +461,7 @@ interface Bounds {
  */
 function calculateNodesBounds(nodes: AppNode[]): Bounds {
   if (nodes.length === 0) {
-    // TODO: throw error?
+    // QUESTION: throw error?
     return { x: 0, y: 0, width: 100, height: 100 };
   }
 

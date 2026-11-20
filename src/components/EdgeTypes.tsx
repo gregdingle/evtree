@@ -48,7 +48,7 @@ export function CustomEdge({
     (state) => selectPathProbability(state, target) === 0,
   );
 
-  // TODO: best significant digits for users? precision vs usability tradeoff?
+  // QUESTION: best significant digits for users? precision vs usability tradeoff?
   const significantDigits = 6;
   const shouldWarn = useStore((state) =>
     selectShouldShowProbabilityWarning(state, id, significantDigits),
@@ -147,7 +147,7 @@ export function CustomEdge({
                 <InlineEdit
                   value={data?.probabilityExpr}
                   onCommit={(value) => {
-                    // TODO: should the right-side input work the same way?
+                    // QUESTION: should the right-side input work the same way?
                     updateEdgeData(id, {
                       probabilityExpr: convertProbabilityInputToDecimal(value),
                     });

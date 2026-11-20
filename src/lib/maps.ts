@@ -17,7 +17,7 @@ type EdgeLike = { source: string; target: string; type?: string };
  * NOTE: memoize is important to save nodes.length-1 calls per store update.
  * otherwise, selectPathValue is O(n^2) per store update.
  *
- * TODO: extract to new utils file along with buildAdjacencyList?
+ * QUESTION: extract to new utils file along with buildAdjacencyList?
  */
 export const getChildToParentNodeMap = memoizeWeak(function (
   edges: Record<string, EdgeLike> | EdgeLike[],

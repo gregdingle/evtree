@@ -72,7 +72,7 @@ export default function About() {
         </p>
       </div>
       <div className="mx-8">
-        {/* TODO: better heading? About ??? */}
+        {/* QUESTION: better heading? About ??? */}
         <h2 className="my-4 text-2xl">About the App</h2>
         <p className="my-4">
           We created{" "}

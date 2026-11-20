@@ -27,7 +27,7 @@ import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface HistogramProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-// TODO: how to optimize display of negative numbers?
+// QUESTION: how to optimize display of negative numbers?
 export function Histogram(props: HistogramProps) {
   // NOTE: deep isEqual so the histogram only re-renders when terminal node
   // data changes, not on every store change like dragging a node
@@ -116,7 +116,7 @@ export function Histogram(props: HistogramProps) {
           min={minTerminalValue}
           max={maxTerminalValue}
           onInput={(e) => {
-            // TODO: allow an empty value? what would it do?
+            // QUESTION: allow an empty value? what would it do?
             const breakpoint = parseFloat(e.currentTarget.value);
             setBreakpoint(Number.isFinite(breakpoint) ? breakpoint : 1);
           }}

@@ -2,7 +2,7 @@ import { values } from "es-toolkit/compat";
 
 import { AppNode } from "./node";
 
-// TODO: use same default height and width as in layout.ts and anywhere else?
+// QUESTION: use same default height and width as in layout.ts and anywhere else?
 const DEFAULT_NODE_WIDTH = 200;
 const DEFAULT_NODE_HEIGHT = 100;
 

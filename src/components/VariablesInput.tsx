@@ -141,7 +141,7 @@ export function VariablesInput({
               }
               className="min-w-0 rounded-md border-2 p-1 text-sm"
               step={scope === "probability" ? 0.1 : 1000}
-              // TODO: always a good idea to have var values >= 0 ?
+              // QUESTION: always a good idea to have var values >= 0 ?
               min={0}
               max={scope === "probability" ? 1 : undefined}
             />

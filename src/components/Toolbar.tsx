@@ -252,7 +252,7 @@ export function Toolbar() {
         </ToolbarButton>
         {/*
         NOTE: disabled for users, see hotkey
-        TODO: surface Reset somehow to users?
+        QUESTION: surface Reset somehow to users?
         <ToolbarButton onClick={onReset} tooltip="Ctrl+Shift+R">
           Reset
         </ToolbarButton> */}

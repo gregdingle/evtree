@@ -42,7 +42,7 @@ export function InlineEdit({
     ? "resize-none overflow-hidden text-center py-0.5 relative top-1.5"
     : "px-0.5 py-0 text-center";
 
-  // TODO: change hover behavior for Responsive design Read-only mode?
+  // QUESTION: change hover behavior for Responsive design Read-only mode?
   const defaultDisplayClassName = multiline
     ? "hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap cursor-pointer"
     : "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded";

@@ -44,7 +44,7 @@ export function TreeProperties({
           label: `${data.symbol} ${data.code} - ${data.name}`,
         }))}
       />
-      {/* TODO: have a 'probabilities' setting for formating as decimal or percentage? */}
+      {/* QUESTION: have a 'probabilities' setting for formating as decimal or percentage? */}
       <PropertyInput
         label="Rounding"
         info={`Determines how amounts will be \nrounded for display on the tree`}
@@ -76,7 +76,7 @@ export function TreeProperties({
       <hr className="my-6 border-gray-500" />
       <VariablesInput
         scope="value"
-        // TODO: add 'See docs for more info on forumlas' when docs are done?
+        // QUESTION: add 'See docs for more info on forumlas' when docs are done?
         info={`Creates variables that may be \nused in formulas for outcome values`}
       />
       <VariablesInput

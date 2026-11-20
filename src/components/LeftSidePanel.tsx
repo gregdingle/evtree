@@ -19,7 +19,7 @@ import { ContextMenuButton } from "./ContextMenuButton";
 import { CreateDialog } from "./CreateDialog";
 import { Tooltip } from "./Tooltip";
 
-// TODO: allow delete last tree? or support zero trees? revert to initial tree or what?
+// QUESTION: allow delete last tree? or support zero trees? revert to initial tree or what?
 export function LeftSidePanel() {
   const [showMoreMenu, setShowMoreMenu] = useState<string | null>(null);
   const [isDialogOpen, setOpenDialog] = useState(false);
@@ -143,7 +143,7 @@ export function LeftSidePanel() {
                           className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
                           <ChevronDownIcon
-                            // TODO: make chevron color same as primary text?
+                            // QUESTION: make chevron color same as primary text?
                             className="h-5 w-5"
                           />
                         </button>

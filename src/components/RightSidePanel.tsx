@@ -198,7 +198,7 @@ function EdgeProperties({
             updateEdgeData(edge.id, { probabilityExpr });
           }}
           placeholder={
-            // TODO: also make the prob input a textarea if there are many prob vars?
+            // QUESTION: also make the prob input a textarea if there are many prob vars?
             probabilityVariables.length
               ? "Enter value or formula"
               : "Enter value"
@@ -207,7 +207,7 @@ function EdgeProperties({
           <div className="flex-1/4">
             <ToolbarButton
               tooltip={
-                // TODO: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
+                // QUESTION: How best to convey: Set the probability to (1 - sum(existing probabilities)) / count(undefined sibiling probabilities)
                 <span>
                   Set the probability
                   <br /> based on other
@@ -282,7 +282,7 @@ function NodeProperties({
     <div className="mb-8">
       {node.type === "terminal" ? (
         <PropertyInput
-          // TODO: should we prefix the input with the currency symbol here? or is it better implied?
+          // QUESTION: should we prefix the input with the currency symbol here? or is it better implied?
           label="Outcome Value"
           value={editingOutcome ?? node.data.valueExpr}
           info={`The award, payoff, or payment \nobligation at this end point. \nStandalone values can use the \nselected rounding suffixes.`}
@@ -376,7 +376,7 @@ function NodeProperties({
           </PropertyInput>
           {node.type !== "terminal" && (
             <div className="-mt-2 mb-4 text-sm italic">
-              {/* TODO: better as "before the start of this subtree"? */}
+              {/* QUESTION: better as "before the start of this subtree"? */}
               Note: Ignore costs that occur before the start of the tree. Those
               are sunk costs.
             </div>
@@ -385,7 +385,7 @@ function NodeProperties({
       )}
       {node.type == "terminal" && (
         <div className="italic">
-          {/* TODO: should we revert back to showing these costs conditionally? */}
+          {/* QUESTION: should we revert back to showing these costs conditionally? */}
           <PropertyInput
             // NOTE: also considered the label "Prior Costs"
             label="Path Costs"
@@ -393,7 +393,7 @@ function NodeProperties({
             value={formatValueLong(cumulativeCosts)}
             disabled={true}
           />
-          {/* TODO: should we revert back to showing these costs conditional on nonzero totalCosts? */}
+          {/* QUESTION: should we revert back to showing these costs conditional on nonzero totalCosts? */}
           <PropertyInput
             label="Total Costs"
             info={`The cost of this node \nplus its path costs`}

@@ -43,7 +43,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
 
   const { createTree, loadTree, arrange } = useStore.getState();
 
-  // TODO: replace all this form state with a local reducer?
+  // QUESTION: replace all this form state with a local reducer?
   const [newTreeName, setNewTreeName] = useState("");
   const [newTreeDescription, setNewTreeDescription] = useState("");
   const [currentTab, setCurrentTab] = useState("create");
@@ -63,7 +63,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
     tabs.push({ name: "Generate with AI", id: "ai", icon: SparklesIcon });
   }
 
-  // TODO: replace with cx function?
+  // QUESTION: replace with cx function?
   function classNames(...classes: (string | boolean | undefined)[]): string {
     return classes.filter(Boolean).join(" ");
   }
@@ -100,7 +100,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       const decisionTree = convertAIStructureToDecisionTree(
         aiTreeStructure,
         newTreeName.trim(),
-        // TODO: optimize description?
+        // QUESTION: optimize description?
         `Generated from AI based on text: \n\n"${truncate(aiInputText.trim(), { length: 1000 })}"`,
       );
 
@@ -196,7 +196,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       loadTree(treeData, false);
       onClose();
     } catch (error) {
-      // TODO: error cause here?
+      // QUESTION: error cause here?
       console.error(error);
     }
   };
@@ -259,7 +259,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                               }
                               className={classNames(
                                 currentTab === tab.id
-                                  ? // TODO: use blue highlight here or standard blue?
+                                  ? // QUESTION: use blue highlight here or standard blue?
                                     "border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400"
                                   : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300",
                                 "group inline-flex items-center border-b-2 px-1 py-4 text-base font-medium",
@@ -354,7 +354,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                             ) : (
                               <div
                                 className="animate-pulse"
-                                // TODO: better to use a spinner?
+                                // QUESTION: better to use a spinner?
                               >
                                 ✨ Extracting text
                               </div>
@@ -408,7 +408,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                   className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
                   {isGenerating ? (
-                    // TODO: use a spinner?
+                    // QUESTION: use a spinner?
                     <>Generating...</>
                   ) : (
                     "Generate"

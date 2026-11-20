@@ -88,7 +88,7 @@ Ignore footnotes.
  * Creates a decision tree from a text description using AI.
  *
  * NOTE: memoize to avoid spamming service
- * TODO: maybe throttle would be better?
+ * QUESTION: maybe throttle would be better?
  *
  * @param text - The case description to convert into a decision tree
  * @returns Promise<Decision> - The generated decision tree structure
@@ -136,7 +136,7 @@ export const generateDecisionTree = memoize(async function (
 
     return NodeSchema.parse(decisionTree);
   } catch (error) {
-    // TODO: should we retry schema parse failures? maybe with a different model or settings?
+    // QUESTION: should we retry schema parse failures? maybe with a different model or settings?
     throw error;
   }
 });

@@ -201,7 +201,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
 
-  // TODO: consolidate isParseable and parsedValue logic?
+  // QUESTION: consolidate isParseable and parsedValue logic?
   const [isParseable, setIsParseable] = useState(true);
   const [parsedValue, setParsedValue] = useState<number | null>(null);
 
@@ -230,7 +230,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const topOffset = showPathProbability ? "-top-2.5" : "top-0.5";
   return (
     <div
-      // TODO: should also "nodrag" when not selected?
+      // QUESTION: should also "nodrag" when not selected?
       className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"} ${showEVs && isZeroProbability ? "opacity-50" : ""}`}
     >
       <div className="relative">
@@ -293,7 +293,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           displayFormatter={() =>
             isParseable && pathValue !== null
               ? formatValue(
-                  // TODO: also support terminalValueDisplay === 'formula' for displaying data.valueExpr?
+                  // QUESTION: also support terminalValueDisplay === 'formula' for displaying data.valueExpr?
                   terminalValueDisplay === "net" ? pathValue : parsedValue,
                   currency,
                   rounding,
@@ -305,7 +305,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             // NOTE: show how the value is computed when evaluated value differs
             (isParseable &&
             pathValue !== null &&
-            // TODO: used parsed value here?
+            // QUESTION: used parsed value here?
             terminalValueDisplay === "net"
               ? "italic "
               : "") +

@@ -5,7 +5,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 import { Tooltip } from "./Tooltip";
 
-// TODO: should PropertyInputProps inherit from React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
+// QUESTION: should PropertyInputProps inherit from React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
 interface PropertyInputProps {
   label: string;
   value?: string;

@@ -8,7 +8,7 @@ import { DecisionTree } from "./tree";
 
 // Default node dimensions for layout when measured dimensions aren't available
 // These serve as fallbacks for newly created nodes that haven't been rendered yet
-// TODO: are these numbers actually similar to `measured`?
+// QUESTION: are these numbers actually similar to `measured`?
 const DEFAULT_NODE_HEIGHT = 72;
 
 export const MINIMUM_DISTANCE = 10; // Minimum distance between subtree and surrounding nodes
@@ -153,7 +153,7 @@ export const getLayoutedElementsD3 = (
   rootNodeId: string,
   nodes: AppNode[],
   edges: AppEdge[],
-  // TODO: node spacing dynamically by longest labels or terminal values?
+  // QUESTION: node spacing dynamically by longest labels or terminal values?
   nodeSpacing = { horizontal: 200, vertical: 150 },
   separate = { siblings: 0.5, parents: 2 },
   rightAligned = false,

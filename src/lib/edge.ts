@@ -4,7 +4,7 @@ export type AppEdge = Edge<{
   label?: string;
   description?: string;
   // NOTE: transformed into probability by safeEvalExpr in toComputeEdge
-  // TODO: consider allowing expressions in both percentage and decimal form...
+  // QUESTION: consider allowing expressions in both percentage and decimal form...
   // then also show expr inline instead of computed to be consistent with terminal values?
   probabilityExpr?: string;
 }>;
@@ -45,7 +45,7 @@ export function cloneEdge(
     selected: true,
   };
   return newEdge;
-} // TODO: rename to branch be consistent with decision tree terminology?
+} // QUESTION: rename to branch be consistent with decision tree terminology?
 
 /**
  * Filters out arrow edges that don't participate in tree logic.

@@ -11,7 +11,7 @@ export function isPercentage(
  * Convert a percentage expression like "25%" to its decimal equivalent, "0.25".
  * Invalid percentages return the original expression.
  *
- * TODO: would it be better to expect percentages everywhere and not allow
+ * QUESTION: would it be better to expect percentages everywhere and not allow
  * decimal probabilities? percentage is the current default for display
  */
 export function convertPercentageToDecimal(
@@ -37,7 +37,7 @@ export function convertPercentageToDecimal(
  * without %. Integers other than 1 are treated as percentages. They are
  * converted to decimal internally.
  *
- * TODO: should we store percentages internally instead?
+ * QUESTION: should we store percentages internally instead?
  */
 export function convertProbabilityInputToDecimal(
   value: string | undefined,

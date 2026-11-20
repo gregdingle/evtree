@@ -115,7 +115,7 @@ export interface StoreState {
   showHistogram: () => void;
 }
 
-// TODO: should we clear undo stack when switching trees? or better to be safe?
+// QUESTION: should we clear undo stack when switching trees? or better to be safe?
 const temporalOptions: ZundoOptions<
   StoreState,
   ReturnType<typeof selectUndoableState>
@@ -125,7 +125,7 @@ const temporalOptions: ZundoOptions<
     throttle((...args: unknown[]) => {
       // @ts-expect-error - handleSet expects specific args but we just pass all through
       handleSet(...args);
-      // TODO: how to optimize throttle window for undo?
+      // QUESTION: how to optimize throttle window for undo?
     }, 400),
   partialize: selectUndoableState,
   // NOTE: deep isEqual instead of shallow. this is needed to prevent
@@ -143,7 +143,7 @@ const temporalOptions: ZundoOptions<
     withCurrentTree(currentState, (tree) => {
       const pastTreeState = pastState.trees[tree.id];
       if (pastTreeState !== tree) {
-        // TODO: use dayjs for timestamps?
+        // QUESTION: use dayjs for timestamps?
         tree.updatedAt = new Date().toISOString();
         return;
       }
@@ -178,7 +178,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     display: {},
 
     // Tree management functions
-    // TODO: include tree management in undo/redo? it is strange to undo across
+    // QUESTION: include tree management in undo/redo? it is strange to undo across
     // tree creation boundary
     createTree: (name: string, description?: string) => {
       const newTree = createTree(name, description);
@@ -220,11 +220,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       const treeId = replace ? treeData.id : nanoid(12);
       set(
         (state) => {
-          // TODO: should do something about duplicate tree names?
+          // QUESTION: should do something about duplicate tree names?
           const loadedTree: DecisionTree = {
             ...treeData,
             id: treeId,
-            // TODO: is it conventional to update these dates on load?
+            // QUESTION: is it conventional to update these dates on load?
             updatedAt: new Date().toISOString(),
           };
           state.trees[treeId] = loadedTree;
@@ -272,7 +272,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               ...sourceTree,
               id: newTreeId,
               name: newName,
-              // TODO: is it conventional to update these dates on duplicate?
+              // QUESTION: is it conventional to update these dates on duplicate?
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             };
@@ -730,7 +730,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
                   );
                   tree.edges[reconnectionEdge.id] = reconnectionEdge;
 
-                  // TODO: Also arrange the new subtree?
+                  // QUESTION: Also arrange the new subtree?
                   // NOTE: we need to do this here instead of in event handler like handleAddBranch
                   // because we need to the new firstPastedNodeId
                   // HACK: Delay the arrangement to ensure the new node is rendered and

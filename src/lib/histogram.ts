@@ -28,7 +28,7 @@ export function getTerminalNodesData(
   if (!currentTree) return [];
 
   const terminalNodes = values(currentTree.nodes).filter(
-    // TODO: should we only get type="terminal" nodes, or any nodes that do not have children?
+    // QUESTION: should we only get type="terminal" nodes, or any nodes that do not have children?
     (node) => node.type === "terminal",
   );
 

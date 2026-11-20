@@ -105,7 +105,7 @@ export function ReactFlowApp() {
   };
 
   return (
-    // TODO: how to fix height to fill to bottom of viewport only so that if
+    // QUESTION: how to fix height to fill to bottom of viewport only so that if
     // left or right panel overflows, the canvas doesn't also overflow? you can
     // produce this effect by adding more and more variables to a tree.
     // NOTE: see also message on RightSidePanel when more than 800px height
@@ -134,7 +134,7 @@ export function ReactFlowApp() {
         fitView
         onNodesChange={(changes) => {
           onNodesChange(changes);
-          // TODO: is this best way to close context menu?
+          // QUESTION: is this best way to close context menu?
           closeMenu();
         }}
         onEdgesChange={(changes) => {

@@ -18,7 +18,7 @@ type AdjacencyList = Record<
   }[]
 >;
 
-// TODO: how to keep in sync with ComputeNode and AppEdge types?
+// QUESTION: how to keep in sync with ComputeNode and AppEdge types?
 export interface ComputeNode {
   id: string;
   type?: NodeType;
@@ -55,7 +55,7 @@ const EPSILON = 1e-10;
  * node. In this way, the costs are "bubbled back up" in the expected value of
  * each node.
  *
- * TODO: should we support edge values like silver decisions?
+ * QUESTION: should we support edge values like silver decisions?
  *
  * TODO: hourlyRate The hourly rate for legal costs
  * TODO: discountRate The annual discount rate (as a decimal, e.g., 0.05 for 5%)
@@ -249,7 +249,7 @@ export function toComputeNode(
     type: node.type,
     data: {
       // NOTE: expressions evaluate to null if no expression is provided
-      // TODO: can we do better than null?
+      // QUESTION: can we do better than null?
       value: safeEvalExpr(
         node.data.valueExpr,
         variablesToRecord(variables, "value"),
@@ -317,7 +317,7 @@ export function safeEvalExpr<T extends number | null>(
 /**
  * Strip commas, spaces and currency symbols.
  *
- * TODO: strip all common currency symbols and number separators, or depend on
+ * QUESTION: strip all common currency symbols and number separators, or depend on
  * current currency setting? see currency.ts
  */
 export function normalizeExpression(expression: string | undefined): string {

@@ -20,7 +20,7 @@ export function useBreakpoint(
     const media = window.matchMedia(query);
 
     // Set initial value
-    // TODO: should we fix this lint warning?
+    // QUESTION: should we fix this lint warning?
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMatches(media.matches);
 

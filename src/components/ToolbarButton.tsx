@@ -40,7 +40,7 @@ export function ToolbarButton({
 
   const firstDropdownKey = keys(dropdownItems)[0];
   const [dropdownKey, setDropdownKey] = useState<string | undefined>(
-    // TODO: is this a good way to set initial dropdown key?
+    // QUESTION: is this a good way to set initial dropdown key?
     // does it assume static dropdownItems?
     // what is the selected option is set outside the component?
     firstDropdownKey,

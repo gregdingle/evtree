@@ -58,7 +58,7 @@ export default function Builder() {
   const showHistogram = useStore(selectShowHistogram);
 
   if (!isValidClient) {
-    // TODO: put some kind of loading spinner here?
+    // QUESTION: put some kind of loading spinner here?
     return null;
   }
 
@@ -103,7 +103,7 @@ export default function Builder() {
 
 /**
  * NOTE: This will replace an existing tree that has the same ID.
- * TODO: should we warn the user when the current tree updatedAt is more recent?
+ * QUESTION: should we warn the user when the current tree updatedAt is more recent?
  * NOTE: earlier versions used root / path; now we use /builder/
  */
 function ShareLinkLoader() {
