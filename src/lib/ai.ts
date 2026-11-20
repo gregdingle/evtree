@@ -14,18 +14,11 @@ import { createNode } from "@/lib/node";
 import { createTree } from "@/lib/tree";
 
 import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
-import aiSchemasText from "./ai-schemas.md";
 import { AppEdge } from "./edge";
 import { firebaseApp } from "./firebase";
 import { AppNode } from "./node";
-import promptTemplate from "./prompt.md";
+import prompt from "./prompt.md";
 import { DecisionTree } from "./tree";
-
-// HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
-// file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
-// NOTE: The schema text is sent in the prompt as well as responseJsonSchema.
-// Removing it from the prompt made the generated trees much smaller, even with
-// the field descriptions moved into the JSON schema.
 
 /**
  * JSON Schema for structured output of the AI, generated from NodeSchema.
@@ -38,7 +31,10 @@ import { DecisionTree } from "./tree";
  */
 const nodeJsonSchema = omit(z.toJSONSchema(NodeSchema), ["$schema"]);
 
-function getAIModel(generationConfig?: GenerationConfig) {
+function getAIModel(
+  generationConfig?: GenerationConfig,
+  systemInstruction?: string,
+) {
   // NOTE: Callers of the functions in this file should check that firebaseApp exists.
   if (!firebaseApp) {
     throw new Error("[EVTree] Firebase app is not initialized");
@@ -57,6 +53,7 @@ function getAIModel(generationConfig?: GenerationConfig) {
       // gemini-2.0-flash ("follows example much better than gemini-2.5")
       model: "gemini-3.8-flash",
       generationConfig,
+      systemInstruction,
     },
   );
 }
@@ -117,20 +114,23 @@ const generateDecisionTreeMemoized = memoize(async function (
   text: string,
 ): Promise<NodeShape> {
   try {
-    // Get the prompt template from markdown file and replace the placeholder
-    const prompt = promptTemplate
-      .replace("{{CASE_DESCRIPTION}}", text)
-      .replace("{{ZOD_SCHEMAS}}", aiSchemasText);
-
     // Generate the decision tree using AI, as JSON matching NodeSchema
+    // NOTE: the prompt is the system instruction and the user's description is
+    // the content, so the description can't override the instructions, and no
+    // template substitution is needed. Tags mark where the description ends.
     const startTime = performance.now();
-    const result = await getAIModel({
-      responseMimeType: "application/json",
-      responseJsonSchema: nodeJsonSchema,
-      // NOTE: with the default thinking level, the AI builds the smallest tree
-      // that satisfies the prompt and leaves out issues from the description
-      thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
-    }).generateContent(prompt);
+    const result = await getAIModel(
+      {
+        responseMimeType: "application/json",
+        responseJsonSchema: nodeJsonSchema,
+        // NOTE: with the default thinking level, the AI builds the smallest tree
+        // that satisfies the prompt and leaves out issues from the description
+        thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
+      },
+      prompt,
+    ).generateContent(
+      `## Lawsuit description\n\n<lawsuit>\n${text}\n</lawsuit>`,
+    );
     const generatedText = result.response.text();
 
     // NOTE: to see where generation time goes: thinking or output tokens

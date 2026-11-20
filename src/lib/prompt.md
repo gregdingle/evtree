@@ -1,6 +1,6 @@
 # Task description
 
-Given the Zod schemas below, construct a decision tree in JSON from the following text description of a lawsuit. Follow the construction procedure below to construct the decision tree.
+Construct a decision tree in JSON, matching the response schema, from the lawsuit description that the user gives you. Follow the construction procedure below to construct the decision tree.
 
 <!-- TODO: consider how to model cases that have already happened... use counter-factuals? -->
 
@@ -40,14 +40,3 @@ Work through these steps in order. They are distilled from Marc B. Victor, "Deci
 6. **End every path with a value.** Every path ends in a terminal node that has a `value`. When the amount of an award is uncertain, use a few representative amounts, typically a high, a medium and a low award, each on its own branch. The range does not need to be symmetrical. When the amount is undisputed, use a single value.
 7. **Give each branch a `reason` and a `probability`.** In the `reason`, give the strongest point in favor of that outcome and what cuts against it, using the evidence and arguments in the description that the judge or jury will weigh. You may also use general legal knowledge, but say that it is general, and do not invent statistics, studies or sources. If the description gives no basis for an estimate, say so in the `reason`. Then estimate the `probability`. A probability is realistic if it reflects what would happen if the issue were decided many times by similar judges or juries. A probability of 0.65 means that 65 of 100 similar judges would rule that way. The same issue may deserve different probabilities on different paths. For example, a jury that has found negligent conduct is more likely to also find causation.
 8. **Add costs.** Set a `cost` on the node where a litigation cost is incurred. Only include costs that are still to come and that a settlement would avoid. Leave out money that has already been spent. If the loser will have to pay some of the winner's costs, add that amount to the award in the terminal `value`.
-
-## Lawsuit description
-
-{{CASE_DESCRIPTION}}
-
-## Zod schemas
-
-<!-- prettier-ignore -->
-```ts
-{{ZOD_SCHEMAS}}
-```
