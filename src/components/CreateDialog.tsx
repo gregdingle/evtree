@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 // NOTE: headlessui is complementary library from Tailwind Labs
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import {
+  ArrowPathIcon,
   FolderOpenIcon,
   PlusIcon,
   SparklesIcon,
@@ -20,8 +21,11 @@ import { isEmpty, truncate } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import {
+  AIGenerationError,
+  type AIGenerationProgress,
   convertAIStructureToDecisionTree,
   extractTextFromFile,
+  formatElapsed,
   generateDecisionTree,
 } from "@/lib/ai";
 import { firebaseApp } from "@/lib/firebase";
@@ -51,6 +55,17 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
   const [isExtractingText, setIsExtractingText] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [aiInputText, setAiInputText] = useState("");
+  const [aiProgress, setAiProgress] = useState<AIGenerationProgress>();
+  const [generationStartedAt, setGenerationStartedAt] = useState<number>();
+  const [now, setNow] = useState(0);
+  const abortControllerRef = useRef<AbortController>(undefined);
+
+  // NOTE: tick every second while generating, to show the elapsed time
+  useEffect(() => {
+    if (!generationStartedAt) return;
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [generationStartedAt]);
 
   const tabs = [
     { name: "Create New", id: "create", icon: PlusIcon },
@@ -92,9 +107,18 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
     }
 
     setIsGenerating(true);
+    const startedAt = Date.now();
+    setGenerationStartedAt(startedAt);
+    setNow(startedAt);
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
 
     try {
-      const aiTreeStructure = await generateDecisionTree(aiInputText.trim());
+      const aiTreeStructure = await generateDecisionTree(
+        aiInputText.trim(),
+        setAiProgress,
+        abortController.signal,
+      );
 
       // Convert the hierarchical AI structure to flat DecisionTree format
       const decisionTree = convertAIStructureToDecisionTree(
@@ -124,13 +148,47 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       setNewTreeDescription("");
       onClose();
     } catch (error) {
+      // NOTE: cancelled by the user
+      if (abortController.signal.aborted) {
+        return;
+      }
       console.error(error);
       // TODO: better than window.alert
-      window.alert("Failed to generate tree with AI. Please try again.");
+      window.alert(
+        error instanceof AIGenerationError
+          ? `Failed to generate tree with AI after ${formatElapsed(error.elapsedMs)} while ${error.phase}${error.status ? ` (error ${error.status})` : ""}. Please try again.`
+          : "Failed to generate tree with AI. Please try again.",
+      );
     } finally {
       setIsGenerating(false);
+      setAiProgress(undefined);
+      setGenerationStartedAt(undefined);
+      abortControllerRef.current = undefined;
     }
   };
+
+  const handleCancel = () => {
+    // NOTE: the first cancel stops a generation in progress, the next closes
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    } else {
+      onClose();
+    }
+  };
+
+  function getAiStatusText(progress?: AIGenerationProgress): string {
+    switch (progress?.phase) {
+      case "thinking":
+        return progress.status ?? "Thinking";
+      case "writing":
+        return `Writing the tree (${progress.nodes ?? 0} nodes so far)`;
+      case "parsing":
+      case "validating":
+        return "Checking the tree";
+      default:
+        return "Waiting for the AI";
+    }
+  }
 
   const handleFileUploadForAI = async (
     e: React.InputEvent<HTMLInputElement>,
@@ -339,7 +397,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                             onInput={(e) =>
                               setAiInputText(e.currentTarget.value)
                             }
-                            placeholder={`Example: I'm representing a party in a legal dispute that has generated years of expensive and acrimonious litigation over alleged defects in railroad cars designed to carry larger quantities of coal than a conventional railroad car. It isundisputed that...`}
+                            placeholder={`Example: I'm representing Iron-Steel, the defendant, in a legal dispute that has generated years of expensive and acrimonious litigation over alleged defects in railroad cars designed to carry larger quantities of coal than a conventional railroad car. It is undisputed that...`}
                             className="flex-2/3 rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           />
                           <div className="mt-2 mb-4 flex-1/3 rounded-md border-0 px-3 py-1.5 text-base text-blue-600">
@@ -361,6 +419,20 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                             )}
                           </div>
                         </div>
+                        {isGenerating && (
+                          <div className="flex items-center gap-2 text-base text-gray-500 dark:text-gray-400">
+                            <ArrowPathIcon className="size-4 shrink-0 animate-spin" />
+                            <span className="truncate">
+                              {getAiStatusText(aiProgress)}
+                            </span>
+                            <span className="ml-auto shrink-0 tabular-nums">
+                              {formatElapsed(
+                                Math.max(0, now - (generationStartedAt ?? now)),
+                              )}{" "}
+                              · usually 1–3 min
+                            </span>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -407,12 +479,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                   }
                   className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 sm:ml-3 sm:w-auto dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
                 >
-                  {isGenerating ? (
-                    // TODO: use a spinner?
-                    <>Generating...</>
-                  ) : (
-                    "Generate"
-                  )}
+                  {isGenerating ? "Generating..." : "Generate"}
                 </button>
               )}
               {currentTab === "open" && (
@@ -426,7 +493,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
               )}
               <button
                 type="button"
-                onClick={() => onClose()}
+                onClick={handleCancel}
                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-base font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto dark:bg-gray-800 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-700"
               >
                 Cancel

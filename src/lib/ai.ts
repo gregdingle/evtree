@@ -1,35 +1,32 @@
-import { isPlainObject, memoize, omit } from "es-toolkit";
+import { isPlainObject, memoize } from "es-toolkit";
 import { isEmpty } from "es-toolkit/compat";
 import {
+  AIError,
   AgentPlatformBackend,
   GenerationConfig,
   ThinkingLevel,
+  UsageMetadata,
   getAI,
   getGenerativeModel,
 } from "firebase/ai";
-import z from "zod";
 
 import { createEdge } from "@/lib/edge";
 import { createNode } from "@/lib/node";
 import { createTree } from "@/lib/tree";
 
-import { BranchShape, NodeSchema, NodeShape } from "./ai-schemas";
+import {
+  BranchShape,
+  NodeSchema,
+  NodeShape,
+  buildNodeJsonSchema,
+} from "./ai-schemas";
 import { AppEdge } from "./edge";
 import { firebaseApp } from "./firebase";
 import { AppNode } from "./node";
 import promptMarkdown from "./prompt.md";
 import { DecisionTree } from "./tree";
 
-/**
- * JSON Schema for structured output of the AI, generated from NodeSchema.
- *
- * NOTE: unsupported keywords like minLength are ignored by the model, and the
- * recursion is a "$ref": "#" to the root. Refinements like probabilities
- * summing to 1 can't be expressed, so the output is still checked with
- * NodeSchema.parse. "$schema" is omitted because it isn't part of the schema
- * Gemini uses.
- */
-const nodeJsonSchema = omit(z.toJSONSchema(NodeSchema), ["$schema"]);
+const nodeJsonSchema = buildNodeJsonSchema();
 
 // NOTE: strip HTML comments, which are notes to developers and not to the AI
 const treePrompt = promptMarkdown.replace(/<!--[\s\S]*?-->\n*/g, "");
@@ -109,72 +106,184 @@ Ignore footnotes.
   }
 }
 
+/**
+ * Where AI tree generation is: waiting for the first chunk of the stream,
+ * thinking, writing the JSON, or checking the finished JSON.
+ */
+export type AIGenerationPhase =
+  "waiting" | "thinking" | "writing" | "parsing" | "validating";
+
+export interface AIGenerationProgress {
+  phase: AIGenerationPhase;
+  /** The heading of the latest thought summary, while thinking */
+  status?: string;
+  /** The number of nodes written so far, while writing */
+  nodes?: number;
+}
+
+/**
+ * Formats milliseconds as m:ss
+ */
+export function formatElapsed(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+/**
+ * An AI generation failure, with the phase it failed in and how long it ran,
+ * to tell apart failures while thinking from failures while writing.
+ */
+export class AIGenerationError extends Error {
+  constructor(
+    readonly phase: AIGenerationPhase,
+    readonly elapsedMs: number,
+    readonly status: number | undefined,
+    cause: unknown,
+  ) {
+    super(
+      `failed after ${formatElapsed(elapsedMs)} while ${phase}${status ? ` (${status})` : ""}: ${cause}`,
+      { cause },
+    );
+    this.name = "AIGenerationError";
+  }
+}
+
+/**
+ * Returns the last bold heading in Gemini thought summaries, which start each
+ * thought like "**Identifying the claims**".
+ */
+function getLastThoughtHeading(thoughts: string): string | undefined {
+  return [...thoughts.matchAll(/\*\*(.+?)\*\*/g)].at(-1)?.[1];
+}
+
+interface GenerateDecisionTreeArgs {
+  text: string;
+  onProgress?: (progress: AIGenerationProgress) => void;
+  signal?: AbortSignal;
+}
+
 // NOTE: memoize to avoid spamming service
 // QUESTION: maybe throttle would be better?
-const generateDecisionTreeMemoized = memoize(async function (
-  text: string,
-): Promise<NodeShape> {
-  try {
-    // Generate the decision tree using AI, as JSON matching NodeSchema
-    // NOTE: the prompt is the system instruction and the user's description is
-    // the content, so the description is less likely to override the
-    // instructions, and no template substitution is needed. Tags mark where the
-    // description ends.
+const generateDecisionTreeMemoized = memoize(
+  async function ({
+    text,
+    onProgress,
+    signal,
+  }: GenerateDecisionTreeArgs): Promise<NodeShape> {
     const startTime = performance.now();
-    const result = await getAIModel(
-      {
-        responseMimeType: "application/json",
-        responseJsonSchema: nodeJsonSchema,
-        // NOTE: with the default thinking level, the AI builds the smallest tree
-        // that satisfies the prompt and leaves out issues from the description
-        thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
-      },
-      treePrompt,
-    ).generateContent(
-      `## Lawsuit description\n\n<lawsuit>\n${text}\n</lawsuit>`,
-    );
-    const generatedText = result.response.text();
+    let phase: AIGenerationPhase = "waiting";
+    let usage: UsageMetadata | undefined;
+    onProgress?.({ phase });
 
-    // NOTE: to see where generation time goes: thinking or output tokens
-    const usage = result.response.usageMetadata;
-    // eslint-disable-next-line no-console
-    console.debug(
-      `[EVTree] AI decision tree generated in ${((performance.now() - startTime) / 1000).toFixed(1)}s. Tokens: ${usage?.thoughtsTokenCount ?? 0} thinking, ${usage?.candidatesTokenCount ?? 0} output, ${usage?.promptTokenCount ?? 0} prompt.`,
-    );
-
-    // Parse the JSON response
-    let decisionTree: DecisionTree;
     try {
-      decisionTree = JSON.parse(generatedText);
-    } catch (parseError) {
-      throw new Error(
-        `[EVTree] Failed to parse AI response as JSON: ${parseError}`,
+      // Generate the decision tree using AI, as JSON matching NodeSchema
+      // NOTE: the prompt is the system instruction and the user's description is
+      // the content, so the description is less likely to override the
+      // instructions, and no template substitution is needed. Tags mark where the
+      // description ends.
+      const result = await getAIModel(
+        {
+          responseMimeType: "application/json",
+          responseJsonSchema: nodeJsonSchema,
+          thinkingConfig: {
+            // NOTE: with the default thinking level, the AI builds the smallest tree
+            // that satisfies the prompt and leaves out issues from the description
+            thinkingLevel: ThinkingLevel.HIGH,
+            // NOTE: thought summaries are streamed as status messages
+            includeThoughts: true,
+          },
+        },
+        treePrompt,
+      ).generateContentStream(
+        `## Lawsuit description\n\n<lawsuit>\n${text}\n</lawsuit>`,
+        // NOTE: the SDK clears the timeout once the response headers arrive, so
+        // for a stream it limits only the wait for the first chunk, not the
+        // whole generation. The default is 180 seconds.
+        { timeout: 300_000, signal },
       );
-    }
 
-    // Sanity check that we have a structure
-    if (!isPlainObject(decisionTree) || isEmpty(decisionTree)) {
-      throw new Error(
-        "[EVTree] Invalid decision tree structure returned by AI",
+      let thoughts = "";
+      let generatedText = "";
+      for await (const chunk of result.stream) {
+        usage = chunk.usageMetadata ?? usage;
+        const thought = chunk.thoughtSummary();
+        if (thought) {
+          thoughts += thought;
+          phase = "thinking";
+          onProgress?.({ phase, status: getLastThoughtHeading(thoughts) });
+        }
+        const chunkText = chunk.text();
+        if (chunkText) {
+          generatedText += chunkText;
+          phase = "writing";
+          // NOTE: every node has a branches key, even a terminal node
+          onProgress?.({
+            phase,
+            nodes: generatedText.match(/"branches"/g)?.length ?? 0,
+          });
+        }
+      }
+
+      // NOTE: to see where generation time goes: thinking or output tokens
+      // eslint-disable-next-line no-console
+      console.debug(
+        `[EVTree] AI decision tree generated in ${formatElapsed(performance.now() - startTime)}. Tokens: ${usage?.thoughtsTokenCount ?? 0} thinking, ${usage?.candidatesTokenCount ?? 0} output, ${usage?.promptTokenCount ?? 0} prompt.`,
       );
-    }
+      // NOTE: to compare what the AI planned with the tree it wrote
+      // eslint-disable-next-line no-console
+      console.debug(`[EVTree] AI thought summaries:\n\n${thoughts}`);
 
-    return NodeSchema.parse(decisionTree);
-  } catch (error) {
-    // QUESTION: should we retry schema parse failures? maybe with a different model or settings?
-    throw error;
-  }
-});
+      // Parse the JSON response
+      phase = "parsing";
+      onProgress?.({ phase });
+      const decisionTree: DecisionTree = JSON.parse(generatedText);
+
+      // Sanity check that we have a structure
+      if (!isPlainObject(decisionTree) || isEmpty(decisionTree)) {
+        throw new Error("Invalid decision tree structure returned by AI");
+      }
+
+      phase = "validating";
+      onProgress?.({ phase });
+      return NodeSchema.parse(decisionTree);
+    } catch (error) {
+      // NOTE: an abort by the user is not a failure
+      if (signal?.aborted) {
+        throw error;
+      }
+      const generationError = new AIGenerationError(
+        phase,
+        performance.now() - startTime,
+        error instanceof AIError ? error.customErrorData?.status : undefined,
+        error,
+      );
+      console.error(
+        `[EVTree] AI decision tree generation ${generationError.message}. Tokens so far: ${usage?.thoughtsTokenCount ?? "unknown"} thinking, ${usage?.candidatesTokenCount ?? "unknown"} output.`,
+        error,
+      );
+      // QUESTION: should we retry schema parse failures? maybe with a different model or settings?
+      throw generationError;
+    }
+  },
+  { getCacheKey: ({ text }: GenerateDecisionTreeArgs) => text },
+);
 
 /**
  * Creates a decision tree from a text description using AI.
  *
  * @param text - The case description to convert into a decision tree
+ * @param onProgress - Called as the AI thinks and writes, for status messages
+ * @param signal - Aborts the request
  * @returns Promise<Decision> - The generated decision tree structure
+ * @throws AIGenerationError with the phase and elapsed time of a failure
  */
-export async function generateDecisionTree(text: string): Promise<NodeShape> {
+export async function generateDecisionTree(
+  text: string,
+  onProgress?: (progress: AIGenerationProgress) => void,
+  signal?: AbortSignal,
+): Promise<NodeShape> {
   try {
-    return await generateDecisionTreeMemoized(text);
+    return await generateDecisionTreeMemoized({ text, onProgress, signal });
   } catch (error) {
     // NOTE: don't cache failures, so that the user can retry
     generateDecisionTreeMemoized.cache.delete(text);

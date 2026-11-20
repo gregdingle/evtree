@@ -1,3 +1,4 @@
+import { omit } from "es-toolkit";
 import z from "zod";
 
 import { PROBABILITY_SUM_TOLERANCE } from "./expectedValue";
@@ -96,3 +97,61 @@ export const NodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
       },
     ),
 );
+
+/**
+ * The most levels of branches that an AI tree can have.
+ *
+ * NOTE: Gemini rejects a response schema of 6 levels with a 400 and accepts 5.
+ * Each level of the tree nests the schema 5 levels deeper, and the limit
+ * appears to be about 32 levels of nesting in the schema document. The
+ * human-crafted demo trees are up to 7 levels deep, so this cap is too low.
+ * TODO: a flat list of nodes with parent ids would have no depth limit
+ */
+export const MAX_AI_TREE_DEPTH = 5;
+
+type JsonSchema = Record<string, unknown>;
+
+interface NodeJsonSchema extends JsonSchema {
+  properties: {
+    branches: JsonSchema & {
+      items: JsonSchema & { properties?: { nextNode: JsonSchema } };
+    };
+  };
+}
+
+/**
+ * JSON Schema for structured output of the AI, generated from NodeSchema.
+ *
+ * NOTE: NodeSchema is recursive, which z.toJSONSchema writes as a "$ref": "#"
+ * to the root. Gemini unrolls that to only two levels and closes off the last
+ * one with "maxItems": 0. The AI sees that, and merges issues to fit the tree
+ * into two levels. So the recursion is unrolled here instead, to the deepest
+ * that Gemini accepts.
+ *
+ * NOTE: unsupported keywords like minLength are ignored by the model.
+ * Refinements like probabilities summing to 1 can't be expressed, so the output
+ * is still checked with NodeSchema.parse. "$schema" is omitted because it isn't
+ * part of the schema Gemini uses.
+ */
+export function buildNodeJsonSchema(
+  depth: number = MAX_AI_TREE_DEPTH,
+): JsonSchema {
+  const node = omit(z.toJSONSchema(NodeSchema), [
+    "$schema",
+  ]) as unknown as NodeJsonSchema;
+  const { branches } = node.properties;
+  if (depth === 0) {
+    // NOTE: a node at the maximum depth has to be terminal. An array still
+    // needs items, which Gemini may require.
+    branches.items = { type: "object" };
+    branches["maxItems"] = 0;
+  } else {
+    // NOTE: the descriptions are the same at every level, so only keep them
+    // at the root
+    branches.items.properties!.nextNode = JSON.parse(
+      JSON.stringify(buildNodeJsonSchema(depth - 1)),
+      (key, value) => (key === "description" ? undefined : value),
+    );
+  }
+  return node;
+}
