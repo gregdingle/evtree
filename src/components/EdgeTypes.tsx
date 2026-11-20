@@ -162,8 +162,9 @@ export function CustomEdge({
                 >
                   {shouldWarn ? (
                     <WarningCircle
-                      // TODO: it doesn't always fix... if the sum of other
-                      // probabilities is >1, clicking this only sets it to 0%
+                      // NOTE: it doesn't always fix in one click: if the sum of
+                      // other probabilities is >1, clicking this only sets it
+                      // to 0%, need to click on another edge to fully balance.
                       tooltip="Incomplete probabilities. Click to fix."
                       onClick={(event) => {
                         event.stopPropagation();

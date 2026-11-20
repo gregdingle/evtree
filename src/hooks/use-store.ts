@@ -1069,8 +1069,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     // TODO: there is a quirk of using the reactflow built-in "delete" key
-    // handler: it results in two undo steps. by contrast, clicking the delete
-    // button results in one. use beforeDelete API of reactflow?
+    // handler: it results in two undo steps, one for nodes, one for edges. by
+    // contrast, clicking the delete button results in one. use beforeDelete API
+    // of reactflow?
     deleteSelected: () => {
       set(
         (state) =>
@@ -1172,8 +1173,14 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
   })),
-  // TODO: is this best as shallow or deep isEqual? any mutation to a node
-  // seems to result in a call back to onNodesChange with updated `measured`
+  // NOTE: shallow, not deep isEqual, as the default for all selectors. Most
+  // selectors return primitives, and immer keeps unchanged nodes and edges as
+  // the same objects, so shallow is enough for arrays like selectCurrentNodes.
+  // Deep isEqual would walk every node for every subscriber on every update,
+  // like each frame of a drag. Pass isEqual per call for selectors that build
+  // new nested objects, see LeftSidePanel and Histogram. The `measured` updates
+  // from onNodesChange are real changes that React Flow needs, so no equality
+  // fn should skip them.
   shallow,
 );
 

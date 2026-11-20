@@ -9,7 +9,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
-import { sortBy } from "es-toolkit";
+import { isEqual, sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
@@ -26,10 +26,21 @@ export function LeftSidePanel() {
 
   const { fitView } = useReactFlow();
 
-  const { trees, currentTreeId } = useStore((state) => ({
-    trees: sortBy(values(state.trees), ["updatedAt"]).reverse(),
-    currentTreeId: state.currentTreeId,
-  }));
+  // NOTE: select only displayed fields with deep isEqual so the panel doesn't
+  // re-render on every change to the current tree, like dragging a node
+  const trees = useStore(
+    (state) =>
+      sortBy(values(state.trees), ["updatedAt"])
+        .reverse()
+        .map(({ id, name, createdAt, updatedAt }) => ({
+          id,
+          name,
+          createdAt,
+          updatedAt,
+        })),
+    isEqual,
+  );
+  const currentTreeId = useStore((state) => state.currentTreeId);
 
   const { deleteTree, setCurrentTree, duplicateTree } = useStore.getState();
 

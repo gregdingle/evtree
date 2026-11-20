@@ -1,5 +1,6 @@
-import { memoize } from "es-toolkit";
 import { values } from "es-toolkit/compat";
+
+import { memoizeWeak } from "@/utils/memoize";
 
 import { AppEdge, filterTreeEdges } from "./edge";
 import { DecisionTree } from "./tree";
@@ -13,7 +14,7 @@ import { DecisionTree } from "./tree";
  *
  * TODO: extract to new utils file along with buildAdjacencyList?
  */
-export const getChildToParentNodeMap = memoize(function (
+export const getChildToParentNodeMap = memoizeWeak(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
@@ -33,7 +34,7 @@ export function getRootNodeId(tree: DecisionTree, nodeId: string): string {
   return rootId;
 }
 
-export const getNodeToIncomingEdgeMap = memoize(function (
+export const getNodeToIncomingEdgeMap = memoizeWeak(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const nodeToIncomingEdge: Record<string, string> = {};
@@ -44,7 +45,7 @@ export const getNodeToIncomingEdgeMap = memoize(function (
   return nodeToIncomingEdge;
 });
 
-export const getChildToParentEdgeMap = memoize(function (
+export const getChildToParentEdgeMap = memoizeWeak(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string> {
   const childToParentMap: Record<string, string> = {};
@@ -69,7 +70,7 @@ export const getChildToParentEdgeMap = memoize(function (
   return childToParentMap;
 });
 
-export const getParentToChildNodeMap = memoize(function (
+export const getParentToChildNodeMap = memoizeWeak(function (
   edges: Record<string, AppEdge> | AppEdge[],
 ): Record<string, string[]> {
   const parentToChildMap: Record<string, string[]> = {};

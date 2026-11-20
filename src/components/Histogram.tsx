@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 
+import { isEqual } from "es-toolkit";
 import { round, sum } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
@@ -28,18 +29,15 @@ interface HistogramProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 // TODO: how to optimize display of negative numbers?
 export function Histogram(props: HistogramProps) {
-  const { currentTree, storeState } = useStore((state) => ({
-    currentTree: selectCurrentTree(state),
-    storeState: state,
-  }));
+  // NOTE: deep isEqual so the histogram only re-renders when terminal node
+  // data changes, not on every store change like dragging a node
+  const terminalNodesData: TerminalNodeData[] = useStore(
+    (state) => getTerminalNodesData(selectCurrentTree(state), state),
+    isEqual,
+  );
 
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
-
-  const terminalNodesData: TerminalNodeData[] = getTerminalNodesData(
-    currentTree,
-    storeState,
-  );
 
   let initialOverUnder = terminalNodesData.reduce(
     (sum, { probability, value }) => {
@@ -105,11 +103,11 @@ export function Histogram(props: HistogramProps) {
   return (
     <div {...props} id="histogram-export">
       <h3 className="mb-4 text-lg font-semibold">
-        Probability Distribution of Outcome Values
+        Probabilities of Outcome Ranges
       </h3>
       {HistogramBars(histogramData, maxProbability, currency, rounding)}
       <h3 className="mt-8 mb-4 text-lg font-semibold">
-        Probability Over-Under
+        Probability of Outcome Over-Under
         <input
           name="breakpoint"
           value={breakpoint}

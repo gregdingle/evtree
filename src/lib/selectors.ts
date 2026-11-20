@@ -1,4 +1,4 @@
-import { mapValues, memoize, omit } from "es-toolkit";
+import { mapValues, omit } from "es-toolkit";
 import { fromPairs, toPairs, values } from "es-toolkit/compat";
 
 import { StoreState } from "@/hooks/use-store";
@@ -6,6 +6,7 @@ import { AppEdge, filterTreeEdges } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
 import { DecisionTree } from "@/lib/tree";
 import { Variable } from "@/lib/variable";
+import { memoizeWeak } from "@/utils/memoize";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
 import {
@@ -72,30 +73,16 @@ export function selectCurrentTerminalValueDisplay(
   return currentTree?.terminalValueDisplay ?? "net";
 }
 
-/**
- * Returns computed values for all nodes in the current tree, performing
- * the expected value calculation on-demand during React component rendering.
- *
- * TODO: better to use createCachedSelector from reselect package?
- * TODO: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
- */
-export const selectNetExpectedValues = memoize(
-  (
-    state: StoreState,
-  ): {
-    nodeValues?: Record<string, number | null>;
-    nodeCumulativeCosts?: Record<string, number | null>;
-    edgeProbabilities?: Record<string, number | null>;
-  } => {
-    const { currentTreeId } = state;
-    if (!currentTreeId) {
-      return {};
-    }
-    const tree = state.trees[currentTreeId];
-    if (!tree) {
-      return {};
-    }
+interface NetExpectedValues {
+  nodeValues?: Record<string, number | null>;
+  nodeCumulativeCosts?: Record<string, number | null>;
+  edgeProbabilities?: Record<string, number | null>;
+}
 
+// NOTE: memoized on the tree, not the store state, so it's only recomputed
+// when the current tree changes
+const computeNetExpectedValues = memoizeWeak(
+  (tree: DecisionTree): NetExpectedValues => {
     // Filter out arrow edges from tree logic calculations
     const treeEdges = filterTreeEdges(values(tree.edges));
     const treeEdgesMap = fromPairs(treeEdges.map((edge) => [edge.id, edge]));
@@ -115,6 +102,24 @@ export const selectNetExpectedValues = memoize(
     };
   },
 );
+
+/**
+ * Returns computed values for all nodes in the current tree, performing
+ * the expected value calculation on-demand during React component rendering.
+ *
+ * TODO: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
+ */
+export function selectNetExpectedValues(state: StoreState): NetExpectedValues {
+  const { currentTreeId } = state;
+  if (!currentTreeId) {
+    return {};
+  }
+  const tree = state.trees[currentTreeId];
+  if (!tree) {
+    return {};
+  }
+  return computeNetExpectedValues(tree);
+}
 
 /**
  * Returns the computed probability for a specific edge.
