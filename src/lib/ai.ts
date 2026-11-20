@@ -1,6 +1,12 @@
-import { isPlainObject, memoize } from "es-toolkit";
+import { isPlainObject, memoize, omit } from "es-toolkit";
 import { isEmpty } from "es-toolkit/compat";
-import { AgentPlatformBackend, getAI, getGenerativeModel } from "firebase/ai";
+import {
+  AgentPlatformBackend,
+  GenerationConfig,
+  getAI,
+  getGenerativeModel,
+} from "firebase/ai";
+import z from "zod";
 
 import { createEdge } from "@/lib/edge";
 import { createNode } from "@/lib/node";
@@ -17,7 +23,18 @@ import { DecisionTree } from "./tree";
 // HACK: ai-schemas.md is not actually markdown, it's a hardlink to have the TS
 // file loaded by the raw-loader as text... could we use ai-schemas?raw instead?
 
-function getAIModel() {
+/**
+ * JSON Schema for structured output of the AI, generated from NodeSchema.
+ *
+ * NOTE: unsupported keywords like minLength are ignored by the model, and the
+ * recursion is a "$ref": "#" to the root. Refinements like probabilities
+ * summing to 1 can't be expressed, so the output is still checked with
+ * NodeSchema.parse. "$schema" is omitted because it isn't part of the schema
+ * Gemini uses.
+ */
+const nodeJsonSchema = omit(z.toJSONSchema(NodeSchema), ["$schema"]);
+
+function getAIModel(generationConfig?: GenerationConfig) {
   // NOTE: Callers of the functions in this file should check that firebaseApp exists.
   if (!firebaseApp) {
     throw new Error("[EVTree] Firebase app is not initialized");
@@ -35,6 +52,7 @@ function getAIModel() {
       // TODO: compare results with the prompt, which was tuned for
       // gemini-2.0-flash ("follows example much better than gemini-2.5")
       model: "gemini-3.8-flash",
+      generationConfig,
     },
   );
 }
@@ -100,25 +118,17 @@ const generateDecisionTreeMemoized = memoize(async function (
       .replace("{{CASE_DESCRIPTION}}", text)
       .replace("{{ZOD_SCHEMAS}}", aiSchemasText);
 
-    // Generate the decision tree using AI
-    const result = await getAIModel().generateContent(prompt);
-    const response = await result.response;
-    const generatedText = response.text();
-
-    // Extract JSON from the response (it might be wrapped in markdown code blocks)
-    const jsonMatch = generatedText.match(/```json\s*([\s\S]*?)\s*```/) ||
-      generatedText.match(/```\s*([\s\S]*?)\s*```/) || [null, generatedText];
-
-    if (!jsonMatch[1]) {
-      throw new Error("[EVTree] No JSON found in AI response");
-    }
-
-    const jsonText = jsonMatch[1].trim();
+    // Generate the decision tree using AI, as JSON matching NodeSchema
+    const result = await getAIModel({
+      responseMimeType: "application/json",
+      responseJsonSchema: nodeJsonSchema,
+    }).generateContent(prompt);
+    const generatedText = result.response.text();
 
     // Parse the JSON response
     let decisionTree: DecisionTree;
     try {
-      decisionTree = JSON.parse(jsonText);
+      decisionTree = JSON.parse(generatedText);
     } catch (parseError) {
       throw new Error(
         `[EVTree] Failed to parse AI response as JSON: ${parseError}`,
