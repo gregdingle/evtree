@@ -46,6 +46,12 @@ body {
   }
 }
 
+/*
+  TODO: React Flow 13 puts its styles in @layer xyflow. These unlayered
+  overrides still win, but check the order against Tailwind's layers for
+  utility classes on React Flow elements, like !left-1/2 on handles.
+*/
+
 /* Make handles bigger as in https://reactflow.dev/examples/interaction/touch-device */
 .evtree .react-flow__handle {
   width: 12px;

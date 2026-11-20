@@ -11,6 +11,8 @@ import {
   SelectionMode,
   useReactFlow,
 } from "@xyflow/react";
+// TODO: React Flow 13 adds the import path "@xyflow/react/style.css" and puts
+// its styles in @layer xyflow, see the React Flow overrides in globals.css
 // NOTE: ts-ignore not ts-expect-error because TS 7 (VS Code native preview) errors here but TS 5 (build) does not
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — Next.js processes this global stylesheet import.
@@ -131,6 +133,8 @@ export function ReactFlowApp() {
         edgeTypes={edgeTypes}
         selectionMode={SelectionMode.Partial}
         colorMode={colorMode}
+        // TODO: React Flow 13 changes the default fitView padding to 5%, which
+        // also applies to fitView() in builder/page.tsx and CreateDialog.tsx
         fitView
         onNodesChange={(changes) => {
           onNodesChange(changes);

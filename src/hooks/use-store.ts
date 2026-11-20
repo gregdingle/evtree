@@ -337,6 +337,8 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
+            // TODO: React Flow 13 passes a NodeChangeset class instead of a
+            // NodeChange[] array. Update applyNodeChanges and changes.length.
             const updatedNodesArray = applyNodeChanges(
               changes,
               values(tree.nodes),
@@ -352,6 +354,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
+            // TODO: React Flow 13 passes an EdgeChangeset class instead of an
+            // EdgeChange[] array. Update changes.forEach, applyEdgeChanges and
+            // changes.length.
             // NOTE: Special case: Delete any ghost nodes when their arrow edges
             // are removed.
             changes.forEach((change) => {
@@ -1059,6 +1064,9 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
               .forEach((node) => deleteSubTreeHelper(tree, node.id));
 
             // Delete edges individually
+            // TODO: React Flow 13 changesets replace EdgeChange[] arrays. Check
+            // that applyEdgeChanges still accepts this, or delete from
+            // tree.edges directly.
             const edgeChanges: EdgeChange<AppEdge>[] = values(tree.edges)
               .filter((edge) => edge.selected)
               .map((edge) => ({

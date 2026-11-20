@@ -47,6 +47,8 @@ export function LeftSidePanel() {
   const handleSetCurrentTree = (treeId: string) => {
     setCurrentTree(treeId);
     // NOTE: optimized for fitting in the terminal labels of Hello World Tree
+    // TODO: React Flow 13 reads numeric padding as pixels. Use "12%", about
+    // the same as 0.3 now.
     fitView({ padding: 0.3 });
   };
 
