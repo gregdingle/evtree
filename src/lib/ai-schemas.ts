@@ -84,7 +84,9 @@ export const NodeSchema: z.ZodType<NodeShape> = z.lazy(() =>
           (acc, outcome) => acc + outcome.probability,
           0,
         );
-        // HACK: Allow for floating point imprecision
+        // NOTE: allow for floating point imprecision, same tolerance as
+        // PROBABILITY_SUM_TOLERANCE in expectedValue.ts. Kept as a literal
+        // because this file is also sent to the AI as text, see ai.ts.
         return Math.abs(sum - 1) < 0.000001;
       },
       {

@@ -7,6 +7,7 @@ import { round, sum } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import { CurrencyCode } from "@/lib/currency";
+import { PROBABILITY_SUM_TOLERANCE } from "@/lib/expectedValue";
 import {
   HistogramData,
   TerminalNodeData,
@@ -82,8 +83,7 @@ export function Histogram(props: HistogramProps) {
     0,
   );
 
-  // HACK: Allow for floating point imprecision
-  if (sumTerminalPathProb - 1 < -0.000001) {
+  if (sumTerminalPathProb < 1 - PROBABILITY_SUM_TOLERANCE) {
     return (
       <div {...props}>
         <CanvasCenteredHelpMessage text="Missing probabilities or values" />
@@ -91,8 +91,7 @@ export function Histogram(props: HistogramProps) {
     );
   }
 
-  // HACK: Allow for floating point imprecision
-  if (sumTerminalPathProb - 1 > 0.000001) {
+  if (sumTerminalPathProb > 1 + PROBABILITY_SUM_TOLERANCE) {
     return (
       <div {...props}>
         <CanvasCenteredHelpMessage text="Terminal path probabilities sum to more than 1.0" />

@@ -41,6 +41,13 @@ export interface ComputeEdge {
 const EPSILON = 1e-10;
 
 /**
+ * Tolerance for a sum of probabilities to count as 1. Floating point sums like
+ * 0.1 + 0.2 aren't exact, and balanceEdgeProbability rounds to 6 decimal
+ * places, so this is looser than EPSILON.
+ */
+export const PROBABILITY_SUM_TOLERANCE = 1e-6;
+
+/**
  * Computes values recursively for input `nodes`. The value of a
  * node is defined as the average of its children's values weighted by the
  * probabilities of the associated edges. Updates values in-place.
