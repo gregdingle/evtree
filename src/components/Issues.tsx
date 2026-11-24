@@ -128,6 +128,11 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
   // NOTE: the outcomes on the path shown, like the sub-tree view. One without
   // a reason would only restate its label and probability, which are in the
   // view.
+  //
+  // TODO: a branch without a reason is not listed, so it has no edit link, and
+  // a reason cannot be added to it from here. That is every branch of a tree
+  // made by hand. List every branch when any can be edited? Or put the edit
+  // links in the table or the sub-tree view?
   const listedOutcomes = current.outcomes.filter((outcome) => outcome.reason);
 
   return (
