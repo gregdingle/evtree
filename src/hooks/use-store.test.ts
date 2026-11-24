@@ -281,3 +281,23 @@ describe("selectNode", () => {
     expect(selected).toEqual([second]);
   });
 });
+
+describe("selectEdge", () => {
+  test("should select only the edge", () => {
+    const { currentTreeId, trees } = useStore.getState();
+    const tree = trees[currentTreeId!]!;
+    const [nodeId] = Object.keys(tree.nodes);
+    const [edgeId] = Object.keys(tree.edges);
+    useStore.getState().selectNode(nodeId!);
+
+    useStore.getState().selectEdge(edgeId!);
+
+    const state = useStore.getState().trees[tree.id]!;
+    expect(values(state.nodes).filter((node) => node.selected)).toEqual([]);
+    expect(
+      values(state.edges)
+        .filter((edge) => edge.selected)
+        .map((edge) => edge.id),
+    ).toEqual([edgeId]);
+  });
+});

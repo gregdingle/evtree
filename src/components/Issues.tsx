@@ -84,7 +84,8 @@ export function Issues({ className, ...props }: IssuesProps) {
       className={`@container h-full overflow-y-auto ${className ?? ""}`}
       {...props}
     >
-      <div id="issues-export" className="max-w-7xl pb-16">
+      {/* NOTE: text-lg is the size of text here that does not set its own */}
+      <div id="issues-export" className="max-w-7xl pb-16 text-lg">
         <h2 className="mb-2 text-2xl font-semibold">Key Issues</h2>
         {
           // TODO: put some sort of summary or intro to the page here?
@@ -108,7 +109,7 @@ export function Issues({ className, ...props }: IssuesProps) {
 function IssueSection({ number, issue }: { number: number; issue: Issue }) {
   const terminalValueDisplay = useStore(selectCurrentTerminalValueDisplay);
   const format = useFormatAmount();
-  const { selectNode } = useStore.getState();
+  const { selectNode, selectEdge } = useStore.getState();
 
   // NOTE: an issue can occur on several paths, and the sub-tree view shows one
   // at a time. Clamped because the tree can change under an open issues view.
@@ -131,14 +132,13 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
 
   return (
     <section className="mt-10">
-      <h3 className="mb-3 text-lg font-semibold">
+      <h3 className="mb-3 text-xl font-semibold">
         {number}. {issue.heading}
-        <button
-          type="button"
-          onClick={() => {
-            // NOTE: the heading is made from the branch labels, so offer a way to
-            // write a better one. Selecting the node shows its description in the
-            // side panel, and the issues view stays open.
+        <EditLink
+          inputId="Description"
+          onSelect={() => {
+            // NOTE: the heading is the description of the node, or else its
+            // branch labels, so this is the way to write a better one
             //
             // TODO: this edits one node, but an issue that occurs on several
             // paths has a node for each, and they are grouped by their
@@ -152,17 +152,8 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
             // would be one description box in the side panel for nodes of the
             // same type, which writes to all of them in one undo step.
             selectNode(current.nodeId);
-            // HACK: put the cursor in the description of the node in the
-            // side panel, once the panel has rendered it. PropertyInput uses
-            // its label as its id.
-            requestAnimationFrame(() =>
-              window.document.getElementById("Description")?.focus(),
-            );
           }}
-          className="ml-3 cursor-pointer text-sm font-normal text-blue-600 hover:underline dark:text-blue-400"
-        >
-          edit
-        </button>{" "}
+        />
       </h3>
       {/*
         NOTE: every sub-tree view of a tree is the same width, so the text
@@ -181,11 +172,15 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
                 <li key={outcome.edgeId}>
                   <span className="font-medium">{outcome.label}</span>
                   {!issue.isDecision && (
-                    <span className="ml-2 text-gray-600 dark:text-gray-400">
-                      {formatProbability(outcome.probability, 0, "???", "")}
+                    <span>
+                      : {formatProbability(outcome.probability, 0, "???", "")}
                     </span>
                   )}
-                  <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
+                  <EditLink
+                    inputId="Label"
+                    onSelect={() => selectEdge(outcome.edgeId)}
+                  />
+                  <p className="mt-1 text-base text-gray-700 dark:text-gray-300">
                     {outcome.reason}
                   </p>
                 </li>
@@ -193,7 +188,7 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
             </ul>
           )}
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-base">
               <thead>
                 <tr className="border-b border-gray-400 text-gray-600 dark:text-gray-400">
                   <th className="py-1 pr-6 font-medium">After</th>
@@ -244,11 +239,12 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
               // NOTE: a new view for each occurrence
               key={current.nodeId}
               nodeId={current.nodeId}
-              className="rounded border border-gray-300 dark:border-gray-700"
+              // NOTE: text-base so that the view is the same size as the canvas
+              className="rounded border border-gray-300 text-base dark:border-gray-700"
             />
           </div>
           {pageCount > 1 && (
-            <div className="mt-2 flex flex-wrap items-baseline justify-center gap-x-3 text-sm text-gray-600 dark:text-gray-400">
+            <div className="mt-2 flex flex-wrap items-baseline justify-center gap-x-3 text-base text-gray-600 dark:text-gray-400">
               <PageButton
                 disabled={pageIndex === 0}
                 onClick={() => setPage(pageIndex - 1)}
@@ -277,6 +273,36 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
   );
 }
 
+/**
+ * A link that selects a node or a branch, so that the side panel shows its
+ * properties, and puts the cursor in one of them. The issues view stays open.
+ */
+function EditLink({
+  inputId,
+  onSelect,
+}: {
+  inputId: string;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onSelect();
+        // HACK: once the side panel has rendered the properties. PropertyInput
+        // uses its label as its id.
+        requestAnimationFrame(() =>
+          window.document.getElementById(inputId)?.focus(),
+        );
+      }}
+      // NOTE: muted, to not compete with the text that it is beside
+      className="ml-3 cursor-pointer text-base font-normal text-gray-500 hover:underline dark:text-gray-400"
+    >
+      edit
+    </button>
+  );
+}
+
 function PageButton({
   disabled,
   onClick,
@@ -297,6 +323,12 @@ function PageButton({
     </button>
   );
 }
+
+/**
+ * A space that a line does not break at. In a calculation, it keeps each term
+ * whole, like "50% × $2M", and a sign with the term that it is for.
+ */
+const NBSP = "\u00a0";
 
 /**
  * The sum that gives the expected value of an occurrence of an issue, and its
@@ -335,18 +367,23 @@ function Calculation({
   const terms = occurrence.outcomes
     .map(
       (outcome) =>
-        `${formatProbability(outcome.probability, 0, "???", "")} × ${format(isNet ? outcome.value : outcome.onwardValue)}`,
+        `${formatProbability(outcome.probability, 0, "???", "")}${NBSP}×${NBSP}${format(isNet ? outcome.value : outcome.onwardValue)}`,
     )
-    .join(" + ");
+    .join(` +${NBSP}`);
   // NOTE: a minus sign and not a hyphen, to tell it from a negative amount
   const costTerm =
-    !isNet && occurrence.cost ? ` − ${format(occurrence.cost)}` : "";
+    !isNet && occurrence.cost ? ` −${NBSP}${format(occurrence.cost)}` : "";
   return (
+    // NOTE: two inline blocks, so that when the whole does not fit on a line,
+    // it breaks before the equals sign first, and inside the sum only if the
+    // sum is too long for a line of its own
     <>
-      {terms}
-      {costTerm}
-      {" = "}
-      <span className="font-medium whitespace-nowrap">
+      <span className="inline-block">
+        {terms}
+        {costTerm}
+      </span>{" "}
+      <span className="inline-block font-medium whitespace-nowrap">
+        {"= "}
         {format(
           isNet ? occurrence.expectedValue : occurrence.onwardExpectedValue,
         )}

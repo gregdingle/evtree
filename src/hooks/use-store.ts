@@ -119,6 +119,7 @@ export interface StoreState {
   showHistogram: () => void;
   showIssues: () => void;
   selectNode: (nodeId: string) => void;
+  selectEdge: (edgeId: string) => void;
 }
 
 // QUESTION: should we clear undo stack when switching trees? or better to be safe?
@@ -1194,6 +1195,22 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }),
         undefined,
         { type: "selectNode", nodeId },
+      );
+    },
+
+    // NOTE: the same, for a branch
+    selectEdge: (edgeId) => {
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            clearSelections(tree);
+            const edge = tree.edges[edgeId];
+            if (edge) {
+              edge.selected = true;
+            }
+          }),
+        undefined,
+        { type: "selectEdge", edgeId },
       );
     },
   })),
