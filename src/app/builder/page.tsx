@@ -87,6 +87,11 @@ export default function Builder() {
               </CollapsiblePanel>
             </div>
             <div className="w-screen bg-amber-50 dark:bg-neutral-900">
+              {/* TODO: consider keeping the active view in the hash of the URL,
+              such as #view=histogram or #view=issues, so that a view can be
+              linked to, reloaded, and reached with the back button. The hash
+              already carries a shared tree, see ShareLinkLoader, so the two
+              would have to be read and written together. */}
               {showIssues ? (
                 <Issues className="px-16 py-4" />
               ) : showHistogram ? (
