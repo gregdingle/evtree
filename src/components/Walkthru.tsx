@@ -40,7 +40,9 @@ interface WalkthruProps extends React.HTMLAttributes<HTMLDivElement> {}
  * arithmetic, see getWalkthru.
  *
  * QUESTION: would "Issues" or "Key Issues" be a better name for users than
- * "Walkthrough"?
+ * "Walkthrough"? If so, the Description of a chance or decision node, which is
+ * the heading of its section here, could be called "Issue Name" or similar in
+ * the side panel, to say what it is for.
  *
  * TODO: a hotkey, and PDF or print output, which is what a lawyer would hand to
  * a client or mediator

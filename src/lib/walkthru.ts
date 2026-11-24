@@ -174,6 +174,17 @@ export function getWalkthru(
       // hand often has no descriptions, and labels the same issue differently
       // on different paths, like "High No Contrib" and "High w Contrib", so
       // then only the first word of each label has to match.
+      //
+      // TODO: the weak spots of this grouping:
+      // - a node with a description never groups with one without, so
+      //   describing one node of an issue that is on several paths takes it
+      //   out of its section, see the edit link in Walkthru.tsx
+      // - different issues without descriptions are merged when their labels
+      //   start with the same words, like two questions of "Yes" and "No"
+      // - the same issue is not merged when its labels start differently on
+      //   different paths, like "33%" and "One third"
+      // - the same issue is not merged when its branches are in a different
+      //   order on the canvas, or one is missing on some path
       const key = [
         description,
         ...(description ? labels : labels.map(getFirstWord)),
