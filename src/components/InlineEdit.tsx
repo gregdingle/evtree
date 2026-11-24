@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useBreakpoint } from "@/hooks/use-breakpoint";
+import { useTreeCanvas } from "@/hooks/use-tree-canvas";
 
 interface InlineEditProps {
   value: string | undefined;
@@ -74,11 +74,12 @@ export function InlineEdit({
     }
   }, [isEditing, autoFocus, multiline, handleTextareaResize]);
 
-  const isMediumScreenSizeOrLarger = useBreakpoint("md");
+  const { isReadOnly } = useTreeCanvas();
 
   const handleClick = () => {
-    // NOTE: Responsive design! Read-only mode for below medium size screens
-    if (!isMediumScreenSizeOrLarger) {
+    // NOTE: Responsive design! Read-only mode for below medium size screens,
+    // and for static views
+    if (isReadOnly) {
       return;
     }
     const displayed = displayFormatter

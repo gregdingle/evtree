@@ -13,7 +13,7 @@ import {
 import { CollapsiblePanel } from "@/components/CollapsiblePanel";
 import { Histogram } from "@/components/Histogram";
 import { LeftSidePanel } from "@/components/LeftSidePanel";
-import { ReactFlowApp } from "@/components/ReactFlowApp";
+import { MainTreeView } from "@/components/MainTreeView";
 import { RightSidePanel } from "@/components/RightSidePanel";
 import { Toolbar } from "@/components/Toolbar";
 import { useStore } from "@/hooks/use-store";
@@ -88,7 +88,7 @@ export default function Builder() {
               {showHistogram ? (
                 <Histogram className="px-16 py-4" />
               ) : (
-                <ReactFlowApp />
+                <MainTreeView />
               )}
             </div>
             {/* NOTE: Responsive design! Read-only mode for below medium size screens */}

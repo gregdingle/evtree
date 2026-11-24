@@ -6,8 +6,8 @@ import {
   getStraightPath,
 } from "@xyflow/react";
 
-import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
+import { useShowEVs, useTreeCanvas } from "@/hooks/use-tree-canvas";
 import { AppEdge } from "@/lib/edge";
 import { convertProbabilityInputToDecimal } from "@/lib/percentage";
 import {
@@ -15,7 +15,6 @@ import {
   selectHasDecisionNodeSource,
   selectPathProbability,
   selectShouldShowProbabilityWarning,
-  selectShowEVs,
 } from "@/lib/selectors";
 import { getSmoothStepPathWithAbsoluteStep } from "@/lib/smoothStepPath";
 import { formatProbability } from "@/utils/format";
@@ -59,8 +58,8 @@ export function CustomEdge({
   );
 
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
-  const isMediumScreenSizeOrLarger = useBreakpoint("md");
-  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
+  const showEVs = useShowEVs();
+  const { withoutProbabilityIds } = useTreeCanvas();
 
   // NOTE: assumes the edge is always left to right
   // NOTE: empirically determined to provide enough space for a terminal node
@@ -133,7 +132,7 @@ export function CustomEdge({
               transform: transformProb,
               pointerEvents: "all",
             }}
-            className={`absolute top-4 z-10 text-center ${showEVs && isZeroProbability ? "opacity-50" : ""}`}
+            className={`absolute top-4 z-10 text-center ${showEVs && isZeroProbability ? "opacity-50" : ""} ${withoutProbabilityIds.has(id) ? "hidden" : ""}`}
           >
             {hasDecisionNodeSource ? (
               showEVs && (

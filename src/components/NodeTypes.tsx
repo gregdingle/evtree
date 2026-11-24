@@ -2,8 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
-import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useStore } from "@/hooks/use-store";
+import { useShowEVs, useTreeCanvas } from "@/hooks/use-tree-canvas";
 import { normalizeTerminalValue, safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
 import {
@@ -15,7 +15,6 @@ import {
   selectHasParentNode,
   selectNetExpectedValue,
   selectPathProbability,
-  selectShowEVs,
   selectShowPathEVs,
 } from "@/lib/selectors";
 import { variablesToRecord } from "@/lib/variable";
@@ -50,8 +49,8 @@ const BaseNode = ({
 }: BaseNodeProps) => {
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
-  const isMediumScreenSizeOrLarger = useBreakpoint("md");
-  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
+  const showEVs = useShowEVs();
+  const { isStatic } = useTreeCanvas();
   const showPathEVs = useStore(selectShowPathEVs);
   const currency = useStore(selectCurrentCurrency);
   const rounding = useStore(selectCurrentRounding);
@@ -66,7 +65,11 @@ const BaseNode = ({
     <div
       className={`nopan group relative ${selected ? "cursor-move" : "cursor-pointer"} ${showEVs && isZeroProbability ? "opacity-50" : ""} z-10`}
     >
-      {data.costExpr && (
+      {/*
+        NOTE: no cost in a static view, where it would be over the label of the
+        branch that leads to the node. The values in the view are net of it.
+      */}
+      {data.costExpr && !isStatic && (
         <div className="absolute -top-6.5 left-1/2 -translate-x-1/2 transform text-center whitespace-nowrap">
           <InlineEdit
             value={data.costExpr}
@@ -190,8 +193,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const isZeroProbability = pathProbability === 0;
   const hasParent = useStore((state) => selectHasParentNode(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
-  const isMediumScreenSizeOrLarger = useBreakpoint("md");
-  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
+  const showEVs = useShowEVs();
   const showPathProbability = showEVs && pathProbability !== null;
   const variables = useStore(selectCurrentVariables);
 

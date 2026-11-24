@@ -7,20 +7,11 @@ import {
   Controls,
   OnConnectEnd,
   OnConnectStart,
-  ReactFlow,
   SelectionMode,
   useReactFlow,
 } from "@xyflow/react";
-// TODO: React Flow 13 adds the import path "@xyflow/react/style.css" and puts
-// its styles in @layer xyflow, see the React Flow overrides in globals.css
-// NOTE: ts-ignore not ts-expect-error because TS 7 (VS Code native preview) errors here but TS 5 (build) does not
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore — Next.js processes this global stylesheet import.
-import "@xyflow/react/dist/style.css";
 
-import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { useContextMenu } from "@/hooks/use-context-menu";
-import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useStore } from "@/hooks/use-store";
 import { AppEdge } from "@/lib/edge";
 import { getChildToParentNodeMap } from "@/lib/maps";
@@ -29,10 +20,12 @@ import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
 import { ArrowMarker } from "./ArrowMarker";
 import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
 import { ContextMenu } from "./ContextMenu";
-import { edgeTypes } from "./EdgeTypes";
-import { nodeTypes } from "./NodeTypes";
+import { TreeCanvas } from "./TreeCanvas";
 
-export function ReactFlowApp() {
+/**
+ * The editor of the current tree, see TreeCanvas for how a tree is drawn
+ */
+export function MainTreeView() {
   const {
     onNodesChange,
     onEdgesChange,
@@ -44,14 +37,10 @@ export function ReactFlowApp() {
   const nodes = useStore(selectCurrentNodes);
   const edges = useStore(selectCurrentEdges);
 
-  // Get system color mode preference
-  const colorMode = useDarkMode() ? "dark" : "light";
   const { screenToFlowPosition } = useReactFlow();
 
   // Context menu hook
   const { menu, ref, onContextMenu, closeMenu } = useContextMenu();
-
-  const isMediumScreenSizeOrLarger = useBreakpoint("md");
 
   // Track which handle was clicked for connections
   const connectingHandleId = useRef<string | null>(null);
@@ -124,15 +113,12 @@ export function ReactFlowApp() {
           text={`Window too small. \nTry maximizing your window, \nzooming out, or using \na bigger screen.`}
         />
       </div>
-      <ReactFlow
+      <TreeCanvas
         className="hidden [@media(min-height:600px)]:block"
         ref={ref}
         nodes={nodes}
         edges={edges}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
         selectionMode={SelectionMode.Partial}
-        colorMode={colorMode}
         // TODO: React Flow 13 changes the default fitView padding to 5%, which
         // also applies to fitView() in builder/page.tsx and CreateDialog.tsx
         fitView
@@ -168,13 +154,6 @@ export function ReactFlowApp() {
         maxZoom={4}
         minZoom={0.1}
         isValidConnection={(connection) => isValidConnection(edges, connection)}
-        // NOTE: Responsive design! Read-only mode for below medium size screens
-        elementsSelectable={isMediumScreenSizeOrLarger}
-        selectionOnDrag={isMediumScreenSizeOrLarger}
-        nodesDraggable={isMediumScreenSizeOrLarger}
-        nodesConnectable={isMediumScreenSizeOrLarger}
-        nodesFocusable={isMediumScreenSizeOrLarger}
-        edgesFocusable={isMediumScreenSizeOrLarger}
       >
         {menu && <ContextMenu {...menu} onClose={closeMenu} />}
 
@@ -183,7 +162,7 @@ export function ReactFlowApp() {
           NOTE: see downloadPNG in download.ts for how this must be specially handled in export.
         */}
         {ArrowMarker()}
-      </ReactFlow>
+      </TreeCanvas>
       <Controls
         position="bottom-right"
         orientation="horizontal"

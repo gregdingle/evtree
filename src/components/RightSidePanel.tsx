@@ -139,7 +139,7 @@ export function RightSidePanel() {
       </div>
       <footer
         // HACK: only show when at least 800px height to avoid overlapping with other content
-        // NOTE: see also message on ReactFlowApp canvas when less than 800px height
+        // NOTE: see also message on MainTreeView canvas when less than 800px height
         className="absolute right-0 bottom-5 hidden w-80 text-center text-sm select-none [@media(min-height:800px)]:block"
       >
         Feedback or questions?{" "}

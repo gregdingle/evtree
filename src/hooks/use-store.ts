@@ -1057,7 +1057,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
     },
 
     // NOTE: the React Flow built-in delete key is routed here via
-    // onBeforeDelete in ReactFlowApp.tsx, for one undo step
+    // onBeforeDelete in MainTreeView.tsx, for one undo step
     deleteSelected: () => {
       set(
         (state) =>
