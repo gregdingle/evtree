@@ -237,6 +237,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           state.trees[treeId] = loadedTree;
           state.currentTreeId = treeId;
           state.display.lastEditedProbability = null;
+          // NOTE: show the canvas, so that React Flow renders and measures the
+          // nodes of the loaded tree. An arrange of nodes that have not been
+          // measured uses DEFAULT_NODE_HEIGHT, see layout.ts.
+          state.display.showHistogram = false;
+          state.display.showIssues = false;
           return state;
         },
         undefined,

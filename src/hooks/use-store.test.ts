@@ -301,3 +301,19 @@ describe("selectEdge", () => {
     ).toEqual([edgeId]);
   });
 });
+
+describe("loadTree", () => {
+  test("should show the canvas in place of the issues view", () => {
+    const { currentTreeId, trees } = useStore.getState();
+    const tree = trees[currentTreeId!]!;
+    useStore.getState().showIssues();
+    expect(useStore.getState().display.showIssues).toBe(true);
+
+    useStore.getState().loadTree(tree, false);
+
+    const state = useStore.getState();
+    expect(state.currentTreeId).not.toBe(tree.id);
+    expect(state.display.showIssues).toBe(false);
+    expect(state.display.showHistogram).toBe(false);
+  });
+});
