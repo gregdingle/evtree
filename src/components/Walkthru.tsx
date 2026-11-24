@@ -91,18 +91,21 @@ export function Walkthru({ className, ...props }: WalkthruProps) {
       {...props}
     >
       <div id="walkthru-export" className="max-w-7xl pb-16">
-        <h2 className="mb-2 text-2xl font-semibold">{tree.name}</h2>
-        <p>
-          The overall expected value from the start is{" "}
-          <strong>{format(roots[0]!.expectedValue)}</strong>.
-        </p>
-        {roots.map((root) => (
-          <div key={root.rootId} className="mb-12">
-            {root.sections.map((section, index) => (
-              <Section key={section.key} number={index + 1} section={section} />
-            ))}
-          </div>
-        ))}
+        <h2 className="mb-2 text-2xl font-semibold">Issues</h2>
+        {
+          // TODO: put some sort of summary or intro to the page here?
+          roots.map((root) => (
+            <div key={root.rootId} className="mb-12">
+              {root.sections.map((section, index) => (
+                <Section
+                  key={section.key}
+                  number={index + 1}
+                  section={section}
+                />
+              ))}
+            </div>
+          ))
+        }
       </div>
     </div>
   );
