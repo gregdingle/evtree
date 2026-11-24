@@ -102,12 +102,17 @@ export function Histogram(props: HistogramProps) {
   }
 
   return (
-    <div {...props} id="histogram-export">
-      <h3 className="mb-4 text-lg font-semibold">
+    <div
+      {...props}
+      id="histogram-export"
+      // NOTE: text-lg is the size of text here that does not set its own
+      className={`text-lg ${props.className ?? ""}`}
+    >
+      <h3 className="mb-4 text-2xl font-semibold">
         Probabilities of Outcome Ranges
       </h3>
       {HistogramBars(histogramData, maxProbability, currency, rounding)}
-      <h3 className="mt-8 mb-4 text-lg font-semibold">
+      <h3 className="mt-8 mb-4 text-2xl font-semibold">
         Probability of Outcome Over-Under
         <input
           name="breakpoint"
@@ -156,7 +161,7 @@ function HistogramBars(
         return (
           <div key={binLabel} className="flex items-center space-x-4">
             {/* Bin label (y-axis) */}
-            <div className="w-32 text-right">{binLabel}</div>
+            <div className="w-40 text-right">{binLabel}</div>
 
             {/* Bar */}
             <div className="flex h-12 flex-1 items-center">
@@ -172,7 +177,7 @@ function HistogramBars(
             </div>
 
             {/* Probability label */}
-            <div className="w-16 text-right text-gray-600">
+            <div className="w-20 text-right text-gray-600">
               {(probability * 100).toFixed(1)}%
             </div>
           </div>
