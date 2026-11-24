@@ -185,37 +185,67 @@ export function Toolbar() {
   // Undo, redo, copy, and paste leave text editing to the browser. Cmd+S shares
   // the tree even from form fields and prevents browser save when available.
   // TODO: make hotkey usage also flash corresponding button
-  useHotkeys("ctrl+z", () => undo());
+  // NOTE: a hotkey works exactly when its button does. The histogram and the
+  // walkthru take the place of the canvas, so what acts on the canvas is off
+  // then. That also leaves Cmd+C to the browser, for copying text out of the
+  // walkthru while a node is selected.
+  const isEnabled = {
+    copy: hasSelectedItems && !isCanvasHidden,
+    paste: hasClipboardContent && !isCanvasHidden,
+    deleteSelected: hasSelectedItems && !isCanvasHidden,
+    arrange: hasNodes && !isCanvasHidden,
+    undo: canUndo && !isCanvasHidden,
+    redo: canRedo && !isCanvasHidden,
+    showEVs: hasTerminalNodes && !isCanvasHidden,
+    showHistogram: hasTerminalNodes,
+    showWalkthru: hasNodes,
+    shareLink: Boolean(firebaseApp) && hasNodes && !isLinkCopied,
+  };
+
+  useHotkeys("ctrl+z", () => undo(), { enabled: isEnabled.undo });
   useHotkeys("meta+z", () => undo(), {
-    enabled: canUndo,
+    enabled: isEnabled.undo,
     preventDefault: true,
   });
-  useHotkeys("ctrl+y", () => redo());
+  useHotkeys("ctrl+y", () => redo(), { enabled: isEnabled.redo });
   useHotkeys("meta+y, meta+shift+z", () => redo(), {
-    enabled: canRedo,
+    enabled: isEnabled.redo,
     preventDefault: true,
   });
-  useHotkeys("ctrl+c", () => copy());
+  useHotkeys("ctrl+c", () => copy(), { enabled: isEnabled.copy });
   useHotkeys("meta+c", () => copy(), {
-    enabled: hasSelectedItems,
+    enabled: isEnabled.copy,
     preventDefault: true,
   });
-  useHotkeys("ctrl+v", () => paste());
+  useHotkeys("ctrl+v", () => paste(), { enabled: isEnabled.paste });
   useHotkeys("meta+v", () => paste(), {
-    enabled: hasClipboardContent,
+    enabled: isEnabled.paste,
     preventDefault: true,
   });
   // NOTE: reset only available as a hotkey as a hidden feature
   useHotkeys("ctrl+shift+r", handleReset, { enableOnFormTags: true });
-  useHotkeys("ctrl+a", () => arrange(), { enableOnFormTags: false });
-  useHotkeys("ctrl+h", showHistogram, { enableOnFormTags: false });
-  useHotkeys("ctrl+e", () => showEVs(), { enableOnFormTags: false });
-  useHotkeys("ctrl+delete", deleteSelected, { enableOnFormTags: true });
+  useHotkeys("ctrl+a", () => arrange(), {
+    enabled: isEnabled.arrange,
+    enableOnFormTags: false,
+  });
+  useHotkeys("ctrl+h", showHistogram, {
+    enabled: isEnabled.showHistogram,
+    enableOnFormTags: false,
+  });
+  useHotkeys("ctrl+e", () => showEVs(), {
+    enabled: isEnabled.showEVs,
+    enableOnFormTags: false,
+  });
+  useHotkeys("ctrl+delete", deleteSelected, {
+    enabled: isEnabled.deleteSelected,
+    enableOnFormTags: true,
+  });
   useHotkeys("ctrl+s", () => currentTree && handleShareLink(currentTree), {
+    enabled: isEnabled.shareLink,
     enableOnFormTags: true,
   });
   useHotkeys("meta+s", () => currentTree && handleShareLink(currentTree), {
-    enabled: Boolean(firebaseApp && currentTree),
+    enabled: isEnabled.shareLink,
     enableOnFormTags: true,
     preventDefault: true,
   });
@@ -251,7 +281,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => copy()}
           tooltip={isMac ? "Cmd+C" : "Ctrl+C"}
-          disabled={!hasSelectedItems || isCanvasHidden}
+          disabled={!isEnabled.copy}
         >
           <DocumentDuplicateIcon className="h-4 w-4" />
           Copy
@@ -259,7 +289,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => paste()}
           tooltip={isMac ? "Cmd+V" : "Ctrl+V"}
-          disabled={!hasClipboardContent}
+          disabled={!isEnabled.paste}
         >
           <ClipboardDocumentIcon className="h-4 w-4" />
           Paste
@@ -267,7 +297,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={deleteSelected}
           tooltip="Ctrl+Delete"
-          disabled={!hasSelectedItems || isCanvasHidden}
+          disabled={!isEnabled.deleteSelected}
         >
           <TrashIcon className="h-4 w-4" />
           Delete
@@ -281,7 +311,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={handleArrange}
           tooltip="Ctrl+A"
-          disabled={!hasNodes || isCanvasHidden}
+          disabled={!isEnabled.arrange}
           dropdownItems={{
             compact: "Compact",
             rightAligned: "Right-aligned",
@@ -294,7 +324,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => undo()}
           tooltip={isMac ? "Cmd+Z" : "Ctrl+Z"}
-          disabled={!canUndo || isCanvasHidden}
+          disabled={!isEnabled.undo}
         >
           <ArrowUturnLeftIcon className="h-4 w-4" />
           Undo
@@ -302,7 +332,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => redo()}
           tooltip={isMac ? "Cmd+Shift+Z" : "Ctrl+Y"}
-          disabled={!canRedo || isCanvasHidden}
+          disabled={!isEnabled.redo}
         >
           <ArrowUturnRightIcon className="h-4 w-4" />
           Redo
@@ -314,7 +344,7 @@ export function Toolbar() {
             areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
           }
           active={areEVsShowing}
-          disabled={!hasTerminalNodes || isCanvasHidden}
+          disabled={!isEnabled.showEVs}
           dropdownItems={{
             show: "Show path values",
             hide: "Hide path values",
@@ -331,7 +361,7 @@ export function Toolbar() {
               : `Show Histogram \n(Ctrl+H)`
           }
           active={isHistogramOpen}
-          disabled={!hasTerminalNodes}
+          disabled={!isEnabled.showHistogram}
         >
           <ChartBarIcon className="h-4 w-4" />
           Histogram
@@ -344,7 +374,7 @@ export function Toolbar() {
               : "Show Walkthrough: \nthe tree explained issue by issue"
           }
           active={isWalkthruOpen}
-          disabled={!hasNodes}
+          disabled={!isEnabled.showWalkthru}
         >
           <ListBulletIcon className="h-4 w-4" />
           Walkthrough
@@ -356,7 +386,7 @@ export function Toolbar() {
             <ToolbarButton
               onButtonClick={() => currentTree && handleShareLink(currentTree)}
               tooltip={`Upload tree and copy URL for sharing (${isMac ? "Cmd+S" : "Ctrl+S"})`}
-              disabled={!hasNodes || isLinkCopied}
+              disabled={!isEnabled.shareLink}
             >
               <LinkIcon className="h-4 w-4" />
               {isLinkCopied ? (
