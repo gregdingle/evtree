@@ -1,0 +1,1107 @@
+{
+  "id": "age-discrimination-defendant",
+  "name": "Age Discrimination: Defendant's Side, with fees and costs",
+  "description": "Age discrimination claim for constructive discharge. Written for counsel for the employer, D.\n\nD, a manufacturing firm that had fallen on hard times, has been sued under the Age Discrimination in Employment Act by P, a former manager aged 67. P claims that D constructively discharged him because of his age.\n\nSix months ago, D demoted P and two other managers, aged 63 and 36, in a series of personnel changes meant to bring vitality and profits back to the company. P had been with the company for 30 years. He was reassigned to clerical duties, moved to a small windowless office, lost his company car, and was told to deal only with his replacement and no longer with the executives he used to report to. P quit rather than accept these conditions. The 36-year-old manager also quit, and has moved back to his home town. The 63-year-old manager has stayed in the job.\n\n## Liability\n\n**Intolerable conditions.** The first question for the jury is whether the conditions that came with the demotion were so intolerable that a reasonable person would have quit. If not, the jury will return a verdict for D. For P: the demotion after 30 years, the windowless office, the loss of the company car and of access to the executives, the demeaning work, and that the young manager also quit. For D: the older manager has not quit, the young manager moved back to his home town, and P is not a sympathetic witness. Counsel estimates an 80% chance that the jury finds the conditions intolerable.\n\n**Intent.** If the conditions were intolerable, the judge may still rule, as a matter of law, that D must have intended P to quit. This judge is pro-management, but the trend in the law is against requiring intent. Counsel estimates a 25% chance that the judge rules that intent is necessary.\n\nIf intent is necessary, D wins unless the jury finds that D acted with the intent of forcing P to resign. For P: he claims that an executive vice president told him that the company hoped all the old deadwood would quit, the jury may be upset with D, and P may discover a memo from the executive vice president on the personnel changes, with a blind copy note to the general counsel saying that it may be necessary to terminate all three managers. For D: it could simply have fired all three, after the demotion it began talking to P about a promotion, and it may show that the conditions were the result of the chaos that followed a massive reorganization. Counsel estimates two chances in three that the jury finds this intent.\n\n**Age.** Whether or not intent is necessary, D loses only if the jury finds that it acted because of P's age and not because of his performance. For P: he claims that the executive vice president said that he could not handle the pace, the jury may be angry with D, and P may argue that it was widely known that the young manager was already planning to resign. For D: the executive vice president says that he only said that new ideas were needed, D may not have known of the young manager's plan, and one of the new managers is 59. Counsel estimates a 90% chance that the jury finds that D acted because of P's age if it has already found that D intended to force P to quit, and an 80% chance if the judge has ruled that intent is not necessary.\n\n## Damages\n\nIf D is liable, it is unclear whether P was really damaged, because he may have been planning to retire anyway. He had asked about his retirement benefits at 68, 69 and 70, and he may have told other workers that he was planning to retire. Against this, his wife has high medical expenses, and he contributed his own money to buy a personal computer for his work. Counsel estimates a 25% chance that the jury believes that P would have retired then anyhow, and awards no lost wages.\n\nOtherwise, counsel estimates two chances in three that the jury finds that P would have retired at 69, for $50,000 in lost wages, and one chance in three that it finds that he would have retired at 70, for $100,000 in lost wages.\n\nIf lost wages are awarded, the court may double them as liquidated damages, on the ground that D's violation was willful. Counsel estimates a 90% chance that the damages are doubled, and a 10% chance of single damages only.\n\n## Fees and costs\n\nIf D wins, its own fees and other litigation costs will be $50,000. If D loses, it will also be responsible for P's legal fees, whether or not any lost wages are awarded. The amount is quite uncertain at this early stage: counsel estimates two chances in three that D's costs and P's fees will total $100,000, and one chance in three that they will total $150,000.",
+  "createdAt": "2026-11-24T00:00:00.000Z",
+  "updatedAt": "2026-11-24T00:00:00.000Z",
+  "currency": "USD",
+  "rounding": "US",
+  "nodes": {
+    "age-discrimination-defendant-n1": {
+      "id": "age-discrimination-defendant-n1",
+      "type": "chance",
+      "position": {
+        "x": 0,
+        "y": 1831.25
+      },
+      "data": {
+        "description": "Were the conditions so intolerable that a reasonable person would have quit?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n2": {
+      "id": "age-discrimination-defendant-n2",
+      "type": "chance",
+      "position": {
+        "x": 250,
+        "y": 1362.5
+      },
+      "data": {
+        "description": "Will the judge rule that intent to force P to quit is necessary?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n3": {
+      "id": "age-discrimination-defendant-n3",
+      "type": "chance",
+      "position": {
+        "x": 500,
+        "y": 875.0
+      },
+      "data": {
+        "description": "Did D intend to force P to quit?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n4": {
+      "id": "age-discrimination-defendant-n4",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 650.0
+      },
+      "data": {
+        "description": "Did D act because of P's age?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n5": {
+      "id": "age-discrimination-defendant-n5",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 300.0
+      },
+      "data": {
+        "description": "Would P have retired then anyhow?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n6": {
+      "id": "age-discrimination-defendant-n6",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 50.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n7": {
+      "id": "age-discrimination-defendant-n7",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 0
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-100000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n8": {
+      "id": "age-discrimination-defendant-n8",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-150000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n9": {
+      "id": "age-discrimination-defendant-n9",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 550.0
+      },
+      "data": {
+        "description": "When would P otherwise have retired?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n10": {
+      "id": "age-discrimination-defendant-n10",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 350.0
+      },
+      "data": {
+        "description": "Will the damages be doubled as liquidated damages?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n11": {
+      "id": "age-discrimination-defendant-n11",
+      "type": "chance",
+      "position": {
+        "x": 1750,
+        "y": 250.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n12": {
+      "id": "age-discrimination-defendant-n12",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-150000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n13": {
+      "id": "age-discrimination-defendant-n13",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n14": {
+      "id": "age-discrimination-defendant-n14",
+      "type": "chance",
+      "position": {
+        "x": 1750,
+        "y": 450.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n15": {
+      "id": "age-discrimination-defendant-n15",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n16": {
+      "id": "age-discrimination-defendant-n16",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-250000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n17": {
+      "id": "age-discrimination-defendant-n17",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 750.0
+      },
+      "data": {
+        "description": "Will the damages be doubled as liquidated damages?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n18": {
+      "id": "age-discrimination-defendant-n18",
+      "type": "chance",
+      "position": {
+        "x": 1750,
+        "y": 650.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n19": {
+      "id": "age-discrimination-defendant-n19",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n20": {
+      "id": "age-discrimination-defendant-n20",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 700
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-250000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n21": {
+      "id": "age-discrimination-defendant-n21",
+      "type": "chance",
+      "position": {
+        "x": 1750,
+        "y": 850.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n22": {
+      "id": "age-discrimination-defendant-n22",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 800
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-300000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n23": {
+      "id": "age-discrimination-defendant-n23",
+      "type": "terminal",
+      "position": {
+        "x": 2000,
+        "y": 900
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-350000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n24": {
+      "id": "age-discrimination-defendant-n24",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 1000
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-50000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n25": {
+      "id": "age-discrimination-defendant-n25",
+      "type": "terminal",
+      "position": {
+        "x": 750,
+        "y": 1100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-50000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n26": {
+      "id": "age-discrimination-defendant-n26",
+      "type": "chance",
+      "position": {
+        "x": 500,
+        "y": 1850.0
+      },
+      "data": {
+        "description": "Did D act because of P's age?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n27": {
+      "id": "age-discrimination-defendant-n27",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 1500.0
+      },
+      "data": {
+        "description": "Would P have retired then anyhow?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n28": {
+      "id": "age-discrimination-defendant-n28",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 1250.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n29": {
+      "id": "age-discrimination-defendant-n29",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 1200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-100000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n30": {
+      "id": "age-discrimination-defendant-n30",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 1300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-150000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n31": {
+      "id": "age-discrimination-defendant-n31",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 1750.0
+      },
+      "data": {
+        "description": "When would P otherwise have retired?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n32": {
+      "id": "age-discrimination-defendant-n32",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1550.0
+      },
+      "data": {
+        "description": "Will the damages be doubled as liquidated damages?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n33": {
+      "id": "age-discrimination-defendant-n33",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 1450.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n34": {
+      "id": "age-discrimination-defendant-n34",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-150000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n35": {
+      "id": "age-discrimination-defendant-n35",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n36": {
+      "id": "age-discrimination-defendant-n36",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 1650.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n37": {
+      "id": "age-discrimination-defendant-n37",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n38": {
+      "id": "age-discrimination-defendant-n38",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1700
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-250000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n39": {
+      "id": "age-discrimination-defendant-n39",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1950.0
+      },
+      "data": {
+        "description": "Will the damages be doubled as liquidated damages?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n40": {
+      "id": "age-discrimination-defendant-n40",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 1850.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n41": {
+      "id": "age-discrimination-defendant-n41",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1800
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n42": {
+      "id": "age-discrimination-defendant-n42",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1900
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-250000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n43": {
+      "id": "age-discrimination-defendant-n43",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 2050.0
+      },
+      "data": {
+        "description": "How much will D's costs and P's fees be?"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n44": {
+      "id": "age-discrimination-defendant-n44",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 2000
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-300000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n45": {
+      "id": "age-discrimination-defendant-n45",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 2100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-350000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n46": {
+      "id": "age-discrimination-defendant-n46",
+      "type": "terminal",
+      "position": {
+        "x": 750,
+        "y": 2200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-50000"
+      },
+      "origin": [0.5, 0]
+    },
+    "age-discrimination-defendant-n47": {
+      "id": "age-discrimination-defendant-n47",
+      "type": "terminal",
+      "position": {
+        "x": 250,
+        "y": 2300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-50000"
+      },
+      "origin": [0.5, 0]
+    }
+  },
+  "edges": {
+    "eage-discrimination-defendant-n6-age-discrimination-defendant-n7": {
+      "id": "eage-discrimination-defendant-n6-age-discrimination-defendant-n7",
+      "source": "age-discrimination-defendant-n6",
+      "target": "age-discrimination-defendant-n7",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n6-age-discrimination-defendant-n8": {
+      "id": "eage-discrimination-defendant-n6-age-discrimination-defendant-n8",
+      "source": "age-discrimination-defendant-n6",
+      "target": "age-discrimination-defendant-n8",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n5-age-discrimination-defendant-n6": {
+      "id": "eage-discrimination-defendant-n5-age-discrimination-defendant-n6",
+      "source": "age-discrimination-defendant-n5",
+      "target": "age-discrimination-defendant-n6",
+      "type": "custom",
+      "data": {
+        "label": "Would have retired anyhow",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eage-discrimination-defendant-n11-age-discrimination-defendant-n12": {
+      "id": "eage-discrimination-defendant-n11-age-discrimination-defendant-n12",
+      "source": "age-discrimination-defendant-n11",
+      "target": "age-discrimination-defendant-n12",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n11-age-discrimination-defendant-n13": {
+      "id": "eage-discrimination-defendant-n11-age-discrimination-defendant-n13",
+      "source": "age-discrimination-defendant-n11",
+      "target": "age-discrimination-defendant-n13",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n10-age-discrimination-defendant-n11": {
+      "id": "eage-discrimination-defendant-n10-age-discrimination-defendant-n11",
+      "source": "age-discrimination-defendant-n10",
+      "target": "age-discrimination-defendant-n11",
+      "type": "custom",
+      "data": {
+        "label": "Single damages only",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "eage-discrimination-defendant-n14-age-discrimination-defendant-n15": {
+      "id": "eage-discrimination-defendant-n14-age-discrimination-defendant-n15",
+      "source": "age-discrimination-defendant-n14",
+      "target": "age-discrimination-defendant-n15",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n14-age-discrimination-defendant-n16": {
+      "id": "eage-discrimination-defendant-n14-age-discrimination-defendant-n16",
+      "source": "age-discrimination-defendant-n14",
+      "target": "age-discrimination-defendant-n16",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n10-age-discrimination-defendant-n14": {
+      "id": "eage-discrimination-defendant-n10-age-discrimination-defendant-n14",
+      "source": "age-discrimination-defendant-n10",
+      "target": "age-discrimination-defendant-n14",
+      "type": "custom",
+      "data": {
+        "label": "Double damages",
+        "description": "",
+        "probabilityExpr": "0.9"
+      }
+    },
+    "eage-discrimination-defendant-n9-age-discrimination-defendant-n10": {
+      "id": "eage-discrimination-defendant-n9-age-discrimination-defendant-n10",
+      "source": "age-discrimination-defendant-n9",
+      "target": "age-discrimination-defendant-n10",
+      "type": "custom",
+      "data": {
+        "label": "At 69: $50K lost wages",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n18-age-discrimination-defendant-n19": {
+      "id": "eage-discrimination-defendant-n18-age-discrimination-defendant-n19",
+      "source": "age-discrimination-defendant-n18",
+      "target": "age-discrimination-defendant-n19",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n18-age-discrimination-defendant-n20": {
+      "id": "eage-discrimination-defendant-n18-age-discrimination-defendant-n20",
+      "source": "age-discrimination-defendant-n18",
+      "target": "age-discrimination-defendant-n20",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n17-age-discrimination-defendant-n18": {
+      "id": "eage-discrimination-defendant-n17-age-discrimination-defendant-n18",
+      "source": "age-discrimination-defendant-n17",
+      "target": "age-discrimination-defendant-n18",
+      "type": "custom",
+      "data": {
+        "label": "Single damages only",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "eage-discrimination-defendant-n21-age-discrimination-defendant-n22": {
+      "id": "eage-discrimination-defendant-n21-age-discrimination-defendant-n22",
+      "source": "age-discrimination-defendant-n21",
+      "target": "age-discrimination-defendant-n22",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n21-age-discrimination-defendant-n23": {
+      "id": "eage-discrimination-defendant-n21-age-discrimination-defendant-n23",
+      "source": "age-discrimination-defendant-n21",
+      "target": "age-discrimination-defendant-n23",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n17-age-discrimination-defendant-n21": {
+      "id": "eage-discrimination-defendant-n17-age-discrimination-defendant-n21",
+      "source": "age-discrimination-defendant-n17",
+      "target": "age-discrimination-defendant-n21",
+      "type": "custom",
+      "data": {
+        "label": "Double damages",
+        "description": "",
+        "probabilityExpr": "0.9"
+      }
+    },
+    "eage-discrimination-defendant-n9-age-discrimination-defendant-n17": {
+      "id": "eage-discrimination-defendant-n9-age-discrimination-defendant-n17",
+      "source": "age-discrimination-defendant-n9",
+      "target": "age-discrimination-defendant-n17",
+      "type": "custom",
+      "data": {
+        "label": "At 70: $100K lost wages",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n5-age-discrimination-defendant-n9": {
+      "id": "eage-discrimination-defendant-n5-age-discrimination-defendant-n9",
+      "source": "age-discrimination-defendant-n5",
+      "target": "age-discrimination-defendant-n9",
+      "type": "custom",
+      "data": {
+        "label": "Would not yet have retired",
+        "description": "",
+        "probabilityExpr": "0.75"
+      }
+    },
+    "eage-discrimination-defendant-n4-age-discrimination-defendant-n5": {
+      "id": "eage-discrimination-defendant-n4-age-discrimination-defendant-n5",
+      "source": "age-discrimination-defendant-n4",
+      "target": "age-discrimination-defendant-n5",
+      "type": "custom",
+      "data": {
+        "label": "Because of P's age",
+        "description": "",
+        "probabilityExpr": "0.9"
+      }
+    },
+    "eage-discrimination-defendant-n4-age-discrimination-defendant-n24": {
+      "id": "eage-discrimination-defendant-n4-age-discrimination-defendant-n24",
+      "source": "age-discrimination-defendant-n4",
+      "target": "age-discrimination-defendant-n24",
+      "type": "custom",
+      "data": {
+        "label": "Not because of P's age",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "eage-discrimination-defendant-n3-age-discrimination-defendant-n4": {
+      "id": "eage-discrimination-defendant-n3-age-discrimination-defendant-n4",
+      "source": "age-discrimination-defendant-n3",
+      "target": "age-discrimination-defendant-n4",
+      "type": "custom",
+      "data": {
+        "label": "Intended to force P to quit",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n3-age-discrimination-defendant-n25": {
+      "id": "eage-discrimination-defendant-n3-age-discrimination-defendant-n25",
+      "source": "age-discrimination-defendant-n3",
+      "target": "age-discrimination-defendant-n25",
+      "type": "custom",
+      "data": {
+        "label": "Was not D's intent",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n2-age-discrimination-defendant-n3": {
+      "id": "eage-discrimination-defendant-n2-age-discrimination-defendant-n3",
+      "source": "age-discrimination-defendant-n2",
+      "target": "age-discrimination-defendant-n3",
+      "type": "custom",
+      "data": {
+        "label": "Intent necessary",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eage-discrimination-defendant-n28-age-discrimination-defendant-n29": {
+      "id": "eage-discrimination-defendant-n28-age-discrimination-defendant-n29",
+      "source": "age-discrimination-defendant-n28",
+      "target": "age-discrimination-defendant-n29",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n28-age-discrimination-defendant-n30": {
+      "id": "eage-discrimination-defendant-n28-age-discrimination-defendant-n30",
+      "source": "age-discrimination-defendant-n28",
+      "target": "age-discrimination-defendant-n30",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n27-age-discrimination-defendant-n28": {
+      "id": "eage-discrimination-defendant-n27-age-discrimination-defendant-n28",
+      "source": "age-discrimination-defendant-n27",
+      "target": "age-discrimination-defendant-n28",
+      "type": "custom",
+      "data": {
+        "label": "Would have retired anyhow",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eage-discrimination-defendant-n33-age-discrimination-defendant-n34": {
+      "id": "eage-discrimination-defendant-n33-age-discrimination-defendant-n34",
+      "source": "age-discrimination-defendant-n33",
+      "target": "age-discrimination-defendant-n34",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n33-age-discrimination-defendant-n35": {
+      "id": "eage-discrimination-defendant-n33-age-discrimination-defendant-n35",
+      "source": "age-discrimination-defendant-n33",
+      "target": "age-discrimination-defendant-n35",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n32-age-discrimination-defendant-n33": {
+      "id": "eage-discrimination-defendant-n32-age-discrimination-defendant-n33",
+      "source": "age-discrimination-defendant-n32",
+      "target": "age-discrimination-defendant-n33",
+      "type": "custom",
+      "data": {
+        "label": "Single damages only",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "eage-discrimination-defendant-n36-age-discrimination-defendant-n37": {
+      "id": "eage-discrimination-defendant-n36-age-discrimination-defendant-n37",
+      "source": "age-discrimination-defendant-n36",
+      "target": "age-discrimination-defendant-n37",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n36-age-discrimination-defendant-n38": {
+      "id": "eage-discrimination-defendant-n36-age-discrimination-defendant-n38",
+      "source": "age-discrimination-defendant-n36",
+      "target": "age-discrimination-defendant-n38",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n32-age-discrimination-defendant-n36": {
+      "id": "eage-discrimination-defendant-n32-age-discrimination-defendant-n36",
+      "source": "age-discrimination-defendant-n32",
+      "target": "age-discrimination-defendant-n36",
+      "type": "custom",
+      "data": {
+        "label": "Double damages",
+        "description": "",
+        "probabilityExpr": "0.9"
+      }
+    },
+    "eage-discrimination-defendant-n31-age-discrimination-defendant-n32": {
+      "id": "eage-discrimination-defendant-n31-age-discrimination-defendant-n32",
+      "source": "age-discrimination-defendant-n31",
+      "target": "age-discrimination-defendant-n32",
+      "type": "custom",
+      "data": {
+        "label": "At 69: $50K lost wages",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n40-age-discrimination-defendant-n41": {
+      "id": "eage-discrimination-defendant-n40-age-discrimination-defendant-n41",
+      "source": "age-discrimination-defendant-n40",
+      "target": "age-discrimination-defendant-n41",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n40-age-discrimination-defendant-n42": {
+      "id": "eage-discrimination-defendant-n40-age-discrimination-defendant-n42",
+      "source": "age-discrimination-defendant-n40",
+      "target": "age-discrimination-defendant-n42",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n39-age-discrimination-defendant-n40": {
+      "id": "eage-discrimination-defendant-n39-age-discrimination-defendant-n40",
+      "source": "age-discrimination-defendant-n39",
+      "target": "age-discrimination-defendant-n40",
+      "type": "custom",
+      "data": {
+        "label": "Single damages only",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "eage-discrimination-defendant-n43-age-discrimination-defendant-n44": {
+      "id": "eage-discrimination-defendant-n43-age-discrimination-defendant-n44",
+      "source": "age-discrimination-defendant-n43",
+      "target": "age-discrimination-defendant-n44",
+      "type": "custom",
+      "data": {
+        "label": "$100,000",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eage-discrimination-defendant-n43-age-discrimination-defendant-n45": {
+      "id": "eage-discrimination-defendant-n43-age-discrimination-defendant-n45",
+      "source": "age-discrimination-defendant-n43",
+      "target": "age-discrimination-defendant-n45",
+      "type": "custom",
+      "data": {
+        "label": "$150,000",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n39-age-discrimination-defendant-n43": {
+      "id": "eage-discrimination-defendant-n39-age-discrimination-defendant-n43",
+      "source": "age-discrimination-defendant-n39",
+      "target": "age-discrimination-defendant-n43",
+      "type": "custom",
+      "data": {
+        "label": "Double damages",
+        "description": "",
+        "probabilityExpr": "0.9"
+      }
+    },
+    "eage-discrimination-defendant-n31-age-discrimination-defendant-n39": {
+      "id": "eage-discrimination-defendant-n31-age-discrimination-defendant-n39",
+      "source": "age-discrimination-defendant-n31",
+      "target": "age-discrimination-defendant-n39",
+      "type": "custom",
+      "data": {
+        "label": "At 70: $100K lost wages",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eage-discrimination-defendant-n27-age-discrimination-defendant-n31": {
+      "id": "eage-discrimination-defendant-n27-age-discrimination-defendant-n31",
+      "source": "age-discrimination-defendant-n27",
+      "target": "age-discrimination-defendant-n31",
+      "type": "custom",
+      "data": {
+        "label": "Would not yet have retired",
+        "description": "",
+        "probabilityExpr": "0.75"
+      }
+    },
+    "eage-discrimination-defendant-n26-age-discrimination-defendant-n27": {
+      "id": "eage-discrimination-defendant-n26-age-discrimination-defendant-n27",
+      "source": "age-discrimination-defendant-n26",
+      "target": "age-discrimination-defendant-n27",
+      "type": "custom",
+      "data": {
+        "label": "Because of P's age",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "eage-discrimination-defendant-n26-age-discrimination-defendant-n46": {
+      "id": "eage-discrimination-defendant-n26-age-discrimination-defendant-n46",
+      "source": "age-discrimination-defendant-n26",
+      "target": "age-discrimination-defendant-n46",
+      "type": "custom",
+      "data": {
+        "label": "Not because of P's age",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    },
+    "eage-discrimination-defendant-n2-age-discrimination-defendant-n26": {
+      "id": "eage-discrimination-defendant-n2-age-discrimination-defendant-n26",
+      "source": "age-discrimination-defendant-n2",
+      "target": "age-discrimination-defendant-n26",
+      "type": "custom",
+      "data": {
+        "label": "Intent not necessary",
+        "description": "",
+        "probabilityExpr": "0.75"
+      }
+    },
+    "eage-discrimination-defendant-n1-age-discrimination-defendant-n2": {
+      "id": "eage-discrimination-defendant-n1-age-discrimination-defendant-n2",
+      "source": "age-discrimination-defendant-n1",
+      "target": "age-discrimination-defendant-n2",
+      "type": "custom",
+      "data": {
+        "label": "Conditions intolerable",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "eage-discrimination-defendant-n1-age-discrimination-defendant-n47": {
+      "id": "eage-discrimination-defendant-n1-age-discrimination-defendant-n47",
+      "source": "age-discrimination-defendant-n1",
+      "target": "age-discrimination-defendant-n47",
+      "type": "custom",
+      "data": {
+        "label": "Not so intolerable",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    }
+  }
+}

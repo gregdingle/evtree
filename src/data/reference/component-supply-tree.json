@@ -1,0 +1,238 @@
+{
+  "id": "component-supply",
+  "name": "Component Supply",
+  "description": "Breach of contract over a component supplied for a product launch. Written for counsel for Plaintiff.\n\nDefendant agreed to supply a component that Plaintiff needed to launch a new product line. Plaintiff says that the component did not meet the contract specifications, and claims its losses from two things: replacing the component, and the delay of the launch. Defendant says that the component met the specifications. It also says that the contract does not allow delay damages. Even if the judge rules that it does, Defendant says that the delays came only from Plaintiff's own mismanagement of the launch, and that the time taken to replace the component made no difference.\n\n## Counsel's assessment\n\nAfter reviewing the evidence, the witnesses, the law, and the judges, juries and verdicts of this venue, counsel estimates:\n\n- A 60% chance that the jury finds that the component did not meet the contract specifications, and a 40% chance that it finds otherwise, which is a defense verdict.\n- A 75% chance that the judge reads the contract as excluding delay damages, and a 25% chance of a ruling for Plaintiff on this issue.\n- If the judge allows delay damages, an 80% chance that the jury finds that replacing the component caused at least some of the delay, and a 20% chance that it finds that the delay was solely due to Plaintiff's own missteps.\n- If the jury awards both delay damages and replacement costs, a 50% chance of $13 million in total, a 25% chance of only $10 million, and a 25% chance of the full $20 million that Plaintiff seeks for all its losses.\n- If the jury awards only the replacement costs, they are undisputed at $4 million.\n\nThe costs of litigation are left out.",
+  "createdAt": "2026-11-24T00:00:00.000Z",
+  "updatedAt": "2026-11-24T00:00:00.000Z",
+  "currency": "USD",
+  "rounding": "US",
+  "nodes": {
+    "component-supply-n1": {
+      "id": "component-supply-n1",
+      "type": "chance",
+      "position": {
+        "x": 0,
+        "y": 400.0
+      },
+      "data": {
+        "description": "Did the component meet the contract specifications?"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n2": {
+      "id": "component-supply-n2",
+      "type": "chance",
+      "position": {
+        "x": 250,
+        "y": 300.0
+      },
+      "data": {
+        "description": "Does the contract allow delay damages?"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n3": {
+      "id": "component-supply-n3",
+      "type": "chance",
+      "position": {
+        "x": 500,
+        "y": 200.0
+      },
+      "data": {
+        "description": "Did replacing the component delay the launch?"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n4": {
+      "id": "component-supply-n4",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 100.0
+      },
+      "data": {
+        "description": "How much will the jury award for delay and replacement?"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n5": {
+      "id": "component-supply-n5",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 0
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "20000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n6": {
+      "id": "component-supply-n6",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "13000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n7": {
+      "id": "component-supply-n7",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "10000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n8": {
+      "id": "component-supply-n8",
+      "type": "terminal",
+      "position": {
+        "x": 750,
+        "y": 300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "4000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n9": {
+      "id": "component-supply-n9",
+      "type": "terminal",
+      "position": {
+        "x": 500,
+        "y": 400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "4000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "component-supply-n10": {
+      "id": "component-supply-n10",
+      "type": "terminal",
+      "position": {
+        "x": 250,
+        "y": 500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    }
+  },
+  "edges": {
+    "ecomponent-supply-n4-component-supply-n5": {
+      "id": "ecomponent-supply-n4-component-supply-n5",
+      "source": "component-supply-n4",
+      "target": "component-supply-n5",
+      "type": "custom",
+      "data": {
+        "label": "Full $20M claimed",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "ecomponent-supply-n4-component-supply-n6": {
+      "id": "ecomponent-supply-n4-component-supply-n6",
+      "source": "component-supply-n4",
+      "target": "component-supply-n6",
+      "type": "custom",
+      "data": {
+        "label": "$13M",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "ecomponent-supply-n4-component-supply-n7": {
+      "id": "ecomponent-supply-n4-component-supply-n7",
+      "source": "component-supply-n4",
+      "target": "component-supply-n7",
+      "type": "custom",
+      "data": {
+        "label": "$10M",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "ecomponent-supply-n3-component-supply-n4": {
+      "id": "ecomponent-supply-n3-component-supply-n4",
+      "source": "component-supply-n3",
+      "target": "component-supply-n4",
+      "type": "custom",
+      "data": {
+        "label": "Replacement caused delay",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "ecomponent-supply-n3-component-supply-n8": {
+      "id": "ecomponent-supply-n3-component-supply-n8",
+      "source": "component-supply-n3",
+      "target": "component-supply-n8",
+      "type": "custom",
+      "data": {
+        "label": "Delay solely Plaintiff's",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    },
+    "ecomponent-supply-n2-component-supply-n3": {
+      "id": "ecomponent-supply-n2-component-supply-n3",
+      "source": "component-supply-n2",
+      "target": "component-supply-n3",
+      "type": "custom",
+      "data": {
+        "label": "Delay damages allowed",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "ecomponent-supply-n2-component-supply-n9": {
+      "id": "ecomponent-supply-n2-component-supply-n9",
+      "source": "component-supply-n2",
+      "target": "component-supply-n9",
+      "type": "custom",
+      "data": {
+        "label": "Delay damages excluded",
+        "description": "",
+        "probabilityExpr": "0.75"
+      }
+    },
+    "ecomponent-supply-n1-component-supply-n2": {
+      "id": "ecomponent-supply-n1-component-supply-n2",
+      "source": "component-supply-n1",
+      "target": "component-supply-n2",
+      "type": "custom",
+      "data": {
+        "label": "Did not meet specs",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "ecomponent-supply-n1-component-supply-n10": {
+      "id": "ecomponent-supply-n1-component-supply-n10",
+      "source": "component-supply-n1",
+      "target": "component-supply-n10",
+      "type": "custom",
+      "data": {
+        "label": "Met specs",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    }
+  }
+}

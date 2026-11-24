@@ -8,6 +8,9 @@ import {
 import { getRootNodeIds } from "@/lib/maps";
 import { DecisionTree } from "@/lib/tree";
 
+import ageDefendant from "./age-discrimination-defendant-tree.json";
+import agePlaintiff from "./age-discrimination-plaintiff-tree.json";
+import componentSupply from "./component-supply-tree.json";
 import defenseWithCosts from "./hapless-harvest-defense-with-costs-tree.json";
 import plaintiffLessCosts from "./hapless-harvest-plaintiff-less-costs-tree.json";
 import plaintiffNoCosts from "./hapless-harvest-plaintiff-no-costs-tree.json";
@@ -38,13 +41,32 @@ import plaintiffNoCosts from "./hapless-harvest-plaintiff-no-costs-tree.json";
  *   negligence, where $20,000 would be expected. Those look like slips in the
  *   drawings. They are transcribed as drawn, because the expected values
  *   depend on them.
+ *
+ * The other reference trees are hypothetical cases with a known expected
+ * value. The description of each tree states the facts and estimates of its
+ * case in our own words.
+ *
+ * NOTE: about these trees:
+ *
+ * - They do not start with a choice between litigating and settling, and have
+ *   no branch for a certain outcome, as the prompt asks of the AI.
+ * - Each age discrimination tree is one tree, with the damages after each path
+ *   on which the defendant loses, and not a tree of the damages that starts
+ *   from the overall chance that the defendant wins or loses.
+ * - The age discrimination trees have probabilities of 2/3 and 1/3, not .67
+ *   and .33. Those give $147,000 exactly for the defendant, and $30,333.33
+ *   for the plaintiff, which comes to $30,000 when the probabilities of its
+ *   outcomes are rounded to whole percents before they are added up.
  */
 describe("reference trees", () => {
   test.each([
-    ["plaintiff, no costs", plaintiffNoCosts, 9656.63],
-    ["plaintiff, less costs", plaintiffLessCosts, 7946.63],
-    ["defense, with costs", defenseWithCosts, -40000],
-  ])("should have the expected value of the drawing: %s", (_, data, ev) => {
+    ["Hapless Harvest plaintiff, no costs", plaintiffNoCosts, 9656.63, 22],
+    ["Hapless Harvest plaintiff, less costs", plaintiffLessCosts, 7946.63, 22],
+    ["Hapless Harvest defense, with costs", defenseWithCosts, -40000, 22],
+    ["component supply", componentSupply, 3600000, 9],
+    ["age discrimination defendant", ageDefendant, -147000, 46],
+    ["age discrimination plaintiff", agePlaintiff, 30333.33, 34],
+  ])("should have the known expected value: %s", (_, data, ev, edges) => {
     const tree = data as unknown as DecisionTree;
     const { nodes } = computeNodeValues(
       mapValues(tree.nodes, (node) => toComputeNode(node)),
@@ -53,6 +75,6 @@ describe("reference trees", () => {
     const rootIds = getRootNodeIds(tree.nodes, tree.edges);
     expect(rootIds).toHaveLength(1);
     expect(nodes[rootIds[0]!]!.data.value).toBeCloseTo(ev, 1);
-    expect(Object.keys(tree.edges)).toHaveLength(22);
+    expect(Object.keys(tree.edges)).toHaveLength(edges);
   });
 });
