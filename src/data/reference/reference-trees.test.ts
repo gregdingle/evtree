@@ -14,6 +14,8 @@ import componentSupply from "./component-supply-tree.json";
 import defenseWithCosts from "./hapless-harvest-defense-with-costs-tree.json";
 import plaintiffLessCosts from "./hapless-harvest-plaintiff-less-costs-tree.json";
 import plaintiffNoCosts from "./hapless-harvest-plaintiff-no-costs-tree.json";
+import patentInfringement from "./patent-infringement-tree.json";
+import productLiability from "./product-liability-tree.json";
 
 /**
  * The reference trees are transcribed from decision trees drawn by Marjorie
@@ -48,8 +50,13 @@ import plaintiffNoCosts from "./hapless-harvest-plaintiff-no-costs-tree.json";
  *
  * NOTE: about these trees:
  *
- * - They do not start with a choice between litigating and settling, and have
- *   no branch for a certain outcome, as the prompt asks of the AI.
+ * - The component supply and age discrimination trees do not start with a
+ *   choice between litigating and settling, as the prompt asks of the AI. The
+ *   patent infringement and product liability trees do, because their cases
+ *   are about a settlement offer. The settlement is worth $1.8 million to the
+ *   plaintiff in the first, and costs the defendant $500,000 in the second.
+ *   Litigating is the better choice in both, so it gives the expected value.
+ * - No tree has a branch for a certain outcome, as the prompt asks of the AI.
  * - Each age discrimination tree is one tree, with the damages after each path
  *   on which the defendant loses, and not a tree of the damages that starts
  *   from the overall chance that the defendant wins or loses.
@@ -66,6 +73,8 @@ describe("reference trees", () => {
     ["component supply", componentSupply, 3600000, 9],
     ["age discrimination defendant", ageDefendant, -147000, 46],
     ["age discrimination plaintiff", agePlaintiff, 30333.33, 34],
+    ["patent infringement", patentInfringement, 2384000, 28],
+    ["product liability", productLiability, -296800, 46],
   ])("should have the known expected value: %s", (_, data, ev, edges) => {
     const tree = data as unknown as DecisionTree;
     const { nodes } = computeNodeValues(

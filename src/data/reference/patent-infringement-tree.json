@@ -1,0 +1,687 @@
+{
+  "id": "patent-infringement",
+  "name": "Patent Infringement",
+  "description": "Patent infringement claim over a disposable razor. Written for counsel for Plaintiff, the holder of the patent, who must advise whether to accept a settlement offer.\n\n## Facts\n\nPlaintiff holds a patent on a disposable razor with three blades. The patent is a narrow one: its claims say that the blades are placed so that all three reinforce the head of the razor, which gives a rigidity that consumers preferred in market tests.\n\nDefendant's shaving division began to make a razor that was no different in any material way. When Plaintiff gave notice, Defendant went back to its earlier design, and gradually lost market share to Plaintiff. In January 2000, Defendant began to sell a three-blade disposable razor of its own design, in which only one of the blades reinforces the head, and a plastic bar that is part of the head gives the extra rigidity in place of the second and third blades.\n\nIn early 2001, Plaintiff sued Defendant in federal district court for infringement of its patent, seeking damages for past infringement and an injunction against future sales. A judgment after trial is expected at the end of 2002. The patent expires at the end of 2004.\n\nDefendant has two defenses:\n\n- **No infringement**, literally or under the doctrine of equivalents, because the head is reinforced by the plastic bar and not by the second and third blades. The bar adds three percent to the cost of manufacture.\n- **Invalidity**, because Plaintiff's patent lawyers did not tell the Patent and Trademark Office of two earlier patents which, Defendant says, together covered the claimed invention and made it unpatentable. Plaintiff disputes that the earlier patents are relevant, and says that it did not need to disclose them, because they were cited in several other applications that the same examiner reviewed at about the same time. Defendant may try to call the examiner as a witness. He is retired, in uncertain health, and outside the jurisdiction of the court. Plaintiff fears that his testimony would hurt more than help.\n\n## The market\n\nAll amounts are in millions of dollars.\n\n| | 1999 | 2000 | 2001 | 2002 |\n|---|---|---|---|---|\n| Sales of disposable razors | 150 | 200 | 250 | 300 |\n| Plaintiff's market share | 40% | 35% | 30% | 30% |\n| Defendant's market share | 10% | 15% | 20% | 20% |\n\nSales are expected to stay at $300 million a year in 2003 and 2004. Plaintiff's profit margin on disposable razors has been 20%. Defendant gained substantially all the market share that Plaintiff lost. Plaintiff says that this was all due to the infringement. Defendant says that it was due to more advertising and to better quality.\n\n## Past damages\n\nPlaintiff will claim lost profits of $2 million for 2000 (5 points of market share on $200 million of sales at a 20% margin), $5 million for 2001 (10 points on $250 million) and $6 million for 2002 (10 points on $300 million), a total of $13 million.\n\nThe court may find this proof of lost profits too speculative, and measure the damages by a reasonable royalty. Royalties on other features of disposable razors have been about 2% to 3% of sales. On Defendant's sales of $140 million in 2000 to 2002, that is roughly $3 million to $4 million.\n\n## Future benefit\n\nIf the patent is found valid and infringed, Defendant will be enjoined from selling its current design for the two years that are left of the patent, and Plaintiff hopes to win back some or all of its lost market share. Each 5 points of market share is worth $6 million of profit over 2003 and 2004 together. Plaintiff expects to lose again whatever share it wins back, once the patent expires.\n\n## The settlement offer\n\nDefendant has offered to pay $600,000 today, and 1% of its sales in 2003 and 2004, which are estimated at $60 million a year, in final settlement of the lawsuit and for a license under the patent. That comes to $1.8 million.\n\n## Counsel's assessment\n\n- A 40% chance that the jury finds the patent valid.\n- If valid, a 50% chance that the jury finds it infringed.\n- If valid and infringed, a 40% chance that the judge allows past damages to be measured by lost profits, and a 60% chance that the judge requires a royalty.\n- If lost profits: a 10% chance of the full $13 million, a 60% chance of $10 million, and a 30% chance of $6 million.\n- If a royalty: an 80% chance of 3%, about $4 million, and a 20% chance of 2%, about $3 million.\n- If valid and infringed, whatever the past damages: a 25% chance that Plaintiff wins back 10 points of market share in 2003 and 2004, worth $12 million, a 50% chance of 5 points, worth $6 million, and a 25% chance of none.\n\nThe costs of litigation are left out.",
+  "createdAt": "2026-11-24T00:00:00.000Z",
+  "updatedAt": "2026-11-24T00:00:00.000Z",
+  "currency": "USD",
+  "rounding": "US",
+  "nodes": {
+    "patent-infringement-n1": {
+      "id": "patent-infringement-n1",
+      "type": "decision",
+      "position": {
+        "x": 0,
+        "y": 1534.375
+      },
+      "data": {
+        "description": "Should Plaintiff litigate or accept the settlement offer?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n2": {
+      "id": "patent-infringement-n2",
+      "type": "chance",
+      "position": {
+        "x": 250,
+        "y": 1368.75
+      },
+      "data": {
+        "description": "Will the jury find the patent valid?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n3": {
+      "id": "patent-infringement-n3",
+      "type": "chance",
+      "position": {
+        "x": 500,
+        "y": 1137.5
+      },
+      "data": {
+        "description": "Will the jury find the patent infringed?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n4": {
+      "id": "patent-infringement-n4",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 775.0
+      },
+      "data": {
+        "description": "How will the judge measure past damages?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n5": {
+      "id": "patent-infringement-n5",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 400.0
+      },
+      "data": {
+        "description": "How much will the jury award in lost profits for 2000-2002?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n6": {
+      "id": "patent-infringement-n6",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 100.0
+      },
+      "data": {
+        "description": "How much market share will Plaintiff regain in 2003-2004?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n7": {
+      "id": "patent-infringement-n7",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 0
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "25000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n8": {
+      "id": "patent-infringement-n8",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "19000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n9": {
+      "id": "patent-infringement-n9",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "13000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n10": {
+      "id": "patent-infringement-n10",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 400.0
+      },
+      "data": {
+        "description": "How much market share will Plaintiff regain in 2003-2004?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n11": {
+      "id": "patent-infringement-n11",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "22000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n12": {
+      "id": "patent-infringement-n12",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "16000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n13": {
+      "id": "patent-infringement-n13",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "10000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n14": {
+      "id": "patent-infringement-n14",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 700.0
+      },
+      "data": {
+        "description": "How much market share will Plaintiff regain in 2003-2004?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n15": {
+      "id": "patent-infringement-n15",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "18000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n16": {
+      "id": "patent-infringement-n16",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 700
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "12000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n17": {
+      "id": "patent-infringement-n17",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 800
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "6000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n18": {
+      "id": "patent-infringement-n18",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 1150.0
+      },
+      "data": {
+        "description": "What royalty will the jury award for 2000-2002?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n19": {
+      "id": "patent-infringement-n19",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1000.0
+      },
+      "data": {
+        "description": "How much market share will Plaintiff regain in 2003-2004?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n20": {
+      "id": "patent-infringement-n20",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 900
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "16000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n21": {
+      "id": "patent-infringement-n21",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1000
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "10000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n22": {
+      "id": "patent-infringement-n22",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "4000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n23": {
+      "id": "patent-infringement-n23",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1300.0
+      },
+      "data": {
+        "description": "How much market share will Plaintiff regain in 2003-2004?"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n24": {
+      "id": "patent-infringement-n24",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "15000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n25": {
+      "id": "patent-infringement-n25",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "9000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n26": {
+      "id": "patent-infringement-n26",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "3000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n27": {
+      "id": "patent-infringement-n27",
+      "type": "terminal",
+      "position": {
+        "x": 750,
+        "y": 1500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n28": {
+      "id": "patent-infringement-n28",
+      "type": "terminal",
+      "position": {
+        "x": 500,
+        "y": 1600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "patent-infringement-n29": {
+      "id": "patent-infringement-n29",
+      "type": "terminal",
+      "position": {
+        "x": 250,
+        "y": 1700
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "1800000"
+      },
+      "origin": [0.5, 0]
+    }
+  },
+  "edges": {
+    "epatent-infringement-n6-patent-infringement-n7": {
+      "id": "epatent-infringement-n6-patent-infringement-n7",
+      "source": "patent-infringement-n6",
+      "target": "patent-infringement-n7",
+      "type": "custom",
+      "data": {
+        "label": "10 points (= $12M)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n6-patent-infringement-n8": {
+      "id": "epatent-infringement-n6-patent-infringement-n8",
+      "source": "patent-infringement-n6",
+      "target": "patent-infringement-n8",
+      "type": "custom",
+      "data": {
+        "label": "5 points (= $6M)",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n6-patent-infringement-n9": {
+      "id": "epatent-infringement-n6-patent-infringement-n9",
+      "source": "patent-infringement-n6",
+      "target": "patent-infringement-n9",
+      "type": "custom",
+      "data": {
+        "label": "0 points (= $0)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n5-patent-infringement-n6": {
+      "id": "epatent-infringement-n5-patent-infringement-n6",
+      "source": "patent-infringement-n5",
+      "target": "patent-infringement-n6",
+      "type": "custom",
+      "data": {
+        "label": "$13M",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "epatent-infringement-n10-patent-infringement-n11": {
+      "id": "epatent-infringement-n10-patent-infringement-n11",
+      "source": "patent-infringement-n10",
+      "target": "patent-infringement-n11",
+      "type": "custom",
+      "data": {
+        "label": "10 points (= $12M)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n10-patent-infringement-n12": {
+      "id": "epatent-infringement-n10-patent-infringement-n12",
+      "source": "patent-infringement-n10",
+      "target": "patent-infringement-n12",
+      "type": "custom",
+      "data": {
+        "label": "5 points (= $6M)",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n10-patent-infringement-n13": {
+      "id": "epatent-infringement-n10-patent-infringement-n13",
+      "source": "patent-infringement-n10",
+      "target": "patent-infringement-n13",
+      "type": "custom",
+      "data": {
+        "label": "0 points (= $0)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n5-patent-infringement-n10": {
+      "id": "epatent-infringement-n5-patent-infringement-n10",
+      "source": "patent-infringement-n5",
+      "target": "patent-infringement-n10",
+      "type": "custom",
+      "data": {
+        "label": "$10M",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "epatent-infringement-n14-patent-infringement-n15": {
+      "id": "epatent-infringement-n14-patent-infringement-n15",
+      "source": "patent-infringement-n14",
+      "target": "patent-infringement-n15",
+      "type": "custom",
+      "data": {
+        "label": "10 points (= $12M)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n14-patent-infringement-n16": {
+      "id": "epatent-infringement-n14-patent-infringement-n16",
+      "source": "patent-infringement-n14",
+      "target": "patent-infringement-n16",
+      "type": "custom",
+      "data": {
+        "label": "5 points (= $6M)",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n14-patent-infringement-n17": {
+      "id": "epatent-infringement-n14-patent-infringement-n17",
+      "source": "patent-infringement-n14",
+      "target": "patent-infringement-n17",
+      "type": "custom",
+      "data": {
+        "label": "0 points (= $0)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n5-patent-infringement-n14": {
+      "id": "epatent-infringement-n5-patent-infringement-n14",
+      "source": "patent-infringement-n5",
+      "target": "patent-infringement-n14",
+      "type": "custom",
+      "data": {
+        "label": "$6M",
+        "description": "",
+        "probabilityExpr": "0.3"
+      }
+    },
+    "epatent-infringement-n4-patent-infringement-n5": {
+      "id": "epatent-infringement-n4-patent-infringement-n5",
+      "source": "patent-infringement-n4",
+      "target": "patent-infringement-n5",
+      "type": "custom",
+      "data": {
+        "label": "Lost profits",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    },
+    "epatent-infringement-n19-patent-infringement-n20": {
+      "id": "epatent-infringement-n19-patent-infringement-n20",
+      "source": "patent-infringement-n19",
+      "target": "patent-infringement-n20",
+      "type": "custom",
+      "data": {
+        "label": "10 points (= $12M)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n19-patent-infringement-n21": {
+      "id": "epatent-infringement-n19-patent-infringement-n21",
+      "source": "patent-infringement-n19",
+      "target": "patent-infringement-n21",
+      "type": "custom",
+      "data": {
+        "label": "5 points (= $6M)",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n19-patent-infringement-n22": {
+      "id": "epatent-infringement-n19-patent-infringement-n22",
+      "source": "patent-infringement-n19",
+      "target": "patent-infringement-n22",
+      "type": "custom",
+      "data": {
+        "label": "0 points (= $0)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n18-patent-infringement-n19": {
+      "id": "epatent-infringement-n18-patent-infringement-n19",
+      "source": "patent-infringement-n18",
+      "target": "patent-infringement-n19",
+      "type": "custom",
+      "data": {
+        "label": "3% (= $4M)",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "epatent-infringement-n23-patent-infringement-n24": {
+      "id": "epatent-infringement-n23-patent-infringement-n24",
+      "source": "patent-infringement-n23",
+      "target": "patent-infringement-n24",
+      "type": "custom",
+      "data": {
+        "label": "10 points (= $12M)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n23-patent-infringement-n25": {
+      "id": "epatent-infringement-n23-patent-infringement-n25",
+      "source": "patent-infringement-n23",
+      "target": "patent-infringement-n25",
+      "type": "custom",
+      "data": {
+        "label": "5 points (= $6M)",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n23-patent-infringement-n26": {
+      "id": "epatent-infringement-n23-patent-infringement-n26",
+      "source": "patent-infringement-n23",
+      "target": "patent-infringement-n26",
+      "type": "custom",
+      "data": {
+        "label": "0 points (= $0)",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "epatent-infringement-n18-patent-infringement-n23": {
+      "id": "epatent-infringement-n18-patent-infringement-n23",
+      "source": "patent-infringement-n18",
+      "target": "patent-infringement-n23",
+      "type": "custom",
+      "data": {
+        "label": "2% (= $3M)",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    },
+    "epatent-infringement-n4-patent-infringement-n18": {
+      "id": "epatent-infringement-n4-patent-infringement-n18",
+      "source": "patent-infringement-n4",
+      "target": "patent-infringement-n18",
+      "type": "custom",
+      "data": {
+        "label": "Royalty",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "epatent-infringement-n3-patent-infringement-n4": {
+      "id": "epatent-infringement-n3-patent-infringement-n4",
+      "source": "patent-infringement-n3",
+      "target": "patent-infringement-n4",
+      "type": "custom",
+      "data": {
+        "label": "Infringed",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n3-patent-infringement-n27": {
+      "id": "epatent-infringement-n3-patent-infringement-n27",
+      "source": "patent-infringement-n3",
+      "target": "patent-infringement-n27",
+      "type": "custom",
+      "data": {
+        "label": "Not infringed",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "epatent-infringement-n2-patent-infringement-n3": {
+      "id": "epatent-infringement-n2-patent-infringement-n3",
+      "source": "patent-infringement-n2",
+      "target": "patent-infringement-n3",
+      "type": "custom",
+      "data": {
+        "label": "Patent valid",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    },
+    "epatent-infringement-n2-patent-infringement-n28": {
+      "id": "epatent-infringement-n2-patent-infringement-n28",
+      "source": "patent-infringement-n2",
+      "target": "patent-infringement-n28",
+      "type": "custom",
+      "data": {
+        "label": "Patent invalid",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "epatent-infringement-n1-patent-infringement-n2": {
+      "id": "epatent-infringement-n1-patent-infringement-n2",
+      "source": "patent-infringement-n1",
+      "target": "patent-infringement-n2",
+      "type": "custom",
+      "data": {
+        "label": "Litigate",
+        "description": "",
+        "probabilityExpr": "1"
+      }
+    },
+    "epatent-infringement-n1-patent-infringement-n29": {
+      "id": "epatent-infringement-n1-patent-infringement-n29",
+      "source": "patent-infringement-n1",
+      "target": "patent-infringement-n29",
+      "type": "custom",
+      "data": {
+        "label": "Settle",
+        "description": "",
+        "probabilityExpr": "0"
+      }
+    }
+  }
+}

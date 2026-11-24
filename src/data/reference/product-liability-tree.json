@@ -1,0 +1,1110 @@
+{
+  "id": "product-liability",
+  "name": "Product Liability",
+  "description": "Product liability claim for a personal injury. Written for counsel for Defendant, who must advise whether to litigate or to pay a settlement demand of $500,000.\n\nPlaintiff claims that she was injured by Defendant's product, and seeks compensatory damages. Punitive damages are not at issue.\n\n## Liability\n\n**State-of-the-art defense.** Defendant wants to argue to the jury that it is not liable because its product was safe on the risks that were known at the time it was sold. The judge must first decide whether to allow this defense. Counsel estimates a 60% chance that the judge does not allow it, and a 40% chance that the judge does.\n\nIf the defense is allowed, the jury decides whether the product was safe on the risks known at the time of sale. If it finds that the product was safe, Defendant is not liable, even if the product caused the injury. The answer depends heavily on whether the jury hears evidence of the current FDA standard, which is stringent. Counsel estimates a 25% chance that the current FDA standard is admissible. If it is, there is a 90% chance that the jury finds that the product was not safe. If it is not, the chance is 50%.\n\n**Causation.** Unless the state-of-the-art defense succeeds, Defendant is liable if the jury finds that its product caused Plaintiff's injury. That depends heavily on a Daubert motion by Defendant to exclude one of Plaintiff's doctors from testifying. Counsel estimates two chances in three that the judge denies the motion, and one chance in three that the judge grants it. If the motion is denied and the doctor testifies, there is an 80% chance that the jury finds that the product caused the injury. If the motion is granted, the chance is 40%.\n\n## Damages\n\nThe doctor's testimony also affects the award. If the motion is denied and Defendant is liable, counsel estimates a 25% chance of an award of about $1,000,000, a 50% chance of about $500,000, and a 25% chance of about $200,000. If the motion is granted and Defendant is liable, a 25% chance of about $800,000, a 50% chance of about $400,000, and a 25% chance of about $200,000.\n\nThe costs of litigation are left out.",
+  "createdAt": "2026-11-24T00:00:00.000Z",
+  "updatedAt": "2026-11-24T00:00:00.000Z",
+  "currency": "USD",
+  "rounding": "US",
+  "nodes": {
+    "product-liability-n1": {
+      "id": "product-liability-n1",
+      "type": "decision",
+      "position": {
+        "x": 0,
+        "y": 1862.5
+      },
+      "data": {
+        "description": "Should Defendant litigate or pay the settlement demand?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n2": {
+      "id": "product-liability-n2",
+      "type": "chance",
+      "position": {
+        "x": 250,
+        "y": 1125.0
+      },
+      "data": {
+        "description": "Will the judge allow a state-of-the-art defense?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n3": {
+      "id": "product-liability-n3",
+      "type": "chance",
+      "position": {
+        "x": 500,
+        "y": 400.0
+      },
+      "data": {
+        "description": "Will the judge exclude one of Plaintiff's doctors?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n4": {
+      "id": "product-liability-n4",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 200.0
+      },
+      "data": {
+        "description": "Did Defendant's product cause Plaintiff's injury?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n5": {
+      "id": "product-liability-n5",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 100.0
+      },
+      "data": {
+        "description": "How much will the jury award?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n6": {
+      "id": "product-liability-n6",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 0
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-1000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n7": {
+      "id": "product-liability-n7",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-500000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n8": {
+      "id": "product-liability-n8",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n9": {
+      "id": "product-liability-n9",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n10": {
+      "id": "product-liability-n10",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 600.0
+      },
+      "data": {
+        "description": "Did Defendant's product cause Plaintiff's injury?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n11": {
+      "id": "product-liability-n11",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 500.0
+      },
+      "data": {
+        "description": "How much will the jury award?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n12": {
+      "id": "product-liability-n12",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-800000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n13": {
+      "id": "product-liability-n13",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-400000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n14": {
+      "id": "product-liability-n14",
+      "type": "terminal",
+      "position": {
+        "x": 1250,
+        "y": 600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n15": {
+      "id": "product-liability-n15",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 700
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n16": {
+      "id": "product-liability-n16",
+      "type": "chance",
+      "position": {
+        "x": 500,
+        "y": 1850.0
+      },
+      "data": {
+        "description": "Is the current FDA standard admissible?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n17": {
+      "id": "product-liability-n17",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 1400.0
+      },
+      "data": {
+        "description": "Was the product safe on the risks known at the time of sale?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n18": {
+      "id": "product-liability-n18",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 1200.0
+      },
+      "data": {
+        "description": "Will the judge exclude one of Plaintiff's doctors?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n19": {
+      "id": "product-liability-n19",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1000.0
+      },
+      "data": {
+        "description": "Did Defendant's product cause Plaintiff's injury?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n20": {
+      "id": "product-liability-n20",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 900.0
+      },
+      "data": {
+        "description": "How much will the jury award?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n21": {
+      "id": "product-liability-n21",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 800
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-1000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n22": {
+      "id": "product-liability-n22",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 900
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-500000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n23": {
+      "id": "product-liability-n23",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1000
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n24": {
+      "id": "product-liability-n24",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n25": {
+      "id": "product-liability-n25",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1400.0
+      },
+      "data": {
+        "description": "Did Defendant's product cause Plaintiff's injury?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n26": {
+      "id": "product-liability-n26",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 1300.0
+      },
+      "data": {
+        "description": "How much will the jury award?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n27": {
+      "id": "product-liability-n27",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-800000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n28": {
+      "id": "product-liability-n28",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-400000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n29": {
+      "id": "product-liability-n29",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n30": {
+      "id": "product-liability-n30",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 1500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n31": {
+      "id": "product-liability-n31",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 1600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n32": {
+      "id": "product-liability-n32",
+      "type": "chance",
+      "position": {
+        "x": 750,
+        "y": 2300.0
+      },
+      "data": {
+        "description": "Was the product safe on the risks known at the time of sale?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n33": {
+      "id": "product-liability-n33",
+      "type": "chance",
+      "position": {
+        "x": 1000,
+        "y": 2100.0
+      },
+      "data": {
+        "description": "Will the judge exclude one of Plaintiff's doctors?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n34": {
+      "id": "product-liability-n34",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 1900.0
+      },
+      "data": {
+        "description": "Did Defendant's product cause Plaintiff's injury?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n35": {
+      "id": "product-liability-n35",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 1800.0
+      },
+      "data": {
+        "description": "How much will the jury award?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n36": {
+      "id": "product-liability-n36",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1700
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-1000000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n37": {
+      "id": "product-liability-n37",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1800
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-500000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n38": {
+      "id": "product-liability-n38",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 1900
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n39": {
+      "id": "product-liability-n39",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 2000
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n40": {
+      "id": "product-liability-n40",
+      "type": "chance",
+      "position": {
+        "x": 1250,
+        "y": 2300.0
+      },
+      "data": {
+        "description": "Did Defendant's product cause Plaintiff's injury?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n41": {
+      "id": "product-liability-n41",
+      "type": "chance",
+      "position": {
+        "x": 1500,
+        "y": 2200.0
+      },
+      "data": {
+        "description": "How much will the jury award?"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n42": {
+      "id": "product-liability-n42",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 2100
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-800000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n43": {
+      "id": "product-liability-n43",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 2200
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-400000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n44": {
+      "id": "product-liability-n44",
+      "type": "terminal",
+      "position": {
+        "x": 1750,
+        "y": 2300
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-200000"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n45": {
+      "id": "product-liability-n45",
+      "type": "terminal",
+      "position": {
+        "x": 1500,
+        "y": 2400
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n46": {
+      "id": "product-liability-n46",
+      "type": "terminal",
+      "position": {
+        "x": 1000,
+        "y": 2500
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "0"
+      },
+      "origin": [0.5, 0]
+    },
+    "product-liability-n47": {
+      "id": "product-liability-n47",
+      "type": "terminal",
+      "position": {
+        "x": 250,
+        "y": 2600
+      },
+      "data": {
+        "description": "",
+        "valueExpr": "-500000"
+      },
+      "origin": [0.5, 0]
+    }
+  },
+  "edges": {
+    "eproduct-liability-n5-product-liability-n6": {
+      "id": "eproduct-liability-n5-product-liability-n6",
+      "source": "product-liability-n5",
+      "target": "product-liability-n6",
+      "type": "custom",
+      "data": {
+        "label": "$1000K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n5-product-liability-n7": {
+      "id": "eproduct-liability-n5-product-liability-n7",
+      "source": "product-liability-n5",
+      "target": "product-liability-n7",
+      "type": "custom",
+      "data": {
+        "label": "$500K",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n5-product-liability-n8": {
+      "id": "eproduct-liability-n5-product-liability-n8",
+      "source": "product-liability-n5",
+      "target": "product-liability-n8",
+      "type": "custom",
+      "data": {
+        "label": "$200K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n4-product-liability-n5": {
+      "id": "eproduct-liability-n4-product-liability-n5",
+      "source": "product-liability-n4",
+      "target": "product-liability-n5",
+      "type": "custom",
+      "data": {
+        "label": "Caused the injury",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "eproduct-liability-n4-product-liability-n9": {
+      "id": "eproduct-liability-n4-product-liability-n9",
+      "source": "product-liability-n4",
+      "target": "product-liability-n9",
+      "type": "custom",
+      "data": {
+        "label": "Did not cause the injury",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    },
+    "eproduct-liability-n3-product-liability-n4": {
+      "id": "eproduct-liability-n3-product-liability-n4",
+      "source": "product-liability-n3",
+      "target": "product-liability-n4",
+      "type": "custom",
+      "data": {
+        "label": "Daubert motion denied",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eproduct-liability-n11-product-liability-n12": {
+      "id": "eproduct-liability-n11-product-liability-n12",
+      "source": "product-liability-n11",
+      "target": "product-liability-n12",
+      "type": "custom",
+      "data": {
+        "label": "$800K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n11-product-liability-n13": {
+      "id": "eproduct-liability-n11-product-liability-n13",
+      "source": "product-liability-n11",
+      "target": "product-liability-n13",
+      "type": "custom",
+      "data": {
+        "label": "$400K",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n11-product-liability-n14": {
+      "id": "eproduct-liability-n11-product-liability-n14",
+      "source": "product-liability-n11",
+      "target": "product-liability-n14",
+      "type": "custom",
+      "data": {
+        "label": "$200K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n10-product-liability-n11": {
+      "id": "eproduct-liability-n10-product-liability-n11",
+      "source": "product-liability-n10",
+      "target": "product-liability-n11",
+      "type": "custom",
+      "data": {
+        "label": "Caused the injury",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    },
+    "eproduct-liability-n10-product-liability-n15": {
+      "id": "eproduct-liability-n10-product-liability-n15",
+      "source": "product-liability-n10",
+      "target": "product-liability-n15",
+      "type": "custom",
+      "data": {
+        "label": "Did not cause the injury",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "eproduct-liability-n3-product-liability-n10": {
+      "id": "eproduct-liability-n3-product-liability-n10",
+      "source": "product-liability-n3",
+      "target": "product-liability-n10",
+      "type": "custom",
+      "data": {
+        "label": "Daubert motion granted",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eproduct-liability-n2-product-liability-n3": {
+      "id": "eproduct-liability-n2-product-liability-n3",
+      "source": "product-liability-n2",
+      "target": "product-liability-n3",
+      "type": "custom",
+      "data": {
+        "label": "Defense not allowed",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "eproduct-liability-n20-product-liability-n21": {
+      "id": "eproduct-liability-n20-product-liability-n21",
+      "source": "product-liability-n20",
+      "target": "product-liability-n21",
+      "type": "custom",
+      "data": {
+        "label": "$1000K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n20-product-liability-n22": {
+      "id": "eproduct-liability-n20-product-liability-n22",
+      "source": "product-liability-n20",
+      "target": "product-liability-n22",
+      "type": "custom",
+      "data": {
+        "label": "$500K",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n20-product-liability-n23": {
+      "id": "eproduct-liability-n20-product-liability-n23",
+      "source": "product-liability-n20",
+      "target": "product-liability-n23",
+      "type": "custom",
+      "data": {
+        "label": "$200K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n19-product-liability-n20": {
+      "id": "eproduct-liability-n19-product-liability-n20",
+      "source": "product-liability-n19",
+      "target": "product-liability-n20",
+      "type": "custom",
+      "data": {
+        "label": "Caused the injury",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "eproduct-liability-n19-product-liability-n24": {
+      "id": "eproduct-liability-n19-product-liability-n24",
+      "source": "product-liability-n19",
+      "target": "product-liability-n24",
+      "type": "custom",
+      "data": {
+        "label": "Did not cause the injury",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    },
+    "eproduct-liability-n18-product-liability-n19": {
+      "id": "eproduct-liability-n18-product-liability-n19",
+      "source": "product-liability-n18",
+      "target": "product-liability-n19",
+      "type": "custom",
+      "data": {
+        "label": "Daubert motion denied",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eproduct-liability-n26-product-liability-n27": {
+      "id": "eproduct-liability-n26-product-liability-n27",
+      "source": "product-liability-n26",
+      "target": "product-liability-n27",
+      "type": "custom",
+      "data": {
+        "label": "$800K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n26-product-liability-n28": {
+      "id": "eproduct-liability-n26-product-liability-n28",
+      "source": "product-liability-n26",
+      "target": "product-liability-n28",
+      "type": "custom",
+      "data": {
+        "label": "$400K",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n26-product-liability-n29": {
+      "id": "eproduct-liability-n26-product-liability-n29",
+      "source": "product-liability-n26",
+      "target": "product-liability-n29",
+      "type": "custom",
+      "data": {
+        "label": "$200K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n25-product-liability-n26": {
+      "id": "eproduct-liability-n25-product-liability-n26",
+      "source": "product-liability-n25",
+      "target": "product-liability-n26",
+      "type": "custom",
+      "data": {
+        "label": "Caused the injury",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    },
+    "eproduct-liability-n25-product-liability-n30": {
+      "id": "eproduct-liability-n25-product-liability-n30",
+      "source": "product-liability-n25",
+      "target": "product-liability-n30",
+      "type": "custom",
+      "data": {
+        "label": "Did not cause the injury",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "eproduct-liability-n18-product-liability-n25": {
+      "id": "eproduct-liability-n18-product-liability-n25",
+      "source": "product-liability-n18",
+      "target": "product-liability-n25",
+      "type": "custom",
+      "data": {
+        "label": "Daubert motion granted",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eproduct-liability-n17-product-liability-n18": {
+      "id": "eproduct-liability-n17-product-liability-n18",
+      "source": "product-liability-n17",
+      "target": "product-liability-n18",
+      "type": "custom",
+      "data": {
+        "label": "Product not safe",
+        "description": "",
+        "probabilityExpr": "0.9"
+      }
+    },
+    "eproduct-liability-n17-product-liability-n31": {
+      "id": "eproduct-liability-n17-product-liability-n31",
+      "source": "product-liability-n17",
+      "target": "product-liability-n31",
+      "type": "custom",
+      "data": {
+        "label": "Product safe",
+        "description": "",
+        "probabilityExpr": "0.1"
+      }
+    },
+    "eproduct-liability-n16-product-liability-n17": {
+      "id": "eproduct-liability-n16-product-liability-n17",
+      "source": "product-liability-n16",
+      "target": "product-liability-n17",
+      "type": "custom",
+      "data": {
+        "label": "FDA standard admissible",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n35-product-liability-n36": {
+      "id": "eproduct-liability-n35-product-liability-n36",
+      "source": "product-liability-n35",
+      "target": "product-liability-n36",
+      "type": "custom",
+      "data": {
+        "label": "$1000K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n35-product-liability-n37": {
+      "id": "eproduct-liability-n35-product-liability-n37",
+      "source": "product-liability-n35",
+      "target": "product-liability-n37",
+      "type": "custom",
+      "data": {
+        "label": "$500K",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n35-product-liability-n38": {
+      "id": "eproduct-liability-n35-product-liability-n38",
+      "source": "product-liability-n35",
+      "target": "product-liability-n38",
+      "type": "custom",
+      "data": {
+        "label": "$200K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n34-product-liability-n35": {
+      "id": "eproduct-liability-n34-product-liability-n35",
+      "source": "product-liability-n34",
+      "target": "product-liability-n35",
+      "type": "custom",
+      "data": {
+        "label": "Caused the injury",
+        "description": "",
+        "probabilityExpr": "0.8"
+      }
+    },
+    "eproduct-liability-n34-product-liability-n39": {
+      "id": "eproduct-liability-n34-product-liability-n39",
+      "source": "product-liability-n34",
+      "target": "product-liability-n39",
+      "type": "custom",
+      "data": {
+        "label": "Did not cause the injury",
+        "description": "",
+        "probabilityExpr": "0.2"
+      }
+    },
+    "eproduct-liability-n33-product-liability-n34": {
+      "id": "eproduct-liability-n33-product-liability-n34",
+      "source": "product-liability-n33",
+      "target": "product-liability-n34",
+      "type": "custom",
+      "data": {
+        "label": "Daubert motion denied",
+        "description": "",
+        "probabilityExpr": "2/3"
+      }
+    },
+    "eproduct-liability-n41-product-liability-n42": {
+      "id": "eproduct-liability-n41-product-liability-n42",
+      "source": "product-liability-n41",
+      "target": "product-liability-n42",
+      "type": "custom",
+      "data": {
+        "label": "$800K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n41-product-liability-n43": {
+      "id": "eproduct-liability-n41-product-liability-n43",
+      "source": "product-liability-n41",
+      "target": "product-liability-n43",
+      "type": "custom",
+      "data": {
+        "label": "$400K",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n41-product-liability-n44": {
+      "id": "eproduct-liability-n41-product-liability-n44",
+      "source": "product-liability-n41",
+      "target": "product-liability-n44",
+      "type": "custom",
+      "data": {
+        "label": "$200K",
+        "description": "",
+        "probabilityExpr": "0.25"
+      }
+    },
+    "eproduct-liability-n40-product-liability-n41": {
+      "id": "eproduct-liability-n40-product-liability-n41",
+      "source": "product-liability-n40",
+      "target": "product-liability-n41",
+      "type": "custom",
+      "data": {
+        "label": "Caused the injury",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    },
+    "eproduct-liability-n40-product-liability-n45": {
+      "id": "eproduct-liability-n40-product-liability-n45",
+      "source": "product-liability-n40",
+      "target": "product-liability-n45",
+      "type": "custom",
+      "data": {
+        "label": "Did not cause the injury",
+        "description": "",
+        "probabilityExpr": "0.6"
+      }
+    },
+    "eproduct-liability-n33-product-liability-n40": {
+      "id": "eproduct-liability-n33-product-liability-n40",
+      "source": "product-liability-n33",
+      "target": "product-liability-n40",
+      "type": "custom",
+      "data": {
+        "label": "Daubert motion granted",
+        "description": "",
+        "probabilityExpr": "1/3"
+      }
+    },
+    "eproduct-liability-n32-product-liability-n33": {
+      "id": "eproduct-liability-n32-product-liability-n33",
+      "source": "product-liability-n32",
+      "target": "product-liability-n33",
+      "type": "custom",
+      "data": {
+        "label": "Product not safe",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n32-product-liability-n46": {
+      "id": "eproduct-liability-n32-product-liability-n46",
+      "source": "product-liability-n32",
+      "target": "product-liability-n46",
+      "type": "custom",
+      "data": {
+        "label": "Product safe",
+        "description": "",
+        "probabilityExpr": "0.5"
+      }
+    },
+    "eproduct-liability-n16-product-liability-n32": {
+      "id": "eproduct-liability-n16-product-liability-n32",
+      "source": "product-liability-n16",
+      "target": "product-liability-n32",
+      "type": "custom",
+      "data": {
+        "label": "FDA standard not admissible",
+        "description": "",
+        "probabilityExpr": "0.75"
+      }
+    },
+    "eproduct-liability-n2-product-liability-n16": {
+      "id": "eproduct-liability-n2-product-liability-n16",
+      "source": "product-liability-n2",
+      "target": "product-liability-n16",
+      "type": "custom",
+      "data": {
+        "label": "Defense allowed",
+        "description": "",
+        "probabilityExpr": "0.4"
+      }
+    },
+    "eproduct-liability-n1-product-liability-n2": {
+      "id": "eproduct-liability-n1-product-liability-n2",
+      "source": "product-liability-n1",
+      "target": "product-liability-n2",
+      "type": "custom",
+      "data": {
+        "label": "Litigate",
+        "description": "",
+        "probabilityExpr": "1"
+      }
+    },
+    "eproduct-liability-n1-product-liability-n47": {
+      "id": "eproduct-liability-n1-product-liability-n47",
+      "source": "product-liability-n1",
+      "target": "product-liability-n47",
+      "type": "custom",
+      "data": {
+        "label": "Settle at $500,000",
+        "description": "",
+        "probabilityExpr": "0"
+      }
+    }
+  }
+}
