@@ -304,7 +304,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
                 )
               : "???"
           }
-          inputClassName="px-0.5 py-0 mt-0.5"
+          inputClassName="px-[3px] py-0 mt-0.5"
           displayClassName={
             // NOTE: show how the value is computed when evaluated value differs
             (isParseable &&

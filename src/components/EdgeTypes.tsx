@@ -157,7 +157,7 @@ export function CustomEdge({
                     formatProbability(computedProbability, 0, "??%", "")
                   }
                   placeholder="??%"
-                  inputClassName="py-0.5 text-center"
+                  inputClassName="px-px py-0.5 text-center"
                   inputStyle={{ width: `${labelWidth}px` }}
                   displayStyle={{ width: `${labelWidth}px` }}
                 >

@@ -39,15 +39,21 @@ export function InlineEdit({
 }: InlineEditProps) {
   // Default classNames based on multiline mode
   const defaultInputClassName = multiline
-    ? "resize-none overflow-hidden text-center py-0.5 relative top-1.5"
-    : "px-0.5 py-0 text-center";
+    ? "resize-none overflow-hidden text-center px-px py-0.5 relative top-1.5"
+    : "px-[3px] py-0 text-center";
 
   // QUESTION: change hover behavior for Responsive design Read-only mode?
+  // NOTE: text-balance makes the lines of a wrapped label about the same
+  // width, so that a short last line does not leave the first one wide enough
+  // to run over the edge. Only for display: balanced text would move between
+  // lines while typing, so the textarea wraps as usual.
   const defaultDisplayClassName = multiline
-    ? "hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap cursor-pointer"
+    ? "hover:bg-gray-100 dark:hover:bg-gray-700 rounded break-words py-0.5 whitespace-pre-wrap text-balance cursor-pointer"
     : "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-1.5 py-0.5 -mx-1 rounded";
 
-  const finalInputClassName = inputClassName ?? defaultInputClassName;
+  // NOTE: the same background while editing as on hover, so that the text
+  // does not seem to change place when clicked
+  const finalInputClassName = `${inputClassName ?? defaultInputClassName} rounded bg-gray-100 dark:bg-gray-700`;
   const finalDisplayClassName = displayClassName ?? defaultDisplayClassName;
   const [isEditing, setIsEditing] = useState(false);
   const [editingValue, setEditingValue] = useState("");
@@ -152,7 +158,8 @@ export function InlineEdit({
         className={finalInputClassName}
         style={{
           // NOTE: dynamically size input to fit content
-          width: `${Math.max(3, editingValue.length + 1)}ch`,
+          // NOTE: plus the 1px of padding on each side beyond the 1ch of slack
+          width: `calc(${Math.max(3, editingValue.length + 1)}ch + 2px)`,
           ...inputStyle,
         }}
       />
