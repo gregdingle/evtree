@@ -312,6 +312,11 @@ export function Toolbar() {
           onButtonClick={handleArrange}
           tooltip="Ctrl+A"
           disabled={!isEnabled.arrange}
+          // TODO: consider another option that also orders the branches of
+          // each node by the size of what follows, largest first, as is done
+          // for an AI-generated tree, see getBranchPlaces in ai-convert.ts.
+          // Arrange keeps the branches in the order that the user placed
+          // them, so it would have to be an option and not the default.
           dropdownItems={{
             compact: "Compact",
             rightAligned: "Right-aligned",
