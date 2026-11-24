@@ -3,7 +3,7 @@
   "name": "Hello World Tree",
   "description": "This is a demo tree that has all the various types of nodes arranged in a typical pattern",
   "createdAt": "2025-10-29T16:30:47.156Z",
-  "updatedAt": "2026-11-20T12:00:00.000Z",
+  "updatedAt": "2026-11-24T12:00:00.000Z",
   "nodes": {
     "decision": {
       "id": "decision",
