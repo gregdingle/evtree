@@ -83,14 +83,18 @@ describe("getWalkthru", () => {
         ["SJ Denied", "Liability", "33% Contrib"],
       ]);
       // The probability of a back injury differs with contributory negligence
-      expect(injury.outcomes).toMatchObject([
-        { label: "Back & Knee", probability: null, probabilityVaries: true },
-        { label: "Knee Only", probability: null, probabilityVaries: true },
+      expect(
+        injury.occurrences.map((o) => o.outcomes.map((x) => x.probability)),
+      ).toEqual([
+        [0.6, 0.4],
+        [0.5, 0.5],
       ]);
       const awards = root.sections[4]!;
-      expect(awards.outcomes.map((o) => o.probability)).toEqual([
-        0.25, 0.5, 0.25,
-      ]);
+      awards.occurrences.forEach((occurrence) =>
+        expect(occurrence.outcomes.map((o) => o.probability)).toEqual([
+          0.25, 0.5, 0.25,
+        ]),
+      );
       expect(awards.occurrences.map((o) => o.expectedValue)).toEqual([
         -193000, -74250, -177250, -63750,
       ]);
@@ -108,19 +112,9 @@ describe("getWalkthru", () => {
     );
     const [section] = getRoot(tree).sections;
     expect(section!.heading).toBe("Will it rain?");
-    expect(section!.outcomes).toEqual([
-      {
-        label: "Yes",
-        probability: 0.5,
-        probabilityVaries: false,
-        reasons: ["Reason for Yes"],
-      },
-      {
-        label: "No",
-        probability: 0.5,
-        probabilityVaries: false,
-        reasons: ["Reason for No"],
-      },
+    expect(section!.occurrences[0]!.outcomes).toMatchObject([
+      { label: "Yes", probability: 0.5, reason: "Reason for Yes" },
+      { label: "No", probability: 0.5, reason: "Reason for No" },
     ]);
   });
 

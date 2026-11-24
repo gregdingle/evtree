@@ -1,4 +1,3 @@
-import { isEqual } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 import { AppEdge, filterTreeEdges } from "./edge";
@@ -29,18 +28,7 @@ export interface WalkthruSection {
   heading: string;
   /** A decision takes its best option, where a chance weighs its outcomes */
   isDecision: boolean;
-  outcomes: WalkthruSectionOutcome[];
   occurrences: WalkthruOccurrence[];
-}
-
-/** An outcome of an issue, summarized over the occurrences of the issue */
-export interface WalkthruSectionOutcome {
-  label: string;
-  /** Null when missing, or when it differs between occurrences */
-  probability: number | null;
-  probabilityVaries: boolean;
-  /** The distinct reasons given for this outcome */
-  reasons: string[];
 }
 
 export interface WalkthruOccurrence {
@@ -195,7 +183,6 @@ export function getWalkthru(
         key,
         heading: description,
         isDecision,
-        outcomes: [],
         occurrences: [],
       });
       section.occurrences.push({
@@ -218,31 +205,16 @@ export function getWalkthru(
       });
     }
 
+    // NOTE: a section without a description is headed by its branch labels,
+    // or by the part of each that its occurrences have in common
     values(sections).forEach((section) => {
-      section.outcomes = section.occurrences[0]!.outcomes.map(
-        (first, index): WalkthruSectionOutcome => {
-          const all = section.occurrences.map(
-            (occurrence) => occurrence.outcomes[index]!,
-          );
-          // NOTE: the part of the label that the occurrences have in common
-          const label = all.every((outcome) => outcome.label === first.label)
-            ? first.label
-            : getFirstWord(first.label);
-          const probabilityVaries = !all.every((outcome) =>
-            isEqual(outcome.probability, first.probability),
-          );
-          return {
-            label,
-            probability: probabilityVaries ? null : first.probability,
-            probabilityVaries,
-            reasons: [
-              ...new Set(all.map((outcome) => outcome.reason).filter(Boolean)),
-            ],
-          };
-        },
-      );
-      section.heading ||= section.outcomes
-        .map((outcome) => outcome.label)
+      const [first, ...others] = section.occurrences;
+      section.heading ||= first!.outcomes
+        .map(({ label }, index) =>
+          others.every((other) => other.outcomes[index]!.label === label)
+            ? label
+            : getFirstWord(label),
+        )
         .join(" / ");
     });
 

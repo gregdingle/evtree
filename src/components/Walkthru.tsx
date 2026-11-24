@@ -129,16 +129,14 @@ function Section({
   // NOTE: a decision made by hand often has no reasons, so give the reason
   // that follows from the numbers, for the option taken on the path shown
   const bestOption =
-    section.isDecision &&
-    section.outcomes.every((outcome) => outcome.reasons.length === 0)
-      ? section.outcomes.find((_, index) => current.outcomes[index]?.isBest)
+    section.isDecision && current.outcomes.every((outcome) => !outcome.reason)
+      ? current.outcomes.find((outcome) => outcome.isBest)
       : undefined;
 
-  // NOTE: an outcome without a reason would only restate its label and
-  // probability, which are in the sub-tree view
-  const listedOutcomes = section.outcomes.filter(
-    (outcome) => outcome.reasons.length > 0,
-  );
+  // NOTE: the outcomes on the path shown, like the sub-tree view. One without
+  // a reason would only restate its label and probability, which are in the
+  // view.
+  const listedOutcomes = current.outcomes.filter((outcome) => outcome.reason);
 
   return (
     <section className="mt-10">
@@ -189,23 +187,16 @@ function Section({
           {listedOutcomes.length > 0 && (
             <ul className="mb-4 space-y-2">
               {listedOutcomes.map((outcome) => (
-                <li key={outcome.label}>
+                <li key={outcome.edgeId}>
                   <span className="font-medium">{outcome.label}</span>
                   {!section.isDecision && (
                     <span className="ml-2 text-gray-600 dark:text-gray-400">
-                      {outcome.probabilityVaries
-                        ? "probability varies"
-                        : formatProbability(outcome.probability, 0, "???", "")}
+                      {formatProbability(outcome.probability, 0, "???", "")}
                     </span>
                   )}
-                  {outcome.reasons.map((reason) => (
-                    <p
-                      key={reason}
-                      className="mt-1 text-sm text-gray-700 dark:text-gray-300"
-                    >
-                      {reason}
-                    </p>
-                  ))}
+                  <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
+                    {outcome.reason}
+                  </p>
                 </li>
               ))}
             </ul>
