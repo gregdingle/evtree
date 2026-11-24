@@ -137,20 +137,30 @@ export function RightSidePanel() {
           </div>
         )}
       </div>
-      <footer
-        // HACK: only show when at least 800px height to avoid overlapping with other content
-        // NOTE: see also message on MainTreeView canvas when less than 800px height
-        className="absolute right-0 bottom-5 hidden w-80 text-center text-sm select-none [@media(min-height:800px)]:block"
-      >
-        Feedback or questions?{" "}
-        <a
-          // TODO: extract contact email to global config
-          href="mailto:gregdingle@gmail.com,maaron@just-decisions.com?subject=TreeDecisions"
-          className="bluelink font-semibold"
-        >
-          Email us
-        </a>
-      </footer>
+      {
+        // HACK: not when several nodes or edges are selected, because their
+        // properties run down the panel and under the footer
+        // TODO: handle overflow of the right side panel properly. It has a
+        // fixed height and does not scroll, so the properties of more than
+        // about three selected nodes are cut off at the bottom. Make the
+        // properties scroll, and keep the footer below them.
+        nodes.length + edges.length <= 1 && (
+          <footer
+            // HACK: only show when at least 800px height to avoid overlapping with other content
+            // NOTE: see also message on MainTreeView canvas when less than 800px height
+            className="absolute right-0 bottom-5 hidden w-80 text-center text-sm select-none [@media(min-height:800px)]:block"
+          >
+            Feedback or questions?{" "}
+            <a
+              // TODO: extract contact email to global config
+              href="mailto:gregdingle@gmail.com,maaron@just-decisions.com?subject=TreeDecisions"
+              className="bluelink font-semibold"
+            >
+              Email us
+            </a>
+          </footer>
+        )
+      }
     </div>
   );
 }
