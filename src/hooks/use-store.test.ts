@@ -253,3 +253,31 @@ describe("paste", () => {
     ).toHaveLength(2);
   });
 });
+
+describe("selectNode", () => {
+  test("should select only the node", () => {
+    const { currentTreeId, trees } = useStore.getState();
+    const tree = trees[currentTreeId!]!;
+    const [first, second] = Object.keys(tree.nodes);
+    useStore.setState({
+      trees: {
+        ...trees,
+        [tree.id]: {
+          ...tree,
+          nodes: {
+            ...tree.nodes,
+            [first!]: { ...tree.nodes[first!]!, selected: true },
+          },
+        },
+      },
+    });
+
+    useStore.getState().selectNode(second!);
+
+    const state = useStore.getState();
+    const selected = values(state.trees[tree.id]!.nodes)
+      .filter((node) => node.selected)
+      .map((node) => node.id);
+    expect(selected).toEqual([second]);
+  });
+});

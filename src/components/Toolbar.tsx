@@ -12,6 +12,7 @@ import {
   ClipboardDocumentIcon,
   DocumentDuplicateIcon,
   LinkIcon,
+  ListBulletIcon,
   PhotoIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -39,6 +40,7 @@ import {
   selectHasTerminalNodes,
   selectShowEVs,
   selectShowHistogram,
+  selectShowWalkthru,
 } from "@/lib/selectors";
 import { uploadTreeForSharing } from "@/lib/share";
 import { DecisionTree } from "@/lib/tree";
@@ -60,6 +62,7 @@ export function Toolbar() {
     deleteSelected,
     showEVs,
     showHistogram,
+    showWalkthru,
   } = useStore.getState();
 
   const [isLinkCopied, setIsLinkCopied] = useState(false);
@@ -72,6 +75,9 @@ export function Toolbar() {
   const hasTerminalNodes = useStore(selectHasTerminalNodes);
   const areEVsShowing = useStore(selectShowEVs);
   const isHistogramOpen = useStore(selectShowHistogram);
+  const isWalkthruOpen = useStore(selectShowWalkthru);
+  // NOTE: the histogram and the walkthru take the place of the canvas
+  const isCanvasHidden = isHistogramOpen || isWalkthruOpen;
 
   const isDarkMode = useDarkMode();
   // The builder mounts the toolbar only after client validation.
@@ -110,8 +116,19 @@ export function Toolbar() {
           "#171717"
         : "#fffbeb"); // amber-50
 
-    // If histogram is open, export it instead of the tree
-    if (isHistogramOpen) {
+    // If the walkthru or histogram is open, export it instead of the tree
+    if (isWalkthruOpen) {
+      const walkthruElement = window.document.getElementById("walkthru-export");
+      if (walkthruElement) {
+        exportHTMLElementAsPNG(
+          walkthruElement,
+          `${filename}-walkthrough.png`,
+          backgroundColor,
+        );
+      } else {
+        console.error("[EVTree] Walkthru element not found");
+      }
+    } else if (isHistogramOpen) {
       const histogramElement =
         window.document.getElementById("histogram-export");
       if (histogramElement) {
@@ -169,7 +186,10 @@ export function Toolbar() {
   // the tree even from form fields and prevents browser save when available.
   // TODO: make hotkey usage also flash corresponding button
   useHotkeys("ctrl+z", () => undo());
-  useHotkeys("meta+z", () => undo(), { enabled: canUndo, preventDefault: true });
+  useHotkeys("meta+z", () => undo(), {
+    enabled: canUndo,
+    preventDefault: true,
+  });
   useHotkeys("ctrl+y", () => redo());
   useHotkeys("meta+y, meta+shift+z", () => redo(), {
     enabled: canRedo,
@@ -231,7 +251,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => copy()}
           tooltip={isMac ? "Cmd+C" : "Ctrl+C"}
-          disabled={!hasSelectedItems || isHistogramOpen}
+          disabled={!hasSelectedItems || isCanvasHidden}
         >
           <DocumentDuplicateIcon className="h-4 w-4" />
           Copy
@@ -247,7 +267,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={deleteSelected}
           tooltip="Ctrl+Delete"
-          disabled={!hasSelectedItems || isHistogramOpen}
+          disabled={!hasSelectedItems || isCanvasHidden}
         >
           <TrashIcon className="h-4 w-4" />
           Delete
@@ -261,7 +281,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={handleArrange}
           tooltip="Ctrl+A"
-          disabled={!hasNodes || isHistogramOpen}
+          disabled={!hasNodes || isCanvasHidden}
           dropdownItems={{
             compact: "Compact",
             rightAligned: "Right-aligned",
@@ -274,7 +294,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => undo()}
           tooltip={isMac ? "Cmd+Z" : "Ctrl+Z"}
-          disabled={!canUndo || isHistogramOpen}
+          disabled={!canUndo || isCanvasHidden}
         >
           <ArrowUturnLeftIcon className="h-4 w-4" />
           Undo
@@ -282,7 +302,7 @@ export function Toolbar() {
         <ToolbarButton
           onButtonClick={() => redo()}
           tooltip={isMac ? "Cmd+Shift+Z" : "Ctrl+Y"}
-          disabled={!canRedo || isHistogramOpen}
+          disabled={!canRedo || isCanvasHidden}
         >
           <ArrowUturnRightIcon className="h-4 w-4" />
           Redo
@@ -294,7 +314,7 @@ export function Toolbar() {
             areEVsShowing ? `Hide EVs \n(Ctrl+E)` : `Show EVs \n(Ctrl+E)`
           }
           active={areEVsShowing}
-          disabled={!hasTerminalNodes || isHistogramOpen}
+          disabled={!hasTerminalNodes || isCanvasHidden}
           dropdownItems={{
             show: "Show path values",
             hide: "Hide path values",
@@ -315,6 +335,19 @@ export function Toolbar() {
         >
           <ChartBarIcon className="h-4 w-4" />
           Histogram
+        </ToolbarButton>
+        <ToolbarButton
+          onButtonClick={showWalkthru}
+          tooltip={
+            isWalkthruOpen
+              ? "Hide Walkthrough"
+              : "Show Walkthrough: \nthe tree explained issue by issue"
+          }
+          active={isWalkthruOpen}
+          disabled={!hasNodes}
+        >
+          <ListBulletIcon className="h-4 w-4" />
+          Walkthrough
         </ToolbarButton>
         <VerticalDivider />
         {

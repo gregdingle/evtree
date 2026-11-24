@@ -56,6 +56,9 @@ export interface StoreState {
     showEVs?: boolean;
     showPathEVs?: boolean;
     showHistogram?: boolean;
+    // NOTE: the histogram and the walkthru take the place of the canvas, so
+    // only one of them shows at a time
+    showWalkthru?: boolean;
     // NOTE: for suppressing the not-sum-to-one warning on the last edited edge
     lastEditedProbability?: { treeId: string; edgeId: string } | null;
   };
@@ -114,6 +117,8 @@ export interface StoreState {
   connectToNearestNode: (nodeId: string) => void;
   showEVs: (showPathEVs?: boolean) => void;
   showHistogram: () => void;
+  showWalkthru: () => void;
+  selectNode: (nodeId: string) => void;
 }
 
 // QUESTION: should we clear undo stack when switching trees? or better to be safe?
@@ -1155,10 +1160,40 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) => {
           state.display.showHistogram = !state.display.showHistogram;
+          state.display.showWalkthru = false;
           return state;
         },
         undefined,
         { type: "showHistogram" },
+      );
+    },
+
+    showWalkthru: () => {
+      set(
+        (state) => {
+          state.display.showWalkthru = !state.display.showWalkthru;
+          state.display.showHistogram = false;
+          return state;
+        },
+        undefined,
+        { type: "showWalkthru" },
+      );
+    },
+
+    // NOTE: for selecting a node from outside the canvas, like the walkthru,
+    // so that the side panel shows its properties
+    selectNode: (nodeId) => {
+      set(
+        (state) =>
+          withCurrentTree(state, (tree) => {
+            clearSelections(tree);
+            const node = tree.nodes[nodeId];
+            if (node) {
+              node.selected = true;
+            }
+          }),
+        undefined,
+        { type: "selectNode", nodeId },
       );
     },
   })),

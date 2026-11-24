@@ -73,7 +73,7 @@ export function selectCurrentTerminalValueDisplay(
   return currentTree?.terminalValueDisplay ?? "net";
 }
 
-interface NetExpectedValues {
+export interface NetExpectedValues {
   nodeValues?: Record<string, number | null>;
   nodeCumulativeCosts?: Record<string, number | null>;
   edgeProbabilities?: Record<string, number | null>;
@@ -81,7 +81,7 @@ interface NetExpectedValues {
 
 // NOTE: memoized on the tree, not the store state, so it's only recomputed
 // when the current tree changes
-const computeNetExpectedValues = memoizeWeak(
+export const computeNetExpectedValues = memoizeWeak(
   (tree: DecisionTree): NetExpectedValues => {
     // Filter out arrow edges from tree logic calculations
     const treeEdges = filterTreeEdges(values(tree.edges));
@@ -377,6 +377,10 @@ export function selectShowPathEVs(state: StoreState): boolean {
 // NOTE: default here should match useStoreBase definition
 export function selectShowHistogram(state: StoreState): boolean {
   return state.display.showHistogram ?? false;
+}
+
+export function selectShowWalkthru(state: StoreState): boolean {
+  return state.display.showWalkthru ?? false;
 }
 
 export function selectUndoableState(
