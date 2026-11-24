@@ -12,14 +12,14 @@ import {
 
 import { CollapsiblePanel } from "@/components/CollapsiblePanel";
 import { Histogram } from "@/components/Histogram";
+import { Issues } from "@/components/Issues";
 import { LeftSidePanel } from "@/components/LeftSidePanel";
 import { MainTreeView } from "@/components/MainTreeView";
 import { RightSidePanel } from "@/components/RightSidePanel";
 import { Toolbar } from "@/components/Toolbar";
-import { Walkthru } from "@/components/Walkthru";
 import { useStore } from "@/hooks/use-store";
 import { firebaseApp } from "@/lib/firebase";
-import { selectShowHistogram, selectShowWalkthru } from "@/lib/selectors";
+import { selectShowHistogram, selectShowIssues } from "@/lib/selectors";
 import { downloadSharedTree, extractShareHash } from "@/lib/share";
 
 export default function Builder() {
@@ -59,7 +59,7 @@ export default function Builder() {
   }, []);
 
   const showHistogram = useStore(selectShowHistogram);
-  const showWalkthru = useStore(selectShowWalkthru);
+  const showIssues = useStore(selectShowIssues);
 
   if (!isValidClient) {
     // QUESTION: put some kind of loading spinner here?
@@ -87,8 +87,8 @@ export default function Builder() {
               </CollapsiblePanel>
             </div>
             <div className="w-screen bg-amber-50 dark:bg-neutral-900">
-              {showWalkthru ? (
-                <Walkthru className="px-16 py-4" />
+              {showIssues ? (
+                <Issues className="px-16 py-4" />
               ) : showHistogram ? (
                 <Histogram className="px-16 py-4" />
               ) : (

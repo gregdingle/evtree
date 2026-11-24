@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 
 import { useStore } from "@/hooks/use-store";
+import { Issue, IssueOccurrence, getIssues } from "@/lib/issues";
 import {
   selectCurrentCurrency,
   selectCurrentRounding,
@@ -10,11 +11,6 @@ import {
   selectCurrentTree,
   selectNetExpectedValues,
 } from "@/lib/selectors";
-import {
-  WalkthruOccurrence,
-  WalkthruSection,
-  getWalkthru,
-} from "@/lib/walkthru";
 import { formatProbability, formatValue } from "@/utils/format";
 
 import { CanvasCenteredHelpMessage } from "./CanvasCenteredHelpMessage";
@@ -33,35 +29,33 @@ function useFormatAmount() {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface WalkthruProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface IssuesProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 /**
  * A read-only view that explains the current tree issue by issue, in text and
- * arithmetic, see getWalkthru.
+ * arithmetic, see getIssues.
  *
- * QUESTION: would "Issues" or "Key Issues" be a better name for users than
- * "Walkthrough"? If so, the Description of a chance or decision node, which is
- * the heading of its section here, could be called "Issue Name" or similar in
- * the side panel, to say what it is for.
+ * TODO: the Description of a chance or decision node, which is the heading of
+ * its issue here, could be called "Issue Name" or similar in the side panel,
+ * to say what it is for
  *
  * TODO: a hotkey, and PDF or print output, which is what a lawyer would hand to
  * a client or mediator
  * TODO: show what an issue or a cost contributes to the result, by computing
  * the tree again without it
  * TODO: hand-built trees have no descriptions on their nodes or branches, so
- * their sections show labels and numbers only... prompt for them? generate them?
+ * their issues show labels and numbers only... prompt for them? generate them?
  */
-export function Walkthru({ className, ...props }: WalkthruProps) {
+export function Issues({ className, ...props }: IssuesProps) {
   const tree = useStore(selectCurrentTree);
   // NOTE: memoized on the tree, so it is the same object until the tree changes
   const netExpectedValues = useStore(selectNetExpectedValues);
-  const format = useFormatAmount();
 
-  const roots = tree ? getWalkthru(tree, netExpectedValues) : [];
-  if (!tree || roots.every((root) => root.sections.length === 0)) {
+  const roots = tree ? getIssues(tree, netExpectedValues) : [];
+  if (!tree || roots.every((root) => root.issues.length === 0)) {
     return (
       <div className={className} {...props}>
-        <CanvasCenteredHelpMessage text="Nothing to walk through yet" />
+        <CanvasCenteredHelpMessage text="No issues yet" />
       </div>
     );
   }
@@ -70,8 +64,8 @@ export function Walkthru({ className, ...props }: WalkthruProps) {
   const isComplete = roots.every(
     (root) =>
       root.expectedValue !== null &&
-      root.sections.every((section) =>
-        section.occurrences.every((occurrence) => occurrence.isComplete),
+      root.issues.every((issue) =>
+        issue.occurrences.every((occurrence) => occurrence.isComplete),
       ),
   );
   if (!isComplete) {
@@ -84,23 +78,23 @@ export function Walkthru({ className, ...props }: WalkthruProps) {
 
   return (
     <div
-      // NOTE: the walkthru can be much longer than the canvas
+      // NOTE: the issues view can be much longer than the canvas
       // NOTE: a container, so that the layout follows the width that the side
       // panels leave, not the width of the window
       className={`@container h-full overflow-y-auto ${className ?? ""}`}
       {...props}
     >
-      <div id="walkthru-export" className="max-w-7xl pb-16">
-        <h2 className="mb-2 text-2xl font-semibold">Issues</h2>
+      <div id="issues-export" className="max-w-7xl pb-16">
+        <h2 className="mb-2 text-2xl font-semibold">Key Issues</h2>
         {
           // TODO: put some sort of summary or intro to the page here?
           roots.map((root) => (
             <div key={root.rootId} className="mb-12">
-              {root.sections.map((section, index) => (
-                <Section
-                  key={section.key}
+              {root.issues.map((issue, index) => (
+                <IssueSection
+                  key={issue.key}
                   number={index + 1}
-                  section={section}
+                  issue={issue}
                 />
               ))}
             </div>
@@ -111,28 +105,22 @@ export function Walkthru({ className, ...props }: WalkthruProps) {
   );
 }
 
-function Section({
-  number,
-  section,
-}: {
-  number: number;
-  section: WalkthruSection;
-}) {
+function IssueSection({ number, issue }: { number: number; issue: Issue }) {
   const terminalValueDisplay = useStore(selectCurrentTerminalValueDisplay);
   const format = useFormatAmount();
   const { selectNode } = useStore.getState();
 
   // NOTE: an issue can occur on several paths, and the sub-tree view shows one
-  // at a time. Clamped because the tree can change under an open walkthru.
+  // at a time. Clamped because the tree can change under an open issues view.
   const [page, setPage] = useState(0);
-  const pageCount = section.occurrences.length;
+  const pageCount = issue.occurrences.length;
   const pageIndex = Math.min(page, pageCount - 1);
-  const current = section.occurrences[pageIndex]!;
+  const current = issue.occurrences[pageIndex]!;
 
   // NOTE: a decision made by hand often has no reasons, so give the reason
   // that follows from the numbers, for the option taken on the path shown
   const bestOption =
-    section.isDecision && current.outcomes.every((outcome) => !outcome.reason)
+    issue.isDecision && current.outcomes.every((outcome) => !outcome.reason)
       ? current.outcomes.find((outcome) => outcome.isBest)
       : undefined;
 
@@ -144,22 +132,22 @@ function Section({
   return (
     <section className="mt-10">
       <h3 className="mb-3 text-lg font-semibold">
-        {number}. {section.heading}
+        {number}. {issue.heading}
         <button
           type="button"
           onClick={() => {
             // NOTE: the heading is made from the branch labels, so offer a way to
             // write a better one. Selecting the node shows its description in the
-            // side panel, and the walkthru stays open.
+            // side panel, and the issues view stays open.
             //
             // TODO: this edits one node, but an issue that occurs on several
             // paths has a node for each, and they are grouped by their
             // descriptions. So describing one node takes it out of the group,
-            // into a section of its own, until every other node of the issue
+            // into an issue of its own, until every other node of the issue
             // is given the same description, one edit link at a time.
             // Selecting all of the nodes was tried: the side panel shows a
             // block for each, with nothing to tell them apart, the same text
-            // has to be typed in each, the section still splits while typing,
+            // has to be typed in each, the issue still splits while typing,
             // and the panel does not scroll past about three blocks. Better
             // would be one description box in the side panel for nodes of the
             // same type, which writes to all of them in one undo step.
@@ -178,7 +166,7 @@ function Section({
       </h3>
       {/*
         NOTE: every sub-tree view of a tree is the same width, so the text
-        beside it is the same width in every section as well
+        beside it is the same width in every issue as well
       */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 @4xl:grid-cols-[minmax(0,1fr)_auto]">
         <div>
@@ -192,7 +180,7 @@ function Section({
               {listedOutcomes.map((outcome) => (
                 <li key={outcome.edgeId}>
                   <span className="font-medium">{outcome.label}</span>
-                  {!section.isDecision && (
+                  {!issue.isDecision && (
                     <span className="ml-2 text-gray-600 dark:text-gray-400">
                       {formatProbability(outcome.probability, 0, "???", "")}
                     </span>
@@ -213,7 +201,7 @@ function Section({
                 </tr>
               </thead>
               <tbody>
-                {section.occurrences.map((occurrence, index) => (
+                {issue.occurrences.map((occurrence, index) => (
                   <tr
                     key={occurrence.nodeId}
                     // NOTE: the row that the sub-tree view is showing
@@ -231,7 +219,7 @@ function Section({
                       {/*
                         NOTE: only the branch that leads here, as in the
                         sub-tree view. The whole path is long, and it is in
-                        the sections above.
+                        the issues above.
                       */}
                       {occurrence.path.at(-1) ?? "Start"}
                     </td>
@@ -323,12 +311,12 @@ function PageButton({
  *   the node is a term of its own, like "70% × $1.3M + 30% × $0 − $100K =
  *   $841K". A terminal node then has its value as entered.
  *
- * See WalkthruOutcome.onwardValue for why both give the value of the tree.
+ * See IssueOutcome.onwardValue for why both give the value of the tree.
  *
  * TODO: with "outcome", an outcome that is not a terminal node has a value
  * from that point on, like the $1.3M above, which the canvas never shows. The
  * canvas has only net values for those nodes, whatever the setting. Consider
- * showing onward values on the canvas too, or saying in the walkthru that
+ * showing onward values on the canvas too, or saying in the issues view that
  * they differ.
  *
  * NOTE: the same for a decision, where the best option has a probability of
@@ -339,7 +327,7 @@ function Calculation({
   terminalValueDisplay,
   format,
 }: {
-  occurrence: WalkthruOccurrence;
+  occurrence: IssueOccurrence;
   terminalValueDisplay: "outcome" | "net";
   format: (value: number | null) => string;
 }) {

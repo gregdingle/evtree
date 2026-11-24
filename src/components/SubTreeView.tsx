@@ -5,8 +5,8 @@ import { useMemo } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 
 import { useStore } from "@/hooks/use-store";
+import { getSubTreeElements } from "@/lib/issues";
 import { selectCurrentTree } from "@/lib/selectors";
-import { getSubTreeElements } from "@/lib/walkthru";
 
 import { TreeCanvas } from "./TreeCanvas";
 

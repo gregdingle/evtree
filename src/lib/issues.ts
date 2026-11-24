@@ -8,30 +8,30 @@ import type { NetExpectedValues } from "./selectors";
 import { DecisionTree } from "./tree";
 
 /**
- * A walkthru explains a tree issue by issue, from a root. An issue is a node
+ * The issues view explains a tree issue by issue, from a root. An issue is a node
  * that has branches. The same issue can occur on several paths, like a range
  * of awards under each finding of liability, so the nodes of an issue are
- * grouped into one section, with one occurrence for each node.
+ * grouped together, with one occurrence for each node.
  *
  * NOTE: everything here comes from the tree and its computed values, so the
- * same tree always gives the same walkthru.
+ * same tree always gives the same issues.
  */
-export interface WalkthruRoot {
+export interface IssuesRoot {
   rootId: string;
   expectedValue: number | null;
-  sections: WalkthruSection[];
+  issues: Issue[];
 }
 
-export interface WalkthruSection {
+export interface Issue {
   key: string;
   /** The description of the node, or else its branch labels */
   heading: string;
   /** A decision takes its best option, where a chance weighs its outcomes */
   isDecision: boolean;
-  occurrences: WalkthruOccurrence[];
+  occurrences: IssueOccurrence[];
 }
 
-export interface WalkthruOccurrence {
+export interface IssueOccurrence {
   nodeId: string;
   /** The branch labels from the root to this node, empty for a root */
   path: string[];
@@ -41,15 +41,15 @@ export interface WalkthruOccurrence {
   expectedValue: number | null;
   /**
    * The expected value from this node on: net of its own cost, but before the
-   * costs on the path to it. See WalkthruOutcome.onwardValue.
+   * costs on the path to it. See IssueOutcome.onwardValue.
    */
   onwardExpectedValue: number | null;
-  outcomes: WalkthruOutcome[];
+  outcomes: IssueOutcome[];
   /** False when a probability or a value is missing for the arithmetic */
   isComplete: boolean;
 }
 
-export interface WalkthruOutcome {
+export interface IssueOutcome {
   edgeId: string;
   label: string;
   reason: string;
@@ -102,17 +102,17 @@ function getChildEdgesGetter(tree: DecisionTree) {
 }
 
 /**
- * Returns a walkthru for each root node, because a canvas can hold more than
+ * Returns the issues under each root node, because a canvas can hold more than
  * one tree
  */
-export function getWalkthru(
+export function getIssues(
   tree: DecisionTree,
   {
     nodeValues = {},
     nodeCumulativeCosts = {},
     edgeProbabilities = {},
   }: NetExpectedValues,
-): WalkthruRoot[] {
+): IssuesRoot[] {
   const getChildEdges = getChildEdgesGetter(tree);
   const getValue = (nodeId: string) => {
     const value = nodeValues[nodeId];
@@ -125,9 +125,9 @@ export function getWalkthru(
   };
 
   return getRootNodeIds(tree.nodes, tree.edges).map((rootId) => {
-    const sections: Record<string, WalkthruSection> = {};
+    const issues: Record<string, Issue> = {};
 
-    // NOTE: breadth first, so that sections are in order of the depth at which
+    // NOTE: breadth first, so that issues are in order of the depth at which
     // an issue first occurs
     const queue: { nodeId: string; path: string[] }[] = [
       { nodeId: rootId, path: [] },
@@ -141,7 +141,7 @@ export function getWalkthru(
       }
 
       const isDecision = node.type === "decision";
-      const outcomes = edges.map((edge, index): WalkthruOutcome => {
+      const outcomes = edges.map((edge, index): IssueOutcome => {
         const probability = edgeProbabilities[edge.id] ?? null;
         return {
           edgeId: edge.id,
@@ -166,7 +166,7 @@ export function getWalkthru(
       // TODO: the weak spots of this grouping:
       // - a node with a description never groups with one without, so
       //   describing one node of an issue that is on several paths takes it
-      //   out of its section, see the edit link in Walkthru.tsx
+      //   out of its group, see the edit link in Issues.tsx
       // - different issues without descriptions are merged when their labels
       //   start with the same words, like two questions of "Yes" and "No"
       // - the same issue is not merged when its labels start differently on
@@ -179,13 +179,13 @@ export function getWalkthru(
       ]
         .join("|")
         .toLowerCase();
-      const section = (sections[key] ??= {
+      const issue = (issues[key] ??= {
         key,
         heading: description,
         isDecision,
         occurrences: [],
       });
-      section.occurrences.push({
+      issue.occurrences.push({
         nodeId,
         path,
         cost: toComputeNode(node, tree.variables).data.cost,
@@ -205,11 +205,11 @@ export function getWalkthru(
       });
     }
 
-    // NOTE: a section without a description is headed by its branch labels,
+    // NOTE: an issue without a description is headed by its branch labels,
     // or by the part of each that its occurrences have in common
-    values(sections).forEach((section) => {
-      const [first, ...others] = section.occurrences;
-      section.heading ||= first!.outcomes
+    values(issues).forEach((issue) => {
+      const [first, ...others] = issue.occurrences;
+      issue.heading ||= first!.outcomes
         .map(({ label }, index) =>
           others.every((other) => other.outcomes[index]!.label === label)
             ? label
@@ -221,7 +221,7 @@ export function getWalkthru(
     return {
       rootId,
       expectedValue: getValue(rootId),
-      sections: values(sections),
+      issues: values(issues),
     };
   });
 }

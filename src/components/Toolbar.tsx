@@ -40,7 +40,7 @@ import {
   selectHasTerminalNodes,
   selectShowEVs,
   selectShowHistogram,
-  selectShowWalkthru,
+  selectShowIssues,
 } from "@/lib/selectors";
 import { uploadTreeForSharing } from "@/lib/share";
 import { DecisionTree } from "@/lib/tree";
@@ -62,7 +62,7 @@ export function Toolbar() {
     deleteSelected,
     showEVs,
     showHistogram,
-    showWalkthru,
+    showIssues,
   } = useStore.getState();
 
   const [isLinkCopied, setIsLinkCopied] = useState(false);
@@ -75,9 +75,9 @@ export function Toolbar() {
   const hasTerminalNodes = useStore(selectHasTerminalNodes);
   const areEVsShowing = useStore(selectShowEVs);
   const isHistogramOpen = useStore(selectShowHistogram);
-  const isWalkthruOpen = useStore(selectShowWalkthru);
-  // NOTE: the histogram and the walkthru take the place of the canvas
-  const isCanvasHidden = isHistogramOpen || isWalkthruOpen;
+  const isIssuesOpen = useStore(selectShowIssues);
+  // NOTE: the histogram and the issues view take the place of the canvas
+  const isCanvasHidden = isHistogramOpen || isIssuesOpen;
 
   const isDarkMode = useDarkMode();
   // The builder mounts the toolbar only after client validation.
@@ -116,17 +116,17 @@ export function Toolbar() {
           "#171717"
         : "#fffbeb"); // amber-50
 
-    // If the walkthru or histogram is open, export it instead of the tree
-    if (isWalkthruOpen) {
-      const walkthruElement = window.document.getElementById("walkthru-export");
-      if (walkthruElement) {
+    // If the issues view or histogram is open, export it instead of the tree
+    if (isIssuesOpen) {
+      const issuesElement = window.document.getElementById("issues-export");
+      if (issuesElement) {
         exportHTMLElementAsPNG(
-          walkthruElement,
-          `${filename}-walkthrough.png`,
+          issuesElement,
+          `${filename}-issues.png`,
           backgroundColor,
         );
       } else {
-        console.error("[EVTree] Walkthru element not found");
+        console.error("[EVTree] Issues element not found");
       }
     } else if (isHistogramOpen) {
       const histogramElement =
@@ -186,9 +186,9 @@ export function Toolbar() {
   // the tree even from form fields and prevents browser save when available.
   // TODO: make hotkey usage also flash corresponding button
   // NOTE: a hotkey works exactly when its button does. The histogram and the
-  // walkthru take the place of the canvas, so what acts on the canvas is off
+  // issues view take the place of the canvas, so what acts on the canvas is off
   // then. That also leaves Cmd+C to the browser, for copying text out of the
-  // walkthru while a node is selected.
+  // issues view while a node is selected.
   const isEnabled = {
     copy: hasSelectedItems && !isCanvasHidden,
     paste: hasClipboardContent && !isCanvasHidden,
@@ -198,7 +198,7 @@ export function Toolbar() {
     redo: canRedo && !isCanvasHidden,
     showEVs: hasTerminalNodes && !isCanvasHidden,
     showHistogram: hasTerminalNodes,
-    showWalkthru: hasNodes,
+    showIssues: hasNodes,
     shareLink: Boolean(firebaseApp) && hasNodes && !isLinkCopied,
   };
 
@@ -367,17 +367,17 @@ export function Toolbar() {
           Histogram
         </ToolbarButton>
         <ToolbarButton
-          onButtonClick={showWalkthru}
+          onButtonClick={showIssues}
           tooltip={
-            isWalkthruOpen
-              ? "Hide Walkthrough"
-              : "Show Walkthrough: \nthe tree explained issue by issue"
+            isIssuesOpen
+              ? "Hide Issues"
+              : "Show Issues: \nthe tree explained issue by issue"
           }
-          active={isWalkthruOpen}
-          disabled={!isEnabled.showWalkthru}
+          active={isIssuesOpen}
+          disabled={!isEnabled.showIssues}
         >
           <ListBulletIcon className="h-4 w-4" />
-          Walkthrough
+          Issues
         </ToolbarButton>
         <VerticalDivider />
         {

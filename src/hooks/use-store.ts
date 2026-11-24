@@ -56,9 +56,9 @@ export interface StoreState {
     showEVs?: boolean;
     showPathEVs?: boolean;
     showHistogram?: boolean;
-    // NOTE: the histogram and the walkthru take the place of the canvas, so
+    // NOTE: the histogram and the issues view take the place of the canvas, so
     // only one of them shows at a time
-    showWalkthru?: boolean;
+    showIssues?: boolean;
     // NOTE: for suppressing the not-sum-to-one warning on the last edited edge
     lastEditedProbability?: { treeId: string; edgeId: string } | null;
   };
@@ -117,7 +117,7 @@ export interface StoreState {
   connectToNearestNode: (nodeId: string) => void;
   showEVs: (showPathEVs?: boolean) => void;
   showHistogram: () => void;
-  showWalkthru: () => void;
+  showIssues: () => void;
   selectNode: (nodeId: string) => void;
 }
 
@@ -1160,7 +1160,7 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       set(
         (state) => {
           state.display.showHistogram = !state.display.showHistogram;
-          state.display.showWalkthru = false;
+          state.display.showIssues = false;
           return state;
         },
         undefined,
@@ -1168,19 +1168,19 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
       );
     },
 
-    showWalkthru: () => {
+    showIssues: () => {
       set(
         (state) => {
-          state.display.showWalkthru = !state.display.showWalkthru;
+          state.display.showIssues = !state.display.showIssues;
           state.display.showHistogram = false;
           return state;
         },
         undefined,
-        { type: "showWalkthru" },
+        { type: "showIssues" },
       );
     },
 
-    // NOTE: for selecting a node from outside the canvas, like the walkthru,
+    // NOTE: for selecting a node from outside the canvas, like the issues view,
     // so that the side panel shows its properties
     selectNode: (nodeId) => {
       set(

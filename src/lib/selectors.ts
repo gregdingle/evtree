@@ -379,8 +379,8 @@ export function selectShowHistogram(state: StoreState): boolean {
   return state.display.showHistogram ?? false;
 }
 
-export function selectShowWalkthru(state: StoreState): boolean {
-  return state.display.showWalkthru ?? false;
+export function selectShowIssues(state: StoreState): boolean {
+  return state.display.showIssues ?? false;
 }
 
 export function selectUndoableState(
