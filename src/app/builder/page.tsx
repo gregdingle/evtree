@@ -139,6 +139,9 @@ function ShareLinkLoader() {
             useStore.getState().loadTree(tree, true);
             // Clear the hash after successful load
             window.history.replaceState(null, "", window.location.pathname);
+            // NOTE: this is not too early. React Flow queues a fitView() until
+            // it next has nodes that are all measured, so it fits to the
+            // loaded tree once the canvas has rendered it.
             fitView();
             // eslint-disable-next-line no-console
             console.debug(

@@ -28,6 +28,7 @@ import {
   formatElapsed,
   generateDecisionTree,
 } from "@/lib/ai";
+import { ARRANGE_FADE_MS } from "@/lib/animate";
 import { firebaseApp } from "@/lib/firebase";
 import { type DecisionTree } from "@/lib/tree";
 
@@ -140,7 +141,14 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       // avoid spurious undo stack entries
       setTimeout(() => {
         arrange();
-        fitView();
+        // NOTE: fit after the arrange, which moves the nodes only after its
+        // fade, see withArrangeAnimation. React Flow queues a fitView() until
+        // it next has nodes that are all measured. Here the nodes are already
+        // measured, so a fit asked for at once would run on the next frame,
+        // while the nodes are all still in one place.
+        setTimeout(() => {
+          fitView();
+        }, ARRANGE_FADE_MS + 100);
       }, 100);
 
       setAiInputText("");

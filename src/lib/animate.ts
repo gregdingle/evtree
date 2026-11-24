@@ -1,5 +1,9 @@
 "use client";
 
+// NOTE: the new layout is applied this long after withArrangeAnimation is
+// called, once the edges have faded out
+export const ARRANGE_FADE_MS = 250;
+
 let arrangeFadeTimeoutId: number | null = null;
 let arrangeAnimationTimeoutId: number | null = null;
 
@@ -27,7 +31,7 @@ export function withArrangeAnimation(run: () => void) {
 
   // Fade should be quick even if the move animation is long.
   const arrangeMs = 500;
-  const fadeMs = 250;
+  const fadeMs = ARRANGE_FADE_MS;
 
   wrapper.style.setProperty("--evtree-arrange-move-ms", `${arrangeMs}ms`);
   wrapper.style.setProperty("--evtree-arrange-fade-ms", `${fadeMs}ms`);
