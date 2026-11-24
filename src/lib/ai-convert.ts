@@ -1,11 +1,88 @@
-import { countBy } from "es-toolkit";
+import { groupBy, sumBy } from "es-toolkit";
 
-import { AITree } from "./ai-schemas";
+import { AINode, AITree } from "./ai-schemas";
 import { AppEdge, createEdge } from "./edge";
 import { AppNode, createNode } from "./node";
 import { DecisionTree, createTree } from "./tree";
 
 // NOTE: this is apart from ai.ts so that it can be tested without Firebase
+
+type AIChildren = Record<string, AINode[]>;
+
+/**
+ * Returns the expected size of the amounts that a node leads to, ignoring
+ * their sign and any costs.
+ */
+function getExpectedSize(aiNode: AINode, children: AIChildren): number {
+  const childNodes = children[aiNode.id];
+  if (!childNodes) {
+    return Math.abs(aiNode.value ?? 0);
+  }
+  return sumBy(
+    childNodes,
+    (child) => (child.probability ?? 0) * getExpectedSize(child, children),
+  );
+}
+
+/**
+ * Returns the place of each node among the branches of its parent, from the
+ * top, with the branch that leads to the largest amounts first.
+ *
+ * NOTE: Why order the branches at all? The human-crafted trees that we use for
+ * reference follow a convention: the case of the plaintiff runs along the top.
+ * At each issue, the outcome that keeps the claim alive comes first, the
+ * outcome that ends the case for the defendant comes last, and awards go from
+ * high to low. That holds whichever side the tree is written for. In a tree
+ * for the defendant, the top path is still the plaintiff winning, with the
+ * largest payment at the top.
+ *
+ * The AI does not follow the convention by itself. Of three trees that it
+ * generated from the descriptions of reference trees, one came out in the
+ * order of its reference tree, one fully reversed, with the defense verdict
+ * and the lowest award first, and one mixed.
+ *
+ * Ordering by size, ignoring sign, gives the convention without knowing which
+ * side the tree is for: a branch that continues to an award comes before one
+ * that ends at nothing, and a higher award before a lower one. All 60 chance
+ * nodes of the Hapless Harvest, component supply, patent infringement and
+ * product liability reference trees are in this order, and 26 of the 33 chance
+ * nodes of the three generated trees were.
+ *
+ * Where the rule falls short:
+ * - Branches of the same size stay in the order of the AI, such as two ways to
+ *   the same award.
+ * - A branch that ends in a loss for the party of the tree, such as its fees
+ *   when it loses, counts by the size of the loss. It comes first if that is
+ *   more than the other branches are expected to win.
+ * - Not every human-crafted tree agrees. The age discrimination reference
+ *   trees are as their source drew them, with single damages before double,
+ *   the lower fees before the higher, and a ruling for the defendant before
+ *   one for the plaintiff. The reference trees are not held to this order.
+ *
+ * The alternative is to ask for the order in step 1 of prompt.md, for example
+ * "list the outcome that keeps the claim of the plaintiff alive first, and
+ * awards from high to low". That states the convention itself, where the size
+ * is only a stand-in for it, and it could order branches of the same size. But
+ * it adds to the prompt, cannot be tested, and the AI already applies the
+ * rules of the prompt about its nodes unevenly. It could be tried on top of
+ * this, since the order of the AI is kept between branches of the same size.
+ */
+function getBranchPlaces(children: AIChildren): Record<string, number> {
+  const places: Record<string, number> = {};
+  Object.values(children).forEach((childNodes) => {
+    const sizes = new Map(
+      childNodes.map((child) => [child, getExpectedSize(child, children)]),
+    );
+    // NOTE: the sort is stable, so that the order of the AI is kept between
+    // branches of the same size
+    [...childNodes]
+      .sort((a, b) => sizes.get(b)! - sizes.get(a)!)
+      .forEach((child, place) => {
+        places[child.id] = place;
+      });
+  });
+  return places;
+}
 
 /**
  * Converts the AI-generated flat list of nodes to DecisionTree format. Each
@@ -17,13 +94,11 @@ export function convertAIStructureToDecisionTree(
   name: string,
   description: string,
 ): DecisionTree {
-  // NOTE: ignore positions because auto-arrange after
-  const dummyPosition = { x: 0, y: 0 };
-
-  const childCounts = countBy(
+  const children: AIChildren = groupBy(
     aiTree.nodes.filter((aiNode) => aiNode.parentId !== null),
     (aiNode) => aiNode.parentId!,
   );
+  const branchPlaces = getBranchPlaces(children);
 
   // NOTE: nodes get new ids, so keep a map from the ids that the AI gave them
   const nodeIds: Record<string, string> = {};
@@ -36,7 +111,7 @@ export function convertAIStructureToDecisionTree(
     // TODO: we shouldn't really define decision nodes this way... either
     // exclude decision node, or else modify the prompt and AI schemas to return
     // decision nodes
-    const childCount = childCounts[aiNode.id] ?? 0;
+    const childCount = children[aiNode.id]?.length ?? 0;
     let nodeType: "decision" | "chance" | "terminal";
     if (childCount === 0) {
       nodeType = "terminal";
@@ -46,7 +121,12 @@ export function convertAIStructureToDecisionTree(
       nodeType = "chance";
     }
 
-    const appNode = createNode(dummyPosition, nodeType, false, {
+    // NOTE: positions are replaced by the auto-arrange after, which keeps the
+    // branches of a node in the order of their vertical positions, see
+    // getLayoutedElementsD3. So the vertical position is only the place of the
+    // node among the branches of its parent.
+    const position = { x: 0, y: branchPlaces[aiNode.id] ?? 0 };
+    const appNode = createNode(position, nodeType, false, {
       // NOTE: the description of a node is the question that it decides
       description: aiNode.question ?? "",
       // NOTE: convert to string which will be converted back to number internally
