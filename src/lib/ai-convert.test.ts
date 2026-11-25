@@ -1,6 +1,12 @@
 import { values } from "es-toolkit/compat";
 
-import { convertAIStructureToDecisionTree } from "./ai-convert";
+import {
+  SOURCE_AI,
+  SOURCE_DESCRIPTION,
+  SOURCE_NOT_FOUND,
+  convertAIStructureToDecisionTree,
+  isQuoteInText,
+} from "./ai-convert";
 import { AINode, AITree } from "./ai-schemas";
 import { arrangeSubtreeHelper } from "./layout";
 
@@ -14,6 +20,7 @@ const nodes: AINode[] = [
     id: "n1",
     parentId: null,
     label: null,
+    quote: null,
     reason: null,
     probability: null,
     question: "Does the settlement bar the claims?",
@@ -24,6 +31,7 @@ const nodes: AINode[] = [
     id: "n2",
     parentId: "n1",
     label: "Claims barred",
+    quote: null,
     reason: "Because of the settlement",
     probability: 0.25,
     question: null,
@@ -34,6 +42,7 @@ const nodes: AINode[] = [
     id: "n3",
     parentId: "n1",
     label: "Claims survive",
+    quote: null,
     reason: "Because the settlement is narrow",
     probability: 0.75,
     question: null,
@@ -44,6 +53,7 @@ const nodes: AINode[] = [
     id: "n4",
     parentId: "n3",
     label: "Award",
+    quote: null,
     reason: "Because it is the only outcome",
     probability: 1,
     question: null,
@@ -139,6 +149,78 @@ describe("convertAIStructureToDecisionTree", () => {
     expect(tree.rounding).toBe("US");
   });
 
+  describe("source of a reason", () => {
+    const sourceText =
+      "The parties settled in 2020.\nThe settlement \u201creleases all claims\u201d of the buyer.";
+    const getDescriptions = (quotes: (string | null)[], text?: string) => {
+      const aiNodes = nodes.map((node, index) => ({
+        ...node,
+        quote: quotes[index] ?? null,
+      }));
+      const tree = convertAIStructureToDecisionTree(
+        { currency: "USD", issues: ["Issue?"], nodes: aiNodes },
+        "Name",
+        "Description",
+        text,
+      );
+      return values(tree.edges).map((edge) => edge.data?.description);
+    };
+
+    test("should leave a reason as it is without the text that the AI was given", () => {
+      expect(getDescriptions([null, "releases all claims"])).toEqual([
+        "Because of the settlement",
+        "Because the settlement is narrow",
+        "Because it is the only outcome",
+      ]);
+    });
+
+    test("should say where the point of each reason comes from", () => {
+      expect(
+        getDescriptions(
+          [null, '"Releases all claims"', "releases some claims", null],
+          sourceText,
+        ),
+      ).toEqual([
+        `Because of the settlement\n\n${SOURCE_DESCRIPTION} "Releases all claims"`,
+        `Because the settlement is narrow\n\n${SOURCE_NOT_FOUND} "releases some claims"`,
+        `Because it is the only outcome\n\n${SOURCE_AI}`,
+      ]);
+    });
+
+    test("should find a quote whatever its case, spacing and quotation marks", () => {
+      expect(
+        isQuoteInText('settled in 2020. The settlement "releases', sourceText),
+      ).toBe(true);
+      expect(isQuoteInText("settled in 2021", sourceText)).toBe(false);
+      expect(isQuoteInText(" ", sourceText)).toBe(false);
+    });
+
+    test("should find a quote that runs across a page break of a PDF", () => {
+      const pages =
+        "They contend that the Plan prohibits BlockFi from pursuing any claim\nPage 4 of 7\n===== page 5 =====\nStatement 2025-09-11\nregarding the Policy because it was assumed.";
+      expect(
+        isQuoteInText(
+          "the Plan prohibits BlockFi from pursuing any claim regarding the Policy because it was assumed.",
+          pages,
+        ),
+      ).toBe(true);
+      // Not a quote that is put together from words that are far apart
+      expect(isQuoteInText("They contend it was assumed", pages)).toBe(false);
+      expect(
+        isQuoteInText("the Plan prohibits BlockFi from winning", pages),
+      ).toBe(false);
+    });
+
+    test("should find a quote that leaves out words with an ellipsis, in order", () => {
+      expect(
+        isQuoteInText("The parties settled ... of the buyer.", sourceText),
+      ).toBe(true);
+      expect(
+        isQuoteInText("of the buyer \u2026 The parties settled", sourceText),
+      ).toBe(false);
+    });
+  });
+
   describe("order of the branches", () => {
     const row = (
       id: string,
@@ -149,6 +231,7 @@ describe("convertAIStructureToDecisionTree", () => {
       id,
       parentId,
       label: parentId && id,
+      quote: null,
       reason: parentId && "Because",
       probability,
       question: value === null ? "Question?" : null,

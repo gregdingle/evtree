@@ -128,6 +128,8 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
         newTreeName.trim(),
         // TODO: optimize description?
         `Generated from AI based on text: \n\n"${truncate(aiInputText.trim(), { length: 1000 })}"`,
+        // NOTE: the whole text, to check the quotes of the AI against
+        aiInputText,
       );
 
       // Sanity check

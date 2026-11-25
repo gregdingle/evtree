@@ -84,15 +84,149 @@ function getBranchPlaces(children: AIChildren): Record<string, number> {
   return places;
 }
 
+export const SOURCE_DESCRIPTION = "From the case description:";
+export const SOURCE_NOT_FOUND =
+  "Quoted by AI, but not found in the case description:";
+export const SOURCE_AI = "Suggested by AI, not in the case description.";
+
+/**
+ * Returns text for finding a quote in, without the differences that do not
+ * matter: case, line breaks and other spacing, and curly or straight quotation
+ * marks and dashes.
+ */
+function normalizeForQuote(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[\u2018\u2019\u201c\u201d"'`]/g, "'")
+    .replace(/[\u2010-\u2015]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * How much text may be skipped inside of a quote, and how few words of a
+ * quote count as found on their own, see findQuotePart
+ */
+const MAX_QUOTE_GAP = 300;
+const MIN_QUOTE_WORDS = 3;
+const MAX_QUOTE_PIECES = 3;
+
+/**
+ * Returns where a part of a quote ends in the text, searching on from a place,
+ * or -1 if it is not there.
+ *
+ * NOTE: the part does not have to be in one piece. The AI quotes across what
+ * a reader skips, like a page number and a header where a sentence runs on to
+ * the next page of a PDF, or a footnote mark. So the part may be in a few
+ * pieces that are close together, each of a few words or more, which a made-up
+ * quote is unlikely to be.
+ */
+function findQuotePart(part: string, text: string, from: number): number {
+  const words = part.split(" ");
+  let wordIndex = 0;
+  for (let piece = 0; wordIndex < words.length; piece++) {
+    if (piece === MAX_QUOTE_PIECES) {
+      return -1;
+    }
+    const minLength = Math.min(MIN_QUOTE_WORDS, words.length - wordIndex);
+    let found = -1;
+    let length = words.length - wordIndex;
+    // NOTE: the longest run of words that is in the text
+    for (; length >= minLength; length--) {
+      const run = words.slice(wordIndex, wordIndex + length).join(" ");
+      const index = text.indexOf(run, from);
+      if (index !== -1 && (piece === 0 || index - from <= MAX_QUOTE_GAP)) {
+        found = index + run.length;
+        break;
+      }
+    }
+    if (found === -1) {
+      return -1;
+    }
+    from = found;
+    wordIndex += length;
+  }
+  return from;
+}
+
+/**
+ * Returns whether a quote is in the text that the AI was given. A quote may
+ * leave out words with an ellipsis, and then every part has to be in the text,
+ * in order.
+ */
+export function isQuoteInText(quote: string, text: string): boolean {
+  const normalizedText = normalizeForQuote(text);
+  let from = 0;
+  const parts = normalizeForQuote(quote)
+    .split(/\.{3,}|\u2026/)
+    // NOTE: also without quotation marks or a period that the AI put around
+    // a part, which are not in the text at that place
+    .map((part) => part.replace(/^[\s'.,]+|[\s'.,]+$/g, ""))
+    .filter((part) => part.length > 0);
+  if (parts.length === 0) {
+    return false;
+  }
+  return parts.every((part) => {
+    from = findQuotePart(part, normalizedText, from);
+    return from !== -1;
+  });
+}
+
+/**
+ * Returns the reason of a branch with a footnote that says where its point
+ * comes from: a quote from the description that the AI was given, or else the
+ * AI itself, from general legal knowledge.
+ *
+ * A reason is the only place where the AI argues, so the reader needs to know
+ * which arguments are from the document and which the AI supplied. That
+ * matters most for a description that is written by one side, like a
+ * mediation statement, which does not say what the other side will argue.
+ *
+ * NOTE: the AI gives the quote, and it is checked here against the text that
+ * the AI was given, because an AI can also make up a quote. A label written by
+ * the AI itself, like "Suggested by AI", could not be checked.
+ *
+ * NOTE: the footnote is part of the description of the branch, and not a
+ * field of its own, so nothing else had to change: the side panel, the Issues
+ * page, export and share links all show a description.
+ *
+ * TODO: as text, the footnote can be edited away, and the Issues page cannot
+ * mark or filter the reasons that the AI supplied without matching on these
+ * words. If that is wanted, keep the source of a reason as a field of the
+ * branch, see AppEdge.
+ */
+function getReasonWithSource(
+  aiNode: AINode,
+  sourceText: string | undefined,
+): string {
+  const reason = aiNode.reason || "";
+  // NOTE: without the text that the AI was given, there is nothing to check
+  // a quote against
+  if (!reason || sourceText === undefined) {
+    return reason;
+  }
+  const quote = aiNode.quote?.trim().replace(/^["\u201c]+|["\u201d]+$/g, "");
+  if (!quote) {
+    return `${reason}\n\n${SOURCE_AI}`;
+  }
+  return isQuoteInText(quote, sourceText)
+    ? `${reason}\n\n${SOURCE_DESCRIPTION} "${quote}"`
+    : `${reason}\n\n${SOURCE_NOT_FOUND} "${quote}"`;
+}
+
 /**
  * Converts the AI-generated flat list of nodes to DecisionTree format. Each
  * AI node becomes a node, and an edge from its parent if it has one.
  * The tree takes the currency that the AI inferred, and rounding to match.
+ *
+ * @param sourceText - The text that the AI was given, to check its quotes
+ * against. With it, every reason gets a footnote, see getReasonWithSource.
  */
 export function convertAIStructureToDecisionTree(
   aiTree: AITree,
   name: string,
   description: string,
+  sourceText?: string,
 ): DecisionTree {
   const children: AIChildren = groupBy(
     aiTree.nodes.filter((aiNode) => aiNode.parentId !== null),
@@ -160,7 +294,7 @@ export function convertAIStructureToDecisionTree(
         label: aiNode.label || "",
         // NOTE: convert to string which will be converted back to number internally
         probabilityExpr: aiNode.probability?.toString() || undefined,
-        description: aiNode.reason || "",
+        description: getReasonWithSource(aiNode, sourceText),
       },
     );
     edges[edge.id] = edge;

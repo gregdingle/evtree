@@ -5,6 +5,7 @@ function root(overrides: Partial<AINode> = {}): AINode {
     id: "n1",
     parentId: null,
     label: null,
+    quote: null,
     reason: null,
     probability: null,
     question: "Question?",
@@ -24,6 +25,7 @@ function child(
     id,
     parentId,
     label: `Label ${id}`,
+    quote: null,
     reason: `Reason ${id}`,
     probability,
     question: null,
@@ -56,13 +58,14 @@ describe("aiTreeJsonSchema", () => {
     ]);
   });
 
-  test("should put the reason before the probability", () => {
+  test("should put the quote before the reason before the probability", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const node = (aiTreeJsonSchema as any).properties.nodes.items;
     expect(Object.keys(node.properties)).toEqual([
       "id",
       "parentId",
       "label",
+      "quote",
       "reason",
       "probability",
       "question",

@@ -197,7 +197,11 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
                     inputId="Label"
                     onSelect={() => selectEdge(outcome.edgeId)}
                   />
-                  <p className="mt-1 text-base text-gray-700 dark:text-gray-300">
+                  <p
+                    // NOTE: whitespace-pre-line for the footnote of a reason
+                    // from AI, see getReasonWithSource in ai-convert.ts
+                    className="mt-1 text-base whitespace-pre-line text-gray-700 dark:text-gray-300"
+                  >
                     {outcome.reason}
                   </p>
                 </li>

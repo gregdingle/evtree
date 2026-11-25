@@ -16,7 +16,8 @@ import { PROBABILITY_SUM_TOLERANCE } from "./expectedValue";
 // NOTE: The descriptions and the order of the fields below are sent to the AI
 // as the JSON schema for structured output, see ai.ts. The reason comes before
 // the probability because structured output follows the order of the schema,
-// so the AI justifies before it estimates.
+// so the AI justifies before it estimates. The quote comes before the reason
+// in the same way.
 
 const AINodeSchema = z.object({
   id: z.string().min(1).describe("Short unique id of the node, such as n1."),
@@ -31,6 +32,16 @@ const AINodeSchema = z.object({
     .nullable()
     .describe(
       "User-facing label for the branch from the parent to this node. Null for the root node only.",
+    ),
+  // NOTE: the quote comes before the reason so that the AI finds its support
+  // in the description before it argues. It is checked against the
+  // description and shown under the reason, see getReasonWithSource in
+  // ai-convert.ts.
+  quote: z
+    .string()
+    .nullable()
+    .describe(
+      "The few words of the description that the reason rests on, copied exactly. Null for the root node, and when the point of the reason is not in the description.",
     ),
   reason: z
     .string()
