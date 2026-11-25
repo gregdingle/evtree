@@ -195,6 +195,23 @@ describe("convertAIStructureToDecisionTree", () => {
       expect(isQuoteInText(" ", sourceText)).toBe(false);
     });
 
+    test("should find a quote whatever its punctuation and hyphens", () => {
+      const text =
+        'The Court held, in 2020, that "[t]he pre-petition trans-\nfer was not a pur\u2010 chase" \u2014 at least in part.';
+      expect(
+        isQuoteInText(
+          "the court held in 2020 that the prepetition transfer was not a purchase - at least in part",
+          text,
+        ),
+      ).toBe(true);
+      expect(isQuoteInText("The pre-petition transfer was not", text)).toBe(
+        true,
+      );
+      // Not with a word left out or changed, or with part of a word
+      expect(isQuoteInText("the transfer was a purchase", text)).toBe(false);
+      expect(isQuoteInText("he pre-petition transfer", text)).toBe(false);
+    });
+
     test("should find a quote that runs across a page break of a PDF", () => {
       const pages =
         "They contend that the Plan prohibits BlockFi from pursuing any claim\nPage 4 of 7\n===== page 5 =====\nStatement 2025-09-11\nregarding the Policy because it was assumed.";

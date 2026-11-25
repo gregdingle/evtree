@@ -90,17 +90,24 @@ export const SOURCE_NOT_FOUND =
 export const SOURCE_AI = "Suggested by AI, not in the case description.";
 
 /**
- * Returns text for finding a quote in, without the differences that do not
- * matter: case, line breaks and other spacing, and curly or straight quotation
- * marks and dashes.
+ * Returns the words of a text for finding a quote in, with a space before
+ * and after each, and without the differences that do not matter: case,
+ * punctuation, line breaks and other spacing.
+ *
+ * NOTE: the AI does not copy punctuation exactly: it changes quotation marks
+ * and dashes, drops a comma, writes "[t]he" for "The", and joins a word that
+ * is hyphenated at the end of a line of a PDF. So only the words are
+ * compared, and a hyphen inside of a word is left out, with any line break
+ * after it. The words themselves have to be the same, because one word, like
+ * "not", can change what a quote says.
  */
-function normalizeForQuote(text: string): string {
-  return text
+function getQuoteWords(text: string): string {
+  const words = text
     .toLowerCase()
-    .replace(/[\u2018\u2019\u201c\u201d"'`]/g, "'")
-    .replace(/[\u2010-\u2015]/g, "-")
-    .replace(/\s+/g, " ")
+    .replace(/[\u2010\u2011-]\s*|[[\]]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim();
+  return ` ${words} `;
 }
 
 /**
@@ -133,10 +140,12 @@ function findQuotePart(part: string, text: string, from: number): number {
     let length = words.length - wordIndex;
     // NOTE: the longest run of words that is in the text
     for (; length >= minLength; length--) {
-      const run = words.slice(wordIndex, wordIndex + length).join(" ");
+      // NOTE: with a space at both ends, to find whole words
+      const run = ` ${words.slice(wordIndex, wordIndex + length).join(" ")} `;
       const index = text.indexOf(run, from);
       if (index !== -1 && (piece === 0 || index - from <= MAX_QUOTE_GAP)) {
-        found = index + run.length;
+        // NOTE: on from the space after the run, which the next run starts with
+        found = index + run.length - 1;
         break;
       }
     }
@@ -155,19 +164,17 @@ function findQuotePart(part: string, text: string, from: number): number {
  * in order.
  */
 export function isQuoteInText(quote: string, text: string): boolean {
-  const normalizedText = normalizeForQuote(text);
+  const textWords = getQuoteWords(text);
   let from = 0;
-  const parts = normalizeForQuote(quote)
+  const parts = quote
     .split(/\.{3,}|\u2026/)
-    // NOTE: also without quotation marks or a period that the AI put around
-    // a part, which are not in the text at that place
-    .map((part) => part.replace(/^[\s'.,]+|[\s'.,]+$/g, ""))
+    .map((part) => getQuoteWords(part).trim())
     .filter((part) => part.length > 0);
   if (parts.length === 0) {
     return false;
   }
   return parts.every((part) => {
-    from = findQuotePart(part, normalizedText, from);
+    from = findQuotePart(part, textWords, from);
     return from !== -1;
   });
 }
