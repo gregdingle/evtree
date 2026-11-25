@@ -23,7 +23,7 @@
     "es-toolkit": "^1.53.2",
     "expr-eval-fork": "^3.0.3",
     "firebase": "^13.4.0",
-    "html-to-image": "^1.11.13",
+    "html-to-image": "1.11.11",
     "human-format": "^1.4.0",
     "immer": "^11.2.10",
     "jspdf": "^4.2.1",

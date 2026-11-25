@@ -210,6 +210,8 @@ export const exportHTMLElementAsPNG = async (
 };
 
 // NOTE: see https://reactflow.dev/examples/misc/download-image
+// NOTE: html-to-image is pinned to 1.11.11 in package.json, as that example
+// says to. With 1.11.13 the exported image has no edges.
 export const exportPNG = async (
   nodes: AppNode[],
   filename: string,
