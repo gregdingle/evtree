@@ -27,6 +27,12 @@ Some guidelines:
 - Costs must be positive because they are subtracted from values
 - Do not calculate path probabilities or expected values, and do not adjust for risk aversion. The app does this from the tree.
 
+## Summary
+
+Before the tree, write a `summary` of the description in about 80 words, for a reader who has not seen it. Say who the parties are and whose side the tree takes, what is claimed and for how much, and name the main issues in a few words each. In the last sentence, say what kind of document the description is, such as an assessment by counsel or a mediation statement written by one side, and whether it gives the probabilities and costs or you estimated them.
+
+<!-- NOTE: the summary becomes the description of the tree, with a line by the app that names the source, see getAITreeDescription in ai-convert.ts. The last sentence is there because a tree from the argument of one side looks as sure as one from the estimates of counsel. The length is in words because, asked for three to five sentences, the AI wrote four long ones, of about 170 words. -->
+
 ## Construction procedure
 
 <!-- The steps are distilled from Marc B. Victor, "Decision Tree Analysis: A Means of Reducing Litigation Uncertainty and Facilitating Good Settlements", 31 Georgia State University Law Review 715 (2015), https://www.litigationrisk.com/GSU%20Law%20Review%20article.pdf. NOTE: this is in a comment because the AI took the citation to mean that the lawsuit came from the article. -->

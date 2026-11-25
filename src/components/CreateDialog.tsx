@@ -17,7 +17,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
-import { isEmpty, truncate } from "es-toolkit/compat";
+import { isEmpty } from "es-toolkit/compat";
 
 import { useStore } from "@/hooks/use-store";
 import {
@@ -57,6 +57,9 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
   const [isExtractingText, setIsExtractingText] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [aiInputText, setAiInputText] = useState("");
+  // NOTE: the name of the file that the text for AI was extracted from, for
+  // the description of the tree. The user can still edit the text.
+  const [aiSourceFileName, setAiSourceFileName] = useState<string | null>(null);
   const [aiProgress, setAiProgress] = useState<AIGenerationProgress>();
   const [generationStartedAt, setGenerationStartedAt] = useState<number>();
   const [now, setNow] = useState(0);
@@ -126,10 +129,9 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       const decisionTree = convertAIStructureToDecisionTree(
         aiTreeStructure,
         newTreeName.trim(),
-        // TODO: optimize description?
-        `Generated from AI based on text: \n\n"${truncate(aiInputText.trim(), { length: 1000 })}"`,
-        // NOTE: the whole text, to check the quotes of the AI against
-        aiInputText,
+        // NOTE: the whole text, to check the quotes of the AI against, and
+        // the file to name in the description of the tree
+        { text: aiInputText, fileName: aiSourceFileName ?? undefined },
       );
 
       // Sanity check
@@ -155,6 +157,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       }, 100);
 
       setAiInputText("");
+      setAiSourceFileName(null);
       setNewTreeName("");
       setNewTreeDescription("");
       onClose();
@@ -217,6 +220,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       // createDecisionTreeFromText with the document?
       const extractedText = await extractTextFromFile(file);
       setAiInputText(extractedText);
+      setAiSourceFileName(file.name);
     } catch (error) {
       console.error(error);
       // TODO: better than window.alert
@@ -405,9 +409,14 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                           <textarea
                             rows={7}
                             value={aiInputText}
-                            onInput={(e) =>
-                              setAiInputText(e.currentTarget.value)
-                            }
+                            onInput={(e) => {
+                              setAiInputText(e.currentTarget.value);
+                              // NOTE: text that is cleared and typed or
+                              // pasted again is no longer from the file
+                              if (!e.currentTarget.value) {
+                                setAiSourceFileName(null);
+                              }
+                            }}
                             placeholder={`Example: I'm representing Iron-Steel, the defendant, in a legal dispute that has generated years of expensive and acrimonious litigation over alleged defects in railroad cars designed to carry larger quantities of coal than a conventional railroad car. It is undisputed that...`}
                             className="flex-2/3 rounded-md border-0 px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600 focus:ring-inset dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:placeholder:text-gray-500 dark:focus:ring-blue-500"
                           />

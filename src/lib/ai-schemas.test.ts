@@ -38,6 +38,7 @@ function child(
 function getMessages(nodes: AINode[]): string[] {
   const result = AITreeSchema.safeParse({
     currency: "USD",
+    summary: "Summary.",
     issues: ["Issue?"],
     nodes,
   });
@@ -49,10 +50,11 @@ describe("aiTreeJsonSchema", () => {
     expect(JSON.stringify(aiTreeJsonSchema)).not.toContain("$ref");
   });
 
-  test("should put the issues before the nodes", () => {
+  test("should put the summary before the issues before the nodes", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(Object.keys((aiTreeJsonSchema as any).properties)).toEqual([
       "currency",
+      "summary",
       "issues",
       "nodes",
     ]);
@@ -82,6 +84,7 @@ describe("AITreeSchema", () => {
     const parse = (currency: unknown) =>
       AITreeSchema.safeParse({
         currency,
+        summary: "Summary.",
         issues: [],
         nodes: [root({ value: 1 })],
       }).success;

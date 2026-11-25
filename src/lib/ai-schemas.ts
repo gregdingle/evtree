@@ -97,6 +97,14 @@ export const AITreeSchema = z
       .describe(
         "The currency of the amounts in the description. Where a symbol is shared by several currencies, choose by the country of the dispute. Null if the description has no amounts or does not indicate a currency.",
       ),
+    // NOTE: the summary becomes the description of the tree, see
+    // getAITreeDescription in ai-convert.ts. It comes before the issues, so
+    // that the AI takes in the whole case and its source before it plans.
+    summary: z
+      .string()
+      .describe(
+        "A summary of the description in about 80 words, for a reader who has not seen it.",
+      ),
     // NOTE: issues come before nodes so that the AI writes out its plan before
     // it builds the tree, in place of planning in thinking tokens, which is
     // slow. The issues are not used in the tree itself.
