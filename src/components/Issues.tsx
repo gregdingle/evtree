@@ -88,7 +88,8 @@ export function Issues({ className, ...props }: IssuesProps) {
       <div id="issues-export" className="max-w-7xl pb-16 text-lg">
         <h2 className="mb-2 text-2xl font-semibold">Key Issues</h2>
         <p className="text-base text-gray-600 dark:text-gray-400">
-          Nodes that have matching branches are grouped together as issues.
+          Nodes in the tree that have matching branches are grouped together as
+          issues.
           {/* QUESTION: add some more help text like "Probabilities and values may differ; the branch structure remains the
           same within an issue."? */}
         </p>
