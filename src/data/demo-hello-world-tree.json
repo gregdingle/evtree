@@ -9,7 +9,7 @@
       "id": "decision",
       "type": "decision",
       "data": {
-        "description": ""
+        "description": "Whether to litigate or settle?"
       },
       "position": {
         "x": 100,
@@ -24,7 +24,8 @@
       "id": "chance",
       "type": "chance",
       "data": {
-        "description": ""
+        "description": "What will the judge decide?",
+        "costExpr": "100"
       },
       "position": {
         "x": 300,
@@ -40,7 +41,7 @@
       "type": "terminal",
       "data": {
         "description": "",
-        "valueExpr": "500"
+        "valueExpr": "250"
       },
       "position": {
         "x": 500,
@@ -72,7 +73,7 @@
       "type": "terminal",
       "data": {
         "description": "",
-        "valueExpr": "250"
+        "valueExpr": "500"
       },
       "position": {
         "x": 300,
@@ -104,7 +105,7 @@
       "id": "k2iTTAYoxfdF",
       "type": "ghost",
       "position": {
-        "x": 105.48499330955953,
+        "x": 95.48499330955953,
         "y": -24.050011319819465
       },
       "data": {
@@ -141,7 +142,7 @@
       "type": "ghost",
       "position": {
         "x": 315.13140527826937,
-        "y": -21.40754197908328
+        "y": -41.40754197908328
       },
       "data": {
         "label": "",
@@ -233,7 +234,7 @@
       "target": "chance",
       "type": "custom",
       "data": {
-        "label": "d to c",
+        "label": "litigate",
         "description": ""
       }
     },
@@ -243,7 +244,7 @@
       "target": "terminal1",
       "type": "custom",
       "data": {
-        "label": "c to t1",
+        "label": "low",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -254,7 +255,7 @@
       "target": "terminal2",
       "type": "custom",
       "data": {
-        "label": "c to t2",
+        "label": "high",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -265,7 +266,7 @@
       "target": "terminal3",
       "type": "custom",
       "data": {
-        "label": "d to t3",
+        "label": "settle",
         "description": ""
       }
     },
