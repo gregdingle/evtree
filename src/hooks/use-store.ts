@@ -263,6 +263,16 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
           }
 
           // Clear any display settings
+          // TODO: this also turns off Calculate, see showEVs, so a user who
+          // is comparing the expected values of two trees has to turn it on
+          // again after every switch. Needs some thinking. Either keep
+          // Calculate on across trees, and reset only what belongs to one
+          // tree, like lastEditedProbability. Or keep the display of each
+          // tree with the tree, so that a tree comes back in the view it was
+          // left in: Calculate, and the canvas, histogram or issues. See also
+          // loadTree, which resets less than this does, and the TODO in
+          // builder/page.tsx about the active view in the hash of the URL,
+          // because a share link would then have to say which view to open.
           state.display = {};
 
           // Switch to new tree
