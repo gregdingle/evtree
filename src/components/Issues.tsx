@@ -3,7 +3,12 @@
 import React, { useState } from "react";
 
 import { useStore } from "@/hooks/use-store";
-import { Issue, IssueOccurrence, getIssues } from "@/lib/issues";
+import {
+  Issue,
+  IssueOccurrence,
+  getIssues,
+  getOccurrenceNames,
+} from "@/lib/issues";
 import {
   selectCurrentCurrency,
   selectCurrentRounding,
@@ -123,6 +128,7 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
   const pageCount = issue.occurrences.length;
   const pageIndex = Math.min(page, pageCount - 1);
   const current = issue.occurrences[pageIndex]!;
+  const occurrenceNames = getOccurrenceNames(issue.occurrences);
 
   // NOTE: a decision made by hand often has no reasons, so give the reason
   // that follows from the numbers, for the option taken on the path shown
@@ -222,12 +228,7 @@ function IssueSection({ number, issue }: { number: number; issue: Issue }) {
                     } ${pageCount > 1 ? "cursor-pointer" : ""}`}
                   >
                     <td className="py-1 pr-6">
-                      {/*
-                        NOTE: only the branch that leads here, as in the
-                        sub-tree view. The whole path is long, and it is in
-                        the issues above.
-                      */}
-                      {occurrence.path.at(-1) ?? "Start"}
+                      {occurrenceNames[index]!.join(" › ")}
                     </td>
                     <td className="py-1">
                       <Calculation

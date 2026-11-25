@@ -1,7 +1,13 @@
 import haplessHarvestData from "@/data/reference/hapless-harvest-defense-with-costs-tree.json";
 
 import { AppEdge, createEdge } from "./edge";
-import { IssuesRoot, getIssues, getSubTreeElements } from "./issues";
+import {
+  IssueOccurrence,
+  IssuesRoot,
+  getIssues,
+  getOccurrenceNames,
+  getSubTreeElements,
+} from "./issues";
 import { AppNode } from "./node";
 import { computeNetExpectedValues } from "./selectors";
 import { DecisionTree } from "./tree";
@@ -193,6 +199,34 @@ describe("getIssues", () => {
     expect(issue!.occurrences[0]!.outcomes).toMatchObject([
       { label: "Settle", isBest: false, value: 5 },
       { label: "Litigate", isBest: true, value: 10 },
+    ]);
+  });
+});
+
+describe("getOccurrenceNames", () => {
+  const getNames = (paths: string[][]) =>
+    getOccurrenceNames(paths.map((path) => ({ path }) as IssueOccurrence));
+
+  test("should name an occurrence by the branch that leads to it", () => {
+    expect(getNames([[], ["Litigate", "Liability"]])).toEqual([
+      ["Start"],
+      ["Liability"],
+    ]);
+  });
+
+  test("should add the nearest earlier branch that tells occurrences apart", () => {
+    expect(
+      getNames([
+        ["Bars fraud only", "Liability", "No fraud"],
+        ["No bar", "Liability", "No fraud"],
+        ["No bar", "Liability", "Fraud"],
+        ["Denied", "No fraud"],
+      ]),
+    ).toEqual([
+      ["Bars fraud only", "…", "No fraud"],
+      ["No bar", "…", "No fraud"],
+      ["Fraud"],
+      ["Denied", "No fraud"],
     ]);
   });
 });

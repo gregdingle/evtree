@@ -226,6 +226,40 @@ export function getIssues(
   });
 }
 
+/**
+ * Returns what to call each occurrence of an issue, which is the branch that
+ * leads to it, or "Start" for a root. When occurrences follow a branch of the
+ * same label, like "No fraud" on two paths, each also gets the nearest earlier
+ * branch that tells it apart from the others, with an ellipsis for any
+ * branches skipped in between, like "Stat lim no bar › … › No fraud".
+ *
+ * NOTE: not the whole path, which is long, and is in the issues above
+ */
+export function getOccurrenceNames(occurrences: IssueOccurrence[]): string[][] {
+  return occurrences.map(({ path }) => {
+    if (path.length === 0) {
+      return ["Start"];
+    }
+    const isSameEnd = (other: string[], length: number) =>
+      path.slice(-length).join("|") === other.slice(-length).join("|");
+    const others = occurrences
+      .map((occurrence) => occurrence.path)
+      .filter((other) => other !== path);
+    let length = 1;
+    while (
+      length < path.length &&
+      others.some((other) => isSameEnd(other, length))
+    ) {
+      length++;
+    }
+    const last = path.at(-1)!;
+    if (length === 1) {
+      return [last];
+    }
+    return [path.at(-length)!, ...(length > 2 ? ["…"] : []), last];
+  });
+}
+
 function getFirstWord(label: string): string {
   return label.split(/\s+/)[0]!;
 }
