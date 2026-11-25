@@ -18,7 +18,12 @@ import {
   selectShowPathEVs,
 } from "@/lib/selectors";
 import { variablesToRecord } from "@/lib/variable";
-import { formatCost, formatProbability, formatValue } from "@/utils/format";
+import {
+  formatCost,
+  formatProbability,
+  formatValue,
+  isNumericEqual,
+} from "@/utils/format";
 
 import { InlineEdit } from "./InlineEdit";
 import { GhostNode, NoteNode } from "./NoteNode";
@@ -92,7 +97,7 @@ const BaseNode = ({
             text-green-600 italic
             dark:text-green-400
             ${hasParent ? "" : "font-semibold"}
-            ${hasParent ? "-bottom-8 border-1" : "-bottom-9 border-3"}
+            ${hasParent ? "-bottom-8 border" : "-bottom-9 border-3"}
             rounded-md
             px-1
           `}
@@ -202,13 +207,13 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
   const terminalValueDisplay = useStore(selectCurrentTerminalValueDisplay);
 
   const pathValue = useStore((state) => selectNetExpectedValue(state, id));
+  const valueExpr = data.valueExpr;
 
   // QUESTION: consolidate isParseable and parsedValue logic?
   const [isParseable, setIsParseable] = useState(true);
   const [parsedValue, setParsedValue] = useState<number | null>(null);
 
   useEffect(() => {
-    const valueExpr = data.valueExpr;
     // NOTE: if value is unset, consider it parseable
     if (valueExpr === undefined) {
       // TODO: fix this lint error instead of suppressing it
@@ -229,7 +234,7 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         setParsedValue(parsed);
       }
     }
-  }, [variables, data.valueExpr]);
+  }, [variables, valueExpr]);
 
   const topOffset = showPathProbability ? "-top-2.5" : "top-0.5";
   return (
@@ -242,14 +247,11 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
         <div
           className={`
             absolute
-            h-0
-            w-0
-            border-t-[19px]
-            border-r-[32px]
-            border-b-[19px]
+            size-0
+            border-y-19
+            border-r-32
             border-l-0
-            border-t-transparent
-            border-b-transparent
+            border-y-transparent
             border-l-transparent
             ${selected ? "border-r-blue-500" : "border-r-green-500"}
           `}
@@ -260,15 +262,12 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
           // NOTE: this wacky CSS creates the triangle shape
           className={`
             relative
-            h-0
-            w-0
-            border-t-[15px]
-            border-r-[24px]
-            border-b-[15px]
+            size-0
+            border-y-15
+            border-r-24
             border-l-0
-            border-t-transparent
+            border-y-transparent
             border-r-green-400
-            border-b-transparent
             border-l-transparent
           `}
           style={{ left: "2px" }}
@@ -310,7 +309,9 @@ const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
             (isParseable &&
             pathValue !== null &&
             // QUESTION: used parsed value here?
-            terminalValueDisplay === "net"
+            terminalValueDisplay === "net" &&
+            // NOTE: do not italicize in common case of no difference
+            !isNumericEqual(pathValue, valueExpr)
               ? "italic "
               : "") +
             // HACK: copied from InlineEdit defaultDisplayClassName

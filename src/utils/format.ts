@@ -185,3 +185,21 @@ export const formatHistogramNumber = (
 
   return currency.symbol + humanized;
 };
+
+/**
+ * Returns whether a value as entered is the same number as a computed value.
+ *
+ * NOTE: a value entered with commas or a currency symbol, like "$1,000,000",
+ * is still a plain number. An expression that has to be evaluated, like
+ * "100+50" or one with a variable, is never equal, so that it is shown as
+ * computed.
+ */
+export function isNumericEqual(
+  a: number | null | undefined,
+  b: number | string | null | undefined,
+): boolean {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return false;
+  }
+  return a === Number(typeof b === "string" ? normalizeExpression(b) : b);
+}

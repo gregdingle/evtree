@@ -19,7 +19,11 @@ import {
   selectShowEVs,
 } from "@/lib/selectors";
 import { Variable, variablesToRecord } from "@/lib/variable";
-import { formatProbability, formatValueLong } from "@/utils/format";
+import {
+  formatProbability,
+  formatValueLong,
+  isNumericEqual,
+} from "@/utils/format";
 
 import { PropertyInput } from "./PropertyInput";
 import { ToolbarButton } from "./ToolbarButton";
@@ -395,29 +399,46 @@ function NodeProperties({
       )}
       {node.type == "terminal" && (
         <div className="italic">
-          {/* QUESTION: should we revert back to showing these costs conditionally? */}
-          <PropertyInput
-            // NOTE: also considered the label "Prior Costs"
-            label="Path Costs"
-            info={`The sum of all costs on \nthe path up to this node`}
-            value={formatValueLong(cumulativeCosts)}
-            disabled={true}
-          />
-          {/* QUESTION: should we revert back to showing these costs conditional on nonzero totalCosts? */}
-          <PropertyInput
-            label="Total Costs"
-            info={`The cost of this node \nplus its path costs`}
-            value={formatValueLong(totalCosts)}
-            disabled={true}
-          />
-          <PropertyInput
-            // NOTE: special case terminal nodes because there is no
-            // "expected" calculation at leaves in the tree
-            label="Net Value"
-            info={`The value of this node \nafter subtracting all costs`}
-            value={formatValueLong(netExpectedValue)}
-            disabled={true}
-          />
+          {
+            /* NOTE: show these costs conditionally to avoid displaying
+            unnecessary information in common case */
+            cumulativeCosts ? (
+              <PropertyInput
+                // NOTE: we also considered the label "Prior Costs"
+                label="Path Costs"
+                info={`The sum of all costs on \nthe path up to this node`}
+                value={formatValueLong(cumulativeCosts)}
+                disabled={true}
+              />
+            ) : null
+          }
+          {
+            /* NOTE: only when there are both path costs and a cost of this
+            node. With one of them, the total is the same as that one, which is
+            shown already. */
+            cumulativeCosts && totalCosts !== cumulativeCosts ? (
+              <PropertyInput
+                label="Total Costs"
+                info={`The cost of this node \nplus its path costs`}
+                value={formatValueLong(totalCosts)}
+                disabled={true}
+              />
+            ) : null
+          }
+          {
+            /* NOTE: only when the net value differs from the value as
+            entered, because of costs or because the value is an expression */
+            !isNumericEqual(netExpectedValue, node.data.valueExpr) ? (
+              <PropertyInput
+                // NOTE: special case terminal nodes because there is no
+                // "expected" calculation at leaves in the tree
+                label="Net Value"
+                info={`The value of this node \nafter subtracting all costs`}
+                value={formatValueLong(netExpectedValue)}
+                disabled={true}
+              />
+            ) : null
+          }
         </div>
       )}
       {showEVs && node.type !== "note" && (
