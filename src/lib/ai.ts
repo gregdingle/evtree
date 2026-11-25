@@ -55,10 +55,25 @@ function getAIModel(
 }
 
 /**
- * Extracts plain text from a file using AI
+ * Extracts plain text from a file, using AI unless it is a plain text file
  */
 export async function extractTextFromFile(file: File): Promise<string> {
   try {
+    // NOTE: a plain text file needs no AI to read it, which would also take a
+    // while for a long file, and could change the text.
+    //
+    // NOTE: the text is used as written, so it keeps any hard-wrapped lines,
+    // and things like page numbers of text that was taken from a PDF. The AI
+    // joins the lines of a paragraph for other files, see below. That was not
+    // done here, because a single newline can also be meant, as in a list.
+    if (file.type === "text/plain" || /\.txt$/i.test(file.name)) {
+      const text = (await file.text()).trim();
+      if (!text) {
+        throw new Error("The file is empty");
+      }
+      return text;
+    }
+
     const arrayBuffer = await file.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
 
