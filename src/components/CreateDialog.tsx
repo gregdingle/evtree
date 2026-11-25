@@ -23,6 +23,7 @@ import { useStore } from "@/hooks/use-store";
 import {
   AIGenerationError,
   type AIGenerationProgress,
+  EXTRACTABLE_FILE_TYPES,
   convertAIStructureToDecisionTree,
   extractTextFromFile,
   formatElapsed,
@@ -218,7 +219,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       console.error(error);
       // TODO: better than window.alert
       window.alert(
-        "Failed to extract text from file. Please check the console for details or try entering text manually.",
+        `${(error as Error).message}. Please try another file or enter the text manually.`,
       );
       setSelectedFile(null);
     } finally {
@@ -413,7 +414,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
                               <input
                                 type="file"
                                 onInput={handleFileUploadForAI}
-                                accept=".pdf,.doc,.docx,.txt,.rtf"
+                                accept={EXTRACTABLE_FILE_TYPES}
                                 // NOTE: text-transparent to hide the "no file chosen" system text
                                 className="block w-full text-base text-transparent file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-base file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
                               />

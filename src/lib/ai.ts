@@ -2,6 +2,7 @@ import { memoize } from "es-toolkit";
 import {
   AIError,
   AgentPlatformBackend,
+  FinishReason,
   GenerationConfig,
   ThinkingLevel,
   UsageMetadata,
@@ -55,7 +56,43 @@ function getAIModel(
 }
 
 /**
- * Extracts plain text from a file, using AI unless it is a plain text file
+ * The files that extractTextFromFile can read, for the accept of a file input.
+ *
+ * NOTE: the AI that extracts the text reads only PDF and plain text, see
+ * https://firebase.google.com/docs/ai-logic/input-file-requirements. Word
+ * files are listed there for Gemini 4 models only, and RTF not at all.
+ *
+ * TODO: read .docx, which is what lawyers mostly have, in the browser with a
+ * library like mammoth
+ */
+export const EXTRACTABLE_FILE_TYPES = ".pdf,.txt";
+
+/**
+ * NOTE: the limit for a whole request is 20 MB, and base64 makes a file a
+ * third larger, which leaves about 14 MB for the file
+ *
+ * TODO: for larger files, upload to Cloud Storage for Firebase and pass a
+ * FileDataPart with the URL, which also means storing the document of a user
+ */
+const MAX_EXTRACTABLE_FILE_BYTES = 14 * 1024 * 1024;
+
+/**
+ * Extracts plain text from a file, using AI unless it is a plain text file.
+ *
+ * The text is extracted as a first step, before a tree is generated from it,
+ * so that the user can see and edit what the tree is generated from.
+ *
+ * TODO: extract the text of a PDF in the browser with a library like pdf.js,
+ * and keep the AI for a scanned PDF, which has no text to extract. The AI is a
+ * weak way to copy text: it can leave out, reword or make up text, the text
+ * has to fit in its output, the user waits twice, and the document goes to the
+ * AI when it is chosen, before the user asks for a tree.
+ *
+ * TODO: stream the text, so that a long extraction shows progress and can be
+ * canceled, as tree generation does. Also set a low thinking level, because
+ * this is copying.
+ *
+ * @throws Error with a message for the user
  */
 export async function extractTextFromFile(file: File): Promise<string> {
   try {
@@ -74,15 +111,30 @@ export async function extractTextFromFile(file: File): Promise<string> {
       return text;
     }
 
+    // NOTE: the browser gives no type for some files, so also go by the name
+    if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
+      throw new Error("Only PDF and plain text files can be read");
+    }
+    if (file.size > MAX_EXTRACTABLE_FILE_BYTES) {
+      throw new Error(
+        `The file is too large. The limit is ${MAX_EXTRACTABLE_FILE_BYTES / 1024 / 1024} MB`,
+      );
+    }
+
     const arrayBuffer = await file.arrayBuffer();
+    // TODO: Buffer is from Node, and only here because the bundler provides
+    // it. Use something that browsers have, like FileReader.readAsDataURL.
     const base64 = Buffer.from(arrayBuffer).toString("base64");
 
+    // NOTE: this once said to ignore footnotes and to focus on what is
+    // relevant for legal analysis. Both invite leaving text out, and a
+    // footnote of a legal document often has substance.
     const prompt = `
-Please extract all plain text content from this document.
-Return only the extracted text content without any formatting, headers, or explanations.
+Transcribe all of the text of this document, word for word. Include footnotes and the text of tables.
+Do not summarize, reword or leave anything out, and do not add headings, explanations or formatting.
+Leave out page numbers, and headers and footers that repeat on every page.
 Put two newlines between paragraphs. Replace newlines within a paragraph with a single space.
-Focus on extracting the actual readable text content that would be relevant for legal document analysis.
-Ignore footnotes.
+Put each row of a table in a paragraph of its own, with " | " between its cells.
     `.trim();
 
     // Generate content with the file data
@@ -92,14 +144,24 @@ Ignore footnotes.
         text: prompt,
       },
       {
-        // QUESTION: use FileDataPart instead?
         type: "inlineData",
         inlineData: {
-          mimeType: file.type,
+          mimeType: "application/pdf",
           data: base64,
         },
       },
     ]);
+
+    // NOTE: the whole text has to fit in the output of the AI, so a long
+    // document is cut off. A stop for recitation is possible too, because the
+    // AI is asked to copy, and a legal document quotes published text.
+    const finishReason = result.response.candidates?.[0]?.finishReason;
+    if (finishReason === FinishReason.MAX_TOKENS) {
+      throw new Error("The document is too long to extract all of its text");
+    }
+    if (finishReason && finishReason !== FinishReason.STOP) {
+      throw new Error(`The AI stopped before the end (${finishReason})`);
+    }
 
     const extractedText = result.response
       .text()
@@ -115,7 +177,10 @@ Ignore footnotes.
 
     return extractedText;
   } catch (error) {
-    throw new Error(`Failed to extract text from file: ${error}`);
+    throw new Error(
+      `Failed to extract text from file. ${error instanceof Error ? error.message : error}`,
+      { cause: error },
+    );
   }
 }
 
