@@ -606,7 +606,7 @@
       "target": "product-liability-n6",
       "type": "custom",
       "data": {
-        "label": "$1000K",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -617,7 +617,7 @@
       "target": "product-liability-n7",
       "type": "custom",
       "data": {
-        "label": "$500K",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -628,7 +628,7 @@
       "target": "product-liability-n8",
       "type": "custom",
       "data": {
-        "label": "$200K",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -672,7 +672,7 @@
       "target": "product-liability-n12",
       "type": "custom",
       "data": {
-        "label": "$800K",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -683,7 +683,7 @@
       "target": "product-liability-n13",
       "type": "custom",
       "data": {
-        "label": "$400K",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -694,7 +694,7 @@
       "target": "product-liability-n14",
       "type": "custom",
       "data": {
-        "label": "$200K",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -749,7 +749,7 @@
       "target": "product-liability-n21",
       "type": "custom",
       "data": {
-        "label": "$1000K",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -760,7 +760,7 @@
       "target": "product-liability-n22",
       "type": "custom",
       "data": {
-        "label": "$500K",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -771,7 +771,7 @@
       "target": "product-liability-n23",
       "type": "custom",
       "data": {
-        "label": "$200K",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -815,7 +815,7 @@
       "target": "product-liability-n27",
       "type": "custom",
       "data": {
-        "label": "$800K",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -826,7 +826,7 @@
       "target": "product-liability-n28",
       "type": "custom",
       "data": {
-        "label": "$400K",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -837,7 +837,7 @@
       "target": "product-liability-n29",
       "type": "custom",
       "data": {
-        "label": "$200K",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -914,7 +914,7 @@
       "target": "product-liability-n36",
       "type": "custom",
       "data": {
-        "label": "$1000K",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -925,7 +925,7 @@
       "target": "product-liability-n37",
       "type": "custom",
       "data": {
-        "label": "$500K",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -936,7 +936,7 @@
       "target": "product-liability-n38",
       "type": "custom",
       "data": {
-        "label": "$200K",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -980,7 +980,7 @@
       "target": "product-liability-n42",
       "type": "custom",
       "data": {
-        "label": "$800K",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -991,7 +991,7 @@
       "target": "product-liability-n43",
       "type": "custom",
       "data": {
-        "label": "$400K",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -1002,7 +1002,7 @@
       "target": "product-liability-n44",
       "type": "custom",
       "data": {
-        "label": "$200K",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }

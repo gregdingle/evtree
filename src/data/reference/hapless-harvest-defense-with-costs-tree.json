@@ -15,7 +15,7 @@
         "y": 1087.5
       },
       "data": {
-        "description": ""
+        "description": "Will the judge grant summary judgment for Harvest Plenty?"
       },
       "origin": [0.5, 0]
     },
@@ -27,7 +27,7 @@
         "y": 875.0
       },
       "data": {
-        "description": ""
+        "description": "Will the jury find Harvest Plenty liable?"
       },
       "origin": [0.5, 0]
     },
@@ -39,7 +39,7 @@
         "y": 550.0
       },
       "data": {
-        "description": ""
+        "description": "Will the jury find contributory negligence by Jan?"
       },
       "origin": [0.5, 0]
     },
@@ -51,7 +51,7 @@
         "y": 250.0
       },
       "data": {
-        "description": ""
+        "description": "Which injuries will the jury find that the fall caused?"
       },
       "origin": [0.5, 0]
     },
@@ -63,7 +63,7 @@
         "y": 100.0
       },
       "data": {
-        "description": ""
+        "description": "How much will the jury award?"
       },
       "origin": [0.5, 0]
     },
@@ -114,7 +114,7 @@
         "y": 400.0
       },
       "data": {
-        "description": ""
+        "description": "How much will the jury award?"
       },
       "origin": [0.5, 0]
     },
@@ -165,7 +165,7 @@
         "y": 850.0
       },
       "data": {
-        "description": ""
+        "description": "Which injuries will the jury find that the fall caused?"
       },
       "origin": [0.5, 0]
     },
@@ -177,7 +177,7 @@
         "y": 700.0
       },
       "data": {
-        "description": ""
+        "description": "How much will the jury award?"
       },
       "origin": [0.5, 0]
     },
@@ -228,7 +228,7 @@
         "y": 1000.0
       },
       "data": {
-        "description": ""
+        "description": "How much will the jury award?"
       },
       "origin": [0.5, 0]
     },
@@ -305,7 +305,7 @@
       "target": "hh-defense-with-costs-n6",
       "type": "custom",
       "data": {
-        "label": "High No Contrib",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -316,7 +316,7 @@
       "target": "hh-defense-with-costs-n7",
       "type": "custom",
       "data": {
-        "label": "Mid No Contrib",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -349,7 +349,7 @@
       "target": "hh-defense-with-costs-n10",
       "type": "custom",
       "data": {
-        "label": "High No Contrib",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -360,7 +360,7 @@
       "target": "hh-defense-with-costs-n11",
       "type": "custom",
       "data": {
-        "label": "Mid No Contrib",
+        "label": "Mid",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -371,7 +371,7 @@
       "target": "hh-defense-with-costs-n12",
       "type": "custom",
       "data": {
-        "label": "Low No Contrib",
+        "label": "Low",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -404,7 +404,7 @@
       "target": "hh-defense-with-costs-n15",
       "type": "custom",
       "data": {
-        "label": "High w Contrib",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }
@@ -448,7 +448,7 @@
       "target": "hh-defense-with-costs-n19",
       "type": "custom",
       "data": {
-        "label": "High w Contrib",
+        "label": "High",
         "description": "",
         "probabilityExpr": "0.25"
       }

@@ -25,6 +25,13 @@ import productLiability from "./product-liability-tree.json";
  * The description of each tree is the case text that it was drawn from: the
  * general information, and the information for counsel on that side.
  *
+ * NOTE: two things are not as drawn, for the Issues page, see getIssues. The
+ * question in the description of each node is ours, because the drawings have
+ * none. The awards are labeled "High", "Mid" and "Low" on every path, where
+ * the drawings have labels like "High No Contrib" and "High w Contrib" on some
+ * paths, because the labels of an issue have to match for its nodes to be
+ * grouped.
+ *
  * NOTE: The trees are a firm reference for structure, and a loose one for
  * numbers, because of these things in the source material:
  *

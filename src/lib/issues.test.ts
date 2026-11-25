@@ -52,14 +52,12 @@ describe("getIssues", () => {
     const root = getRoot(haplessHarvestData as unknown as DecisionTree);
 
     test("should have each issue once, in order of depth", () => {
-      // NOTE: the drawing labels the awards differently on each path, like
-      // "High No Contrib" and "High w Contrib", and they are still one issue
       expect(root.issues.map((issue) => issue.heading)).toEqual([
-        "SJ Denied / SJ Granted",
-        "Liability / No liability",
-        "No Contrib / 33% Contrib",
-        "Back & Knee / Knee Only",
-        "High / Mid / Low",
+        "Will the judge grant summary judgment for Harvest Plenty?",
+        "Will the jury find Harvest Plenty liable?",
+        "Will the jury find contributory negligence by Jan?",
+        "Which injuries will the jury find that the fall caused?",
+        "How much will the jury award?",
       ]);
       expect(root.issues.map((s) => s.occurrences.length)).toEqual([
         1, 1, 1, 2, 4,
@@ -116,6 +114,26 @@ describe("getIssues", () => {
       { label: "Yes", probability: 0.5, reason: "Reason for Yes" },
       { label: "No", probability: 0.5, reason: "Reason for No" },
     ]);
+  });
+
+  test("should group nodes without descriptions by the first word of each label", () => {
+    // NOTE: a drawing can label the same issue differently on each path, as
+    // the Hapless Harvest drawings do for the awards
+    const tree = buildTree([
+      ["a", null, "", undefined],
+      ["b", "a", "No Contrib", "0.5"],
+      ["c", "a", "33% Contrib", "0.5"],
+      ["d", "b", "High No Contrib", "0.5", "30"],
+      ["e", "b", "Low", "0.5", "10"],
+      ["f", "c", "High w Contrib", "0.5", "20"],
+      ["g", "c", "Low", "0.5", "5"],
+    ]);
+    const { issues } = getRoot(tree);
+    expect(issues.map((issue) => issue.heading)).toEqual([
+      "No Contrib / 33% Contrib",
+      "High / Low",
+    ]);
+    expect(issues[1]!.occurrences).toHaveLength(2);
   });
 
   test("should keep apart issues with the same labels and different descriptions", () => {

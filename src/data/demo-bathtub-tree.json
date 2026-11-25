@@ -11,11 +11,11 @@
       "type": "decision",
       "position": {
         "x": 0,
-        "y": 1910
+        "y": 1760
       },
       "data": {
         "label": "SWL&P vs I-S",
-        "description": "",
+        "description": "Should Iron-Steel litigate or settle?",
         "value": 1264773.75,
         "valueExpr": "1,264,773.75",
         "cost": null
@@ -31,7 +31,7 @@
       "type": "terminal",
       "position": {
         "x": 250,
-        "y": 1975.3476883811686
+        "y": 1825.3476883811686
       },
       "data": {
         "label": "",
@@ -52,11 +52,11 @@
       "type": "chance",
       "position": {
         "x": 250,
-        "y": 1845.6523116188312
+        "y": 1695.6523116188312
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Does the New Mexico decision bar SWL&P's claims?",
         "value": 1164773.75,
         "valueExpr": "1,164,773.75",
         "cost": -100000,
@@ -74,11 +74,11 @@
       "type": "chance",
       "position": {
         "x": 500,
-        "y": 1782.5304057540684
+        "y": 1632.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Does the statute of limitations bar SWL&P's claims?",
         "value": 1663962.5,
         "valueExpr": "1,663,962.5",
         "cost": null
@@ -95,7 +95,7 @@
       "type": "terminal",
       "position": {
         "x": 500,
-        "y": 1909.7742174835942
+        "y": 1759.7742174835942
       },
       "data": {
         "label": "",
@@ -116,7 +116,7 @@
       "type": "terminal",
       "position": {
         "x": 750,
-        "y": 1083.5304057540684
+        "y": 783.5304057540684
       },
       "data": {
         "label": "",
@@ -137,11 +137,11 @@
       "type": "chance",
       "position": {
         "x": 750,
-        "y": 1182.5304057540684
+        "y": 882.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Will the jury find anyone liable for the cracking?",
         "value": 1202250,
         "valueExpr": "1,202,250",
         "cost": -200000,
@@ -163,7 +163,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Will the jury find anyone liable for the cracking?",
         "value": 2286575,
         "valueExpr": "2,286,575",
         "cost": -200000,
@@ -185,7 +185,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Will the jury find deceptive trade practices by Iron-Steel?",
         "value": 4573150,
         "valueExpr": "4,573,150",
         "cost": null
@@ -227,7 +227,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Who will the jury find liable?",
         "value": 2324500,
         "valueExpr": "2,324,500",
         "cost": null
@@ -248,7 +248,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 9820000,
         "valueExpr": "9,820,000",
         "cost": null
@@ -269,7 +269,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 4400000,
         "valueExpr": "4,400,000",
         "cost": null
@@ -290,7 +290,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "What share of the liability will Iron-Steel bear?",
         "value": 2407500,
         "valueExpr": "2,407,500",
         "cost": null
@@ -332,7 +332,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 1610000,
         "valueExpr": "1,610,000",
         "cost": null
@@ -353,7 +353,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 2400000,
         "valueExpr": "2,400,000",
         "cost": null
@@ -374,7 +374,7 @@
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 3220000,
         "valueExpr": "3,220,000",
         "cost": null
@@ -643,11 +643,11 @@
       "type": "chance",
       "position": {
         "x": 1000,
-        "y": 1132.5304057540684
+        "y": 832.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "The deceptive trade practices claim is barred, so no fraud can be found",
         "value": 2404500,
         "valueExpr": "2,404,500",
         "cost": null
@@ -664,7 +664,7 @@
       "type": "terminal",
       "position": {
         "x": 1000,
-        "y": 1233.5304057540684
+        "y": 933.5304057540684
       },
       "data": {
         "label": "",
@@ -685,11 +685,11 @@
       "type": "chance",
       "position": {
         "x": 1250,
-        "y": 1132.5304057540684
+        "y": 832.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "Who will the jury find liable?",
         "value": 2404500,
         "valueExpr": "2,404,500",
         "cost": null
@@ -706,7 +706,7 @@
       "type": "terminal",
       "position": {
         "x": 1500,
-        "y": 1133.5304057540684
+        "y": 1183.5304057540684
       },
       "data": {
         "label": "",
@@ -790,11 +790,11 @@
       "type": "chance",
       "position": {
         "x": 1500,
-        "y": 1432.5304057540684
+        "y": 482.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 4800000,
         "valueExpr": "4,800,000",
         "cost": null
@@ -811,7 +811,7 @@
       "type": "terminal",
       "position": {
         "x": 1750,
-        "y": 1333.5304057540684
+        "y": 383.5304057540684
       },
       "data": {
         "label": "",
@@ -832,7 +832,7 @@
       "type": "terminal",
       "position": {
         "x": 1750,
-        "y": 1433.5304057540684
+        "y": 483.5304057540684
       },
       "data": {
         "label": "",
@@ -853,7 +853,7 @@
       "type": "terminal",
       "position": {
         "x": 1750,
-        "y": 1533.5304057540684
+        "y": 583.5304057540684
       },
       "data": {
         "label": "",
@@ -874,11 +874,11 @@
       "type": "chance",
       "position": {
         "x": 1500,
-        "y": 832.5304057540684
+        "y": 1082.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "What share of the liability will Iron-Steel bear?",
         "value": 2407500,
         "valueExpr": "2,407,500",
         "cost": null
@@ -895,11 +895,11 @@
       "type": "chance",
       "position": {
         "x": 1750,
-        "y": 482.5304057540684
+        "y": 732.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 1610000,
         "valueExpr": "1,610,000",
         "cost": null
@@ -916,11 +916,11 @@
       "type": "chance",
       "position": {
         "x": 1750,
-        "y": 832.5304057540684
+        "y": 1082.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 2400000,
         "valueExpr": "2,400,000",
         "cost": null
@@ -937,11 +937,11 @@
       "type": "chance",
       "position": {
         "x": 1750,
-        "y": 1182.5304057540684
+        "y": 1432.5304057540684
       },
       "data": {
         "label": "",
-        "description": "",
+        "description": "How much will the jury award in damages?",
         "value": 3220000,
         "valueExpr": "3,220,000",
         "cost": null
@@ -958,7 +958,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 383.5304057540684
+        "y": 633.5304057540684
       },
       "data": {
         "label": "",
@@ -979,7 +979,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 483.5304057540684
+        "y": 733.5304057540684
       },
       "data": {
         "label": "",
@@ -1000,7 +1000,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 583.5304057540684
+        "y": 833.5304057540684
       },
       "data": {
         "label": "",
@@ -1021,7 +1021,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 733.5304057540684
+        "y": 983.5304057540684
       },
       "data": {
         "label": "",
@@ -1042,7 +1042,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 833.5304057540684
+        "y": 1083.5304057540684
       },
       "data": {
         "label": "",
@@ -1063,7 +1063,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 933.5304057540683
+        "y": 1183.5304057540684
       },
       "data": {
         "label": "",
@@ -1084,7 +1084,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 1083.5304057540684
+        "y": 1333.5304057540684
       },
       "data": {
         "label": "",
@@ -1105,7 +1105,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 1183.5304057540684
+        "y": 1433.5304057540684
       },
       "data": {
         "label": "",
@@ -1126,7 +1126,7 @@
       "type": "terminal",
       "position": {
         "x": 2000,
-        "y": 1283.5304057540684
+        "y": 1533.5304057540684
       },
       "data": {
         "label": "",
@@ -1238,7 +1238,7 @@
       "target": "N2aXLWPqL4pn",
       "type": "custom",
       "data": {
-        "label": "No Liability",
+        "label": "No liability",
         "description": "",
         "probabilityExpr": "0.5"
       }
@@ -1722,7 +1722,7 @@
       "target": "nLHlc_RhT5kT",
       "type": "custom",
       "data": {
-        "label": "Shared Liability",
+        "label": "Shared liability",
         "description": "",
         "probabilityExpr": "0.6"
       }
