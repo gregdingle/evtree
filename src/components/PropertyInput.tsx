@@ -17,6 +17,7 @@ interface PropertyInputProps {
   // https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups#component-cd2d41bc1bca37b76acacab5925d507c
   optional?: boolean;
   textarea?: boolean; // Optional prop to indicate if this is a textarea
+  fixedHeight?: boolean; // For a textarea that should not grow with its text
   select?: boolean; // Optional prop to indicate if this is a select
   checkbox?: boolean; // Optional prop to indicate if this is a checkbox
   options?: Array<{ value: string; label: string }>; // Options for select
@@ -47,6 +48,7 @@ export const PropertyInput = React.forwardRef<
       onBlur,
       onCheckboxChange,
       textarea,
+      fixedHeight,
       select,
       checkbox,
       options,
@@ -84,7 +86,7 @@ export const PropertyInput = React.forwardRef<
             checked={checked ?? false}
             onInput={(e) => onCheckboxChange?.(e.currentTarget.checked)}
             disabled={disabled}
-            className="h-5 w-5 flex-1/4 cursor-pointer"
+            className="size-5 flex-1/4 cursor-pointer"
             {...props}
           />
         ) : textarea ? (
@@ -96,7 +98,16 @@ export const PropertyInput = React.forwardRef<
               onInput={(e) => onChange?.(e.currentTarget.value)}
               onBlur={onBlur}
               disabled={disabled}
-              className={`min-w-0 flex-3/4 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
+              // NOTE: field-sizing-content makes the textarea as tall as its
+              // text, like a reason from AI with its footnote, with no code.
+              // The min height is about the 4 rows, which it has in a browser
+              // without field-sizing, such as Firefox.
+              // HACK: the max height leaves room in the right side panel for
+              // what is above the description of a branch, and for the
+              // feedback link below it, see RightSidePanel. The panel is as
+              // tall as the window and does not scroll, so the textarea
+              // scrolls instead.
+              className={`${fixedHeight ? "" : "field-sizing-content max-h-[calc(100vh-42rem)]"} min-h-27 min-w-0 flex-3/4 rounded-md p-1 ${disabled ? "border-0" : "border-2"}`}
               rows={4}
               spellCheck={false}
               {...props}
@@ -107,7 +118,7 @@ export const PropertyInput = React.forwardRef<
                 position="left"
                 className="cursor-pointer pl-1 not-italic"
               >
-                <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+                <InformationCircleIcon className="size-6 text-gray-500" />
               </Tooltip>
             )}
           </>
@@ -150,7 +161,7 @@ export const PropertyInput = React.forwardRef<
             position="left"
             className="inline-block cursor-pointer pl-1 not-italic"
           >
-            <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+            <InformationCircleIcon className="size-6 text-gray-500" />
           </Tooltip>
         )}
         {children}

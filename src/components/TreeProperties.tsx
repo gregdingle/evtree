@@ -26,6 +26,9 @@ export function TreeProperties({
         label="Description"
         optional
         textarea
+        // NOTE: the description of a tree from AI is long, and there is much
+        // below it in the panel, so it stays at its min height and scrolls
+        fixedHeight
         value={currentTree.description}
         onChange={(value) => updateTreeData({ description: value })}
         placeholder="Enter tree description"
