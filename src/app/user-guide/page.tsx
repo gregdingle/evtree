@@ -18,6 +18,10 @@ export default function UserGuide() {
         </p>
         <hr className="my-4 w-50 bg-neutral-900" />
         <p className="my-4 text-2xl font-semibold">
+          {/* TODO: the PDF is out of date. Add a section about the Issues
+          page, see Issues.tsx: what an issue is, how the nodes of an issue are
+          grouped by their description and branch labels, and how to export
+          it. */}
           <Link
             href="/user-guide/TreeDecisons User Guide.pdf"
             className="bluelink"
