@@ -160,12 +160,14 @@ function findQuotePart(part: string, text: string, from: number): number {
 
 /**
  * Returns whether a quote is in the text that the AI was given. A quote may
- * leave out words with an ellipsis, and then every part has to be in the text,
- * in order.
+ * leave out words with an ellipsis, and then every part has to be in the text.
+ *
+ * NOTE: the parts may be in any order. The AI joined two real passages with
+ * an ellipsis the other way around from the text. An ellipsis can skip any
+ * amount of text as it is, so the order of the parts added little.
  */
 export function isQuoteInText(quote: string, text: string): boolean {
   const textWords = getQuoteWords(text);
-  let from = 0;
   const parts = quote
     .split(/\.{3,}|\u2026/)
     .map((part) => getQuoteWords(part).trim())
@@ -173,10 +175,7 @@ export function isQuoteInText(quote: string, text: string): boolean {
   if (parts.length === 0) {
     return false;
   }
-  return parts.every((part) => {
-    from = findQuotePart(part, textWords, from);
-    return from !== -1;
-  });
+  return parts.every((part) => findQuotePart(part, textWords, 0) !== -1);
 }
 
 /**

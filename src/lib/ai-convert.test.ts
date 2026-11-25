@@ -228,12 +228,16 @@ describe("convertAIStructureToDecisionTree", () => {
       ).toBe(false);
     });
 
-    test("should find a quote that leaves out words with an ellipsis, in order", () => {
+    test("should find a quote that leaves out words with an ellipsis, in any order", () => {
       expect(
         isQuoteInText("The parties settled ... of the buyer.", sourceText),
       ).toBe(true);
       expect(
         isQuoteInText("of the buyer \u2026 The parties settled", sourceText),
+      ).toBe(true);
+      // Not when one of the parts is not in the text
+      expect(
+        isQuoteInText("The parties settled ... of the seller", sourceText),
       ).toBe(false);
     });
   });
