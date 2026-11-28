@@ -106,21 +106,12 @@ export function LeftSidePanel() {
               {name}
             </button>
           ))}
-          {tab === "trees" && (
-            <Tooltip
-              text={`These are your decision trees, \nincluding some free examples. \n\nThese trees are stored locally in \nyour browser. Click \n“Save & Copy Link” to share an \nencrypted copy of your tree.`}
-              position="bottomright"
-              className="-mb-1.25 inline-block cursor-pointer font-normal"
-            >
-              <InformationCircleIcon className="h-6 w-6 text-gray-500" />
-            </Tooltip>
-          )}
         </h2>
         {tab === "trees" && (
           <Tooltip text={`Create a new \ndecision tree`}>
             <button
               onClick={() => setOpenDialog(true)}
-              className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+              className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-base font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
             >
               Create
             </button>
@@ -233,6 +224,19 @@ export function LeftSidePanel() {
             ))}
           </div>
         )}
+        {/* NOTE: the last item of the list, which scrolls with it. The
+        tooltip opens to the right, where it stays inside the panel.
+        TODO: find a better place for this, or another way to tell the user
+        that the trees are stored in the browser and how to share one. Below
+        the list, an icon alone is easy to miss, and it says nothing until it
+        is hovered. */}
+        <Tooltip
+          text={`These are your decision trees, \nincluding some free examples. \n\nThese trees are stored locally in \nyour browser. Click \n“Save & Copy Link” to share an \nencrypted copy of your tree.`}
+          position="right"
+          className="mt-2 hidden w-fit cursor-pointer md:block"
+        >
+          <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+        </Tooltip>
         <div
           // TODO: beautify and standard warnings like this one
           className="mt-4 rounded-sm border-2 border-amber-400 p-2 italic md:hidden"

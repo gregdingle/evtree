@@ -4,20 +4,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { isEqual } from "es-toolkit";
 import { values } from "es-toolkit/compat";
-import Link from "next/link";
 
-import {
-  ChatEdit,
-  MAX_SOURCE_LENGTH,
-  selectChat,
-  useChatStore,
-} from "@/hooks/use-chat-store";
+import { ChatEdit, selectChat, useChatStore } from "@/hooks/use-chat-store";
 import { useTreeStore } from "@/hooks/use-tree-store";
-import {
-  EXTRACTABLE_FILE_TYPES,
-  extractTextFromFile,
-  getChatModel,
-} from "@/lib/ai";
+import { getChatModel } from "@/lib/ai";
 import {
   ChatIntro,
   acceptChatEdit,
@@ -120,8 +110,6 @@ export function Chat() {
     edits: ChatEdit[];
   } | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
-  const [sourceInput, setSourceInput] = useState<string | null>(null);
-  const [isExtracting, setIsExtracting] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -181,35 +169,6 @@ export function Chat() {
     }
   };
 
-  const handleSaveSource = (text: string, fileName?: string) => {
-    text = text.trim();
-    if (!text) {
-      return;
-    }
-    if (!useChatStore.getState().setSource(treeId, { text, fileName })) {
-      window.alert(
-        `The case description is too long to keep. The limit is ${MAX_SOURCE_LENGTH.toLocaleString()} characters.`,
-      );
-      return;
-    }
-    setSourceInput(null);
-  };
-
-  const handleSourceFile = async (file: File | undefined) => {
-    if (!file) {
-      return;
-    }
-    setIsExtracting(true);
-    try {
-      handleSaveSource(await extractTextFromFile(file), file.name);
-    } catch (error) {
-      window.alert((error as Error).message);
-    } finally {
-      setIsExtracting(false);
-    }
-  };
-
-  const hasReasons = intro.quoted + intro.suggested + intro.notFound > 0;
   const suggestions = getSuggestions(
     intro,
     selectionName !== null,
@@ -219,30 +178,11 @@ export function Chat() {
   const last = messages.at(-1);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col text-sm select-none">
-      <div className="mb-2 flex justify-between text-xs">
-        {chat?.source ? (
-          <button
-            onClick={() => {
-              // TODO: convert to tailwind dialog
-              if (
-                window.confirm(
-                  "Remove the case description that is kept with this chat?",
-                )
-              ) {
-                useChatStore.getState().setSource(treeId, undefined);
-              }
-            }}
-            className={linkButton}
-            title={`From ${chat.source.fileName ?? "pasted text"}. Kept in this browser only, apart from the tree.`}
-          >
-            Remove case description
-          </button>
-        ) : (
-          <button onClick={() => setSourceInput("")} className={linkButton}>
-            Add case description
-          </button>
-        )}
+    <div className="flex min-h-0 flex-1 flex-col text-base select-none">
+      {/* TODO: find a better place for "Clear chat". It has a row of its own
+      at the top of the panel, which takes room from the messages for a link
+      that is seldom used.
+      <div className="mb-2 flex justify-end text-sm">
         <button
           onClick={() => useChatStore.getState().clearMessages(treeId)}
           disabled={messageCount === 0 || pending !== null}
@@ -251,72 +191,15 @@ export function Chat() {
           Clear chat
         </button>
       </div>
-
-      {sourceInput !== null && (
-        <div className="mb-2 rounded-md border border-gray-300 p-2 dark:border-gray-600">
-          <textarea
-            value={sourceInput}
-            onInput={(event) => setSourceInput(event.currentTarget.value)}
-            placeholder="Paste the case description that this tree is about"
-            rows={4}
-            className="w-full rounded-md border-2 p-1"
-          />
-          <div className="mt-1 flex items-center justify-between">
-            <label className={linkButton}>
-              {isExtracting ? "Reading…" : "Choose a file"}
-              <input
-                type="file"
-                accept={EXTRACTABLE_FILE_TYPES}
-                className="hidden"
-                disabled={isExtracting}
-                onChange={(event) => handleSourceFile(event.target.files?.[0])}
-              />
-            </label>
-            <span className="space-x-4">
-              <button
-                onClick={() => setSourceInput(null)}
-                className={linkButton}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleSaveSource(sourceInput)}
-                disabled={!sourceInput.trim()}
-                className={linkButton}
-              >
-                Keep
-              </button>
-            </span>
-          </div>
-          <p className="mt-1 text-xs text-gray-500">
-            Kept in this browser only, apart from the tree: it is not in an
-            export or a share link.
-          </p>
-        </div>
-      )}
+       */}
 
       {/* Messages, which scroll */}
       <div className="-mx-1 min-h-0 flex-1 space-y-2 overflow-y-auto px-1">
         {/* NOTE: this first message is written by the app from the tree, and
         not by the AI, see getChatIntro. Nothing is sent to the AI until the
-        user sends a message. */}
-        <div className="text-gray-600 dark:text-gray-400">
-          {hasReasons ? (
-            <p>
-              This tree has {intro.nodes} nodes. Of the reasons for its
-              probabilities, {intro.quoted} quote the case description
-              {intro.notFound > 0 &&
-                `, ${intro.notFound} have a quote that was not found in it`}{" "}
-              and {intro.suggested} were suggested by AI.
-            </p>
-          ) : (
-            <p>Ask about this tree, or ask for a change to it.</p>
-          )}
-          <p className="mt-1">
-            Select a node or a branch to talk about it. What you ask for is done
-            at once, and you can undo it.
-          </p>
-        </div>
+        user sends a message.
+        TODO: consider an intro text of some kind here, maybe link to data security policy */}
+
         {messages.map((message, index) => (
           <ChatMessage
             key={message.id}
@@ -352,7 +235,7 @@ export function Chat() {
             <button
               key={suggestion}
               onClick={() => send(suggestion)}
-              className="cursor-pointer rounded-md border border-gray-300 px-2 py-1 text-left text-xs hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
+              className="cursor-pointer rounded-md border border-gray-300 px-2 py-1 text-left text-sm hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
             >
               {suggestion}
             </button>
@@ -362,7 +245,7 @@ export function Chat() {
 
       <div className="mt-2">
         {selectionName && (
-          <div className="mb-1 truncate text-xs text-gray-500">
+          <div className="mb-1 truncate text-sm text-gray-500">
             About: {selectionName}
           </div>
         )}
@@ -382,7 +265,7 @@ export function Chat() {
                 send(input);
               }
             }}
-            placeholder="Ask, or ask for a change"
+            placeholder="Ask about your tree"
             rows={2}
             spellCheck={false}
             className="field-sizing-content max-h-40 min-h-14 min-w-0 flex-1 rounded-md border-2 p-1"
@@ -390,7 +273,7 @@ export function Chat() {
           {pending ? (
             <button
               onClick={() => abortControllerRef.current?.abort()}
-              className="rounded-md bg-gray-500 px-3 py-1 font-semibold text-white hover:bg-gray-600"
+              className="rounded-md bg-gray-500 px-3 py-1 text-base font-semibold text-white hover:bg-gray-600"
             >
               Stop
             </button>
@@ -398,24 +281,12 @@ export function Chat() {
             <button
               onClick={() => send(input)}
               disabled={!input.trim()}
-              className="rounded-md bg-blue-500 px-3 py-1 font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+              className="rounded-md bg-blue-500 px-3 py-1 text-base font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
             >
               Send
             </button>
           )}
         </div>
-        {/* NOTE: said before the first message, because a chat sends more,
-        and more often, than generating a tree does */}
-        {messageCount === 0 && (
-          <p className="mt-1 text-xs text-gray-500">
-            A message is sent to an AI service with this tree
-            {chat?.source && " and its case description"}. See{" "}
-            <Link href="/data-security" className="bluelink">
-              Data Security
-            </Link>
-            .
-          </p>
-        )}
       </div>
     </div>
   );

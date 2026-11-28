@@ -28,7 +28,7 @@ function ChatEditLine({ edit, onAccept, onReject }: ChatEditLineProps) {
   const { status, target } = edit;
   const isOff = status === "rejected" || status === "failed";
   return (
-    <div className="my-2 rounded-md border border-gray-300 p-2 text-sm dark:border-gray-600">
+    <div className="my-2 rounded-md border border-gray-300 p-2 text-base dark:border-gray-600">
       <button
         // NOTE: selects what the edit is about on the canvas, which also
         // shows it in the side panel. A node or branch that is gone since is
@@ -55,9 +55,9 @@ function ChatEditLine({ edit, onAccept, onReject }: ChatEditLineProps) {
           {edit.note}
         </div>
       )}
-      <div className="mt-1 text-xs text-gray-500">
+      <div className="mt-1 text-sm text-gray-500">
         {status === "waiting" ? (
-          <span className="space-x-4 text-sm">
+          <span className="space-x-4 text-base">
             <button
               onClick={onAccept}
               disabled={!onAccept}
@@ -129,13 +129,13 @@ export function ChatMessage({
       {onAccept && waiting.length > 1 && (
         <button
           onClick={() => waiting.forEach((edit) => onAccept(edit))}
-          className={`${linkButton} text-sm`}
+          className={`${linkButton} text-base`}
         >
           Accept all {waiting.length}
         </button>
       )}
       {error !== undefined && (
-        <div className="text-sm text-red-700 dark:text-red-400">
+        <div className="text-base text-red-700 dark:text-red-400">
           The AI did not finish its reply. {error}{" "}
           {onRetry && (
             <button onClick={onRetry} className={linkButton}>
@@ -145,7 +145,7 @@ export function ChatMessage({
         </div>
       )}
       {role === "ai" && !text && !edits?.length && error === undefined && (
-        <div className="text-sm text-gray-500">Stopped.</div>
+        <div className="text-base text-gray-500">Stopped.</div>
       )}
     </div>
   );
