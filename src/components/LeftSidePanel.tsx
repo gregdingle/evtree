@@ -15,6 +15,7 @@ import { values } from "es-toolkit/compat";
 import { useTreeStore } from "@/hooks/use-tree-store";
 import { formatDate } from "@/utils/format";
 
+import { Chat } from "./Chat";
 import { ContextMenuButton } from "./ContextMenuButton";
 import { CreateDialog } from "./CreateDialog";
 import { Tooltip } from "./Tooltip";
@@ -23,6 +24,13 @@ import { Tooltip } from "./Tooltip";
 export function LeftSidePanel() {
   const [showMoreMenu, setShowMoreMenu] = useState<string | null>(null);
   const [isDialogOpen, setOpenDialog] = useState(false);
+  // NOTE: the chat with AI is here, as a tab next to the list of trees,
+  // because a chat is about the current tree, which the list picks. Here it
+  // also leaves the canvas and the properties of the right side panel in
+  // view, where an edit by the AI shows as it is made.
+  // TODO: a wider panel for the chat, or one that the user can resize, if a
+  // reply reads as cramped at this width
+  const [tab, setTab] = useState<"trees" | "chat">("trees");
 
   const { fitView } = useReactFlow();
 
@@ -82,32 +90,63 @@ export function LeftSidePanel() {
     <div className="flex h-full w-60 flex-col p-4 select-none md:w-80">
       {/* NOTE: Responsive design! Read-only mode for below medium size screens */}
       <div className="mb-4 hidden justify-between space-x-2 md:flex">
-        <h2 className="text-lg font-semibold">
-          Trees
-          <Tooltip
-            text={`These are your decision trees, \nincluding some free examples. \n\nThese trees are stored locally in \nyour browser. Click \n“Save & Copy Link” to share an \nencrypted copy of your tree.`}
-            position="bottomright"
-            className="-mb-1.25 inline-block cursor-pointer pl-1 font-normal"
-          >
-            <InformationCircleIcon className="h-6 w-6 text-gray-500" />
-          </Tooltip>
+        <h2 className="space-x-4 text-lg font-semibold" role="tablist">
+          {(["trees", "chat"] as const).map((name) => (
+            <button
+              key={name}
+              role="tab"
+              aria-selected={tab === name}
+              onClick={() => setTab(name)}
+              className={`cursor-pointer border-b-2 capitalize ${
+                tab === name
+                  ? "border-blue-500"
+                  : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              }`}
+            >
+              {name}
+            </button>
+          ))}
+          {tab === "trees" && (
+            <Tooltip
+              text={`These are your decision trees, \nincluding some free examples. \n\nThese trees are stored locally in \nyour browser. Click \n“Save & Copy Link” to share an \nencrypted copy of your tree.`}
+              position="bottomright"
+              className="-mb-1.25 inline-block cursor-pointer font-normal"
+            >
+              <InformationCircleIcon className="h-6 w-6 text-gray-500" />
+            </Tooltip>
+          )}
         </h2>
-        <Tooltip text={`Create a new \ndecision tree`}>
-          <button
-            onClick={() => setOpenDialog(true)}
-            className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
-          >
-            Create
-          </button>
-        </Tooltip>
+        {tab === "trees" && (
+          <Tooltip text={`Create a new \ndecision tree`}>
+            <button
+              onClick={() => setOpenDialog(true)}
+              className="flex-shrink-0 rounded-md bg-blue-500 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+            >
+              Create
+            </button>
+          </Tooltip>
+        )}
         <CreateDialog
           open={isDialogOpen}
           onClose={() => setOpenDialog(false)}
+          // NOTE: to the chat once, after a tree is generated, to show where
+          // to go on from the tree. Nothing is sent to the AI by this.
+          onGenerated={() => setTab("chat")}
         />
       </div>
 
+      {/* NOTE: Responsive design! No chat below medium size screens, where the
+      app is read-only and the tabs are hidden */}
+      {tab === "chat" && (
+        <div className="hidden min-h-0 flex-1 flex-col md:flex">
+          <Chat />
+        </div>
+      )}
+
       {/* Tree list, scrolls vertically when it overflows */}
-      <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
+      <div
+        className={`-mx-1 min-h-0 flex-1 overflow-y-auto px-1 ${tab === "chat" ? "md:hidden" : ""}`}
+      >
         {trees.length === 0 ? (
           <p className="text-gray-500">No trees available</p>
         ) : (
