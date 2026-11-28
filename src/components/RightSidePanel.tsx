@@ -6,7 +6,7 @@ import { upperFirst } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
 import { useBreakpoint } from "@/hooks/use-breakpoint";
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { AppEdge } from "@/lib/edge";
 import { normalizeTerminalValue, safeEvalExpr } from "@/lib/expectedValue";
 import { getRootNodeIds } from "@/lib/maps";
@@ -37,12 +37,12 @@ export function RightSidePanel() {
     updateTreeData,
     updateNoteProperties,
     balanceEdgeProbability,
-  } = useStore.getState();
+  } = useTreeStore.getState();
 
-  const currentTree = useStore(selectCurrentTree);
+  const currentTree = useTreeStore(selectCurrentTree);
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const isMediumScreenSizeOrLarger = useBreakpoint("md");
-  const showEVs = useStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
+  const showEVs = useTreeStore(selectShowEVs) || !isMediumScreenSizeOrLarger;
   const allNodes = currentTree?.nodes ?? {};
   const nodes = values(allNodes).filter(
     // NOTE: filter out ghost nodes because they have no properties to edit
@@ -55,8 +55,8 @@ export function RightSidePanel() {
   );
   const rootNodeIds = getRootNodeIds(allNodes, currentTree?.edges ?? {});
 
-  const netExpectedValues = useStore(selectNetExpectedValues);
-  const pathProbabilities = useStore((state) =>
+  const netExpectedValues = useTreeStore(selectNetExpectedValues);
+  const pathProbabilities = useTreeStore((state) =>
     selectPathProbabilities(
       state,
       nodes.map((n) => n.id),

@@ -48,7 +48,7 @@ import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
 import { withArrangeAnimation } from "../lib/animate";
 
-export interface StoreState {
+export interface TreeStoreState {
   trees: Record<string, DecisionTree>;
   currentTreeId: string | null;
   clipboard?: { nodes: AppNode[]; edges: AppEdge[] };
@@ -124,7 +124,7 @@ export interface StoreState {
 
 // QUESTION: should we clear undo stack when switching trees? or better to be safe?
 const temporalOptions: ZundoOptions<
-  StoreState,
+  TreeStoreState,
   ReturnType<typeof selectUndoableState>
 > = {
   // NOTE: throttling is needed for actions like dragging nodes across the canvas
@@ -160,7 +160,7 @@ const temporalOptions: ZundoOptions<
 
 const middlewares = (
   // NOTE: see https://github.com/pmndrs/zustand/issues/1013 for complex typing
-  f: StateCreator<StoreState, [["zustand/devtools", unknown]]>,
+  f: StateCreator<TreeStoreState, [["zustand/devtools", unknown]]>,
 ) =>
   persist(
     // NOTE: ts-ignore not ts-expect-error because TS 5 (build) errors here but TS 7 (VS Code native preview) does not
@@ -171,13 +171,15 @@ const middlewares = (
       // TODO: develop migration and invalidation protocol...
       // maybe using `merge` function of `persist`...
       // but for now just increment v number
+      // NOTE: the key kept its name when the store was renamed to the tree
+      // store, because the trees of every user are saved under it
       name: "evtree-storage-v6",
       storage: createJSONStorage(() => window.localStorage),
     },
   );
 
 // NOTE: default selector changed to shallow for less re-renders
-const useStoreBase = createWithEqualityFn<StoreState>()(
+const useTreeStoreBase = createWithEqualityFn<TreeStoreState>()(
   middlewares((set, get) => ({
     trees: initialTrees,
     currentTreeId: "tree-1", // Default to the first tree
@@ -1244,11 +1246,11 @@ const useStoreBase = createWithEqualityFn<StoreState>()(
 // from https://zustand.docs.pmnd.rs/integrations/third-party-libraries
 
 // NOTE: see https://github.com/Albert-Gao/auto-zustand-selectors-hook
-export const useStore = createSelectorFunctions(
+export const useTreeStore = createSelectorFunctions(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - see note in middlewares above
-  useStoreBase,
-) as typeof useStoreBase & ZustandFuncSelectors<StoreState>;
+  useTreeStoreBase,
+) as typeof useTreeStoreBase & ZustandFuncSelectors<TreeStoreState>;
 
 function clearSelections(currentTree: DecisionTree) {
   [...values(currentTree.nodes), ...values(currentTree.edges)]
@@ -1259,9 +1261,9 @@ function clearSelections(currentTree: DecisionTree) {
 }
 
 function withCurrentTree(
-  state: StoreState,
+  state: TreeStoreState,
   callback: (tree: DecisionTree) => void,
-): StoreState {
+): TreeStoreState {
   const { currentTreeId } = state;
   if (!currentTreeId) {
     warnNoCurrentTree();

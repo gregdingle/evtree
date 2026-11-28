@@ -23,8 +23,8 @@ import Link from "next/link";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { useDarkMode } from "@/hooks/use-dark-mode";
-import { useStore } from "@/hooks/use-store";
-import { useTemporalStore } from "@/hooks/use-temporal-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
+import { useTreeTemporalStore } from "@/hooks/use-tree-temporal-store";
 import {
   exportHTMLElementAsPNG,
   exportJson,
@@ -48,8 +48,8 @@ import { DecisionTree } from "@/lib/tree";
 import { ToolbarButton } from "./ToolbarButton";
 
 export function Toolbar() {
-  const { undo, redo } = useStore.temporal.getState();
-  const { canUndo, canRedo } = useTemporalStore((state) => ({
+  const { undo, redo } = useTreeStore.temporal.getState();
+  const { canUndo, canRedo } = useTreeTemporalStore((state) => ({
     canUndo: state.pastStates.length > 0,
     canRedo: state.futureStates.length > 0,
   }));
@@ -63,19 +63,19 @@ export function Toolbar() {
     showEVs,
     showHistogram,
     showIssues,
-  } = useStore.getState();
+  } = useTreeStore.getState();
 
   const [isLinkCopied, setIsLinkCopied] = useState(false);
 
-  const currentTree = useStore(selectCurrentTree);
-  const hasSelectedItems = useStore(selectHasSelectedItems);
-  const hasClipboardContent = useStore(selectHasClipboardContent);
+  const currentTree = useTreeStore(selectCurrentTree);
+  const hasSelectedItems = useTreeStore(selectHasSelectedItems);
+  const hasClipboardContent = useTreeStore(selectHasClipboardContent);
 
-  const hasNodes = useStore(selectHasNodes);
-  const hasTerminalNodes = useStore(selectHasTerminalNodes);
-  const areEVsShowing = useStore(selectShowEVs);
-  const isHistogramOpen = useStore(selectShowHistogram);
-  const isIssuesOpen = useStore(selectShowIssues);
+  const hasNodes = useTreeStore(selectHasNodes);
+  const hasTerminalNodes = useTreeStore(selectHasTerminalNodes);
+  const areEVsShowing = useTreeStore(selectShowEVs);
+  const isHistogramOpen = useTreeStore(selectShowHistogram);
+  const isIssuesOpen = useTreeStore(selectShowIssues);
   // NOTE: the histogram and the issues view take the place of the canvas
   const isCanvasHidden = isHistogramOpen || isIssuesOpen;
 

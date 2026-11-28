@@ -12,7 +12,7 @@ import { useReactFlow } from "@xyflow/react";
 import { isEqual, sortBy } from "es-toolkit";
 import { values } from "es-toolkit/compat";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { formatDate } from "@/utils/format";
 
 import { ContextMenuButton } from "./ContextMenuButton";
@@ -28,7 +28,7 @@ export function LeftSidePanel() {
 
   // NOTE: select only displayed fields with deep isEqual so the panel doesn't
   // re-render on every change to the current tree, like dragging a node
-  const trees = useStore(
+  const trees = useTreeStore(
     (state) =>
       sortBy(values(state.trees), ["updatedAt"])
         .reverse()
@@ -40,9 +40,9 @@ export function LeftSidePanel() {
         })),
     isEqual,
   );
-  const currentTreeId = useStore((state) => state.currentTreeId);
+  const currentTreeId = useTreeStore((state) => state.currentTreeId);
 
-  const { deleteTree, setCurrentTree, duplicateTree } = useStore.getState();
+  const { deleteTree, setCurrentTree, duplicateTree } = useTreeStore.getState();
 
   const handleSetCurrentTree = (treeId: string) => {
     setCurrentTree(treeId);

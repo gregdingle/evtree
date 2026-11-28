@@ -6,7 +6,7 @@ import {
   getStraightPath,
 } from "@xyflow/react";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { useShowEVs, useTreeCanvas } from "@/hooks/use-tree-canvas";
 import { AppEdge } from "@/lib/edge";
 import { convertProbabilityInputToDecimal } from "@/lib/percentage";
@@ -37,23 +37,23 @@ export function CustomEdge({
 }: EdgeProps<AppEdge>) {
   const { label } = data ?? {};
 
-  const { updateEdgeData, balanceEdgeProbability } = useStore.getState();
+  const { updateEdgeData, balanceEdgeProbability } = useTreeStore.getState();
 
   // Use computed probability instead of stored probability
-  const computedProbability = useStore((state) =>
+  const computedProbability = useTreeStore((state) =>
     selectComputedProbability(state, id),
   );
-  const isZeroProbability = useStore(
+  const isZeroProbability = useTreeStore(
     (state) => selectPathProbability(state, target) === 0,
   );
 
   // QUESTION: best significant digits for users? precision vs usability tradeoff?
   const significantDigits = 6;
-  const shouldWarn = useStore((state) =>
+  const shouldWarn = useTreeStore((state) =>
     selectShouldShowProbabilityWarning(state, id, significantDigits),
   );
 
-  const hasDecisionNodeSource = useStore((state) =>
+  const hasDecisionNodeSource = useTreeStore((state) =>
     selectHasDecisionNodeSource(state, id),
   );
 

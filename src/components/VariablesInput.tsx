@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { range, upperFirst } from "es-toolkit";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { selectCurrentTree } from "@/lib/selectors";
 
 import { Tooltip } from "./Tooltip";
@@ -20,7 +20,7 @@ export function VariablesInput({
   info: string;
 }) {
   // Subscribe to store directly - also get currentTreeId to detect tree switches
-  const { currentTreeId, variables } = useStore((state) => {
+  const { currentTreeId, variables } = useTreeStore((state) => {
     const currentTree = selectCurrentTree(state);
     return {
       currentTreeId: state.currentTreeId,
@@ -28,7 +28,7 @@ export function VariablesInput({
     };
   });
 
-  const { replaceVariables } = useStore.getState();
+  const { replaceVariables } = useTreeStore.getState();
 
   // Derive initial UI state from store variables
   const initialVariablesArray = React.useMemo(() => {

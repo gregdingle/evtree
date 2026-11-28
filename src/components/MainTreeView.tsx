@@ -12,7 +12,7 @@ import {
 } from "@xyflow/react";
 
 import { useContextMenu } from "@/hooks/use-context-menu";
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { AppEdge } from "@/lib/edge";
 import { getChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
@@ -32,10 +32,10 @@ export function MainTreeView() {
     onConnect,
     createNodeAtFrom,
     deleteSelected,
-  } = useStore.getState();
+  } = useTreeStore.getState();
 
-  const nodes = useStore(selectCurrentNodes);
-  const edges = useStore(selectCurrentEdges);
+  const nodes = useTreeStore(selectCurrentNodes);
+  const edges = useTreeStore(selectCurrentEdges);
 
   const { screenToFlowPosition } = useReactFlow();
 
@@ -78,7 +78,7 @@ export function MainTreeView() {
       // For note nodes, create a ghost node with an arrow edge
       // See https://reactflow.dev/examples/edges/temporary-edges
       if (connectionState.fromNode.type === "note") {
-        const { createGhostNodeWithArrow } = useStore.getState();
+        const { createGhostNodeWithArrow } = useTreeStore.getState();
         createGhostNodeWithArrow(
           connectionState.fromNode.id,
           position,

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import {
   Issue,
   IssueOccurrence,
@@ -28,8 +28,8 @@ import { SubTreeView } from "./SubTreeView";
  * up exactly
  */
 function useFormatAmount() {
-  const currency = useStore(selectCurrentCurrency);
-  const rounding = useStore(selectCurrentRounding);
+  const currency = useTreeStore(selectCurrentCurrency);
+  const rounding = useTreeStore(selectCurrentRounding);
   return (value: number | null) => formatValue(value, currency, rounding);
 }
 
@@ -52,9 +52,9 @@ interface IssuesProps extends React.HTMLAttributes<HTMLDivElement> {}
  * their issues show labels and numbers only... prompt for them? generate them?
  */
 export function Issues({ className, ...props }: IssuesProps) {
-  const tree = useStore(selectCurrentTree);
+  const tree = useTreeStore(selectCurrentTree);
   // NOTE: memoized on the tree, so it is the same object until the tree changes
-  const netExpectedValues = useStore(selectNetExpectedValues);
+  const netExpectedValues = useTreeStore(selectNetExpectedValues);
 
   const roots = tree ? getIssues(tree, netExpectedValues) : [];
   if (!tree || roots.every((root) => root.issues.length === 0)) {
@@ -118,9 +118,9 @@ export function Issues({ className, ...props }: IssuesProps) {
 }
 
 function IssueSection({ number, issue }: { number: number; issue: Issue }) {
-  const terminalValueDisplay = useStore(selectCurrentTerminalValueDisplay);
+  const terminalValueDisplay = useTreeStore(selectCurrentTerminalValueDisplay);
   const format = useFormatAmount();
-  const { selectNode, selectEdge } = useStore.getState();
+  const { selectNode, selectEdge } = useTreeStore.getState();
 
   // NOTE: an issue can occur on several paths, and the sub-tree view shows one
   // at a time. Clamped because the tree can change under an open issues view.

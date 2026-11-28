@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { AppNode } from "@/lib/node";
 
 export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
@@ -10,7 +10,7 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { updateNodeData } = useStore.getState();
+  const { updateNodeData } = useTreeStore.getState();
 
   // Auto-resize textarea on content change
   useEffect(() => {

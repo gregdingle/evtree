@@ -4,7 +4,7 @@ import { values } from "es-toolkit/compat";
 import { createEdge } from "../lib/edge";
 import { AppNode } from "../lib/node";
 import { DecisionTree } from "../lib/tree";
-import { useStore } from "./use-store";
+import { useTreeStore } from "./use-tree-store";
 
 jest.mock("nanoid", () => {
   let nextId = 0;
@@ -61,14 +61,14 @@ describe("paste", () => {
         [parent.id]: parent,
       },
     };
-    useStore.setState({ trees: { tree }, currentTreeId: "tree" });
+    useTreeStore.setState({ trees: { tree }, currentTreeId: "tree" });
   });
 
   test("attaches copied incoming branches while preserving the target and its subtree", () => {
-    useStore.getState().copy();
-    useStore.getState().paste(undefined, "target");
+    useTreeStore.getState().copy();
+    useTreeStore.getState().paste(undefined, "target");
 
-    const tree = useStore.getState().trees["tree"]!;
+    const tree = useTreeStore.getState().trees["tree"]!;
     expect(tree.nodes["target"]).toBeDefined();
     expect(tree.nodes["existing"]).toBeDefined();
     expect(tree.edges[existing.id]).toBeDefined();
@@ -113,16 +113,16 @@ describe("paste", () => {
   });
 
   test("attaches to the selected node when pasting with the keyboard", () => {
-    useStore.getState().copy();
-    useStore.getState().onNodesChange([
+    useTreeStore.getState().copy();
+    useTreeStore.getState().onNodesChange([
       { id: "first", type: "select", selected: false },
       { id: "second", type: "select", selected: false },
       { id: "child", type: "select", selected: false },
       { id: "target", type: "select", selected: true },
     ]);
-    useStore.getState().paste();
+    useTreeStore.getState().paste();
 
-    const tree = useStore.getState().trees["tree"]!;
+    const tree = useTreeStore.getState().trees["tree"]!;
     expect(tree.nodes["target"]).toBeDefined();
     expect(
       values(tree.edges).filter((edge) => edge.source === "target"),
@@ -130,11 +130,11 @@ describe("paste", () => {
   });
 
   test("keeps attached branches hidden under a collapsed target", () => {
-    useStore.getState().copy();
-    useStore.getState().toggleNodeCollapse("target");
-    useStore.getState().paste(undefined, "target");
+    useTreeStore.getState().copy();
+    useTreeStore.getState().toggleNodeCollapse("target");
+    useTreeStore.getState().paste(undefined, "target");
 
-    let tree = useStore.getState().trees["tree"]!;
+    let tree = useTreeStore.getState().trees["tree"]!;
     const pastedNodes = values(tree.nodes).filter((item) =>
       item.id.startsWith("copied-"),
     );
@@ -150,8 +150,8 @@ describe("paste", () => {
       true,
     );
 
-    useStore.getState().toggleNodeCollapse("target");
-    tree = useStore.getState().trees["tree"]!;
+    useTreeStore.getState().toggleNodeCollapse("target");
+    tree = useTreeStore.getState().trees["tree"]!;
     expect(pastedNodes.every((item) => !tree.nodes[item.id]!.hidden)).toBe(
       true,
     );
@@ -159,57 +159,57 @@ describe("paste", () => {
 
   test("does not attach branches to a terminal node", () => {
     const warning = jest.spyOn(console, "warn").mockImplementation(() => {});
-    useStore.getState().copy();
-    const before = useStore.getState().trees["tree"];
-    useStore.getState().paste(undefined, "terminal");
+    useTreeStore.getState().copy();
+    const before = useTreeStore.getState().trees["tree"];
+    useTreeStore.getState().paste(undefined, "terminal");
     expect(warning).toHaveBeenCalled();
-    expect(useStore.getState().trees["tree"]).toEqual(before);
+    expect(useTreeStore.getState().trees["tree"]).toEqual(before);
     warning.mockRestore();
   });
 
   test("does not replace a node when the clipboard has no nodes", () => {
     const warning = jest.spyOn(console, "warn").mockImplementation(() => {});
-    useStore.setState({ clipboard: { nodes: [], edges: [first] } });
-    const before = useStore.getState().trees["tree"];
-    useStore.getState().paste(undefined, "target");
+    useTreeStore.setState({ clipboard: { nodes: [], edges: [first] } });
+    const before = useTreeStore.getState().trees["tree"];
+    useTreeStore.getState().paste(undefined, "target");
     expect(warning).toHaveBeenCalled();
-    expect(useStore.getState().trees["tree"]).toEqual(before);
+    expect(useTreeStore.getState().trees["tree"]).toEqual(before);
     warning.mockRestore();
   });
 
   test("does nothing when pasting a copy of a node onto itself", () => {
-    useStore.getState().selectSubtree("first");
-    useStore.getState().copy();
-    const before = useStore.getState().trees["tree"];
-    useStore.getState().paste(undefined, "first");
-    expect(useStore.getState().trees["tree"]).toEqual(before);
+    useTreeStore.getState().selectSubtree("first");
+    useTreeStore.getState().copy();
+    const before = useTreeStore.getState().trees["tree"];
+    useTreeStore.getState().paste(undefined, "first");
+    expect(useTreeStore.getState().trees["tree"]).toEqual(before);
 
     // Also with the copied node still selected and no explicit target
-    useStore.getState().selectSubtree("second");
-    useStore.getState().copy();
-    const beforeSelected = useStore.getState().trees["tree"];
-    useStore.getState().paste();
-    expect(useStore.getState().trees["tree"]).toEqual(beforeSelected);
+    useTreeStore.getState().selectSubtree("second");
+    useTreeStore.getState().copy();
+    const beforeSelected = useTreeStore.getState().trees["tree"];
+    useTreeStore.getState().paste();
+    expect(useTreeStore.getState().trees["tree"]).toEqual(beforeSelected);
   });
 
   test("uses the real root of the paste when it was copied after its children", () => {
     // insertNodeBefore adds the new parent after its children in tree order
-    useStore.getState().insertNodeBefore("first", "decision");
-    const inserted = values(useStore.getState().trees["tree"]!.nodes).find(
+    useTreeStore.getState().insertNodeBefore("first", "decision");
+    const inserted = values(useTreeStore.getState().trees["tree"]!.nodes).find(
       (item) => item.type === "decision" && item.id !== "target",
     )!;
-    useStore.getState().selectSubtree(inserted.id);
-    useStore.getState().copy();
-    expect(useStore.getState().clipboard!.nodes.at(-1)!.id).toBe(inserted.id);
+    useTreeStore.getState().selectSubtree(inserted.id);
+    useTreeStore.getState().copy();
+    expect(useTreeStore.getState().clipboard!.nodes.at(-1)!.id).toBe(inserted.id);
 
     // Pasting onto the real root is a no-op
-    const before = useStore.getState().trees["tree"];
-    useStore.getState().paste(undefined, inserted.id);
-    expect(useStore.getState().trees["tree"]).toEqual(before);
+    const before = useTreeStore.getState().trees["tree"];
+    useTreeStore.getState().paste(undefined, inserted.id);
+    expect(useTreeStore.getState().trees["tree"]).toEqual(before);
 
     // Replacing a node connects its incoming edge to the copy of the root
-    useStore.getState().paste(undefined, "target");
-    const tree = useStore.getState().trees["tree"]!;
+    useTreeStore.getState().paste(undefined, "target");
+    const tree = useTreeStore.getState().trees["tree"]!;
     const fromParent = values(tree.edges).filter(
       (edge) => edge.source === "parent",
     );
@@ -229,11 +229,11 @@ describe("paste", () => {
   });
 
   test("still pastes onto a non-root node of the copied subtree", () => {
-    useStore.getState().selectSubtree("first");
-    useStore.getState().copy();
-    useStore.getState().paste(undefined, "child");
+    useTreeStore.getState().selectSubtree("first");
+    useTreeStore.getState().copy();
+    useTreeStore.getState().paste(undefined, "child");
 
-    const tree = useStore.getState().trees["tree"]!;
+    const tree = useTreeStore.getState().trees["tree"]!;
     expect(tree.nodes["child"]).toBeUndefined();
     expect(
       values(tree.nodes).filter((item) => item.data.description === "first"),
@@ -241,11 +241,11 @@ describe("paste", () => {
   });
 
   test("still replaces a target when the copied subtree has no incoming branch", () => {
-    useStore.getState().selectSubtree("first");
-    useStore.getState().copy();
-    useStore.getState().paste(undefined, "target");
+    useTreeStore.getState().selectSubtree("first");
+    useTreeStore.getState().copy();
+    useTreeStore.getState().paste(undefined, "target");
 
-    const tree = useStore.getState().trees["tree"]!;
+    const tree = useTreeStore.getState().trees["tree"]!;
     expect(tree.nodes["target"]).toBeUndefined();
     expect(tree.nodes["existing"]).toBeUndefined();
     expect(
@@ -256,10 +256,10 @@ describe("paste", () => {
 
 describe("selectNode", () => {
   test("should select only the node", () => {
-    const { currentTreeId, trees } = useStore.getState();
+    const { currentTreeId, trees } = useTreeStore.getState();
     const tree = trees[currentTreeId!]!;
     const [first, second] = Object.keys(tree.nodes);
-    useStore.setState({
+    useTreeStore.setState({
       trees: {
         ...trees,
         [tree.id]: {
@@ -272,9 +272,9 @@ describe("selectNode", () => {
       },
     });
 
-    useStore.getState().selectNode(second!);
+    useTreeStore.getState().selectNode(second!);
 
-    const state = useStore.getState();
+    const state = useTreeStore.getState();
     const selected = values(state.trees[tree.id]!.nodes)
       .filter((node) => node.selected)
       .map((node) => node.id);
@@ -284,15 +284,15 @@ describe("selectNode", () => {
 
 describe("selectEdge", () => {
   test("should select only the edge", () => {
-    const { currentTreeId, trees } = useStore.getState();
+    const { currentTreeId, trees } = useTreeStore.getState();
     const tree = trees[currentTreeId!]!;
     const [nodeId] = Object.keys(tree.nodes);
     const [edgeId] = Object.keys(tree.edges);
-    useStore.getState().selectNode(nodeId!);
+    useTreeStore.getState().selectNode(nodeId!);
 
-    useStore.getState().selectEdge(edgeId!);
+    useTreeStore.getState().selectEdge(edgeId!);
 
-    const state = useStore.getState().trees[tree.id]!;
+    const state = useTreeStore.getState().trees[tree.id]!;
     expect(values(state.nodes).filter((node) => node.selected)).toEqual([]);
     expect(
       values(state.edges)
@@ -304,14 +304,14 @@ describe("selectEdge", () => {
 
 describe("loadTree", () => {
   test("should show the canvas in place of the issues view", () => {
-    const { currentTreeId, trees } = useStore.getState();
+    const { currentTreeId, trees } = useTreeStore.getState();
     const tree = trees[currentTreeId!]!;
-    useStore.getState().showIssues();
-    expect(useStore.getState().display.showIssues).toBe(true);
+    useTreeStore.getState().showIssues();
+    expect(useTreeStore.getState().display.showIssues).toBe(true);
 
-    useStore.getState().loadTree(tree, false);
+    useTreeStore.getState().loadTree(tree, false);
 
-    const state = useStore.getState();
+    const state = useTreeStore.getState();
     expect(state.currentTreeId).not.toBe(tree.id);
     expect(state.display.showIssues).toBe(false);
     expect(state.display.showHistogram).toBe(false);

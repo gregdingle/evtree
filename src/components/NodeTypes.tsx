@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { useShowEVs, useTreeCanvas } from "@/hooks/use-tree-canvas";
 import { normalizeTerminalValue, safeEvalExpr } from "@/lib/expectedValue";
 import { AppNode } from "@/lib/node";
@@ -52,19 +52,19 @@ const BaseNode = ({
   hasParent,
   data,
 }: BaseNodeProps) => {
-  const pathValue = useStore((state) => selectNetExpectedValue(state, id));
+  const pathValue = useTreeStore((state) => selectNetExpectedValue(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const showEVs = useShowEVs();
   const { isStatic } = useTreeCanvas();
-  const showPathEVs = useStore(selectShowPathEVs);
-  const currency = useStore(selectCurrentCurrency);
-  const rounding = useStore(selectCurrentRounding);
-  const isZeroProbability = useStore(
+  const showPathEVs = useTreeStore(selectShowPathEVs);
+  const currency = useTreeStore(selectCurrentCurrency);
+  const rounding = useTreeStore(selectCurrentRounding);
+  const isZeroProbability = useTreeStore(
     (state) => selectPathProbability(state, id) === 0,
   );
 
   const shouldShowPathEV = showEVs && (showPathEVs || !hasParent);
-  const { updateNodeData } = useStore.getState();
+  const { updateNodeData } = useTreeStore.getState();
 
   return (
     <div
@@ -112,8 +112,8 @@ const BaseNode = ({
 };
 
 const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  const { isCollapsed } = useStore((state) => selectCollapsible(state, id));
-  const hasParent = useStore((state) => selectHasParentNode(state, id));
+  const { isCollapsed } = useTreeStore((state) => selectCollapsible(state, id));
+  const hasParent = useTreeStore((state) => selectHasParentNode(state, id));
   return (
     <BaseNode
       data={data}
@@ -151,8 +151,8 @@ const DecisionNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  const { isCollapsed } = useStore((state) => selectCollapsible(state, id));
-  const hasParent = useStore((state) => selectHasParentNode(state, id));
+  const { isCollapsed } = useTreeStore((state) => selectCollapsible(state, id));
+  const hasParent = useTreeStore((state) => selectHasParentNode(state, id));
   return (
     <BaseNode
       data={data}
@@ -192,21 +192,21 @@ const ChanceNode = ({ data, selected, id }: NodeProps<AppNode>) => {
 };
 
 const TerminalNode = ({ data, selected, id }: NodeProps<AppNode>) => {
-  const { updateNodeData } = useStore.getState();
+  const { updateNodeData } = useTreeStore.getState();
 
-  const pathProbability = useStore((state) => selectPathProbability(state, id));
+  const pathProbability = useTreeStore((state) => selectPathProbability(state, id));
   const isZeroProbability = pathProbability === 0;
-  const hasParent = useStore((state) => selectHasParentNode(state, id));
+  const hasParent = useTreeStore((state) => selectHasParentNode(state, id));
   // NOTE: Responsive design! No toolbar for below medium size screens, so always showEVs
   const showEVs = useShowEVs();
   const showPathProbability = showEVs && pathProbability !== null;
-  const variables = useStore(selectCurrentVariables);
+  const variables = useTreeStore(selectCurrentVariables);
 
-  const currency = useStore(selectCurrentCurrency);
-  const rounding = useStore(selectCurrentRounding);
-  const terminalValueDisplay = useStore(selectCurrentTerminalValueDisplay);
+  const currency = useTreeStore(selectCurrentCurrency);
+  const rounding = useTreeStore(selectCurrentRounding);
+  const terminalValueDisplay = useTreeStore(selectCurrentTerminalValueDisplay);
 
-  const pathValue = useStore((state) => selectNetExpectedValue(state, id));
+  const pathValue = useTreeStore((state) => selectNetExpectedValue(state, id));
   const valueExpr = data.valueExpr;
 
   // QUESTION: consolidate isParseable and parsedValue logic?

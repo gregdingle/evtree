@@ -1,6 +1,6 @@
 import { values } from "es-toolkit/compat";
 
-import { StoreState } from "@/hooks/use-store";
+import { TreeStoreState } from "@/hooks/use-tree-store";
 
 import { selectNetExpectedValue, selectPathProbability } from "./selectors";
 import { DecisionTree } from "./tree";
@@ -23,7 +23,7 @@ export type HistogramData = {
  */
 export function getTerminalNodesData(
   currentTree: DecisionTree | undefined,
-  storeState: StoreState,
+  storeState: TreeStoreState,
 ): TerminalNodeData[] {
   if (!currentTree) return [];
 

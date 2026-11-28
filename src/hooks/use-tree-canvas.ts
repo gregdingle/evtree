@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 
 import { selectShowEVs } from "@/lib/selectors";
 
-import { useStore } from "./use-store";
+import { useTreeStore } from "./use-tree-store";
 
 export interface TreeCanvasMode {
   /**
@@ -41,7 +41,7 @@ export function useTreeCanvas(): TreeCanvasMode {
  */
 export function useShowEVs(): boolean {
   const { isReadOnly, isStatic } = useTreeCanvas();
-  const showEVs = useStore(selectShowEVs);
+  const showEVs = useTreeStore(selectShowEVs);
   // NOTE: a static view is plain, because the text around it has the numbers
   if (isStatic) {
     return false;

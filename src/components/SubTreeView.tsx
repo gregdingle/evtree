@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { ReactFlowProvider } from "@xyflow/react";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { getSubTreeElements } from "@/lib/issues";
 import { selectCurrentTree } from "@/lib/selectors";
 
@@ -25,7 +25,7 @@ interface SubTreeViewProps {
  * TODO: mount lazily when scrolled into view, if a large tree proves slow
  */
 export function SubTreeView({ nodeId, className }: SubTreeViewProps) {
-  const tree = useStore(selectCurrentTree);
+  const tree = useTreeStore(selectCurrentTree);
   const elements = useMemo(
     () => tree && getSubTreeElements(tree, nodeId),
     [tree, nodeId],

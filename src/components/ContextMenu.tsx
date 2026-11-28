@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useReactFlow } from "@xyflow/react";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { getChildToParentNodeMap } from "@/lib/maps";
 import { AppNode, NodeType } from "@/lib/node";
 import {
@@ -67,14 +67,14 @@ export function ContextMenu({
     createNodeAtFrom,
     insertNodeBefore,
     paste,
-  } = useStore.getState();
+  } = useTreeStore.getState();
 
-  const { hasChildren, isCollapsed } = useStore((state) =>
+  const { hasChildren, isCollapsed } = useTreeStore((state) =>
     selectCollapsible(state, contextNode?.id),
   );
 
-  const edges = useStore(selectCurrentEdges);
-  const hasClipboardContent = useStore(selectHasClipboardContent);
+  const edges = useTreeStore(selectCurrentEdges);
+  const hasClipboardContent = useTreeStore(selectHasClipboardContent);
 
   const { screenToFlowPosition } = useReactFlow();
 

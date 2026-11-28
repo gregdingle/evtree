@@ -17,7 +17,7 @@ import { LeftSidePanel } from "@/components/LeftSidePanel";
 import { MainTreeView } from "@/components/MainTreeView";
 import { RightSidePanel } from "@/components/RightSidePanel";
 import { Toolbar } from "@/components/Toolbar";
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { firebaseApp } from "@/lib/firebase";
 import { selectShowHistogram, selectShowIssues } from "@/lib/selectors";
 import { downloadSharedTree, extractShareHash } from "@/lib/share";
@@ -58,8 +58,8 @@ export default function Builder() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const showHistogram = useStore(selectShowHistogram);
-  const showIssues = useStore(selectShowIssues);
+  const showHistogram = useTreeStore(selectShowHistogram);
+  const showIssues = useTreeStore(selectShowIssues);
 
   if (!isValidClient) {
     // QUESTION: put some kind of loading spinner here?
@@ -141,7 +141,7 @@ function ShareLinkLoader() {
         const firebaseStorage = getStorage(firebaseApp);
         downloadSharedTree(shareData.hash, shareData.key, firebaseStorage)
           .then((tree) => {
-            useStore.getState().loadTree(tree, true);
+            useTreeStore.getState().loadTree(tree, true);
             // Clear the hash after successful load
             window.history.replaceState(null, "", window.location.pathname);
             // NOTE: this is not too early. React Flow queues a fitView() until

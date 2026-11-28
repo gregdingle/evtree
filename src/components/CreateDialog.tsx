@@ -19,7 +19,7 @@ import {
 import { useReactFlow } from "@xyflow/react";
 import { isEmpty } from "es-toolkit/compat";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import {
   AIGenerationError,
   type AIGenerationProgress,
@@ -47,7 +47,7 @@ interface CreateDialogProps {
 export function CreateDialog({ open, onClose }: CreateDialogProps) {
   const { fitView, zoomTo } = useReactFlow();
 
-  const { createTree, loadTree, arrange } = useStore.getState();
+  const { createTree, loadTree, arrange } = useTreeStore.getState();
 
   // TODO: replace all this form state with a local reducer?
   const [newTreeName, setNewTreeName] = useState("");

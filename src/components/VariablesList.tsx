@@ -1,4 +1,4 @@
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { AppEdge } from "@/lib/edge";
 import { AppNode } from "@/lib/node";
 import { Variable, getNewExpr, isVariableInExpr } from "@/lib/variable";
@@ -20,7 +20,7 @@ export function VariablesList({
   exprFor,
   ...props
 }: VariablesListProps) {
-  const { updateNodeData, updateEdgeData } = useStore.getState();
+  const { updateNodeData, updateEdgeData } = useTreeStore.getState();
 
   if (!node && !edge) {
     throw new Error("VariablesList requires either node or edge prop");

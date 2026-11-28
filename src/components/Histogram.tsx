@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { isEqual } from "es-toolkit";
 import { round, sum } from "es-toolkit/compat";
 
-import { useStore } from "@/hooks/use-store";
+import { useTreeStore } from "@/hooks/use-tree-store";
 import { CurrencyCode } from "@/lib/currency";
 import { PROBABILITY_SUM_TOLERANCE } from "@/lib/expectedValue";
 import {
@@ -32,13 +32,13 @@ interface HistogramProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Histogram(props: HistogramProps) {
   // NOTE: deep isEqual so the histogram only re-renders when terminal node
   // data changes, not on every store change like dragging a node
-  const terminalNodesData: TerminalNodeData[] = useStore(
+  const terminalNodesData: TerminalNodeData[] = useTreeStore(
     (state) => getTerminalNodesData(selectCurrentTree(state), state),
     isEqual,
   );
 
-  const currency = useStore(selectCurrentCurrency);
-  const rounding = useStore(selectCurrentRounding);
+  const currency = useTreeStore(selectCurrentCurrency);
+  const rounding = useTreeStore(selectCurrentRounding);
 
   let initialOverUnder = terminalNodesData.reduce(
     (sum, { probability, value }) => {
