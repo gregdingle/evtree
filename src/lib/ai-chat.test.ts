@@ -15,10 +15,12 @@ import {
   sendChatMessage,
 } from "./ai-chat";
 import {
+  SOURCE_SEARCH,
   convertAIStructureToDecisionTree,
   convertDecisionTreeToAIRows,
 } from "./ai-convert";
 import { AINode } from "./ai-schemas";
+import { ChatSearch, SearchModel } from "./chat-search";
 import { selectCurrentTree, selectUndoableState } from "./selectors";
 
 // TODO: a set of conversations to run against the AI itself, which these
@@ -116,19 +118,72 @@ const getProbabilities = () =>
 const getReply = () => getChat().messages.at(-1)!;
 const getText = (content: Content | undefined) =>
   content?.parts.map((part) => ("text" in part ? part.text : "")).join("");
-const send = (rounds: Round[], text = "Hello", signal?: AbortSignal) => {
+const send = (
+  rounds: Round[],
+  text = "Hello",
+  signal?: AbortSignal,
+  searchModel?: SearchModel,
+) => {
   const { model, requests } = fakeModel(rounds);
   const texts: string[] = [];
   const edits: ChatEdit[] = [];
+  const searches: ChatSearch[] = [];
   return sendChatMessage({
     treeId,
     text,
     model,
+    searchModel,
     signal,
     onText: (text) => texts.push(text),
     onEdit: (edit) => edits.push(edit),
-  }).then(() => ({ requests, texts, edits }));
+    onSearch: (search) => searches.push(search),
+  }).then(() => ({ requests, texts, edits, searches }));
 };
+
+/**
+ * A model that searches, and finds one page of each of the domains for each
+ * question, see chat-search.test.ts for what a search makes of that
+ */
+function fakeSearchModel(domains: string[], fail?: () => void) {
+  const questions: string[] = [];
+  const model = {
+    generateContent: async (request: { contents: Content[] }) => {
+      const part = request.contents[0]!.parts[0]!;
+      questions.push("text" in part ? (part.text ?? "") : "");
+      fail?.();
+      return {
+        response: {
+          text: () => "Ten percent a year.",
+          candidates: [
+            {
+              groundingMetadata: {
+                groundingChunks: domains.map((domain) => ({
+                  web: { uri: `https://redirect.example/${domain}`, domain },
+                })),
+                searchEntryPoint: { renderedContent: "<div>Suggestions</div>" },
+              },
+            },
+          ],
+        },
+      };
+    },
+  } as unknown as SearchModel;
+  return { model, questions };
+}
+
+const searchLaw = (question = "What is the rate of interest?") => ({
+  name: "search_law",
+  args: { question, jurisdiction: "California" },
+});
+
+const setReason = (sourceId: string) => ({
+  name: "set_branch_text",
+  args: { id: "n5", reason: "At ten percent.", sourceId, askFirst: false },
+});
+
+const getReason = () =>
+  Object.values(getTree().edges).find((edge) => edge.data?.label === "Granted")!
+    .data!.description;
 
 const setProbabilities = (askFirst: boolean, granted = 0.4) => ({
   name: "set_probabilities",
@@ -456,6 +511,213 @@ describe("sendChatMessage", () => {
       { status: "done" },
       { status: "done", sentence: 'Value of "Mid": $2M → $2.5M.' },
     ]);
+  });
+
+  describe("with a search", () => {
+    beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation(() => {});
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test("should search for the AI, and give it what was found", async () => {
+      const search = fakeSearchModel(["blog.example.com", "courts.ca.gov"]);
+      const { requests, searches } = await send(
+        [{ calls: [searchLaw()] }, { text: ["Ten percent."] }],
+        "Look up the rate of interest.",
+        undefined,
+        search.model,
+      );
+      // Only the question and the jurisdiction went to the search
+      expect(search.questions).toEqual([
+        "Jurisdiction: California\nQuestion: What is the rate of interest?",
+      ]);
+      const told = JSON.stringify(requests[1]!.at(-1));
+      expect(told).toContain("Ten percent a year.");
+      expect(told).toContain('"id":"s2","domain":"courts.ca.gov"');
+      expect(told).toContain('"citable":false');
+      // The chat is told when a search starts and when it ends
+      expect(searches.map((s) => s.status)).toEqual(["searching", "found"]);
+      expect(getReply()).toMatchObject({
+        text: "Ten percent.",
+        searches: [
+          {
+            status: "found",
+            question: "What is the rate of interest?",
+            jurisdiction: "California",
+            sources: [
+              { id: "s2", domain: "courts.ca.gov", kind: "primary" },
+              { id: "s1", domain: "blog.example.com", kind: "other" },
+            ],
+          },
+        ],
+      });
+      expect(getReply().edits).toBeUndefined();
+    });
+
+    test("should let a reason rest on a source of law of the search, and not on another page", async () => {
+      const search = fakeSearchModel(["blog.example.com", "courts.ca.gov"]);
+      const { requests } = await send(
+        [
+          { calls: [searchLaw()] },
+          { calls: [setReason("s1")] },
+          { calls: [setReason("s2")] },
+          { text: ["Done."] },
+        ],
+        "Look it up and put it in the reason.",
+        undefined,
+        search.model,
+      );
+      expect(JSON.stringify(requests[2]!.at(-1))).toContain("blog.example.com");
+      expect(getReason()).toBe(
+        `At ten percent.\n\n${SOURCE_SEARCH} courts.ca.gov`,
+      );
+      expect(getReply().edits).toMatchObject([
+        {
+          status: "done",
+          sentence:
+            'Reason for "Granted": At ten percent. Source: courts.ca.gov.',
+        },
+      ]);
+    });
+
+    test("should know the sources of an earlier search in a later turn, and number new ones on", async () => {
+      const search = fakeSearchModel(["courts.ca.gov"]);
+      await send(
+        [{ calls: [searchLaw()] }, { text: ["Ten percent."] }],
+        "Look it up.",
+        undefined,
+        search.model,
+      );
+      const { requests } = await send(
+        [{ calls: [setReason("s1"), searchLaw("And after judgment?")] }],
+        "Put it in the reason, and look up the rate after judgment.",
+        undefined,
+        search.model,
+      );
+      expect(getText(requests[0]!.at(-1))).toContain(
+        '<earlier_searches>\n- Searched for "What is the rate of interest?" (California): Ten percent a year. Sources: s1 courts.ca.gov (primary).\n</earlier_searches>',
+      );
+      expect(getReason()).toBe(
+        `At ten percent.\n\n${SOURCE_SEARCH} courts.ca.gov`,
+      );
+      expect(getReply().searches![0]!.sources).toMatchObject([{ id: "s2" }]);
+    });
+
+    test("should accept an edit that waited and that rests on a search", async () => {
+      const search = fakeSearchModel(["courts.ca.gov"]);
+      await send(
+        [
+          { calls: [searchLaw()] },
+          {
+            calls: [
+              {
+                ...setReason("s1"),
+                args: { ...setReason("s1").args, askFirst: true },
+              },
+            ],
+          },
+          { text: ["I suggest a new reason."] },
+        ],
+        "Look it up.",
+        undefined,
+        search.model,
+      );
+      expect(getReason()).toBe("Because granted");
+      acceptChatEdit(treeId, getReply().edits![0]!);
+      expect(getReply().edits).toMatchObject([{ status: "accepted" }]);
+      expect(getReason()).toBe(
+        `At ten percent.\n\n${SOURCE_SEARCH} courts.ca.gov`,
+      );
+    });
+
+    test("should stop the AI at the limit of searches for a message", async () => {
+      const search = fakeSearchModel(["courts.ca.gov"]);
+      const { requests } = await send(
+        [
+          {
+            calls: [searchLaw("One?"), searchLaw("Two?"), searchLaw("Three?")],
+          },
+          { text: ["Two of three."] },
+        ],
+        "Look up three things.",
+        undefined,
+        search.model,
+      );
+      expect(search.questions).toHaveLength(2);
+      expect(getReply().searches).toHaveLength(2);
+      expect(JSON.stringify(requests[1]!.at(-1))).toContain("Only 2 searches");
+    });
+
+    test.each([
+      ["without a model that searches", undefined, "not available"],
+      [
+        "with arguments that are wrong",
+        fakeSearchModel([]).model,
+        "jurisdiction",
+      ],
+    ])(
+      "should tell the AI that it cannot search %s",
+      async (name, model, told) => {
+        const call = name.startsWith("with arguments")
+          ? { name: "search_law", args: { question: "What?" } }
+          : searchLaw();
+        const { requests } = await send(
+          [{ calls: [call] }, { text: ["I could not search."] }],
+          "Look it up.",
+          undefined,
+          model,
+        );
+        expect(JSON.stringify(requests[1]!.at(-1))).toContain(told);
+        expect(getReply().searches).toBeUndefined();
+        expect(getReply().text).toBe("I could not search.");
+      },
+    );
+
+    test("should go on after a search that failed, or that found nothing", async () => {
+      const failing = fakeSearchModel([], () => {
+        throw new Error("quota");
+      });
+      await send(
+        [{ calls: [searchLaw()] }, { text: ["The search failed."] }],
+        "Look it up.",
+        undefined,
+        failing.model,
+      );
+      expect(getReply()).toMatchObject({
+        text: "The search failed.",
+        searches: [{ status: "failed", sources: [] }],
+      });
+      expect(getReply().error).toBeUndefined();
+
+      const { requests } = await send(
+        [{ calls: [searchLaw()] }, { text: ["Nothing was found."] }],
+        "Again.",
+        undefined,
+        fakeSearchModel([]).model,
+      );
+      expect(JSON.stringify(requests[1]!.at(-1))).toContain("found nothing");
+      expect(getReply().searches).toMatchObject([{ status: "nothing" }]);
+    });
+
+    test("should end the turn when a search is stopped", async () => {
+      const abortController = new AbortController();
+      const stopping = fakeSearchModel(["courts.ca.gov"], () => {
+        abortController.abort();
+        throw new Error("aborted");
+      });
+      const { searches } = await send(
+        [{ calls: [searchLaw()] }, { text: ["Never said."] }],
+        "Look it up.",
+        abortController.signal,
+        stopping.model,
+      );
+      expect(searches.map((s) => s.status)).toEqual(["searching"]);
+      expect(getReply()).toMatchObject({ role: "ai", text: "" });
+      expect(getReply().error).toBeUndefined();
+      expect(getReply().searches).toBeUndefined();
+    });
   });
 
   test("should stop after the limit of rounds of calls", async () => {

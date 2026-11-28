@@ -91,9 +91,15 @@ export default function DataSecurity() {
           and the text that the tree was generated from, if there is one. This
           happens with every message, and only when you send one. The chat and
           that text are stored locally in your browser, apart from the tree:
-          they are not part of an exported tree or of a link that you share. You
-          can remove them in the chat, and they are removed when you delete the
-          tree.
+          they are not part of an exported tree or of a link that you share.
+          They are removed when you delete the tree.
+        </p>
+        <p className="my-4">
+          When you ask the AI in the <em>Chat</em> to look up a point of law, it
+          writes a legal question, and that question alone, with the
+          jurisdiction, is sent to a search of the web by Google. The tree, the
+          text that the tree was generated from and the rest of the chat are not
+          part of the search. The chat shows the question that was sent.
         </p>
         <p className="my-4">
           You are welcome to review our{" "}

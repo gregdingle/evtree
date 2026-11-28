@@ -11,6 +11,7 @@ import {
   SOURCE_AI,
   SOURCE_DESCRIPTION,
   SOURCE_NOT_FOUND,
+  SOURCE_SEARCH,
   convertAIStructureToDecisionTree,
   convertDecisionTreeToAIRows,
   getAIRowAliases,
@@ -442,6 +443,19 @@ describe("splitReasonSource", () => {
       quote: null,
       source: "ai",
     });
+    expect(
+      splitReasonSource(`Because.\n\n${SOURCE_SEARCH} law.cornell.edu`),
+    ).toEqual({
+      reason: "Because.",
+      quote: null,
+      source: "search",
+      searchDomain: "law.cornell.edu",
+    });
+    // The source of a search goes before a quote, and needs no description
+    expect(
+      getReasonWithSource("Because.", "a quote", undefined, "justia.com"),
+    ).toBe(`Because.\n\n${SOURCE_SEARCH} justia.com`);
+    expect(getReasonWithSource("", null, "Text.", "justia.com")).toBe("");
   });
 
   test("should leave a reason without a footnote as it is", () => {

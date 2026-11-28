@@ -10,7 +10,9 @@ import {
   convertDecisionTreeToAIRows,
   getReasonWithSource,
 } from "./ai-convert";
+import type { ChatSearchSource } from "./chat-search";
 import { PROBABILITY_SUM_TOLERANCE } from "./expectedValue";
+import { isCitable } from "./legal-sources";
 import { collectSubtreeNodeIds, getNodeToIncomingEdgeMap } from "./maps";
 import { DecisionTree } from "./tree";
 import { addChildNodeHelper, deleteSubTreeHelper } from "./tree-edits";
@@ -66,16 +68,9 @@ import { addChildNodeHelper, deleteSubTreeHelper } from "./tree-edits";
  * change to every occurrence of an issue. A change like that may take more
  * than a sentence to show, see `describe`, perhaps a SubTreeView.
  *
- * TODO: tools that search, which need grounding with Google Search or a
- * source of case law, in this order of how checkable they are: check the
- * authorities that the case description cites, look up the legal test of an
- * issue, look up amounts set by statute like caps and interest, and find
- * precedents. A citation must be checked to exist, and a quote of an opinion
- * checked against its text with isQuoteInText. Search with the legal issue
- * and the jurisdiction, not with the parties or the facts, because the case
- * may be confidential. A request with googleSearch next to function
- * declarations was accepted by gemini-3.8-flash, but whether it then searches
- * was not checked.
+ * NOTE: the search of the chat is not one of these tools, because it does
+ * not edit a tree, see chat-search.ts. Two of these tools take the source of
+ * a search for a reason, see validateSource.
  *
  * TODO: a tool that needs no AI to answer: which probabilities move the
  * expected value the most, worked out by the app, so that the AI can say
@@ -89,6 +84,11 @@ export interface ChatToolContext {
   aliases: AIRowAliases;
   /** The case description, for checking a quote of the AI against */
   sourceText?: string;
+  /**
+   * The pages that the searches of the chat found, by their short id, for a
+   * reason that rests on one, see chat-search.ts
+   */
+  sources?: Record<string, Pick<ChatSearchSource, "domain" | "kind">>;
 }
 
 /** The operations of the tree store that making an edit of a tool takes */
@@ -180,6 +180,39 @@ const quoteSchema = z
   .describe(
     "The few words of the case description that the reason rests on, copied exactly. Leave out when the point of the reason is not in the case description.",
   );
+
+const sourceIdSchema = z
+  .string()
+  .optional()
+  .describe(
+    "The id of a source of a search, like s1, when the point of the reason was found on that source. Only a source that is citable. Not together with a quote.",
+  );
+
+/**
+ * Returns what is wrong with the source of a search that a reason is said to
+ * rest on, or null.
+ *
+ * NOTE: only a site on the list in legal-sources.ts, which is checked here
+ * and not left to the prompt, because what a search returns is mostly not
+ * law: blogs of law firms, and sites that sell tutoring.
+ */
+function validateSource(
+  lookup: Lookup,
+  sourceId: string | undefined,
+  quote: string | undefined,
+): string | null {
+  if (sourceId === undefined) {
+    return null;
+  }
+  const source = lookup.context.sources?.[sourceId];
+  if (!source) {
+    return `There is no source ${sourceId} of a search in this chat.`;
+  }
+  if (!isCitable(source.kind)) {
+    return `Source ${sourceId} (${source.domain}) is not a court, a legislature, a government or an established legal reference, so a reason in the tree cannot rest on it. Give the reason without a sourceId, or tell the user.`;
+  }
+  return quote ? "Give a quote or a sourceId, not both." : null;
+}
 
 /** A tree with what tools look up in it */
 class Lookup {
@@ -309,6 +342,12 @@ function applyBranches(
   });
 }
 
+/** Returns the site that a reason rests on, like " Source: justia.com." */
+function describeSource(lookup: Lookup, sourceId: string | undefined): string {
+  const source = lookup.context.sources?.[sourceId ?? ""];
+  return source ? ` Source: ${source.domain}.` : "";
+}
+
 function truncate(text: string, length = 140): string {
   return text.length > length ? `${text.slice(0, length - 1).trim()}…` : text;
 }
@@ -362,31 +401,32 @@ export const chatTools = [
       id: idSchema,
       label: z.string().min(1).max(100).optional(),
       quote: quoteSchema,
+      sourceId: sourceIdSchema,
       reason: z.string().min(1).optional(),
       askFirst: askFirstSchema,
     }),
-    validate: (lookup, { id, label, reason, quote }) =>
+    validate: (lookup, { id, label, reason, quote, sourceId }) =>
       !lookup.nodeId(id)
         ? missing(id)
         : !lookup.edgeId(id)
           ? `Row ${id} is the root, which has no branch leading to it.`
           : label === undefined && reason === undefined
             ? "Give a label or a reason."
-            : quote && reason === undefined
-              ? "Give the reason that the quote is for."
-              : null,
-    describe: (lookup, { id, label, reason }) => {
+            : (quote || sourceId) && reason === undefined
+              ? "Give the reason that the quote or the sourceId is for."
+              : validateSource(lookup, sourceId, quote),
+    describe: (lookup, { id, label, reason, sourceId }) => {
       const row = lookup.rows[id]!;
       return [
         label !== undefined && `Label "${row.label}" → "${label}".`,
         reason !== undefined &&
-          `Reason for "${label ?? row.label}": ${truncate(reason)}`,
+          `Reason for "${label ?? row.label}": ${truncate(reason)}${describeSource(lookup, sourceId)}`,
       ]
         .filter(Boolean)
         .join(" ");
     },
     target: (lookup, { id }) => ({ edgeId: lookup.edgeId(id)! }),
-    apply: (tree, lookup, { id, label, reason, quote }) => {
+    apply: (tree, lookup, { id, label, reason, quote, sourceId }) => {
       const edge = tree.edges[lookup.edgeId(id)!]!;
       edge.data = {
         ...edge.data,
@@ -398,6 +438,7 @@ export const chatTools = [
             reason,
             quote,
             lookup.context.sourceText,
+            lookup.context.sources?.[sourceId ?? ""]?.domain,
           ),
         }),
       };
@@ -488,14 +529,16 @@ export const chatTools = [
       ),
       label: z.string().min(1).max(100),
       quote: quoteSchema,
+      sourceId: sourceIdSchema,
       reason: z.string().min(1),
       probability: probabilitySchema,
       value: z.number(),
       branches: branchesSchema("every other branch of the node"),
       askFirst: askFirstSchema,
     }),
-    validate: (lookup, { parentId, probability, branches }) =>
-      !lookup.nodeId(parentId)
+    validate: (lookup, { parentId, probability, branches, quote, sourceId }) =>
+      validateSource(lookup, sourceId, quote) ??
+      (!lookup.nodeId(parentId)
         ? missing(parentId)
         : // NOTE: a branch on a terminal node would make it an issue with one
           // outcome, which is a restructuring, see the TODO above
@@ -503,10 +546,13 @@ export const chatTools = [
           ? `Row ${parentId} is a terminal node. A branch can only be added to a node that has branches.`
           : validateBranches(lookup, parentId, branches, {
               extra: probability,
-            }),
-    describe: (lookup, { parentId, label, probability, value, branches }) => {
+            })),
+    describe: (
+      lookup,
+      { parentId, label, probability, value, branches, sourceId },
+    ) => {
       const others = describeBranches(lookup, branches);
-      return `New branch "${label}" of ${lookup.name(parentId)}, at ${formatPercent(probability)}, with a value of ${lookup.money(value)}.${others ? ` Others: ${others}.` : ""}`;
+      return `New branch "${label}" of ${lookup.name(parentId)}, at ${formatPercent(probability)}, with a value of ${lookup.money(value)}.${others ? ` Others: ${others}.` : ""}${describeSource(lookup, sourceId)}`;
     },
     target: (lookup, { parentId }) => ({ nodeId: lookup.nodeId(parentId)! }),
     apply: (tree, lookup, args) => {
@@ -535,6 +581,7 @@ export const chatTools = [
           args.reason,
           args.quote,
           lookup.context.sourceText,
+          lookup.context.sources?.[args.sourceId ?? ""]?.domain,
         ),
       };
       applyBranches(tree, lookup, args.branches);

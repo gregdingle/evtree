@@ -7,6 +7,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
 import type { AIRowAliases, AISource } from "@/lib/ai-convert";
+import type { ChatSearch } from "@/lib/chat-search";
 import type { ChatToolCall, ChatToolTarget } from "@/lib/chat-tools";
 
 /**
@@ -56,6 +57,8 @@ export interface ChatMessage {
   role: "user" | "ai";
   text: string;
   edits?: ChatEdit[];
+  /** The searches that the AI made for the reply, see chat-search.ts */
+  searches?: ChatSearch[];
   /** For a reply that failed, in place of its text */
   error?: string;
   createdAt: string;

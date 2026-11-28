@@ -25,6 +25,16 @@ import {
   splitReasonSource,
 } from "./ai-convert";
 import {
+  ChatSearch,
+  MAX_SEARCHES,
+  SEARCH_TOOL_NAME,
+  SearchModel,
+  getChatSearchText,
+  parseChatSearchArgs,
+  runChatSearch,
+  startChatSearch,
+} from "./chat-search";
+import {
   ChatToolContext,
   applyChatToolCall,
   checkChatToolCall,
@@ -51,12 +61,20 @@ import { DecisionTree } from "./tree";
  * an instruction in a case description that the other party wrote, or in a
  * tree from a share link. What bounds that: an edit is only to the current
  * tree, through tools that each check it; every edit is a line in the chat
- * and one undo step; a tool that deletes always asks; no tool reads a URL or
- * sends anything out; and a reply is shown as plain text.
+ * and one undo step; a tool that deletes always asks; and a reply is shown
+ * as plain text. The one tool that sends anything out is the search, which
+ * sends a question that the AI wrote to a search of the web. The question is
+ * shown in the chat, and the search is a request apart, that is given
+ * nothing else, see chat-search.ts.
  *
  * TODO: a setting to ask before every edit, as code editors have, for a user
  * who wants to approve each one. It would be one more reason to wait in
  * runToolCall.
+ *
+ * TODO: a setting for the AI to search without being asked, for each rule of
+ * law that it would otherwise state from memory. For now the prompt has it
+ * search when the user asks, see chat-prompt.md, because a search takes
+ * seconds and is billed apart.
  *
  * NOTE: this has no import of Firebase, so that it can be tested without it.
  * The model comes from getChatModel in ai.ts.
@@ -190,6 +208,11 @@ function getEditsText(edits: ChatEdit[] | undefined): string {
     .join("\n");
 }
 
+/** Returns the searches of a reply and what they found, in words for the AI */
+function getSearchesText(searches: ChatSearch[] | undefined): string {
+  return (searches ?? []).map(getChatSearchText).join("\n");
+}
+
 function tag(name: string, text: string): string {
   return text ? `<${name}>\n${text}\n</${name}>\n\n` : "";
 }
@@ -237,6 +260,9 @@ export function buildChatContents(
     }
     const isLatest = index === history.length - 1;
     const context =
+      // NOTE: like the edits, with the message that follows, so that the AI
+      // still has the ids of the sources that a search found
+      tag("earlier_searches", getSearchesText(history[index - 1]?.searches)) +
       tag("earlier_edits", getEditsText(history[index - 1]?.edits)) +
       (isLatest
         ? // NOTE: with the description of the tree, which for a generated
@@ -275,8 +301,14 @@ function getCurrentTree(treeId: string): DecisionTree | undefined {
 /**
  * Returns the tree and what a tool needs to work on it, with short ids for
  * any nodes that are new since the last time.
+ *
+ * @param searches - The searches of the turn that is under way, which are
+ * not in the chat yet
  */
-function getToolContext(treeId: string): ChatToolContext | undefined {
+function getToolContext(
+  treeId: string,
+  searches: ChatSearch[] = [],
+): ChatToolContext | undefined {
   const tree = getCurrentTree(treeId);
   if (!tree) {
     return undefined;
@@ -286,7 +318,12 @@ function getToolContext(treeId: string): ChatToolContext | undefined {
   if (Object.keys(aliases).length !== Object.keys(chat?.aliases ?? {}).length) {
     useChatStore.getState().setAliases(treeId, aliases);
   }
-  return { tree, aliases, sourceText: chat?.source?.text };
+  const sources = Object.fromEntries(
+    [...(chat?.messages ?? []).flatMap((m) => m.searches ?? []), ...searches]
+      .flatMap((search) => search.sources)
+      .map((source) => [source.id, source]),
+  );
+  return { tree, aliases, sourceText: chat?.source?.text, sources };
 }
 
 /**
@@ -296,8 +333,9 @@ function getToolContext(treeId: string): ChatToolContext | undefined {
 function applyEdit(
   treeId: string,
   edit: Pick<ChatEdit, "call">,
+  searches?: ChatSearch[],
 ): { error?: string; note?: string } {
-  const context = getToolContext(treeId);
+  const context = getToolContext(treeId, searches);
   if (!context) {
     return { error: "The tree is not open." };
   }
@@ -325,8 +363,9 @@ function applyEdit(
 function runToolCall(
   treeId: string,
   call: FunctionCall,
-): { edit?: ChatEdit; response: Record<string, string> } {
-  const context = getToolContext(treeId);
+  searches: ChatSearch[],
+): { edit?: ChatEdit; response: Record<string, unknown> } {
+  const context = getToolContext(treeId, searches);
   if (!context) {
     return { response: { error: "The tree is not open." } };
   }
@@ -352,7 +391,7 @@ function runToolCall(
       },
     };
   }
-  const { error, note } = applyEdit(treeId, edit);
+  const { error, note } = applyEdit(treeId, edit, searches);
   if (error !== undefined) {
     return { response: { error } };
   }
@@ -423,10 +462,14 @@ export interface SendChatMessageArgs {
   /** The words of the user */
   text: string;
   model: ChatModel;
+  /** The model that searches. Without it, the AI is told that it cannot. */
+  searchModel?: SearchModel;
   /** Called with the text of the reply so far, as it comes */
   onText?: (text: string) => void;
   /** Called with each edit of the reply, as it is made or held */
   onEdit?: (edit: ChatEdit) => void;
+  /** Called with each search of the reply, when it starts and when it ends */
+  onSearch?: (search: ChatSearch) => void;
   /** Stops the turn. Edits that were made already stay. */
   signal?: AbortSignal;
 }
@@ -442,8 +485,10 @@ export async function sendChatMessage({
   treeId,
   text,
   model,
+  searchModel,
   onText,
   onEdit,
+  onSearch,
   signal,
 }: SendChatMessageArgs): Promise<void> {
   const { addMessage } = useChatStore.getState();
@@ -460,6 +505,48 @@ export async function sendChatMessage({
 
   const texts: string[] = [];
   const edits: ChatEdit[] = [];
+  const searches: ChatSearch[] = [];
+  // NOTE: the sources of a chat are numbered on, so that an id names one
+  // source for the life of the chat
+  let nextSourceNumber =
+    1 +
+    Math.max(
+      0,
+      ...useChatStore
+        .getState()
+        .chats[treeId]!.messages.flatMap((message) => message.searches ?? [])
+        .flatMap((search) => search.sources)
+        .map((source) => Number(source.id.slice(1))),
+    );
+  const runSearch = async (
+    call: FunctionCall,
+  ): Promise<Record<string, unknown>> => {
+    const parsed = parseChatSearchArgs(call.args);
+    if (parsed.error !== undefined) {
+      return { error: parsed.error };
+    }
+    if (!searchModel) {
+      return { error: "The search is not available. Tell the user." };
+    }
+    // NOTE: a search takes seconds and is billed apart from the chat
+    if (searches.length >= MAX_SEARCHES) {
+      return {
+        error: `Only ${MAX_SEARCHES} searches for a message of the user. Answer from what was found, and say what is still open.`,
+      };
+    }
+    const started = startChatSearch(parsed.args);
+    onSearch?.(started);
+    const { search, response } = await runChatSearch(
+      searchModel,
+      started,
+      nextSourceNumber,
+      signal,
+    );
+    nextSourceNumber += search.sources.length;
+    searches.push(search);
+    onSearch?.(search);
+    return response;
+  };
   let error: string | undefined;
   try {
     for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
@@ -498,17 +585,26 @@ export async function sendChatMessage({
       if (modelContent) {
         contents.push(modelContent);
       }
-      const responses: Part[] = calls.map((call) => {
-        const { edit, response } = runToolCall(treeId, call);
-        if (edit) {
-          edits.push(edit);
-          onEdit?.(edit);
+      const responses: Part[] = [];
+      // NOTE: one after the other, so that an edit of this round can rest on
+      // a search of this round
+      for (const call of calls) {
+        let response: Record<string, unknown>;
+        if (call.name === SEARCH_TOOL_NAME) {
+          response = await runSearch(call);
+        } else {
+          const result = runToolCall(treeId, call, searches);
+          response = result.response;
+          if (result.edit) {
+            edits.push(result.edit);
+            onEdit?.(result.edit);
+          }
         }
-        return {
+        responses.push({
           type: "functionResponse",
           functionResponse: { name: call.name, id: call.id, response },
-        };
-      });
+        });
+      }
       contents.push({ role: "user", parts: responses });
     }
   } catch (caught) {
@@ -522,6 +618,7 @@ export async function sendChatMessage({
     role: "ai",
     text: texts.join("\n\n"),
     ...(edits.length > 0 && { edits }),
+    ...(searches.length > 0 && { searches }),
     ...(error !== undefined && { error }),
   });
 }

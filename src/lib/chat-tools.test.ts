@@ -6,6 +6,7 @@ import { useTreeStore } from "@/hooks/use-tree-store";
 import {
   SOURCE_AI,
   SOURCE_DESCRIPTION,
+  SOURCE_SEARCH,
   convertAIStructureToDecisionTree,
   convertDecisionTreeToAIRows,
   getAIRowAliases,
@@ -60,7 +61,12 @@ const nodes: AINode[] = [
 let aliases: Record<string, string>;
 
 const getTree = () => selectCurrentTree(useTreeStore.getState())!;
-const getContext = () => ({ tree: getTree(), aliases, sourceText });
+// The pages that a search of the chat found, see chat-search.ts
+const sources = {
+  s1: { domain: "law.cornell.edu", kind: "reference" as const },
+  s2: { domain: "blog.example.com", kind: "other" as const },
+};
+const getContext = () => ({ tree: getTree(), aliases, sourceText, sources });
 const getRows = () => convertDecisionTreeToAIRows(getTree(), aliases);
 const getRow = (id: string) => getRows().find((row) => row.id === id);
 const undoable = () => selectUndoableState(useTreeStore.getState());
@@ -404,6 +410,71 @@ describe("applyChatToolCall", () => {
       `The release is broad.\n\n${SOURCE_DESCRIPTION} "releases all claims"`,
     );
     expect(edge.data!.probabilityExpr).toBe("0.25");
+  });
+
+  test("should name the source of a search under a reason that rests on it", () => {
+    const call = {
+      name: "set_branch_text",
+      args: {
+        id: "n5",
+        reason: "Under rule 56, a genuine dispute defeats the motion.",
+        sourceId: "s1",
+        askFirst: false,
+      },
+    };
+    expect(check(call)).toMatchObject({
+      sentence:
+        'Reason for "Barred": Under rule 56, a genuine dispute defeats the motion. Source: law.cornell.edu.',
+    });
+    applyAndUndo(call);
+    expect(
+      values(getTree().edges).find((e) => e.data?.label === "Barred")!.data!
+        .description,
+    ).toBe(
+      `Under rule 56, a genuine dispute defeats the motion.\n\n${SOURCE_SEARCH} law.cornell.edu`,
+    );
+    // The AI gets the reason back without the footnote, and with the site
+    expect(getRow("n5")).toMatchObject({
+      reason: "Under rule 56, a genuine dispute defeats the motion.",
+      quote: null,
+      searchSource: "law.cornell.edu",
+    });
+  });
+
+  test.each([
+    ["a source that no search found", { sourceId: "s9" }, "no source s9"],
+    [
+      "a source that is not a source of law",
+      { sourceId: "s2" },
+      "blog.example.com",
+    ],
+    [
+      "a source together with a quote",
+      { sourceId: "s1", quote: "releases all claims" },
+      "not both",
+    ],
+  ])("should refuse a reason with %s", (_, fields, message) => {
+    const before = undoable();
+    for (const call of [
+      {
+        name: "set_branch_text",
+        args: { id: "n5", reason: "A reason.", askFirst: false, ...fields },
+      },
+      { ...addBranch, args: { ...(addBranch.args as object), ...fields } },
+    ]) {
+      expect(check(call).error).toContain(message);
+      expect(apply(call).error).toContain(message);
+    }
+    expect(undoable()).toEqual(before);
+  });
+
+  test("should refuse a source without a reason", () => {
+    expect(
+      check({
+        name: "set_branch_text",
+        args: { id: "n5", label: "Barred", sourceId: "s1", askFirst: false },
+      }).error,
+    ).toContain("Give the reason");
   });
 
   test("should mark a reason without a quote as suggested by AI", () => {

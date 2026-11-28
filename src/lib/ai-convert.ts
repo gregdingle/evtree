@@ -94,6 +94,10 @@ export const SOURCE_DESCRIPTION = "From the case description:";
 export const SOURCE_NOT_FOUND =
   "Quoted by AI, but not found in the case description:";
 export const SOURCE_AI = "Suggested by AI, not in the case description.";
+// NOTE: followed by the domain of the site, like "law.cornell.edu". "Not
+// checked", because only the site is known, by the list in legal-sources.ts,
+// and not that the page says what the reason says.
+export const SOURCE_SEARCH = "Found by AI in a web search, not checked:";
 
 /**
  * Returns the words of a text for finding a quote in, with a space before
@@ -207,13 +211,20 @@ export function isQuoteInText(quote: string, text: string): boolean {
  * words. If that is wanted, keep the source of a reason as a field of the
  * branch, see AppEdge. The chat with AI has to take the footnote back off to
  * give the AI the reason that it wrote, see splitReasonSource.
+ *
+ * @param searchDomain - The site that the point comes from, for a reason of
+ * the chat with AI that rests on a search, see chat-search.ts
  */
 export function getReasonWithSource(
   reason: string | null | undefined,
   quote: string | null | undefined,
   sourceText: string | undefined,
+  searchDomain?: string,
 ): string {
   reason = reason || "";
+  if (reason && searchDomain) {
+    return `${reason}\n\n${SOURCE_SEARCH} ${searchDomain}`;
+  }
   // NOTE: without the text that the AI was given, there is nothing to check
   // a quote against
   if (!reason || sourceText === undefined) {
@@ -231,10 +242,10 @@ export function getReasonWithSource(
 /**
  * Where the point of a reason comes from, by its footnote, see
  * getReasonWithSource: the case description, a quote that was not found in
- * it, or the AI. Null for a reason without a footnote, like one that a user
- * wrote.
+ * it, the AI, or a search of the web by the AI. Null for a reason without a
+ * footnote, like one that a user wrote.
  */
-export type ReasonSource = "description" | "notFound" | "ai" | null;
+export type ReasonSource = "description" | "notFound" | "ai" | "search" | null;
 
 /**
  * Takes the footnote of getReasonWithSource back off the description of a
@@ -248,6 +259,8 @@ export function splitReasonSource(description: string | undefined): {
   reason: string;
   quote: string | null;
   source: ReasonSource;
+  /** The site that a search found the point on */
+  searchDomain?: string;
 } {
   const text = description ?? "";
   const index = text.lastIndexOf("\n\n");
@@ -255,6 +268,14 @@ export function splitReasonSource(description: string | undefined): {
   const reason = text.slice(0, Math.max(index, 0));
   if (footnote === SOURCE_AI) {
     return { reason, quote: null, source: "ai" };
+  }
+  if (footnote.startsWith(`${SOURCE_SEARCH} `)) {
+    return {
+      reason,
+      quote: null,
+      source: "search",
+      searchDomain: footnote.slice(SOURCE_SEARCH.length + 1),
+    };
   }
   for (const [prefix, source] of [
     [SOURCE_DESCRIPTION, "description"],
@@ -428,6 +449,11 @@ export type AIRow = Omit<AINode, "probability" | "value" | "cost"> & {
   probability: number | string | null;
   value: number | string | null;
   cost: number | string | null;
+  /**
+   * The site that the point of the reason was found on by a search of the
+   * chat with AI, in place of a quote
+   */
+  searchSource?: string;
 };
 
 /** The short id of a row for each node id of a tree, see getAIRowAliases */
@@ -518,12 +544,15 @@ export function convertDecisionTreeToAIRows(
     .map((nodeId) => {
       const node = tree.nodes[nodeId]!;
       const edge = tree.edges[incomingEdgeIds[nodeId] ?? ""];
-      const { reason, quote } = splitReasonSource(edge?.data?.description);
+      const { reason, quote, searchDomain } = splitReasonSource(
+        edge?.data?.description,
+      );
       return {
         id: aliases[nodeId]!,
         parentId: edge ? (aliases[edge.source] ?? null) : null,
         label: edge ? (edge.data?.label ?? "") : null,
         quote,
+        ...(searchDomain && { searchSource: searchDomain }),
         reason: edge ? reason : null,
         probability: edge ? getRowAmount(edge.data?.probabilityExpr) : null,
         // NOTE: the description of a node is the question that it decides. A

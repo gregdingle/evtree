@@ -7,7 +7,7 @@ import { values } from "es-toolkit/compat";
 
 import { ChatEdit, selectChat, useChatStore } from "@/hooks/use-chat-store";
 import { useTreeStore } from "@/hooks/use-tree-store";
-import { getChatModel } from "@/lib/ai";
+import { getChatModel, getSearchModel } from "@/lib/ai";
 import {
   ChatIntro,
   acceptChatEdit,
@@ -15,6 +15,7 @@ import {
   rejectChatEdit,
   sendChatMessage,
 } from "@/lib/ai-chat";
+import type { ChatSearch } from "@/lib/chat-search";
 import { firebaseApp } from "@/lib/firebase";
 import { selectCurrentTree } from "@/lib/selectors";
 
@@ -67,6 +68,8 @@ function getSuggestions(
   return [
     hasSelection && "Argue the other side.",
     hasSelection && "Make an issue consistent.",
+    // NOTE: the one suggestion that searches the web, see chat-search.ts
+    hasSelection && "Look up the legal test for this.",
     !hasSelection &&
       intro.suggested > 0 &&
       "Review the points suggested by AI.",
@@ -108,6 +111,7 @@ export function Chat() {
   const [pending, setPending] = useState<{
     text: string;
     edits: ChatEdit[];
+    searches: ChatSearch[];
   } | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -134,8 +138,10 @@ export function Chat() {
     }
     setFailure(null);
     let model;
+    let searchModel;
     try {
       model = getChatModel(chat);
+      searchModel = getSearchModel();
     } catch (error) {
       setFailure(error instanceof Error ? error.message : String(error));
       return;
@@ -143,16 +149,29 @@ export function Chat() {
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
     setInput("");
-    setPending({ text: "", edits: [] });
+    setPending({ text: "", edits: [], searches: [] });
     try {
       await sendChatMessage({
         treeId,
         text,
         model,
+        searchModel,
         signal: abortController.signal,
         onText: (text) => setPending((p) => p && { ...p, text }),
         onEdit: (edit) =>
           setPending((p) => p && { ...p, edits: [...p.edits, edit] }),
+        // NOTE: called when a search starts and again when it ends
+        onSearch: (search) =>
+          setPending(
+            (p) =>
+              p && {
+                ...p,
+                searches: [
+                  ...p.searches.filter((s) => s.id !== search.id),
+                  search,
+                ],
+              },
+          ),
       });
     } finally {
       setPending(null);
@@ -244,7 +263,9 @@ export function Chat() {
           />
         ))}
         {pending &&
-          (pending.text || pending.edits.length > 0 ? (
+          (pending.text ||
+          pending.edits.length > 0 ||
+          pending.searches.length > 0 ? (
             <ChatMessage message={{ role: "ai", ...pending }} />
           ) : (
             <p className="text-gray-500">Thinking…</p>

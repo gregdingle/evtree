@@ -14,15 +14,18 @@ import {
 import { ChatModel, buildChatSystemInstruction } from "./ai-chat";
 import { AITree, AITreeSchema, aiTreeJsonSchema } from "./ai-schemas";
 import chatPromptMarkdown from "./chat-prompt.md";
+import { SearchModel, chatSearchDeclaration } from "./chat-search";
 import { chatToolDeclarations } from "./chat-tools";
 import { firebaseApp } from "./firebase";
 import promptMarkdown from "./prompt.md";
+import searchPromptMarkdown from "./search-prompt.md";
 
 // NOTE: strip HTML comments, which are notes to developers and not to the AI
 const stripComments = (markdown: string) =>
   markdown.replace(/<!--[\s\S]*?-->\n*/g, "");
 const treePrompt = stripComments(promptMarkdown);
 const chatPrompt = stripComments(chatPromptMarkdown);
+const searchPrompt = stripComments(searchPromptMarkdown);
 
 // NOTE: gemini-4-hydrogen builds a much fuller tree than gemini-3.8-flash. On
 // the bathtub demo case, it was the first to cover every issue in the
@@ -99,7 +102,30 @@ export function getChatModel(
     CHAT_MODEL,
     // NOTE: the declarations are JSON schema from zod, which the AI takes,
     // where the type of the SDK asks for its own schema format
-    [{ functionDeclarations: chatToolDeclarations }] as unknown as Tool[],
+    [
+      {
+        functionDeclarations: [...chatToolDeclarations, chatSearchDeclaration],
+      },
+    ] as unknown as Tool[],
+  );
+}
+
+/**
+ * Returns the model of the AI that searches the web for the chat, see
+ * runChatSearch in chat-search.ts.
+ *
+ * NOTE: with Google Search as its only tool, and a prompt of its own. It is
+ * given a question and nothing of the tree or the case.
+ */
+export function getSearchModel(): SearchModel {
+  return getAIModel(
+    {
+      maxOutputTokens: 4096,
+      thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+    },
+    searchPrompt,
+    CHAT_MODEL,
+    [{ googleSearch: {} }],
   );
 }
 
