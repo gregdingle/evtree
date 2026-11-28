@@ -7,7 +7,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/vanilla/shallow";
 
 import type { AIRowAliases, AISource } from "@/lib/ai-convert";
-import type { ChatToolCall } from "@/lib/chat-tools";
+import type { ChatToolCall, ChatToolTarget } from "@/lib/chat-tools";
 
 /**
  * The store of the chats with AI: for each tree, the conversation, and what
@@ -47,6 +47,8 @@ export interface ChatEdit {
   status: "done" | "waiting" | "accepted" | "rejected" | "failed";
   /** What came of the edit, like the expected value before and after */
   note?: string;
+  /** What a click on the edit selects on the canvas */
+  target?: ChatToolTarget;
 }
 
 export interface ChatMessage {
@@ -104,6 +106,8 @@ export interface ChatStoreState {
    */
   setSource: (treeId: string, source: AISource | undefined) => boolean;
   setIssues: (treeId: string, issues: string[]) => void;
+  /** Removes the latest messages of a tree, from a message on */
+  deleteMessagesFrom: (treeId: string, messageId: string) => void;
   /** Removes the conversation of a tree, and keeps its case description */
   clearMessages: (treeId: string) => void;
   /** Removes everything that is kept for a tree */
@@ -157,6 +161,15 @@ export const useChatStore = createWithEqualityFn<ChatStoreState>()(
       setIssues: (treeId, issues) =>
         set((state) => {
           (state.chats[treeId] ??= emptyChat()).issues = issues;
+        }),
+
+      deleteMessagesFrom: (treeId, messageId) =>
+        set((state) => {
+          const messages = state.chats[treeId]?.messages;
+          const index = messages?.findIndex((m) => m.id === messageId) ?? -1;
+          if (index !== -1) {
+            messages!.splice(index);
+          }
         }),
 
       clearMessages: (treeId) =>

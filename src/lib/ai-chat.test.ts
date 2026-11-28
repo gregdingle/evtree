@@ -10,6 +10,7 @@ import {
   acceptChatEdit,
   buildChatContents,
   buildChatSystemInstruction,
+  getChatIntro,
   rejectChatEdit,
   sendChatMessage,
 } from "./ai-chat";
@@ -181,6 +182,45 @@ describe("buildChatSystemInstruction", () => {
   });
 });
 
+describe("getChatIntro", () => {
+  test("should count where the reasons of a tree come from", () => {
+    const source = { text: "The motion is likely to be denied." };
+    const tree = convertAIStructureToDecisionTree(
+      {
+        currency: null,
+        summary: "",
+        issues: [],
+        nodes: nodes.map((node) => ({
+          ...node,
+          value: node.value === null ? null : node.value / 4000000,
+          quote:
+            node.id === "n2"
+              ? "likely to be denied"
+              : node.id === "n3"
+                ? "a high award"
+                : null,
+        })),
+      },
+      "Tree",
+      source,
+    );
+    expect(getChatIntro(tree)).toEqual({
+      nodes: 5,
+      quoted: 1,
+      suggested: 2,
+      notFound: 1,
+      hasPlaceholderAmounts: true,
+    });
+    expect(getChatIntro(getTree())).toEqual({
+      nodes: 5,
+      quoted: 0,
+      suggested: 0,
+      notFound: 0,
+      hasPlaceholderAmounts: false,
+    });
+  });
+});
+
 describe("buildChatContents", () => {
   const edit = (status: ChatEdit["status"]): ChatEdit => ({
     id: status,
@@ -201,7 +241,9 @@ describe("buildChatContents", () => {
     ]);
     expect(getText(contents[0])).toBe("First");
     expect(getText(contents[1])).toBe("First reply.");
-    expect(getText(contents[2])).toMatch(/^<tree>\n\[\{"id":"n1"/);
+    expect(getText(contents[2])).toMatch(
+      /^<tree_description>\nTree\n\nSummary\.\n<\/tree_description>\n\n<tree>\n\[\{"id":"n1"/,
+    );
     expect(getText(contents[2])).toMatch(/<\/tree>\n\nSecond$/);
     // The ids of the nodes themselves are not sent
     expect(getText(contents[2])).not.toContain(Object.keys(getTree().nodes)[0]);
@@ -381,7 +423,6 @@ describe("sendChatMessage", () => {
             args: {
               parentId: "n2",
               label: "Mid",
-              quote: null,
               reason: "A compromise verdict.",
               probability: 0.2,
               value: 2000000,

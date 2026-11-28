@@ -13,8 +13,10 @@ import { formatValue } from "@/utils/format";
 import {
   AIRow,
   AIRowAliases,
+  ReasonSource,
   convertDecisionTreeToAIRows,
   getAIRowAliases,
+  splitReasonSource,
 } from "./ai-convert";
 import {
   ChatToolContext,
@@ -102,7 +104,7 @@ export function buildChatSystemInstruction(
   parts.push(
     chat?.source
       ? `# The case description\n\n<case_description>\n${chat.source.text.trim()}\n</case_description>`
-      : "# The case description\n\nThere is no case description for this tree. Leave every `quote` null.",
+      : "# The case description\n\nThere is no case description for this tree. Give no `quote`.",
   );
   return parts.join("\n\n");
 }
@@ -224,7 +226,15 @@ export function buildChatContents(
     const context =
       tag("earlier_edits", getEditsText(history[index - 1]?.edits)) +
       (isLatest
-        ? tag("tree", JSON.stringify(rows)) +
+        ? // NOTE: with the description of the tree, which for a generated
+          // tree is a summary of the case, and for others may be all that
+          // says what the case is. Without it, the AI made up facts to argue
+          // from, like "sweep logs" for a slip and fall.
+          tag(
+            "tree_description",
+            `${tree.name}\n\n${tree.description ?? ""}`.trim(),
+          ) +
+          tag("tree", JSON.stringify(rows)) +
           tag("selection", getSelectionText(tree, rows, aliases))
         : "");
     return {
@@ -318,6 +328,7 @@ function runToolCall(
     call: toolCall,
     sentence: check.sentence,
     status: "waiting",
+    target: check.target,
   };
   if (check.askFirst) {
     return {
@@ -336,6 +347,61 @@ function runToolCall(
     edit: { ...edit, status: "done", note },
     response: { result: ["Made.", note].filter(Boolean).join(" ") },
   };
+}
+
+/** What the chat says of a tree before the user has asked anything */
+export interface ChatIntro {
+  /** The number of nodes of the tree */
+  nodes: number;
+  /** The reasons with a quote that is in the case description */
+  quoted: number;
+  /** The reasons that the AI supplied, without a quote */
+  suggested: number;
+  /** The reasons with a quote that is not in the case description */
+  notFound: number;
+  /**
+   * Whether the amounts stand in for an amount that the case description
+   * does not give: 1 for the full claim and fractions of it, see prompt.md
+   */
+  hasPlaceholderAmounts: boolean;
+}
+
+/**
+ * Returns what the chat says of a tree before the user has asked anything:
+ * how many of its reasons came from the case description and how many from
+ * the AI, by their footnotes, see getReasonWithSource.
+ *
+ * NOTE: this is worked out by the app, and not asked of the AI, so that it
+ * costs nothing, is right, and sends nothing before the user sends a message.
+ */
+export function getChatIntro(tree: DecisionTree): ChatIntro {
+  const sources = Object.values(tree.edges).map(
+    (edge) => splitReasonSource(edge.data?.description).source,
+  );
+  const count = (source: ReasonSource) =>
+    sources.filter((s) => s === source).length;
+  const rows = convertDecisionTreeToAIRows(tree, getAIRowAliases(tree));
+  const amounts = rows.flatMap((row) =>
+    typeof row.value === "number" ? Math.abs(row.value) : [],
+  );
+  return {
+    nodes: rows.length,
+    quoted: count("description"),
+    suggested: count("ai"),
+    notFound: count("notFound"),
+    hasPlaceholderAmounts: amounts.length > 0 && Math.max(...amounts) === 1,
+  };
+}
+
+/**
+ * Returns an error in words for the chat.
+ *
+ * NOTE: only the start of it. An error of the AI service can be the whole
+ * response of the server, which is in the console.
+ */
+function getErrorText(error: unknown): string {
+  const text = error instanceof Error ? error.message : String(error);
+  return text.length > 200 ? `${text.slice(0, 200).trim()}…` : text;
 }
 
 export interface SendChatMessageArgs {
@@ -425,7 +491,7 @@ export async function sendChatMessage({
     // NOTE: a stop by the user is not a failure
     if (!signal?.aborted) {
       console.error("[EVTree] AI chat failed", caught);
-      error = caught instanceof Error ? caught.message : String(caught);
+      error = getErrorText(caught);
     }
   }
   addMessage(treeId, {

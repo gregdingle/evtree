@@ -60,6 +60,16 @@ describe("the chat store", () => {
     });
   });
 
+  test("should remove the latest messages from one on", () => {
+    addMessage("tree", { role: "user", text: "First" });
+    const id = addMessage("tree", { role: "user", text: "Second" });
+    addMessage("tree", { role: "ai", text: "Reply" });
+    useChatStore.getState().deleteMessagesFrom("tree", id);
+    expect(getChat()!.messages.map((message) => message.text)).toEqual([
+      "First",
+    ]);
+  });
+
   test("should refuse a case description that is too long", () => {
     expect(setSource("tree", { text: "x".repeat(MAX_SOURCE_LENGTH + 1) })).toBe(
       false,

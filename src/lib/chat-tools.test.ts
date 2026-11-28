@@ -155,6 +155,9 @@ describe("the registry of tools", () => {
       expect(parameters).toMatchObject({ type: "object" });
       expect(parameters["required"]).toContain("askFirst");
       expect(parameters).not.toHaveProperty("$schema");
+      // NOTE: the AI refuses a parameter that can be null, which zod writes
+      // as a list of types or as anyOf
+      expect(JSON.stringify(parameters)).not.toMatch(/"type":\[|anyOf|null/);
     });
   });
 });

@@ -23,7 +23,9 @@ import {
 import { CurrencyCode } from "./currency";
 import { RoundingCode } from "./rounding";
 
-export function selectCurrentTree(state: TreeStoreState): DecisionTree | undefined {
+export function selectCurrentTree(
+  state: TreeStoreState,
+): DecisionTree | undefined {
   const { trees, currentTreeId } = state;
   if (!currentTreeId) {
     // NOTE: this should never happen
@@ -109,7 +111,9 @@ export const computeNetExpectedValues = memoizeWeak(
  *
  * QUESTION: rename computeNodeValues to computeExpectedValues or computeNetExpectedValues?
  */
-export function selectNetExpectedValues(state: TreeStoreState): NetExpectedValues {
+export function selectNetExpectedValues(
+  state: TreeStoreState,
+): NetExpectedValues {
   const { currentTreeId } = state;
   if (!currentTreeId) {
     return {};

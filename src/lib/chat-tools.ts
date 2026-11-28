@@ -157,11 +157,14 @@ const branchesSchema = (which: string) =>
       `The new probability of ${which}, each named by the id of the row that the branch leads to. Together they must sum to 1.`,
     );
 
+// NOTE: optional and not nullable, where a quote of a generated tree is
+// nullable, see AINodeSchema. The AI refuses the declaration of a tool with
+// a parameter that can be null, which zod writes as a list of types.
 const quoteSchema = z
   .string()
-  .nullable()
+  .optional()
   .describe(
-    "The few words of the case description that the reason rests on, copied exactly. Null when the point of the reason is not in the case description.",
+    "The few words of the case description that the reason rests on, copied exactly. Leave out when the point of the reason is not in the case description.",
   );
 
 /** A tree with what tools look up in it */
@@ -345,7 +348,7 @@ export const chatTools = [
     args: z.object({
       id: idSchema,
       label: z.string().min(1).max(100).optional(),
-      quote: quoteSchema.optional(),
+      quote: quoteSchema,
       reason: z.string().min(1).optional(),
       askFirst: askFirstSchema,
     }),
@@ -564,8 +567,8 @@ export const chatTools = [
  * The tools as function declarations for the AI.
  *
  * NOTE: the parameters are the JSON schema that zod writes, which
- * gemini-3.8-flash took as it is. "$schema" is left out as for the tree, see
- * aiTreeJsonSchema.
+ * gemini-3.8-flash takes, as long as no parameter can be null, see
+ * quoteSchema. "$schema" is left out as for the tree, see aiTreeJsonSchema.
  */
 export const chatToolDeclarations = chatTools.map((tool) => ({
   name: tool.name,
