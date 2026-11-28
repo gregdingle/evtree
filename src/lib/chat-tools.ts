@@ -13,25 +13,27 @@ import {
 import { PROBABILITY_SUM_TOLERANCE } from "./expectedValue";
 import { collectSubtreeNodeIds, getNodeToIncomingEdgeMap } from "./maps";
 import { DecisionTree } from "./tree";
+import { addChildNodeHelper, deleteSubTreeHelper } from "./tree-edits";
 
 /**
  * The tools of the chat with AI: the edits to a tree that the AI can make.
  *
- * A tool is a documented wrapper over operations of the tree store. It
- * changes a tree only by calling them, the same ones that the app calls when
- * a user edits by hand. So an edit by the AI is a hand edit: the same rules,
- * the same undo, the same saving. There is no second way into a tree.
+ * A tool makes its edit as one update of the tree store, on a draft of the
+ * tree, and so as one undo step, see editCurrentTree. Where an edit is more
+ * than setting fields, like adding a branch or deleting a subtree, it is made
+ * by the same function as the operation of the tree store that the app calls
+ * when a user does it by hand, see tree-edits.ts.
  *
- * Every operation of the tree store may be given to the AI, but only as a
- * tool here, added when a use case calls for it. To add one, add an entry to
- * `chatTools` with the use case that justifies it and the operations that it
- * calls, and a test that undo takes its edit back exactly, see
- * chat-tools.test.ts. One call of a tool is one undo step, because it runs
- * inside of `batch` of the tree store.
+ * Whatever the app can do to a tree, the AI may be given, and the other way
+ * around: the two are best kept in step, so that a user can do by hand what
+ * the chat does, and correct it. That is guidance, not a rule. Each tool
+ * names the operations that a user makes the same edit with, and is added
+ * when a use case calls for it. To add one, add an entry to `chatTools`, and
+ * a test that undo takes its edit back exactly, see chat-tools.test.ts.
  *
  * The tools so far, and the use cases that they are for:
  *
- * | Tool              | Use case                                              | Operations                                        |
+ * | Tool              | Use case                                              | By hand                                           |
  * | ----------------- | ----------------------------------------------------- | ------------------------------------------------- |
  * | set_probabilities | Argue the other side, correct with a fact that the    | updateEdgeData                                    |
  * |                   | user knows, make an issue the same on every path      |                                                   |
@@ -42,7 +44,8 @@ import { DecisionTree } from "./tree";
  * |                   |                                                       | arrangeSubtree                                    |
  * | delete_branch     | Take back or correct an outcome                       | deleteSubTree, updateEdgeData                     |
  *
- * Operations that are not given to the AI yet, and what would justify each:
+ * Operations of the tree store that have no tool yet, and what would justify
+ * one:
  *
  * | Operation                        | Use case                                                  |
  * | -------------------------------- | --------------------------------------------------------- |
@@ -88,15 +91,10 @@ export interface ChatToolContext {
   sourceText?: string;
 }
 
-/** The operations of the tree store that tools call */
+/** The operations of the tree store that making an edit of a tool takes */
 export type ChatToolStore = Pick<
   TreeStoreState,
-  | "batch"
-  | "updateEdgeData"
-  | "updateNodeData"
-  | "createNodeAtFrom"
-  | "arrangeSubtree"
-  | "deleteSubTree"
+  "editCurrentTree" | "arrangeSubtree"
 >;
 
 /** What a line about an edit selects on the canvas when it is clicked */
@@ -108,8 +106,8 @@ interface ChatToolDefinition<Schema extends z.ZodObject> {
   description: string;
   /** The use case that justifies giving the tool to the AI */
   useCase: string;
-  /** The operations of the tree store that the tool calls */
-  operations: (keyof ChatToolStore)[];
+  /** The operations of the tree store that a user makes the same edit with */
+  operations: (keyof TreeStoreState)[];
   /**
    * For a tool that must wait for the user to accept, whatever the AI says.
    *
@@ -131,7 +129,23 @@ interface ChatToolDefinition<Schema extends z.ZodObject> {
    */
   describe: (lookup: Lookup, args: z.infer<Schema>) => string;
   target: (lookup: Lookup, args: z.infer<Schema>) => ChatToolTarget;
-  apply: (store: ChatToolStore, lookup: Lookup, args: z.infer<Schema>) => void;
+  /**
+   * Makes the edit, on a draft of the tree.
+   *
+   * NOTE: `lookup` is of the tree from before the edit, for what the edit
+   * was checked against. Change only the draft.
+   */
+  apply: (tree: DecisionTree, lookup: Lookup, args: z.infer<Schema>) => void;
+  /**
+   * Returns the node whose subtree to arrange after the edit, for an edit
+   * that adds a node.
+   *
+   * NOTE: the arrange is an update of its own, and a second undo step, as it
+   * is for the app's own Add Branch. It has to come after the new node is on
+   * the canvas and measured, see the HACK in handleAddBranch in
+   * ContextMenu.tsx and the TODO in layout.ts.
+   */
+  arrange?: (lookup: Lookup, args: z.infer<Schema>) => string;
 }
 
 /**
@@ -281,17 +295,16 @@ function describeBranches(
 }
 
 function applyBranches(
-  store: ChatToolStore,
+  tree: DecisionTree,
   lookup: Lookup,
   branches: { id: string; probability: number }[],
 ) {
   branches.forEach(({ id, probability }) => {
+    const edge = tree.edges[lookup.edgeId(id) ?? ""];
     // NOTE: not for a probability that stays the same, which may be written
     // another way, like "2/3"
-    if (lookup.rows[id]?.probability !== probability) {
-      store.updateEdgeData(lookup.edgeId(id)!, {
-        probabilityExpr: String(probability),
-      });
+    if (edge && lookup.rows[id]?.probability !== probability) {
+      edge.data = { ...edge.data, probabilityExpr: String(probability) };
     }
   });
 }
@@ -334,8 +347,8 @@ export const chatTools = [
     describe: (lookup, { nodeId, branches }) =>
       `Probabilities of ${lookup.name(nodeId)}: ${describeBranches(lookup, branches) || "no change"}.`,
     target: (lookup, { nodeId }) => ({ nodeId: lookup.nodeId(nodeId)! }),
-    apply: (store, lookup, { branches }) =>
-      applyBranches(store, lookup, branches),
+    apply: (tree, lookup, { branches }) =>
+      applyBranches(tree, lookup, branches),
   }),
 
   defineTool({
@@ -373,8 +386,10 @@ export const chatTools = [
         .join(" ");
     },
     target: (lookup, { id }) => ({ edgeId: lookup.edgeId(id)! }),
-    apply: (store, lookup, { id, label, reason, quote }) =>
-      store.updateEdgeData(lookup.edgeId(id)!, {
+    apply: (tree, lookup, { id, label, reason, quote }) => {
+      const edge = tree.edges[lookup.edgeId(id)!]!;
+      edge.data = {
+        ...edge.data,
         ...(label !== undefined && { label }),
         ...(reason !== undefined && {
           // NOTE: with the same footnote on where its point comes from as a
@@ -385,7 +400,8 @@ export const chatTools = [
             lookup.context.sourceText,
           ),
         }),
-      }),
+      };
+    },
   }),
 
   defineTool({
@@ -444,12 +460,15 @@ export const chatTools = [
         .join(" ");
     },
     target: (lookup, { id }) => ({ nodeId: lookup.nodeId(id)! }),
-    apply: (store, lookup, { id, question, value, cost }) =>
-      store.updateNodeData(lookup.nodeId(id)!, {
+    apply: (tree, lookup, { id, question, value, cost }) => {
+      const node = tree.nodes[lookup.nodeId(id)!]!;
+      node.data = {
+        ...node.data,
         ...(question !== undefined && { description: question }),
         ...(value !== undefined && { valueExpr: String(value) }),
         ...(cost !== undefined && { costExpr: String(cost) }),
-      }),
+      };
+    },
   }),
 
   defineTool({
@@ -490,8 +509,7 @@ export const chatTools = [
       return `New branch "${label}" of ${lookup.name(parentId)}, at ${formatPercent(probability)}, with a value of ${lookup.money(value)}.${others ? ` Others: ${others}.` : ""}`;
     },
     target: (lookup, { parentId }) => ({ nodeId: lookup.nodeId(parentId)! }),
-    apply: (store, lookup, args) => {
-      const { tree, sourceText } = lookup.context;
+    apply: (tree, lookup, args) => {
       const parentId = lookup.nodeId(args.parentId)!;
       const parent = tree.nodes[parentId]!;
       const lowest = Math.max(
@@ -499,7 +517,8 @@ export const chatTools = [
           .children(args.parentId)
           .map((row) => tree.nodes[lookup.nodeId(row.id)!]!.position.y),
       );
-      const nodeId = store.createNodeAtFrom(
+      const { node, edge } = addChildNodeHelper(
+        tree,
         // NOTE: to the right of the node as the app's own Add Branch puts it,
         // see handleAddBranch in ContextMenu.tsx, and below the other
         // branches, because the arrange keeps the order from top to bottom
@@ -507,19 +526,20 @@ export const chatTools = [
         parentId,
         "terminal",
       );
-      store.updateNodeData(nodeId, { valueExpr: String(args.value) });
-      // NOTE: the id that createEdge gives an edge, see edge.ts
-      store.updateEdgeData(`e${parentId}-${nodeId}`, {
+      node.data = { ...node.data, valueExpr: String(args.value) };
+      edge.data = {
+        ...edge.data,
         label: args.label,
         probabilityExpr: String(args.probability),
-        description: getReasonWithSource(args.reason, args.quote, sourceText),
-      });
-      applyBranches(store, lookup, args.branches);
-      // NOTE: the arrange is a second undo step, as it is for the app's own
-      // Add Branch, because it has to come after the new node is measured,
-      // see the HACK in handleAddBranch and the TODO in layout.ts
-      store.arrangeSubtree(parentId);
+        description: getReasonWithSource(
+          args.reason,
+          args.quote,
+          lookup.context.sourceText,
+        ),
+      };
+      applyBranches(tree, lookup, args.branches);
     },
+    arrange: (lookup, { parentId }) => lookup.nodeId(parentId)!,
   }),
 
   defineTool({
@@ -556,9 +576,9 @@ export const chatTools = [
       return `Delete the branch "${row.label}" of ${lookup.name(row.parentId!)}${under ? `, with the ${under} ${under === 1 ? "node" : "nodes"} under it` : ""}.${others ? ` Others: ${others}.` : ""}`;
     },
     target: (lookup, { id }) => ({ edgeId: lookup.edgeId(id)! }),
-    apply: (store, lookup, { id, branches }) => {
-      store.deleteSubTree(lookup.nodeId(id)!);
-      applyBranches(store, lookup, branches);
+    apply: (tree, lookup, { id, branches }) => {
+      deleteSubTreeHelper(tree, lookup.nodeId(id)!);
+      applyBranches(tree, lookup, branches);
     },
   }),
 ];
@@ -629,7 +649,8 @@ export function checkChatToolCall(
 }
 
 /**
- * Makes the edit of a call of a tool, as one undo step. Returns what is wrong
+ * Makes the edit of a call of a tool, as one update of the tree store, and so
+ * one undo step. Returns what is wrong
  * with the call if it does not fit the tree, and then changes nothing.
  *
  * NOTE: the call is checked again here, because the tree may have changed
@@ -646,6 +667,13 @@ export function applyChatToolCall(
   }
   const { tool, lookup, args } = checked;
   const check = checkChatToolCall(context, call);
-  store.batch(() => tool.apply(store, lookup, args));
+  store.editCurrentTree(
+    (tree) => tool.apply(tree, lookup, args),
+    `chat:${tool.name}`,
+  );
+  const arrangeId = tool.arrange?.(lookup, args);
+  if (arrangeId) {
+    store.arrangeSubtree(arrangeId);
+  }
   return check;
 }

@@ -73,7 +73,6 @@ const apply = (call: ChatToolCall) => {
 };
 
 beforeEach(() => {
-  jest.useFakeTimers();
   const tree: DecisionTree = convertAIStructureToDecisionTree(
     { currency: "USD", summary: "Summary.", issues: [], nodes },
     "Tree",
@@ -83,13 +82,7 @@ beforeEach(() => {
   // NOTE: as after a tree is generated, see CreateDialog.tsx
   useTreeStore.getState().arrange();
   aliases = getAIRowAliases(getTree());
-  // NOTE: past the throttle of saving for undo, see temporalOptions
-  jest.advanceTimersByTime(1000);
   useTreeStore.temporal.getState().clear();
-});
-
-afterEach(() => {
-  jest.useRealTimers();
 });
 
 const setProbabilities: ChatToolCall = {
@@ -352,7 +345,6 @@ describe("applyChatToolCall", () => {
   const applyAndUndo = (call: ChatToolCall, steps = 1) => {
     const before = undoable();
     expect(apply(call).error).toBeUndefined();
-    jest.advanceTimersByTime(1000);
     const after = undoable();
     expect(after).not.toEqual(before);
     expect(getPastCount()).toBe(steps);
@@ -437,15 +429,14 @@ describe("applyChatToolCall", () => {
     ).toMatchObject({ sentence: 'Value of "High": $5M → $6M.' });
   });
 
-  test("should add a branch, and arrange it", () => {
+  test("should add a branch, and arrange it as a second undo step", () => {
     expect(check(addBranch)).toMatchObject({
       sentence:
         'New branch "Mid" of "How much is awarded?", at 20%, with a value of $2.5M. Others: High 50% → 40%, Low 50% → 40%.',
     });
-    // NOTE: one step here, because the arrange is not animated in a test, so
-    // it runs with the rest. In the app it comes later, as a second step, as
-    // for the app's own Add Branch, see add_branch.
-    applyAndUndo(addBranch);
+    // NOTE: two steps, the branch and then the arrange, as for the app's
+    // own Add Branch, see `arrange` in chat-tools.ts
+    applyAndUndo(addBranch, 2);
     expect(getRows().map((row) => [row.id, row.parentId])).toEqual([
       ["n1", null],
       ["n2", "n1"],
@@ -483,7 +474,6 @@ describe("applyChatToolCall", () => {
       name: "set_node_fields",
       args: { id: "n3", value: 200, askFirst: false },
     });
-    jest.advanceTimersByTime(1000);
     expect(getPastCount()).toBe(3);
 
     undo();

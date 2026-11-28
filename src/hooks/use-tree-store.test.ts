@@ -401,4 +401,14 @@ describe("undo history", () => {
     undoTree();
     expect(getName()).toBe("Before");
   });
+
+  test("should make an edit of several parts one undo step", () => {
+    useTreeStore.getState().editCurrentTree((tree) => {
+      tree.name = "Edited";
+      tree.description = "In one update";
+    }, "test");
+    expect(getPastCount()).toBe(1);
+    undoTree();
+    expect(getName()).toBe("Start");
+  });
 });

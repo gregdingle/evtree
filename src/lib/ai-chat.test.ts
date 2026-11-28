@@ -143,7 +143,6 @@ const setProbabilities = (askFirst: boolean, granted = 0.4) => ({
 });
 
 beforeEach(() => {
-  jest.useFakeTimers();
   useChatStore.setState({ chats: {} });
   const tree = convertAIStructureToDecisionTree(
     { currency: "USD", summary: "Summary.", issues: [], nodes },
@@ -151,12 +150,7 @@ beforeEach(() => {
   );
   treeId = useTreeStore.getState().loadTree(tree, false);
   useTreeStore.getState().arrange();
-  jest.advanceTimersByTime(1000);
   useTreeStore.temporal.getState().clear();
-});
-
-afterEach(() => {
-  jest.useRealTimers();
 });
 
 describe("buildChatSystemInstruction", () => {
@@ -367,7 +361,6 @@ describe("sendChatMessage", () => {
     });
 
     // One undo step
-    jest.advanceTimersByTime(1000);
     useTreeStore.temporal.getState().undo();
     expect(getProbabilities()).toMatchObject({ n2: 0.7, n5: 0.3 });
   });
