@@ -22,6 +22,11 @@ export default function UserGuide() {
           page, see Issues.tsx: what an issue is, how the nodes of an issue are
           grouped by their description and branch labels, and how to export
           it. */}
+          {/* TODO: add a section about the chat with AI, see Chat.tsx: that
+          it is about the current tree and what is selected, that what you
+          ask for is done at once and can be undone, that what the AI
+          suggests waits for Accept or Reject, and where the case description
+          is kept. */}
           <Link
             href="/user-guide/TreeDecisons User Guide.pdf"
             className="bluelink"

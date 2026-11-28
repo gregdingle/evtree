@@ -85,6 +85,17 @@ export default function DataSecurity() {
           explicitly choose to generate a tree with AI.
         </p>
         <p className="my-4">
+          <strong>Partial exception #3:</strong> When you send a message in the{" "}
+          <em>Chat</em> about a tree, the app sends your message to the same AI
+          service, together with the tree, the earlier messages of that chat,
+          and the text that the tree was generated from, if there is one. This
+          happens with every message, and only when you send one. The chat and
+          that text are stored locally in your browser, apart from the tree:
+          they are not part of an exported tree or of a link that you share. You
+          can remove them in the chat, and they are removed when you delete the
+          tree.
+        </p>
+        <p className="my-4">
           You are welcome to review our{" "}
           <a
             target="_blank"
