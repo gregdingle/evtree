@@ -2,6 +2,12 @@ import { groupBy, sumBy } from "es-toolkit";
 
 import { AINode, AITree } from "./ai-schemas";
 import { AppEdge, createEdge } from "./edge";
+import { normalizeExpression, safeEvalExpr } from "./expectedValue";
+import {
+  getNodeToIncomingEdgeMap,
+  getParentToChildNodeMap,
+  getRootNodeIds,
+} from "./maps";
 import { AppNode, createNode } from "./node";
 import { DecisionTree, createTree } from "./tree";
 
@@ -199,25 +205,71 @@ export function isQuoteInText(quote: string, text: string): boolean {
  * TODO: as text, the footnote can be edited away, and the Issues page cannot
  * mark or filter the reasons that the AI supplied without matching on these
  * words. If that is wanted, keep the source of a reason as a field of the
- * branch, see AppEdge.
+ * branch, see AppEdge. The chat with AI has to take the footnote back off to
+ * give the AI the reason that it wrote, see splitReasonSource.
  */
-function getReasonWithSource(
-  aiNode: AINode,
+export function getReasonWithSource(
+  reason: string | null | undefined,
+  quote: string | null | undefined,
   sourceText: string | undefined,
 ): string {
-  const reason = aiNode.reason || "";
+  reason = reason || "";
   // NOTE: without the text that the AI was given, there is nothing to check
   // a quote against
   if (!reason || sourceText === undefined) {
     return reason;
   }
-  const quote = aiNode.quote?.trim().replace(/^["\u201c]+|["\u201d]+$/g, "");
+  quote = quote?.trim().replace(/^["\u201c]+|["\u201d]+$/g, "");
   if (!quote) {
     return `${reason}\n\n${SOURCE_AI}`;
   }
   return isQuoteInText(quote, sourceText)
     ? `${reason}\n\n${SOURCE_DESCRIPTION} "${quote}"`
     : `${reason}\n\n${SOURCE_NOT_FOUND} "${quote}"`;
+}
+
+/**
+ * Where the point of a reason comes from, by its footnote, see
+ * getReasonWithSource: the case description, a quote that was not found in
+ * it, or the AI. Null for a reason without a footnote, like one that a user
+ * wrote.
+ */
+export type ReasonSource = "description" | "notFound" | "ai" | null;
+
+/**
+ * Takes the footnote of getReasonWithSource back off the description of a
+ * branch, to give the AI the reason and the quote as it wrote them.
+ *
+ * TODO: this matches on the words of the footnote, so it breaks when a user
+ * edits them. It would not be needed if the source of a reason were a field
+ * of the branch, see the TODO at getReasonWithSource.
+ */
+export function splitReasonSource(description: string | undefined): {
+  reason: string;
+  quote: string | null;
+  source: ReasonSource;
+} {
+  const text = description ?? "";
+  const index = text.lastIndexOf("\n\n");
+  const footnote = index === -1 ? "" : text.slice(index + 2);
+  const reason = text.slice(0, Math.max(index, 0));
+  if (footnote === SOURCE_AI) {
+    return { reason, quote: null, source: "ai" };
+  }
+  for (const [prefix, source] of [
+    [SOURCE_DESCRIPTION, "description"],
+    [SOURCE_NOT_FOUND, "notFound"],
+  ] as const) {
+    const match = footnote.startsWith(`${prefix} "`) && footnote.endsWith('"');
+    if (match) {
+      return {
+        reason,
+        quote: footnote.slice(prefix.length + 2, -1),
+        source,
+      };
+    }
+  }
+  return { reason: text, quote: null, source: null };
 }
 
 /**
@@ -345,7 +397,11 @@ export function convertAIStructureToDecisionTree(
         label: aiNode.label || "",
         // NOTE: convert to string which will be converted back to number internally
         probabilityExpr: aiNode.probability?.toString() || undefined,
-        description: getReasonWithSource(aiNode, sourceText),
+        description: getReasonWithSource(
+          aiNode.reason,
+          aiNode.quote,
+          sourceText,
+        ),
       },
     );
     edges[edge.id] = edge;
@@ -358,4 +414,125 @@ export function convertAIStructureToDecisionTree(
     // it follows from the currency: "bn" for pounds, and "B" otherwise
     rounding: aiTree.currency === "GBP" ? "UK" : "US",
   };
+}
+
+/**
+ * A row of a tree for the chat with AI: a node together with the branch that
+ * leads to it, as the AI wrote them when it generated a tree, see AINode.
+ *
+ * A probability, value or cost is a string where a user entered an
+ * expression that uses a variable, like "claim * 0.5". The AI can read
+ * it, and a tool of the chat does not overwrite it, see chat-tools.ts.
+ */
+export type AIRow = Omit<AINode, "probability" | "value" | "cost"> & {
+  probability: number | string | null;
+  value: number | string | null;
+  cost: number | string | null;
+};
+
+/** The short id of a row for each node id of a tree, see getAIRowAliases */
+export type AIRowAliases = Record<string, string>;
+
+/**
+ * Returns the short ids of the rows of a tree, like "n1", by node id. Nodes
+ * that already have one keep it, and new nodes get the next number.
+ *
+ * NOTE: why not the ids of the nodes themselves? They are 12 random
+ * characters each, which costs tokens in every message and which an AI can
+ * miscopy. Short ids are also what the AI wrote when it generated a tree.
+ * They have to stay the same for the life of a chat, because earlier turns of
+ * the conversation name them. An id is never used again after its node is
+ * deleted, for the same reason.
+ */
+export function getAIRowAliases(
+  tree: DecisionTree,
+  aliases: AIRowAliases = {},
+): AIRowAliases {
+  const result = { ...aliases };
+  let next =
+    Math.max(
+      0,
+      ...Object.values(aliases).map((alias) => Number(alias.slice(1))),
+    ) + 1;
+  getRowNodeIds(tree).forEach((nodeId) => {
+    result[nodeId] ??= `n${next++}`;
+  });
+  return result;
+}
+
+/**
+ * Returns the ids of the nodes of a tree in the order of its rows: each root
+ * and what is under it, with the branches of a node from top to bottom as on
+ * the canvas.
+ *
+ * NOTE: notes, ghost nodes and arrows are not part of the tree
+ */
+function getRowNodeIds(tree: DecisionTree): string[] {
+  const childIds = getParentToChildNodeMap(tree.edges);
+  const nodeIds: string[] = [];
+  const visit = (nodeId: string) => {
+    // NOTE: a canvas can hold edges that do not make a tree, and a row must
+    // not be listed twice
+    if (!tree.nodes[nodeId] || nodeIds.includes(nodeId)) {
+      return;
+    }
+    nodeIds.push(nodeId);
+    [...(childIds[nodeId] ?? [])]
+      .filter((childId) => tree.nodes[childId])
+      .sort((a, b) => tree.nodes[a]!.position.y - tree.nodes[b]!.position.y)
+      .forEach(visit);
+  };
+  getRootNodeIds(tree.nodes, tree.edges).forEach(visit);
+  return nodeIds;
+}
+
+/**
+ * Returns an expression as a number if it works out to one by itself, like
+ * "25%" or "2/3", as it is if it needs a variable, and null if it is empty.
+ */
+function getRowAmount(expression: string | undefined): number | string | null {
+  if (!normalizeExpression(expression)) {
+    return null;
+  }
+  // NOTE: without variables, so an expression that uses one does not work out
+  return safeEvalExpr(expression, {}, null) ?? expression!.trim();
+}
+
+/**
+ * Converts a tree to rows for the chat with AI, the reverse of
+ * convertAIStructureToDecisionTree. The rows are in the format that the AI
+ * wrote when it generated a tree, so that the prompt of the generation
+ * describes them too, and one id names both a node and the branch to it.
+ *
+ * @param aliases - The short id of each node, from getAIRowAliases. A node
+ * without one is left out.
+ */
+export function convertDecisionTreeToAIRows(
+  tree: DecisionTree,
+  aliases: AIRowAliases,
+): AIRow[] {
+  const incomingEdgeIds = getNodeToIncomingEdgeMap(tree.edges);
+  const hasChildren = getParentToChildNodeMap(tree.edges);
+  return getRowNodeIds(tree)
+    .filter((nodeId) => aliases[nodeId])
+    .map((nodeId) => {
+      const node = tree.nodes[nodeId]!;
+      const edge = tree.edges[incomingEdgeIds[nodeId] ?? ""];
+      const { reason, quote } = splitReasonSource(edge?.data?.description);
+      return {
+        id: aliases[nodeId]!,
+        parentId: edge ? (aliases[edge.source] ?? null) : null,
+        label: edge ? (edge.data?.label ?? "") : null,
+        quote,
+        reason: edge ? reason : null,
+        probability: edge ? getRowAmount(edge.data?.probabilityExpr) : null,
+        // NOTE: the description of a node is the question that it decides. A
+        // terminal node has none, and what a user wrote there is not sent.
+        question: hasChildren[nodeId]?.length
+          ? node.data.description || null
+          : null,
+        value: getRowAmount(node.data.valueExpr),
+        cost: getRowAmount(node.data.costExpr),
+      };
+    });
 }

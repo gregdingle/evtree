@@ -1,15 +1,38 @@
+import { cloneDeep } from "es-toolkit";
 import { values } from "es-toolkit/compat";
+
+import ageDefendant from "@/data/reference/age-discrimination-defendant-tree.json";
+import componentSupply from "@/data/reference/component-supply-tree.json";
+import defenseWithCosts from "@/data/reference/hapless-harvest-defense-with-costs-tree.json";
+import patentInfringement from "@/data/reference/patent-infringement-tree.json";
+import productLiability from "@/data/reference/product-liability-tree.json";
 
 import {
   SOURCE_AI,
   SOURCE_DESCRIPTION,
   SOURCE_NOT_FOUND,
   convertAIStructureToDecisionTree,
+  convertDecisionTreeToAIRows,
+  getAIRowAliases,
   getAITreeDescription,
+  getReasonWithSource,
   isQuoteInText,
+  splitReasonSource,
 } from "./ai-convert";
-import { AINode, AITree } from "./ai-schemas";
+import { AINode, AITree, AITreeSchema } from "./ai-schemas";
+import { createEdge } from "./edge";
 import { arrangeSubtreeHelper } from "./layout";
+import { getRootNodeIds } from "./maps";
+import { createNode } from "./node";
+import { DecisionTree } from "./tree";
+
+const referenceTrees = [
+  ageDefendant,
+  componentSupply,
+  defenseWithCosts,
+  patentInfringement,
+  productLiability,
+] as unknown as DecisionTree[];
 
 jest.mock("nanoid", () => {
   let nextId = 0;
@@ -392,4 +415,158 @@ describe("convertAIStructureToDecisionTree", () => {
     expect(edges).toHaveLength(3);
     expect(getEdge("Award").source).toBe(getEdge("Claims survive").target);
   });
+});
+
+describe("splitReasonSource", () => {
+  test("should take each footnote back off", () => {
+    expect(
+      splitReasonSource(`Because.\n\n${SOURCE_DESCRIPTION} "all claims"`),
+    ).toEqual({
+      reason: "Because.",
+      quote: "all claims",
+      source: "description",
+    });
+    expect(
+      splitReasonSource(`Because.\n\n${SOURCE_NOT_FOUND} "some claims"`),
+    ).toEqual({ reason: "Because.", quote: "some claims", source: "notFound" });
+    expect(splitReasonSource(`Because.\n\n${SOURCE_AI}`)).toEqual({
+      reason: "Because.",
+      quote: null,
+      source: "ai",
+    });
+  });
+
+  test("should leave a reason without a footnote as it is", () => {
+    expect(splitReasonSource("First.\n\nSecond.")).toEqual({
+      reason: "First.\n\nSecond.",
+      quote: null,
+      source: null,
+    });
+    expect(splitReasonSource(undefined)).toEqual({
+      reason: "",
+      quote: null,
+      source: null,
+    });
+  });
+
+  test("should be the reverse of getReasonWithSource", () => {
+    const text = "The settlement releases all claims of the buyer.";
+    for (const quote of ["releases all claims", "releases no claims", null]) {
+      const description = getReasonWithSource(
+        "Because.\n\nAnd so.",
+        quote,
+        text,
+      );
+      expect(splitReasonSource(description)).toMatchObject({
+        reason: "Because.\n\nAnd so.",
+        quote,
+      });
+    }
+  });
+});
+
+describe("convertDecisionTreeToAIRows", () => {
+  const getRows = (tree: DecisionTree, aliases = getAIRowAliases(tree)) =>
+    convertDecisionTreeToAIRows(tree, aliases);
+
+  test("should give back the rows that a tree was made from", () => {
+    const sourceText = "The settlement releases all claims of the buyer.";
+    const aiNodes = nodes.map((node) =>
+      node.id === "n2" ? { ...node, quote: "releases all claims" } : node,
+    );
+    const tree = convertAIStructureToDecisionTree(
+      { currency: "USD", summary: "Summary.", issues: [], nodes: aiNodes },
+      "Name",
+      { text: sourceText },
+    );
+    // NOTE: the survive branch leads to the larger amount, so it comes first
+    expect(getRows(tree)).toEqual([
+      { ...aiNodes[0], id: "n1" },
+      { ...aiNodes[2], id: "n2", parentId: "n1" },
+      { ...aiNodes[3], id: "n3", parentId: "n2" },
+      { ...aiNodes[1], id: "n4", parentId: "n1" },
+    ]);
+  });
+
+  test("should keep the short id of a node, and never use one again", () => {
+    const { tree } = convert(nodes);
+    const aliases = getAIRowAliases(tree);
+    const [rootId, , , barredId] = Object.keys(aliases).sort((a, b) =>
+      aliases[a]!.localeCompare(aliases[b]!),
+    );
+    expect(aliases[barredId!]).toBe("n4");
+
+    // Delete the last node, and add another
+    const smaller = cloneDeep(tree);
+    delete smaller.nodes[barredId!];
+    delete smaller.edges[`e${rootId}-${barredId}`];
+    smaller.nodes["new"] = { ...tree.nodes[barredId!]!, id: "new" };
+    smaller.edges["new"] = {
+      ...tree.edges[`e${rootId}-${barredId}`]!,
+      id: "new",
+      target: "new",
+    };
+    const next = getAIRowAliases(smaller, aliases);
+    expect(next).toMatchObject(aliases);
+    expect(next["new"]).toBe("n5");
+    expect(getRows(smaller, next).map((row) => row.id)).toEqual([
+      "n1",
+      "n2",
+      "n3",
+      "n5",
+    ]);
+  });
+
+  test("should work out an expression, unless it uses a variable", () => {
+    const { tree, getEdge } = convert(nodes);
+    const barred = getEdge("Claims barred");
+    barred.data!.probabilityExpr = "25%";
+    getEdge("Claims survive").data!.probabilityExpr = "3/4";
+    tree.nodes[barred.target]!.data.valueExpr = "claim * 0.5";
+    tree.nodes[barred.target]!.data.costExpr = "$1,000";
+    expect(getRows(tree)[1]).toMatchObject({ probability: 0.75 });
+    expect(getRows(tree).at(-1)).toMatchObject({
+      probability: 0.25,
+      value: "claim * 0.5",
+      cost: 1000,
+    });
+  });
+
+  test("should leave out notes and arrows", () => {
+    const { tree } = convert(nodes);
+    const rootId = getRootNodeIds(tree.nodes, tree.edges)[0]!;
+    tree.nodes["note"] = createNode({ x: 0, y: 0 }, "note", false);
+    tree.nodes["ghost"] = createNode({ x: 0, y: 0 }, "ghost", false);
+    tree.edges["arrow"] = createEdge(rootId, "ghost", false, {}, "arrow");
+    expect(getRows(tree)).toHaveLength(4);
+  });
+
+  test.each(referenceTrees)(
+    "should give a row for every node of the reference tree $name",
+    (tree) => {
+      const rows = getRows(tree);
+      expect(rows).toHaveLength(values(tree.nodes).length);
+      const ids = new Set(rows.map((row) => row.id));
+      expect(ids.size).toBe(rows.length);
+      expect(rows.filter((row) => row.parentId === null)).toHaveLength(1);
+      rows.forEach((row, index) => {
+        if (row.parentId !== null) {
+          // A row comes after its parent
+          expect(rows.findIndex((r) => r.id === row.parentId)).toBeLessThan(
+            index,
+          );
+          expect(typeof row.probability).toBe("number");
+        }
+      });
+      // NOTE: the rows pass the checks of a tree from AI, apart from the
+      // reasons, which the reference trees do not have
+      const result = AITreeSchema.safeParse({
+        currency: null,
+        summary: "",
+        issues: [],
+        nodes: rows.map((row) => ({ ...row, reason: row.reason || "None" })),
+      });
+      expect(result.error?.issues ?? []).toEqual([]);
+    },
+  );
 });
