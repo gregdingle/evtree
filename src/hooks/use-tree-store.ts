@@ -93,11 +93,12 @@ export interface TreeStoreState {
     position: { x: number; y: number },
     nodeType: NodeType,
   ) => void;
+  /** Returns the id of the new node */
   createNodeAtFrom: (
     position: { x: number; y: number },
     fromNodeId: string,
     nodeType?: NodeType,
-  ) => void;
+  ) => string;
   insertNodeBefore: (
     nodeId: string,
     nodeType: Extract<NodeType, "chance" | "decision">,
@@ -120,6 +121,8 @@ export interface TreeStoreState {
   showIssues: () => void;
   selectNode: (nodeId: string) => void;
   selectEdge: (edgeId: string) => void;
+  /** Runs several operations as one undo step */
+  batch: (run: () => void) => void;
 }
 
 // QUESTION: should we clear undo stack when switching trees? or better to be safe?
@@ -128,6 +131,8 @@ const temporalOptions: ZundoOptions<
   ReturnType<typeof selectUndoableState>
 > = {
   // NOTE: throttling is needed for actions like dragging nodes across the canvas
+  // NOTE: so several operations in a row are not one undo step by themselves,
+  // and not one step each either, see batch
   handleSet: (handleSet) =>
     throttle((...args: unknown[]) => {
       // @ts-expect-error - handleSet expects specific args but we just pass all through
@@ -843,11 +848,12 @@ const useTreeStoreBase = createWithEqualityFn<TreeStoreState>()(
     },
 
     createNodeAtFrom: (position, fromNodeId, nodeType = "chance") => {
+      // NOTE: created before the update, so that its id can be returned
+      const newNode = createNode(position, nodeType);
       set(
         (state) =>
           withCurrentTree(state, (tree) => {
             clearSelections(tree);
-            const newNode = createNode(position, nodeType);
             const newEdge = createEdge(fromNodeId, newNode.id);
             tree.nodes[newNode.id] = newNode;
             tree.edges[newEdge.id] = newEdge;
@@ -855,6 +861,7 @@ const useTreeStoreBase = createWithEqualityFn<TreeStoreState>()(
         undefined,
         { type: "createNodeAtFrom", position, fromNodeId, nodeType },
       );
+      return newNode.id;
     },
 
     insertNodeBefore: (nodeId, nodeType) => {
@@ -1229,6 +1236,33 @@ const useTreeStoreBase = createWithEqualityFn<TreeStoreState>()(
         undefined,
         { type: "selectEdge", edgeId },
       );
+    },
+
+    // NOTE: for an edit that takes several operations, like a tool call of
+    // the chat with AI, see chat-tools.ts. Without this, the operations do
+    // not make one undo step. Saving for undo is throttled, see
+    // temporalOptions, and a throttle passes on the first call at once and
+    // the last one later, so undo would stop at the state before the last
+    // operation. So nothing is saved while the operations run, and the state
+    // from before them is saved after, past the throttle.
+    //
+    // NOTE: an operation that updates the store later, like the animated
+    // arrange and arrangeSubtree, is not part of the step.
+    batch: (run) => {
+      const temporal = useTreeStoreBase.temporal;
+      const pastState = selectUndoableState(get());
+      temporal.getState().pause();
+      try {
+        run();
+      } finally {
+        temporal.getState().resume();
+      }
+      const currentState = selectUndoableState(get());
+      if (!isEqual(pastState, currentState)) {
+        // @ts-expect-error - _handleSet is typed for the whole state, and
+        // gets the undoable part of it, as from the middleware
+        temporal.getState()._handleSet(pastState, undefined, currentState);
+      }
     },
   })),
   // NOTE: shallow, not deep isEqual, as the default for all selectors. Most
