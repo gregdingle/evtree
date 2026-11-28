@@ -5,17 +5,24 @@ import {
   FinishReason,
   GenerationConfig,
   ThinkingLevel,
+  Tool,
   UsageMetadata,
   getAI,
   getGenerativeModel,
 } from "firebase/ai";
 
+import { ChatModel, buildChatSystemInstruction } from "./ai-chat";
 import { AITree, AITreeSchema, aiTreeJsonSchema } from "./ai-schemas";
+import chatPromptMarkdown from "./chat-prompt.md";
+import { chatToolDeclarations } from "./chat-tools";
 import { firebaseApp } from "./firebase";
 import promptMarkdown from "./prompt.md";
 
 // NOTE: strip HTML comments, which are notes to developers and not to the AI
-const treePrompt = promptMarkdown.replace(/<!--[\s\S]*?-->\n*/g, "");
+const stripComments = (markdown: string) =>
+  markdown.replace(/<!--[\s\S]*?-->\n*/g, "");
+const treePrompt = stripComments(promptMarkdown);
+const chatPrompt = stripComments(chatPromptMarkdown);
 
 // NOTE: gemini-4-hydrogen builds a much fuller tree than gemini-3.8-flash. On
 // the bathtub demo case, it was the first to cover every issue in the
@@ -25,10 +32,25 @@ const treePrompt = promptMarkdown.replace(/<!--[\s\S]*?-->\n*/g, "");
 // https://firebase.google.com/docs/ai-logic/models
 const TREE_MODEL = "gemini-4-hydrogen";
 
+// NOTE: the chat is not on the model that generates trees. A reply has to
+// come in seconds, and TREE_MODEL takes about 1.5 minutes for a tree. On a
+// tree of three nodes, gemini-3.8-flash at a low thinking level called a tool
+// in about 2 seconds, and answered a question in 1 to 3, though one argument
+// took 24. It took the JSON schema of the tools as zod writes it, streamed
+// with thinking on, and followed the rule on when to ask first, see
+// chat-prompt.md.
+const CHAT_MODEL = "gemini-3.8-flash";
+
+// TODO: consider server prompt templates, see getTemplateGenerativeModel of
+// firebase/ai. The prompts, the tools and the model would then be set on the
+// server, where now any client that passes App Check can send any prompt to
+// any model on the bill of this app. More so with a chat, which is many
+// requests where a generation is one.
 function getAIModel(
   generationConfig?: GenerationConfig,
   systemInstruction?: string,
   model: string = "gemini-3.8-flash",
+  tools?: Tool[],
 ) {
   // NOTE: Callers of the functions in this file should check that firebaseApp exists.
   if (!firebaseApp) {
@@ -51,7 +73,33 @@ function getAIModel(
       model,
       generationConfig,
       systemInstruction,
+      tools,
     },
+  );
+}
+
+/**
+ * Returns the model of the AI for a chat about a tree, with the tools that
+ * edit a tree, see sendChatMessage in ai-chat.ts.
+ *
+ * @param chat - What is kept of how the tree was generated, which goes into
+ * the system instruction
+ */
+export function getChatModel(
+  chat: Parameters<typeof buildChatSystemInstruction>[2],
+): ChatModel {
+  return getAIModel(
+    {
+      // NOTE: a reply is a few sentences and a few calls, so this is only a
+      // stop for a reply that runs away
+      maxOutputTokens: 8192,
+      thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+    },
+    buildChatSystemInstruction(chatPrompt, treePrompt, chat),
+    CHAT_MODEL,
+    // NOTE: the declarations are JSON schema from zod, which the AI takes,
+    // where the type of the SDK asks for its own schema format
+    [{ functionDeclarations: chatToolDeclarations }] as unknown as Tool[],
   );
 }
 
@@ -86,7 +134,10 @@ const MAX_EXTRACTABLE_FILE_BYTES = 14 * 1024 * 1024;
  * and keep the AI for a scanned PDF, which has no text to extract. The AI is a
  * weak way to copy text: it can leave out, reword or make up text, the text
  * has to fit in its output, the user waits twice, and the document goes to the
- * AI when it is chosen, before the user asks for a tree.
+ * AI when it is chosen, before the user asks for a tree. The chat with AI
+ * adds a reason: it checks new quotes against this text, and sends it with
+ * every message, see ai-chat.ts, so words that the AI changed here are
+ * quotes that are not found there.
  *
  * TODO: stream the text, so that a long extraction shows progress and can be
  * canceled, as tree generation does. Also set a low thinking level, because
@@ -242,6 +293,10 @@ interface GenerateDecisionTreeArgs {
 
 // NOTE: memoize to avoid spamming service
 // QUESTION: maybe throttle would be better?
+// TODO: let the chat with AI generate a tree, and generate one again from
+// the case description that it keeps, see use-chat-store.ts. The cache here
+// is by the text, so it would give back the same tree, and needs a way
+// around for that.
 const generateDecisionTreeMemoized = memoize(
   async function ({
     text,

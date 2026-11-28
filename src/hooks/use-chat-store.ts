@@ -47,11 +47,6 @@ export interface ChatEdit {
   status: "done" | "waiting" | "accepted" | "rejected" | "failed";
   /** What came of the edit, like the expected value before and after */
   note?: string;
-  /**
-   * Whether the AI knows what the user chose for an edit that waited. The AI
-   * is told with the next message of the user, see ai-chat.ts.
-   */
-  told?: boolean;
 }
 
 export interface ChatMessage {
