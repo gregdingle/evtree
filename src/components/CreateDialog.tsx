@@ -19,6 +19,7 @@ import {
 import { useReactFlow } from "@xyflow/react";
 import { isEmpty } from "es-toolkit/compat";
 
+import { useChatStore } from "@/hooks/use-chat-store";
 import { useTreeStore } from "@/hooks/use-tree-store";
 import {
   AIGenerationError,
@@ -33,9 +34,15 @@ import { ARRANGE_FADE_MS } from "@/lib/animate";
 import { firebaseApp } from "@/lib/firebase";
 import { type DecisionTree } from "@/lib/tree";
 
+// TODO: let the AI ask before it generates a tree, when the text does not
+// say which side the tree is for, which court the case is in, or the amount
+// of the claim. Now it guesses, and says so in the summary, and the user can
+// correct it after, in the chat with AI, see Chat.tsx.
 interface CreateDialogProps {
   open: boolean;
   onClose: () => void;
+  /** Called after a tree was generated with AI, and the dialog closed */
+  onGenerated?: () => void;
 }
 
 /**
@@ -44,7 +51,11 @@ interface CreateDialogProps {
  * TODO: make styles more consistent with rest of app, like text size and inputs
  * TODO: change to use tailwind plus input: https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups
  */
-export function CreateDialog({ open, onClose }: CreateDialogProps) {
+export function CreateDialog({
+  open,
+  onClose,
+  onGenerated,
+}: CreateDialogProps) {
   const { fitView, zoomTo } = useReactFlow();
 
   const { createTree, loadTree, arrange } = useTreeStore.getState();
@@ -142,6 +153,17 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       }
 
       loadTree(decisionTree, true);
+      // NOTE: kept for the chat with AI about the tree, which did not see the
+      // generation: the text, to quote and to check quotes against, and the
+      // issues that the AI listed. They are kept apart from the tree, so
+      // that they are not in its export or share link, see
+      // use-chat-store.ts. A text that is too long is not kept.
+      const { setSource, setIssues } = useChatStore.getState();
+      setSource(decisionTree.id, {
+        text: aiInputText.trim(),
+        fileName: aiSourceFileName ?? undefined,
+      });
+      setIssues(decisionTree.id, aiTreeStructure.issues);
       // TODO: optimize auto arrange, figure out what's going on with timing,
       // avoid spurious undo stack entries
       setTimeout(() => {
@@ -161,6 +183,7 @@ export function CreateDialog({ open, onClose }: CreateDialogProps) {
       setNewTreeName("");
       setNewTreeDescription("");
       onClose();
+      onGenerated?.();
     } catch (error) {
       // NOTE: cancelled by the user
       if (abortController.signal.aborted) {
