@@ -88,7 +88,13 @@ const nodes: AINode[] = [
 
 function convert(aiNodes: AINode[], currency: AITree["currency"] = "USD") {
   const tree = convertAIStructureToDecisionTree(
-    { currency, summary: "Summary.", issues: ["Issue?"], nodes: aiNodes },
+    {
+      currency,
+      summary: "Summary.",
+      issues: ["Issue?"],
+      nodes: aiNodes,
+      openQuestions: [],
+    },
     "Name",
   );
   const edges = values(tree.edges);
@@ -178,6 +184,7 @@ describe("convertAIStructureToDecisionTree", () => {
       summary: " A buyer sues a seller. ",
       issues: [],
       nodes,
+      openQuestions: [],
     };
     const date = new Date(2026, 10, 25);
     const on = date.toLocaleDateString(undefined, { dateStyle: "medium" });
@@ -223,6 +230,7 @@ describe("convertAIStructureToDecisionTree", () => {
           summary: "Summary.",
           issues: ["Issue?"],
           nodes: aiNodes,
+          openQuestions: [],
         },
         "Name",
         text === undefined ? undefined : { text },
@@ -475,7 +483,13 @@ describe("convertDecisionTreeToAIRows", () => {
       node.id === "n2" ? { ...node, quote: "releases all claims" } : node,
     );
     const tree = convertAIStructureToDecisionTree(
-      { currency: "USD", summary: "Summary.", issues: [], nodes: aiNodes },
+      {
+        currency: "USD",
+        summary: "Summary.",
+        issues: [],
+        nodes: aiNodes,
+        openQuestions: [],
+      },
       "Name",
       { text: sourceText },
     );
@@ -565,6 +579,7 @@ describe("convertDecisionTreeToAIRows", () => {
         summary: "",
         issues: [],
         nodes: rows.map((row) => ({ ...row, reason: row.reason || "None" })),
+        openQuestions: [],
       });
       expect(result.error?.issues ?? []).toEqual([]);
     },

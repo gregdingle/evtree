@@ -96,7 +96,7 @@ export const MAX_HISTORY_MESSAGES = 20;
 export function buildChatSystemInstruction(
   chatPrompt: string,
   treePrompt: string,
-  chat: Pick<Chat, "issues" | "source"> | undefined,
+  chat: Pick<Chat, "issues" | "openQuestions" | "source"> | undefined,
 ): string {
   const parts = [
     chatPrompt.trim(),
@@ -105,6 +105,13 @@ export function buildChatSystemInstruction(
   if (chat?.issues?.length) {
     parts.push(
       `# The issues listed when the tree was generated\n\n<issues>\n${chat.issues.map((issue, index) => `${index + 1}. ${issue}`).join("\n")}\n</issues>`,
+    );
+  }
+  if (chat?.openQuestions?.length) {
+    // NOTE: the user was shown these before the first message, see Chat.tsx,
+    // and may speak of them as "your first question"
+    parts.push(
+      `# The open questions asked when the tree was generated\n\nThese were asked of the user by the AI that generated the tree, and are shown at the start of the chat. One may be answered since.\n\n<open_questions>\n${chat.openQuestions.map((question, index) => `${index + 1}. ${question}`).join("\n")}\n</open_questions>`,
     );
   }
   parts.push(

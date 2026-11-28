@@ -118,14 +118,14 @@ export const AITreeSchema = z
       .describe(
         "All the nodes of the tree, as a flat list. List each node after its parent. Every issue is a node, on every path where it is decided.",
       ),
-    // TODO: consider a field after the nodes for the open points of the AI:
-    // what it was unsure of, what it left out and why, and what it would
-    // have asked, like which court the case is in. The chat with AI about
-    // the tree would open with them, where it now opens with counts that the
-    // app works out, see getChatIntro in ai-chat.ts. It comes last so that
-    // the AI writes it about the tree that it built. A change to the schema
-    // and the prompt, so to be tested alone, over several runs, for whether
-    // it changes the trees.
+    // NOTE: the open questions come last, so that the AI asks them about the
+    // tree that it built. They are not used in the tree itself. The chat with
+    // AI about the tree opens with them, see Chat.tsx.
+    openQuestions: z
+      .array(z.string())
+      .describe(
+        "Up to five questions to the user whose answers would make the tree better, the most important first. Empty when there are none.",
+      ),
   })
   // NOTE: each message names the node, so that it could be sent back to the AI
   .superRefine(({ nodes }, ctx) => {

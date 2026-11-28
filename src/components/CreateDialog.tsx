@@ -155,15 +155,17 @@ export function CreateDialog({
       loadTree(decisionTree, true);
       // NOTE: kept for the chat with AI about the tree, which did not see the
       // generation: the text, to quote and to check quotes against, and the
-      // issues that the AI listed. They are kept apart from the tree, so
+      // issues and the open questions that the AI listed. They are kept apart from the tree, so
       // that they are not in its export or share link, see
       // use-chat-store.ts. A text that is too long is not kept.
-      const { setSource, setIssues } = useChatStore.getState();
+      const { setSource, setIssues, setOpenQuestions } =
+        useChatStore.getState();
       setSource(decisionTree.id, {
         text: aiInputText.trim(),
         fileName: aiSourceFileName ?? undefined,
       });
       setIssues(decisionTree.id, aiTreeStructure.issues);
+      setOpenQuestions(decisionTree.id, aiTreeStructure.openQuestions);
       // TODO: optimize auto arrange, figure out what's going on with timing,
       // avoid spurious undo stack entries
       setTimeout(() => {

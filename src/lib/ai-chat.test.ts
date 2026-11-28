@@ -145,7 +145,13 @@ const setProbabilities = (askFirst: boolean, granted = 0.4) => ({
 beforeEach(() => {
   useChatStore.setState({ chats: {} });
   const tree = convertAIStructureToDecisionTree(
-    { currency: "USD", summary: "Summary.", issues: [], nodes },
+    {
+      currency: "USD",
+      summary: "Summary.",
+      issues: [],
+      nodes,
+      openQuestions: [],
+    },
     "Tree",
   );
   treeId = useTreeStore.getState().loadTree(tree, false);
@@ -157,12 +163,14 @@ describe("buildChatSystemInstruction", () => {
   test("should put the prompts first and the case description last", () => {
     const instruction = buildChatSystemInstruction("CHAT", "METHOD", {
       issues: ["Is the motion granted? Yes or no"],
+      openQuestions: ["The description does not name the court."],
       source: { text: "The buyer sued." },
     });
     const places = [
       "CHAT",
       "<method>\nMETHOD\n</method>",
       "<issues>\n1. Is the motion granted? Yes or no\n</issues>",
+      "<open_questions>\n1. The description does not name the court.\n</open_questions>",
       "<case_description>\nThe buyer sued.\n</case_description>",
     ].map((part) => instruction.indexOf(part));
     expect(places).toEqual([...places].sort((a, b) => a - b));
@@ -184,6 +192,7 @@ describe("getChatIntro", () => {
         currency: null,
         summary: "",
         issues: [],
+        openQuestions: [],
         nodes: nodes.map((node) => ({
           ...node,
           value: node.value === null ? null : node.value / 4000000,

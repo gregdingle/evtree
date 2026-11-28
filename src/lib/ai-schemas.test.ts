@@ -41,6 +41,7 @@ function getMessages(nodes: AINode[]): string[] {
     summary: "Summary.",
     issues: ["Issue?"],
     nodes,
+    openQuestions: [],
   });
   return result.success ? [] : result.error.issues.map((i) => i.message);
 }
@@ -50,13 +51,14 @@ describe("aiTreeJsonSchema", () => {
     expect(JSON.stringify(aiTreeJsonSchema)).not.toContain("$ref");
   });
 
-  test("should put the summary before the issues before the nodes", () => {
+  test("should put the summary before the issues before the nodes before the open questions", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(Object.keys((aiTreeJsonSchema as any).properties)).toEqual([
       "currency",
       "summary",
       "issues",
       "nodes",
+      "openQuestions",
     ]);
   });
 
@@ -87,6 +89,7 @@ describe("AITreeSchema", () => {
         summary: "Summary.",
         issues: [],
         nodes: [root({ value: 1 })],
+        openQuestions: [],
       }).success;
     expect(parse("EUR")).toBe(true);
     expect(parse(null)).toBe(true);

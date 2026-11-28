@@ -73,6 +73,11 @@ export interface Chat {
   source?: AISource;
   /** The issues that the AI listed when it generated the tree */
   issues?: string[];
+  /**
+   * What the AI was unsure of or left out when it generated the tree, as it
+   * said itself. The chat opens with them, see Chat.tsx.
+   */
+  openQuestions?: string[];
 }
 
 /** The messages kept for a tree. Older ones are dropped. */
@@ -106,6 +111,7 @@ export interface ChatStoreState {
    */
   setSource: (treeId: string, source: AISource | undefined) => boolean;
   setIssues: (treeId: string, issues: string[]) => void;
+  setOpenQuestions: (treeId: string, openQuestions: string[]) => void;
   /** Removes the latest messages of a tree, from a message on */
   deleteMessagesFrom: (treeId: string, messageId: string) => void;
   /** Removes the conversation of a tree, and keeps its case description */
@@ -161,6 +167,11 @@ export const useChatStore = createWithEqualityFn<ChatStoreState>()(
       setIssues: (treeId, issues) =>
         set((state) => {
           (state.chats[treeId] ??= emptyChat()).issues = issues;
+        }),
+
+      setOpenQuestions: (treeId, openQuestions) =>
+        set((state) => {
+          (state.chats[treeId] ??= emptyChat()).openQuestions = openQuestions;
         }),
 
       deleteMessagesFrom: (treeId, messageId) =>

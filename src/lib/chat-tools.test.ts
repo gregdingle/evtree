@@ -74,7 +74,13 @@ const apply = (call: ChatToolCall) => {
 
 beforeEach(() => {
   const tree: DecisionTree = convertAIStructureToDecisionTree(
-    { currency: "USD", summary: "Summary.", issues: [], nodes },
+    {
+      currency: "USD",
+      summary: "Summary.",
+      issues: [],
+      nodes,
+      openQuestions: [],
+    },
     "Tree",
     { text: sourceText },
   );

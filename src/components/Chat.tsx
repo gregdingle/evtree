@@ -173,7 +173,8 @@ export function Chat() {
     intro,
     selectionName !== null,
     chat?.source !== undefined,
-    chat?.issues !== undefined,
+    // NOTE: the open questions answer the last suggestion already
+    chat?.issues !== undefined && !chat.openQuestions?.length,
   );
   const last = messages.at(-1);
 
@@ -199,6 +200,29 @@ export function Chat() {
         not by the AI, see getChatIntro. Nothing is sent to the AI until the
         user sends a message.
         TODO: consider an intro text of some kind here, maybe link to data security policy */}
+        {/* NOTE: a generated tree opens its chat with the questions that the AI
+        had when it built the tree: what it was unsure of or left out, see step 9
+        of prompt.md. A click sends a question back as the words of the user,
+        for the AI to take up, since the answer often needs talking over. They stay at the
+        top of the conversation, as its start. */}
+        {chat?.openQuestions && chat.openQuestions.length > 0 && (
+          <div className="mr-2 py-1">
+            <p>Open questions from generating this tree:</p>
+            <ol className="mt-1 list-decimal space-y-1 pl-5">
+              {chat.openQuestions.map((question) => (
+                <li key={question}>
+                  <button
+                    onClick={() => send(`About your question: ${question}`)}
+                    disabled={pending !== null}
+                    className="text-left wrap-anywhere select-text hover:underline disabled:cursor-not-allowed"
+                  >
+                    {question}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {messages.map((message, index) => (
           <ChatMessage
