@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { range, upperFirst } from "es-toolkit";
 
+import { useTreeHistoryHold } from "@/hooks/use-tree-history-hold";
 import { useTreeStore } from "@/hooks/use-tree-store";
 import { selectCurrentTree } from "@/lib/selectors";
 
@@ -51,6 +52,9 @@ export function VariablesInput({
 
   // Local state for immediate UI updates
   const [localVariables, setLocalVariables] = useState(initialVariablesArray);
+  // NOTE: a name or a value updates the tree on every key, and is one undo
+  // step
+  const historyHold = useTreeHistoryHold();
 
   // Sync local state only when tree switches (not when variables change)
   useEffect(() => {
@@ -129,6 +133,7 @@ export function VariablesInput({
               type="text"
               value={variable.name}
               onInput={(e) => handleNameChange(index, e.currentTarget.value)}
+              {...historyHold}
               placeholder={`${scope.slice(0, 4)}var${index + 1}`}
               className="min-w-0 rounded-md border-2 p-1 text-sm"
               spellCheck={false}
@@ -138,6 +143,7 @@ export function VariablesInput({
               type="number"
               value={variable.value}
               onInput={(e) => handleValueChange(index, e.currentTarget.value)}
+              {...historyHold}
               placeholder={
                 scope === "probability" ? `0.${index + 1}` : `${index + 1}000`
               }

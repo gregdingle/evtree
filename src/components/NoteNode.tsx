@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
+import { useTreeHistoryHold } from "@/hooks/use-tree-history-hold";
 import { useTreeStore } from "@/hooks/use-tree-store";
 import { AppNode } from "@/lib/node";
 
@@ -11,6 +12,8 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { updateNodeData } = useTreeStore.getState();
+  // NOTE: the text updates the tree on every key, and is one undo step
+  const historyHold = useTreeHistoryHold();
 
   // Auto-resize textarea on content change
   useEffect(() => {
@@ -26,6 +29,7 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
 
   const handleBlur = () => {
     setIsEditing(false);
+    historyHold.onBlur();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -113,6 +117,7 @@ export const NoteNode = ({ data, selected, id, width }: NodeProps<AppNode>) => {
             autoFocus={true}
             // NOTE: onFocus needed because autoFocus
             onFocus={(event) => {
+              historyHold.onFocus();
               // NOTE: sets cursor to end of text
               const length = event.target.value.length;
               event.target.setSelectionRange(length, length);

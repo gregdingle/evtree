@@ -13,7 +13,7 @@ import {
   ZustandFuncSelectors,
   createSelectorFunctions,
 } from "auto-zustand-selectors-hook";
-import { cloneDeep, isEqual, keyBy, round, throttle } from "es-toolkit";
+import { cloneDeep, isEqual, keyBy, round } from "es-toolkit";
 import { keys, toPairs, values } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
 import { ZundoOptions, temporal } from "zundo";
@@ -131,15 +131,11 @@ const temporalOptions: ZundoOptions<
   TreeStoreState,
   ReturnType<typeof selectUndoableState>
 > = {
-  // NOTE: throttling is needed for actions like dragging nodes across the canvas
-  // NOTE: so several operations in a row are not one undo step by themselves,
-  // and not one step each either, see batch
-  handleSet: (handleSet) =>
-    throttle((...args: unknown[]) => {
-      // @ts-expect-error - handleSet expects specific args but we just pass all through
-      handleSet(...args);
-      // QUESTION: how to optimize throttle window for undo?
-    }, 400),
+  // NOTE: every update of the tree is an undo step, with no throttle. What
+  // updates the tree many times for one edit, like a drag or typing in a
+  // field, holds the history meanwhile, see pauseTreeHistory. There was a
+  // throttle here for those, of 400 ms. It also dropped or merged steps of
+  // edits that came close together, like several edits by the AI.
   partialize: selectUndoableState,
   // NOTE: deep isEqual instead of shallow. this is needed to prevent
   // spurious undo states. see createWithEqualityFn in contrast.
@@ -1244,12 +1240,9 @@ const useTreeStoreBase = createWithEqualityFn<TreeStoreState>()(
     },
 
     // NOTE: for an edit that takes several operations, like a tool call of
-    // the chat with AI, see chat-tools.ts. Without this, the operations do
-    // not make one undo step. Saving for undo is throttled, see
-    // temporalOptions, and a throttle passes on the first call at once and
-    // the last one later, so undo would stop at the state before the last
-    // operation. So nothing is saved while the operations run, and the state
-    // from before them is saved after, past the throttle.
+    // the chat with AI, see chat-tools.ts. Each operation is an update, and
+    // so an undo step of its own. So nothing is saved while the operations
+    // run, and the state from before them is saved after.
     //
     // NOTE: an operation that updates the store later, like the animated
     // arrange and arrangeSubtree, is not part of the step.
@@ -1337,4 +1330,71 @@ function deleteSubTreeHelper(tree: DecisionTree, nodeId: string) {
   nodeIdsToDelete.forEach((nodeId) => {
     delete tree.nodes[nodeId];
   });
+}
+
+// The state from before the history was held, see pauseTreeHistory
+let heldState: ReturnType<typeof selectUndoableState> | null = null;
+
+/**
+ * Holds the undo history, for something that updates the tree many times for
+ * what is one edit to the user: a drag, which updates it on every frame, or
+ * typing in a field, which updates it on every key. Follow with
+ * resumeTreeHistory, which makes it one undo step.
+ *
+ * NOTE: this is the pattern of zundo for a drag, pause and resume. But a
+ * resume alone would leave what happened meanwhile out of the history, and
+ * the next undo would go back past it. So the state from before is kept
+ * here, and saved to the history on resume.
+ *
+ * NOTE: anything else that changes the tree meanwhile is part of the same
+ * step, like an edit by the AI that lands while a field has focus.
+ *
+ * NOTE: holding twice is the same as once, and resuming without a hold does
+ * nothing, so the two do not have to be paired exactly. A drag or a field can
+ * end without its event, like when a field is removed while it has focus.
+ */
+export function pauseTreeHistory() {
+  if (heldState) {
+    return;
+  }
+  heldState = selectUndoableState(useTreeStoreBase.getState());
+  useTreeStoreBase.temporal.getState().pause();
+}
+
+/**
+ * Takes up the undo history again after pauseTreeHistory, with one undo step
+ * for everything that changed meanwhile. Returns whether it was held.
+ */
+export function resumeTreeHistory(): boolean {
+  if (!heldState) {
+    return false;
+  }
+  const pastState = heldState;
+  heldState = null;
+  const temporal = useTreeStoreBase.temporal.getState();
+  temporal.resume();
+  const currentState = selectUndoableState(useTreeStoreBase.getState());
+  if (!isEqual(pastState, currentState)) {
+    // NOTE: what the middleware calls after an update, with the state from
+    // before it
+    // @ts-expect-error - typed for the whole state, and gets the undoable part
+    temporal._handleSet(pastState, undefined, currentState);
+  }
+  return true;
+}
+
+/**
+ * Undoes the last edit to a tree.
+ *
+ * NOTE: after taking up the history, in case it is held, so that what was
+ * done meanwhile is the step that is undone, and not the one before it
+ */
+export function undoTree() {
+  resumeTreeHistory();
+  useTreeStoreBase.temporal.getState().undo();
+}
+
+export function redoTree() {
+  resumeTreeHistory();
+  useTreeStoreBase.temporal.getState().redo();
 }

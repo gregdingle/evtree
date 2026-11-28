@@ -4,7 +4,13 @@ import { values } from "es-toolkit/compat";
 import { createEdge } from "../lib/edge";
 import { AppNode } from "../lib/node";
 import { DecisionTree } from "../lib/tree";
-import { useTreeStore } from "./use-tree-store";
+import {
+  pauseTreeHistory,
+  redoTree,
+  resumeTreeHistory,
+  undoTree,
+  useTreeStore,
+} from "./use-tree-store";
 
 jest.mock("nanoid", () => {
   let nextId = 0;
@@ -200,7 +206,9 @@ describe("paste", () => {
     )!;
     useTreeStore.getState().selectSubtree(inserted.id);
     useTreeStore.getState().copy();
-    expect(useTreeStore.getState().clipboard!.nodes.at(-1)!.id).toBe(inserted.id);
+    expect(useTreeStore.getState().clipboard!.nodes.at(-1)!.id).toBe(
+      inserted.id,
+    );
 
     // Pasting onto the real root is a no-op
     const before = useTreeStore.getState().trees["tree"];
@@ -315,5 +323,82 @@ describe("loadTree", () => {
     expect(state.currentTreeId).not.toBe(tree.id);
     expect(state.display.showIssues).toBe(false);
     expect(state.display.showHistogram).toBe(false);
+  });
+});
+
+describe("undo history", () => {
+  const getPastCount = () => useTreeStore.temporal.getState().pastStates.length;
+  const getName = () => {
+    const { trees, currentTreeId } = useTreeStore.getState();
+    return trees[currentTreeId!]!.name;
+  };
+  const setName = (name: string) =>
+    useTreeStore.getState().updateTreeData({ name });
+
+  beforeEach(() => {
+    resumeTreeHistory();
+    setName("Start");
+    useTreeStore.temporal.getState().clear();
+  });
+
+  test("should make every update an undo step, however close together", () => {
+    setName("A");
+    setName("B");
+    setName("C");
+    expect(getPastCount()).toBe(3);
+    undoTree();
+    expect(getName()).toBe("B");
+    undoTree();
+    undoTree();
+    expect(getName()).toBe("Start");
+  });
+
+  test("should make what happens while the history is held one undo step", () => {
+    setName("Before");
+    pauseTreeHistory();
+    setName("T");
+    setName("Ty");
+    setName("Typed");
+    expect(getPastCount()).toBe(1);
+    expect(resumeTreeHistory()).toBe(true);
+    expect(getPastCount()).toBe(2);
+
+    undoTree();
+    expect(getName()).toBe("Before");
+    redoTree();
+    expect(getName()).toBe("Typed");
+  });
+
+  test("should add no undo step when nothing changed while held", () => {
+    pauseTreeHistory();
+    setName("Other");
+    setName("Start");
+    resumeTreeHistory();
+    expect(getPastCount()).toBe(0);
+  });
+
+  test("should take holding twice, and resuming without a hold", () => {
+    expect(resumeTreeHistory()).toBe(false);
+    pauseTreeHistory();
+    setName("A");
+    pauseTreeHistory();
+    setName("B");
+    resumeTreeHistory();
+    expect(resumeTreeHistory()).toBe(false);
+    expect(getPastCount()).toBe(1);
+    undoTree();
+    expect(getName()).toBe("Start");
+  });
+
+  test("should undo what was done while held, when undo comes before the resume", () => {
+    setName("Before");
+    pauseTreeHistory();
+    setName("Typed");
+    undoTree();
+    expect(getName()).toBe("Before");
+    // And updates are steps again
+    setName("After");
+    undoTree();
+    expect(getName()).toBe("Before");
   });
 });

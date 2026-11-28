@@ -12,7 +12,11 @@ import {
 } from "@xyflow/react";
 
 import { useContextMenu } from "@/hooks/use-context-menu";
-import { useTreeStore } from "@/hooks/use-tree-store";
+import {
+  pauseTreeHistory,
+  resumeTreeHistory,
+  useTreeStore,
+} from "@/hooks/use-tree-store";
 import { AppEdge } from "@/lib/edge";
 import { getChildToParentNodeMap } from "@/lib/maps";
 import { selectCurrentEdges, selectCurrentNodes } from "@/lib/selectors";
@@ -140,6 +144,11 @@ export function MainTreeView() {
           closeMenu();
           return false;
         }}
+        // NOTE: a drag updates the tree on every frame, and is one undo step
+        onNodeDragStart={pauseTreeHistory}
+        onNodeDragStop={resumeTreeHistory}
+        onSelectionDragStart={pauseTreeHistory}
+        onSelectionDragStop={resumeTreeHistory}
         onConnect={onConnect}
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}

@@ -3,6 +3,8 @@ import React from "react";
 
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
+import { useTreeHistoryHold } from "@/hooks/use-tree-history-hold";
+
 import { Tooltip } from "./Tooltip";
 
 // QUESTION: should PropertyInputProps inherit from React.InputHTMLAttributes<HTMLInputElement>? how to handle textarea?
@@ -58,6 +60,15 @@ export const PropertyInput = React.forwardRef<
     },
     ref,
   ) => {
+    // NOTE: for the text fields, which update the tree on every key. What is
+    // typed in a field is one undo step, made when the field loses focus.
+    const historyHold = useTreeHistoryHold();
+    const handleBlur = () => {
+      // NOTE: first, so that what a field does when it loses focus, like
+      // rounding a number, is in the same undo step
+      onBlur?.();
+      historyHold.onBlur();
+    };
     return (
       <div className={`my-4 flex flex-wrap items-center space-x-2`}>
         <label
@@ -96,7 +107,8 @@ export const PropertyInput = React.forwardRef<
               id={label}
               value={value ?? ""}
               onInput={(e) => onChange?.(e.currentTarget.value)}
-              onBlur={onBlur}
+              onFocus={historyHold.onFocus}
+              onBlur={handleBlur}
               disabled={disabled}
               // NOTE: field-sizing-content makes the textarea as tall as its
               // text, like a reason from AI with its footnote, with no code.
@@ -146,7 +158,8 @@ export const PropertyInput = React.forwardRef<
             type={props.type || "text"}
             value={value ?? ""}
             onInput={(e) => onChange?.(e.currentTarget.value)}
-            onBlur={onBlur}
+            onFocus={historyHold.onFocus}
+            onBlur={handleBlur}
             disabled={disabled}
             className={`min-w-0 flex-1/4 rounded-md p-1 ${
               disabled ? "border-0" : "border-2"

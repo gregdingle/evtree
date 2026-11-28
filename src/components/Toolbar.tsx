@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { useDarkMode } from "@/hooks/use-dark-mode";
-import { useTreeStore } from "@/hooks/use-tree-store";
+import { redoTree, undoTree, useTreeStore } from "@/hooks/use-tree-store";
 import { useTreeTemporalStore } from "@/hooks/use-tree-temporal-store";
 import {
   exportHTMLElementAsPNG,
@@ -48,7 +48,10 @@ import { DecisionTree } from "@/lib/tree";
 import { ToolbarButton } from "./ToolbarButton";
 
 export function Toolbar() {
-  const { undo, redo } = useTreeStore.temporal.getState();
+  // NOTE: not undo and redo of the history itself, which could be held, see
+  // pauseTreeHistory
+  const undo = undoTree;
+  const redo = redoTree;
   const { canUndo, canRedo } = useTreeTemporalStore((state) => ({
     canUndo: state.pastStates.length > 0,
     canRedo: state.futureStates.length > 0,
