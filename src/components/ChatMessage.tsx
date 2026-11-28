@@ -168,7 +168,8 @@ function ChatSearchLine({ search }: { search: ChatSearch }) {
               // The cursor over a suggestion says that it leads out of the
               // app, as over the links to the sources. What Google shows is
               // not changed.
-              srcDoc={`<base target="_blank"><style>a { cursor: alias !important; }</style>${search.suggestionsHtml}`}
+              // NOTE: Google ToS requires that the content below is shown, provided by Google
+              srcDoc={`<base target="_blank"><style>.container { padding: 0px 8px !important; } a { font-size: 10px; cursor: alias !important; }</style>${search.suggestionsHtml}`}
               sandbox="allow-popups allow-popups-to-escape-sandbox"
               className="h-12 w-full border-0 opacity-75"
             />
