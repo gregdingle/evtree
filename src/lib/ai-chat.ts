@@ -1,4 +1,10 @@
-import type { Content, FunctionCall, GenerativeModel, Part } from "firebase/ai";
+import type {
+  Content,
+  FunctionCall,
+  GenerativeModel,
+  Part,
+  UsageMetadata,
+} from "firebase/ai";
 import { nanoid } from "nanoid";
 
 import {
@@ -455,7 +461,11 @@ export async function sendChatMessage({
         { signal },
       );
       let roundText = "";
+      let usage: UsageMetadata | undefined;
       for await (const chunk of result.stream) {
+        // NOTE: the counts come with the chunks, the last one having the
+        // totals, and not with the response that is put together from them
+        usage = chunk.usageMetadata ?? usage;
         roundText += chunk.text();
         onText?.([...texts, roundText].filter(Boolean).join("\n\n"));
       }
@@ -463,6 +473,13 @@ export async function sendChatMessage({
         texts.push(roundText.trim());
       }
       const response = await result.response;
+      // NOTE: to see what a request of the chat costs. The system instruction
+      // with the case description goes with every request, so the cached
+      // count says how much of it the server had kept from the request before.
+      // eslint-disable-next-line no-console
+      console.debug(
+        `[EVTree] AI chat request ${round + 1}. Tokens: ${usage?.promptTokenCount ?? 0} prompt, of which ${usage?.cachedContentTokenCount ?? 0} cached, ${usage?.thoughtsTokenCount ?? 0} thinking, ${usage?.candidatesTokenCount ?? 0} output.`,
+      );
       const calls = response.functionCalls() ?? [];
       if (calls.length === 0 || round === MAX_TOOL_ROUNDS) {
         break;
