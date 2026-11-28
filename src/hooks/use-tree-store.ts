@@ -47,6 +47,7 @@ import { Variable } from "@/lib/variable";
 import { warnItemNotFound, warnNoCurrentTree } from "@/utils/warn";
 
 import { withArrangeAnimation } from "../lib/animate";
+import { useChatStore } from "./use-chat-store";
 
 export interface TreeStoreState {
   trees: Record<string, DecisionTree>;
@@ -227,6 +228,10 @@ const useTreeStoreBase = createWithEqualityFn<TreeStoreState>()(
         undefined,
         { type: "deleteTree", treeId },
       );
+      // NOTE: the chat with AI about a tree goes with the tree, because it
+      // may hold a confidential case description, see use-chat-store.ts. It
+      // does not come back if the deletion of the tree is undone.
+      useChatStore.getState().deleteChat(treeId);
     },
 
     loadTree: (treeData: DecisionTree, replace: boolean) => {
